@@ -1,0 +1,351 @@
+﻿
+;────────────────────────────────────
+;도구生成処理
+;※ARGは要求偏差(0を基準に大きいほどこの種別で마력を消費했다がる)
+;────────────────────────────────────
+@MAKE_TOOLS()
+#LOCALSSIZE 50
+#DIM LCOUNT
+#DIM 可用마력
+
+;この価格を上回る도구が存在すると破綻する
+LOCAL = 1000000
+FOR LCOUNT, 0, 50
+	SIF ITEMNAME:LCOUNT != "" && ITEM:LCOUNT == 0
+		LOCAL = MIN(LOCAL, ITEMPRICE:LCOUNT)
+NEXT
+;使用可能마력判定
+可用마력 = MAKE_TOOLS_MP_ABLE()
+
+SIF FLAG:디버그
+	PRINTFORML 「도구 생성 처리」(가용 마력：{可用마력})
+
+;買えないか、買える도구がもう無いなら帰る
+IF 可用마력 < LOCAL || LOCAL == 1000000
+	IF FLAG:디버그
+		IF LOCAL == 1000000
+			PRINTFORMW 구입 가능한 도구가 존재하지 않습니다！
+		ELSE
+			PRINTFORMW 가용 마력이 부족합니다(그리고{LOCAL - 可用마력})
+		ENDIF
+	ENDIF
+	RETURN RESULT
+ENDIF
+
+;変数を初期化
+CALL SET_CRI_VAR
+SPLIT "로터/바이브/Ａ비즈/Ｐバンド//////カスタム//Ａ바이브/Ｃキャプ/Ｂキャプ/Ｐホール//////Ｅマスク/채찍/밧줄////////ギャグ/바늘/관장/삼각목마///////거울//개목걸이", "/", LOCALS
+FOR LCOUNT, 0, 50
+	IF ITEMNAME:LCOUNT != "" && ITEM:LCOUNT == 0
+		CALL SET_CRI_VAR, ITEMNAME:LCOUNT, 1
+		CALL SET_CRI_VAR, LOCALS:LCOUNT, 1, 1
+	ENDIF
+NEXT
+
+;------------------------------------------
+;보정処理
+;------------------------------------------
+
+LOCALS = MAKE_TOOLS
+
+CALL CHA_CRI_VAR, "죠교대상が처녀"
+CALLFORM %LOCALS%_MAIDEN_M
+
+CALL CHA_CRI_VAR, "危険な도구"
+CALLFORM %LOCALS%_RISK
+
+CALL CHA_CRI_VAR, "責め具"
+CALLFORM %LOCALS%_TORMENT
+
+CALL CHA_CRI_VAR, "죠교대상のＣ감각"
+CALLFORM %LOCALS%_C_M
+
+CALL CHA_CRI_VAR, "죠교대상のＶ감각"
+CALLFORM %LOCALS%_V_M
+
+CALL CHA_CRI_VAR, "죠교대상のＡ감각"
+CALLFORM %LOCALS%_A_M
+
+CALL CHA_CRI_VAR, "죠교대상のＢ감각"
+CALLFORM %LOCALS%_B_M
+
+CALL CHA_CRI_VAR, "積極性"
+CALLFORM %LOCALS%_POSITIVELY_T
+
+CALL CHA_CRI_VAR, "새드マゾ"
+CALLFORM %LOCALS%_SM
+
+CALL CHA_CRI_VAR, "도구単体判定"
+CALLFORM %LOCALS%_TOOL
+
+CALL CHA_CRI_VAR, "죠교자の광기"
+CALLFORM %LOCALS%_INSANE
+
+CALL CHA_CRI_VAR, "価格による보정"
+CALLFORM %LOCALS%_PRICE
+
+CALL CHA_CRI_VAR, "実行判定"
+CALLFORM %LOCALS%_ABLE
+
+;------------------------------------------
+;生成判定
+;------------------------------------------
+
+LOCAL:2 = 0
+
+$MAKE_TOOLS
+
+;購入状況による判定(既に所持、마력不발)
+;判定処理
+FOR LCOUNT, 0, 50
+	IF ITEMNAME:LCOUNT == "" || ITEM:LCOUNT > 0
+		CALL DIM_CRI_VAR(ITEMNAME:LCOUNT, -999)
+		CONTINUE
+	ENDIF
+	LOCAL = GET_CRI_VAR(ITEMNAME:LCOUNT + "累計")
+	IF LOCAL < 0
+		LOCAL = ITEMPRICE:LCOUNT * (10 + ABS(LOCAL)) / 10
+	ELSE
+		LOCAL = ITEMPRICE:LCOUNT * 10 / (10 + ABS(LOCAL))
+	ENDIF
+	SIF LOCAL > 可用마력
+		CALL DIM_CRI_VAR(ITEMNAME:LCOUNT, -999)
+NEXT
+
+CALL DEF_CRI_VAR("最大前者")
+LOCAL = GET_CRI_VAR("決定")
+LOCALS = %RESULTS%
+CALL ANA_CRI_VAR()
+IF LOCAL != -1 && ITEMPRICE:LOCALS <= CFLAG:마력
+	LOCAL = CFLAG:마력
+	CFLAG:마력 -= ITEMPRICE:LOCALS
+	可用마력 -= ITEMPRICE:LOCALS
+	ITEM:LOCALS = 1
+	;錬成時구상呼び出し
+	;CALL KOJO_EVENT(110, XX)
+	;CALL VOIDLINE_IF(RESULT)
+	SKIPDISP 0
+	PRINTFORML %CALLNAME%(은)는 %LOCALS%(을)를 련 이루었습니다
+	PRINTFORMW 마력({LOCAL} → {CFLAG:마력})
+	IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
+		SKIPDISP 1
+	ENDIF
+	LOCAL:2++
+	SIF FLAG:디버그
+		PRINTFORML (가용 마력：{可用마력})
+	GOTO MAKE_TOOLS
+ENDIF
+
+SIF FLAG:디버그
+;OriginalString : 
+	PRINTW 
+
+RETURN RESULT
+
+;------------------------------------------
+;죠교대상が처녀
+;------------------------------------------
+@MAKE_TOOLS_MAIDEN_M
+
+IF TALENT:MASTER:처녀
+	;素質によって作用の方向を決定
+	LOCAL = TALENT:심술궂음 - TALENT:마음씨착한 - TALENT:겁쟁이 + TALENT:MASTER:정조무관심 - TALENT:MASTER:정조관념
+	;素質によって作用の強度を決定
+	LOCAL = LOCAL * POWER(2, -TALENT:유치 + 12) / 1024
+	CALL ADD_CRI_VAR("바이브"        , LOCAL)
+	CALL ADD_CRI_VAR("페니스밴드"  , LOCAL)
+ENDIF
+
+;------------------------------------------
+;危険な도구
+;------------------------------------------
+@MAKE_TOOLS_RISK
+;LOCALにはリスクを代入
+LOCAL = 1 + TALENT:MASTER:임신
+;素質によって作用の方向を決定
+LOCAL = LOCAL * (TALENT:민감 - TALENT:신중함 - TALENT:겁쟁이 - TALENT:얌전한 + TALENT:충동적 - TALENT:자제심)
+;素質によって作用の強度を決定
+LOCAL = LOCAL * POWER(2, TALENT:MASTER:고통에약함 - TALENT:MASTER:고통에강함 + 12) / 1024
+CALL ADD_CRI_VAR("로터"      , LOCAL)
+CALL ADD_CRI_VAR("바이브"        , LOCAL * 2)
+CALL ADD_CRI_VAR("항문비즈"  , LOCAL * 3)
+CALL ADD_CRI_VAR("페니스밴드"  , LOCAL * 3)
+CALL ADD_CRI_VAR("항문바이브"  , LOCAL * 2)
+CALL ADD_CRI_VAR("클리캡"  , LOCAL)
+CALL ADD_CRI_VAR("유두캡", LOCAL)
+CALL ADD_CRI_VAR("오나홀"    , LOCAL)
+CALL ADD_CRI_VAR("눈가리개"    , LOCAL)
+CALL ADD_CRI_VAR("채찍"            , LOCAL * 4)
+CALL ADD_CRI_VAR("밧줄"            , LOCAL * 3)
+CALL ADD_CRI_VAR("볼개그"  , LOCAL)
+CALL ADD_CRI_VAR("바늘"            , LOCAL * 5)
+CALL ADD_CRI_VAR("관장세트"    , LOCAL * 3)
+CALL ADD_CRI_VAR("삼각목마"      , LOCAL * 8)
+CALL ADD_CRI_VAR("거울"          , LOCAL)
+CALL ADD_CRI_VAR("개목걸이"          , LOCAL)
+
+;------------------------------------------
+;責め具
+;------------------------------------------
+@MAKE_TOOLS_TORMENT
+;素質によって作用の方向を決定
+LOCAL = TALENT:MASTER:변태적 + TALENT:MASTER:예속 + TALENT:새드
+;素質によって作用の強度を決定
+LOCAL = LOCAL * POWER(2, TALENT:MASTER:고통에약함 - TALENT:MASTER:고통에강함 + TALENT:MASTER:연모 + 12) / 1024
+CALL ADD_CRI_VAR("눈가리개"    , LOCAL)
+CALL ADD_CRI_VAR("채찍"            , LOCAL * 3)
+CALL ADD_CRI_VAR("밧줄"            , LOCAL * 3)
+CALL ADD_CRI_VAR("볼개그"  , LOCAL * 2)
+CALL ADD_CRI_VAR("바늘"            , LOCAL * 5)
+CALL ADD_CRI_VAR("관장세트"    , LOCAL * 4)
+CALL ADD_CRI_VAR("삼각목마"      , LOCAL * 8)
+CALL ADD_CRI_VAR("거울"          , LOCAL)
+CALL ADD_CRI_VAR("개목걸이"          , LOCAL * 2)
+
+;------------------------------------------
+;죠교대상のＣ감각
+;------------------------------------------
+@MAKE_TOOLS_C_M
+;素質によって作用の方向を決定
+LOCAL = TALENT:MASTER:Ｃ민감 - TALENT:MASTER:Ｃ둔감 + TALENT:MASTER:음핵／음경
+;素質によって作用の強度を決定
+LOCAL = LOCAL * POWER(2, TALENT:솔직 + 12) / 1024
+CALL ADD_CRI_VAR("로터"      , LOCAL)
+CALL ADD_CRI_VAR("클리캡"  , LOCAL)
+CALL ADD_CRI_VAR("오나홀"    , LOCAL)
+
+;------------------------------------------
+;죠교대상のＶ감각
+;------------------------------------------
+@MAKE_TOOLS_V_M
+;素質によって作用の方向を決定
+LOCAL = TALENT:MASTER:Ｖ민감 - TALENT:MASTER:Ｖ둔감 + TALENT:MASTER:음호 + TALENT:MASTER:젖기쉬움 - TALENT:MASTER:젖기어려움
+;素質によって作用の強度を決定
+LOCAL = LOCAL * POWER(2, TALENT:솔직 + 12) / 1024
+CALL ADD_CRI_VAR("바이브"        , LOCAL)
+CALL ADD_CRI_VAR("페니스밴드"  , LOCAL)
+
+;------------------------------------------
+;죠교대상のＡ감각
+;------------------------------------------
+@MAKE_TOOLS_A_M
+;素質によって作用の方向を決定
+LOCAL = TALENT:MASTER:Ａ민감 - TALENT:MASTER:Ａ둔감 + TALENT:MASTER:음고
+;素質によって作用の強度を決定
+LOCAL = LOCAL * POWER(2, TALENT:솔직 + 12) / 1024
+CALL ADD_CRI_VAR("항문비즈"  , LOCAL)
+CALL ADD_CRI_VAR("페니스밴드"  , LOCAL)
+CALL ADD_CRI_VAR("항문바이브"  , LOCAL)
+CALL ADD_CRI_VAR("관장세트"    , LOCAL)
+
+;------------------------------------------
+;죠교대상のＢ감각
+;------------------------------------------
+@MAKE_TOOLS_B_M
+;素質によって作用の方向を決定
+LOCAL = TALENT:MASTER:Ｂ민감 - TALENT:MASTER:Ｂ둔감 + TALENT:MASTER:음유
+;素質によって作用の強度を決定
+LOCAL = LOCAL * POWER(2, TALENT:솔직 + 12) / 1024
+CALL ADD_CRI_VAR("유두캡", LOCAL)
+
+;------------------------------------------
+;積極性
+;------------------------------------------
+@MAKE_TOOLS_POSITIVELY_T
+;素質によって作用の方向を決定
+LOCAL = TALENT:헌신적 - TALENT:수동적
+;作用の強度を決定
+LOCAL = LOCAL * POWER(2, 0)
+CALL ADD_CRI_VAR("로터"      , LOCAL * 2)
+CALL ADD_CRI_VAR("바이브"        , LOCAL * 2)
+CALL ADD_CRI_VAR("항문비즈"  , LOCAL * 2)
+CALL ADD_CRI_VAR("페니스밴드"  , LOCAL * 4)
+CALL ADD_CRI_VAR("항문바이브"  , LOCAL * 2)
+CALL ADD_CRI_VAR("클리캡"  , LOCAL)
+CALL ADD_CRI_VAR("유두캡", LOCAL)
+CALL ADD_CRI_VAR("오나홀"    , LOCAL)
+CALL ADD_CRI_VAR("눈가리개"    , LOCAL)
+CALL ADD_CRI_VAR("채찍"            , LOCAL * 2)
+CALL ADD_CRI_VAR("밧줄"            , LOCAL * 3)
+CALL ADD_CRI_VAR("볼개그"  , LOCAL)
+CALL ADD_CRI_VAR("바늘"            , LOCAL * 3)
+CALL ADD_CRI_VAR("관장세트"    , LOCAL * 2)
+CALL ADD_CRI_VAR("삼각목마"      , LOCAL * 3)
+CALL ADD_CRI_VAR("거울"          , LOCAL)
+CALL ADD_CRI_VAR("개목걸이"          , LOCAL)
+
+;------------------------------------------
+;새드マゾ
+;------------------------------------------
+@MAKE_TOOLS_SM
+;素質によって作用の方向を決定
+LOCAL = TALENT:새드
+;素質によって作用の強度を決定
+LOCAL = LOCAL * POWER(2, TALENT:MASTER:고통에약함 - TALENT:MASTER:고통에강함 + TALENT:MASTER:연모 + 12) / 1024
+CALL ADD_CRI_VAR("채찍"            , LOCAL * 2)
+CALL ADD_CRI_VAR("밧줄"            , LOCAL * 3)
+CALL ADD_CRI_VAR("볼개그"  , LOCAL)
+CALL ADD_CRI_VAR("바늘"            , LOCAL * 3)
+CALL ADD_CRI_VAR("관장세트"    , LOCAL * 2)
+CALL ADD_CRI_VAR("삼각목마"      , LOCAL * 3)
+
+;------------------------------------------
+;도구単体判定
+;------------------------------------------
+@MAKE_TOOLS_TOOL
+CALL ADD_CRI_VAR("페니스밴드"  , TALENT:색정적 * 4)
+CALL ADD_CRI_VAR("밧줄"            , TALENT:긴박능숙 * 4)
+CALL ADD_CRI_VAR("바늘"            , TALENT:바느질 * 4)
+CALL ADD_CRI_VAR("개목걸이"          , TALENT:튀고싶어함 * 4)
+
+;------------------------------------------
+;죠교자の광기
+;------------------------------------------
+@MAKE_TOOLS_INSANE
+#DIM LCOUNT
+IF TALENT:광기
+	FOR LCOUNT, 0, 50
+		IF ITEMNAME:LCOUNT != ""
+			CALL MUL_CRI_VAR(ITEMNAME:LCOUNT, -50, 100)
+		ENDIF
+	NEXT
+ENDIF
+
+;------------------------------------------
+;価格による보정
+;------------------------------------------
+@MAKE_TOOLS_PRICE
+#DIM LCOUNT
+FOR LCOUNT, 0, 50
+	IF ITEMNAME:LCOUNT != ""
+		LOCAL = GET_CRI_VAR(ITEMNAME:LCOUNT + "累計")
+		IF LOCAL > 0
+			CALL MUL_CRI_VAR(ITEMNAME:LCOUNT, 100 * POWER(2, 10 + TALENT:충동적 - TALENT:자제심 + TALENT:튀고싶어함) / ITEMPRICE:LCOUNT)
+		ELSEIF LOCAL < 0
+			CALL MUL_CRI_VAR(ITEMNAME:LCOUNT, 100 * ITEMPRICE:LCOUNT / POWER(2, 10 + TALENT:충동적 - TALENT:자제심 + TALENT:튀고싶어함))
+		ENDIF
+	ENDIF
+NEXT
+
+;------------------------------------------
+;実行判定
+;------------------------------------------
+@MAKE_TOOLS_ABLE
+;죠교자に페니스が有れば페니스밴드は不要
+SIF PENIS(TARGET)
+	CALL DIM_CRI_VAR("페니스밴드"  , -999)
+;죠교대상に페니스が無ければオナホは不要
+SIF !PENIS(MASTER)
+	CALL DIM_CRI_VAR("오나홀"    , -999)
+;커스텀도구は未対応
+CALL DIM_CRI_VAR("커스텀도구"  , -999)
+
+;------------------------------------------
+;使用可能마력判定
+;------------------------------------------
+@MAKE_TOOLS_MP_ABLE()
+#FUNCTION
+;마력不발基準設定
+RETURNF LIMIT(CFLAG:마력 * (8 + MANAGE_MP_PROP() + TALENT:도구능숙) * 10 / 100, 0, CFLAG:마력)
+
+

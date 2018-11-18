@@ -1,0 +1,117 @@
+﻿;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+;구상プロファイル表示
+;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+@KOJO_PROFILE(ARG)
+#DIMS DEFONT, 1
+#DIM LCOUNT, 1
+;フォント保存
+DEFONT = %GETFONT()%
+DRAWLINE
+PRINTL 
+;てぬき
+LOCAL =STRLENS(@"　%" "*(STRLENS(CSVCSTR(ARG, 10, 0))/2)%%" "*(STRLENS(CSVCSTR(ARG, 11, 0))/2)%%CSVCSTR(ARG, 12, 0)%")/2
+PRINTFORML  %"―"*(LOCAL/2-1)%조교자명%"―"*(LOCAL/2-1)%
+PRINTL 
+;肩書きはHG教科書体
+SIF CHKFONT("HG教科書体")
+SETFONT "HG教科書体"
+PRINTFORML %" "*MAX(4, (((STRLENS(@"　%"―"*(LOCAL+2)%　")/2+2)-STRLENS(CSVCSTR(ARG, 10, 0)))/2))%%CSVCSTR(ARG, 10, 0)%
+;名前は元フォント
+SETFONT DEFONT
+PRINTFORML %" "*((STRLENS(@"　%"―"*(LOCAL+2)%　")-STRLENS(CSVCSTR(ARG, 11, 0)))/2)%%CSVCSTR(ARG, 11, 0)%
+;로마자読みはＭＳ 明朝（TimesNewRomanは等幅じゃなかった…）
+SIF CHKFONT("ＭＳ 明朝")
+	SETFONT "ＭＳ 明朝"
+PRINTFORML   %" "*(STRLENS(CSVCSTR(ARG, 10, 0))/2)%%" "*(STRLENS(CSVCSTR(ARG, 11, 0))/2)%%CSVCSTR(ARG, 12, 0)%
+SETFONT DEFONT
+PRINTL 
+PRINTFORML  %"―"*(LOCAL+2)%
+PRINTL 
+PRINTL  ―――――조교자 말데이터―――――
+PRINTL 
+VARSET RESULT
+VARSET RESULTS
+TRYCALLFORM KOJO_K{ARG}
+PRINTFORML   일반 말  ：\@ RESULT ? 있어 # 없음 \@
+PRINTFORM   입장 지정 말：
+;주인님判定
+SIF STRFIND(RESULTS, @"/MS/") >= 0
+;OriginalString : [주인님] 
+	PRINT [남편님] 
+;非주인님判定
+SIF STRFIND(RESULTS, @"/AS/") >= 0
+;OriginalString : [非주인님]
+	PRINT [비남편님]
+;なんもなし
+SIF STRFIND(RESULTS, @"/MS/") < 0 && STRFIND(RESULTS, @"/AS/") < 0
+;OriginalString : なし
+	PRINT 없음
+PRINTL 
+
+PRINTFORM   대상 지정 말：
+;男당신判定
+SIF STRFIND(RESULTS, @"/MALEYOU/") >= 0
+;OriginalString : [당신(남자)] 
+	PRINT [당신(남자)] 
+;女당신判定
+SIF STRFIND(RESULTS, @"/FEMALEYOU/") >= 0
+;OriginalString : [당신(女性)] 
+	PRINT [당신(여성)] 
+;후타나리당신判定
+SIF STRFIND(RESULTS, @"/TWINYOU/") >= 0
+;OriginalString : [당신(후타나리)] 
+	PRINT [당신(뚜껑이든지)] 
+;ちんこ付き당신判定
+SIF STRFIND(RESULTS, @"/PENISYOU/") >= 0
+;OriginalString : [당신(페니스あり)] 
+	PRINT [당신(페니스 있어)] 
+;キャラ一致判定
+IF STRFIND(RESULTS, @"/K") >= 0
+	FOR LCOUNT, 0, FLAG:Cha총수
+		SIF STRFIND(RESULTS, @"/K{LCOUNT}/") >= 0
+			PRINTFORM [%CSVCALLNAME(LCOUNT, 0)%]
+	NEXT
+ENDIF
+;男判定
+SIF STRFIND(RESULTS, @"/MALE/") >= 0
+;OriginalString : [남자] 
+	PRINT [남자] 
+;女判定
+SIF  STRFIND(RESULTS, @"/FEMALE/") >= 0
+;OriginalString : [女性] 
+	PRINT [여성] 
+;후타나리判定
+SIF STRFIND(RESULTS, @"/TWIN/") >= 0
+;OriginalString : [후타나리] 
+	PRINT [뚜껑이든지] 
+;ちんこ付き判定
+SIF STRFIND(RESULTS, @"/PENIS/") >= 0
+;OriginalString : [페니스あり] 
+	PRINT [페니스 있어] 
+;なんもなし
+SIF REPLACE(REPLACE(REPLACE(RESULTS, "MS", ""), "AS", ""), "/", "") == ""
+;OriginalString : なし
+	PRINT 없음
+PRINTL 
+PRINTFORML   말작자명 ：\@ RESULTS:1 == "" ? 없음 # %RESULTS:1% \@
+PRINTL 
+PRINTL  ――――――――――――――――――
+PRINTL 
+;OriginalString : 　あらすじ――
+PRINTW  개요――
+PRINTL 
+CALL KOJO_DIGEST(ARG)
+SIF !RESULT
+;OriginalString : 　　　　　　　　　　　――未定義です。本編をご覧ください。
+	PRINTW            ――미정도리입니다. 본편을 봐 주세요.
+PRINTL 
+PRINTL  ――――――――――――――――――
+PRINTL 
+;OriginalString : 　注意事項――
+PRINTW  주의 사항――
+PRINTL 
+CALL KOJO_ATTENTION(ARG)
+SIF !RESULT
+;OriginalString : 　　　　　　　　　　　――特にありません。
+	PRINTW            ――특별히 없습니다.
+PRINTL 

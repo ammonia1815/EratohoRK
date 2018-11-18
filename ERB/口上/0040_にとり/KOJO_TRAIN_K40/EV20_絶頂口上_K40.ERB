@@ -1,0 +1,672 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	니토리구상 죠교이벤트구상ファイル
+;
+;	죠교ターン中이벤트、절정구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;0.60時代の구상を現行仕様の枠に当てはめる為に少々アレンジしています
+;ここで使ったそれぞれの枠組みは、私個人としては必ずしも望ましいものとは考えていません@/L
+
+;========================================================================
+;EV20, 절정구상
+;========================================================================
+;・죠교자か죠교대상が절정に達するときに表示
+;・各절정は個別の呼び出しを持たずに、全て派生で処理される
+;-------------------------------------------------
+;=================================================
+;関連変数…
+;
+;TFLAG:전회질싸,(1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)/5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정))
+;TFLAG:REACT분류,(0=なし/1=소극적으로 한다/2=적극적으로 한다/3=용서를 빌다/4=날뛴다/5=要求に応じない,거부/6=逃げる,もがく)
+;NOWEX:사정,(1=드라이사정/2=사정/3=대량사정/4=사정(조루)/5=A責사정)
+;TEQUIP:자위중,(bit0=죠교대상/bit1=죠교자)
+;
+;=================================================
+;関数類…
+;
+;MASTER_EX
+;引　数:ARG:0…애무者→1.죠교대상自身/2.죠교자/4.조수１/8.조수２/16.조수３
+;                      /64.도구/128.便所利用者　省略すると애무者を問わない
+;              ビット和での指定が可能
+;       ARG:1…(省略可)절정の種別→1.Ｃ절정/2.Ｖ절정/3.Ａ절정/4.Ｂ절정
+;                                  /11.분유/12.사정/13.방뇨
+;ARG:0 (bit0 = 죠교대상自身/bit1 = 죠교자/bit2 = 조수１/bit3 = 조수２/bit4 = 조수３/bit6 = 도구/bit7 = 便所利用者)
+;-------------------------------------------------
+;TARGET_EX
+;引　数:ARG:0…애무者→1.죠교대상/2.죠교자自身/4.조수１/8.조수２/16.조수３
+;              ビット和での指定が可能。省略すると애무者を問わない
+;       ARG:1…(省略可)절정の種別→1.Ｃ절정/2.Ｖ절정/3.Ａ절정/4.Ｂ절정
+;                                  /11.분유/12.사정
+;ARG:0 (bit0 = 죠교대상/bit1 = 죠교자自身/bit2 = 조수１/bit3 = 조수２/bit4 = 조수３)
+;-------------------------------------------------
+@KOJO_EVENT_K40_20(ARG)
+;-------------------------------------------------
+;TFLAG:전회질싸;(1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)/5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정))
+;-------------------------------------------------
+
+;────────────────────────────────────
+;질내사정/항문内사정(MASTER→TARGET)
+;────────────────────────────────────
+;・성교봉사系で죠교대상が사정する場合に表示
+;・TFLAG:안빼고は抜かない判定ごとに+1される
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+
+;드라이사정を想定してある内容ではないので、条件で弾いてしまいます@/L
+;━━━━━━━━━━━━━━━━━━━━━━━━━
+;질내사정/항문内사정(죠교대상→죠교자)
+;━━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 6) > 0
+	;=================================================
+	;죠교자が절정
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(NOWEX:Ｖ절정, NOWEX:Ａ절정) > 0
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDEVENT(3, 0)
+				CASE 0
+;OriginalString : 「손、握って……？」
+					PRINTFORMW 「손, 잡아……？」
+;OriginalString : 「一緒に、良くなりたいから……ぁっ！」
+					PRINTFORMW 「함께, 좋아지고 싶으니까……！」
+				CASE 1
+;OriginalString : 「いきなり、抱きつかないでぇ……」
+					PRINTFORMW 「갑자기, 안아 붙지 말고……」
+;OriginalString : 「私、もう駄目なんだから……っ！」
+					PRINTFORMW 「 나, 이제 안되니까……！」
+				CASE 2
+;OriginalString : 「熱いの、出てるよっ……」
+					PRINTFORMW 「뜨거운 것, 나오고 있는……」
+;OriginalString : 「これ、凄い……っ！」
+					PRINTFORMW 「이것, 굉장하다……！」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDEVENT(3, 1)
+				CASE 0
+;OriginalString : 「もう、참다できないみたいだあね……」
+					PRINTFORMW 「 이제, 참을 수 없는 것 같다 언니(누나)……」
+;OriginalString : 「出しちゃっても、いいよ……」
+					PRINTFORMW 「내 버려서도, 좋아……」
+				CASE 1
+;OriginalString : 「よく、頑張ったね……」
+					PRINTFORMW 「자주(잘), 노력했군요……」
+;OriginalString : 「早く、出して……っ！」
+					PRINTFORMW 「빨리, 내……！」
+				CASE 2
+;OriginalString : 「必死な顔、してるねえ」
+					PRINTFORMW 「필사적인 얼굴, 하고 있구나」
+;OriginalString : 「참다しないで、出しちゃいなよぉ……っ！」
+					PRINTFORMW 「참지 말고, 내버릴……！」
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDEVENT(3, 2)
+			CASE 0
+;OriginalString : 「中で、出てるよ……っ」
+				PRINTFORMW 「안으로, 나오고 있어……」
+;OriginalString : 「そんなに、良かったんだ？」
+				PRINTFORMW 「그렇게, 좋았다？」
+			CASE 1
+;OriginalString : 「ん、熱いの、がぁ……！」
+				PRINTFORMW 「응, 뜨거운 것, 이……！」
+;OriginalString : 「零れちゃうよぉ……」
+				PRINTFORMW 「흘러넘쳐버린다……」
+			CASE 2
+;OriginalString : 「凄い、勢いだあ……」
+				PRINTFORMW 「굉장한, 기세다……」
+;OriginalString : 「全部、搾ってあげるからね……」
+				PRINTFORMW 「전부, 짜 주니까요……」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDEVENT(3, 3)
+			CASE 0
+;OriginalString : 「あっ……！」
+				PRINTFORMW 「아……！」
+;OriginalString : 「ちょっと、気持ち良かったよ……」
+				PRINTFORMW 「조금, 기분 좋았어요……」
+			CASE 1
+;OriginalString : 「中で、出しちゃうなんてねえ」
+				PRINTFORMW 「안으로, 내버린다라니 」
+;OriginalString : 「気持ち良ければ、何でもいいのかな？」
+				PRINTFORMW 「기분 좋다면, 뭐든지 좋은 것인지？」
+			CASE 2
+;OriginalString : 「참다が발りないなあ」
+				PRINTFORMW 「인내가 부족하다」
+;OriginalString : 「もっと、楽しませてよ？」
+				PRINTFORMW 「 좀 더, 즐겁게 해？」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;질내사정/항문内사정(TARGET→MASTER)
+;────────────────────────────────────
+;・성교系で죠교자が사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+
+;드라이사정を想定してある内容ではないので、条件で弾いてしまいます@/L
+;━━━━━━━━━━━━━━━━━━━━━━━━━
+;질내사정/항문内사정(죠교자→죠교대상)
+;━━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 1, 5) > 0
+	;=================================================
+	;죠교대상が절정
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(NOWEX:MASTER:Ｖ절정, NOWEX:MASTER:Ａ절정) > 0
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDEVENT(3, 10)
+				CASE 0
+;OriginalString : 「%CNAME(MASTER, TARGET)%の体、震えて……」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 몸, 떨려……」
+;OriginalString : 「私も、出ちゃう……っ！」
+					PRINTFORMW 「 나도, 나와버린다……！」
+				CASE 1
+;OriginalString : 「손、握ってあげる……」
+					PRINTFORMW 「손, 잡아 준다……」
+;OriginalString : 「一緒に、良くなろうね……！」
+					PRINTFORMW 「함께, 좋아지자……！」
+				CASE 2
+;OriginalString : 「ふぁ……っ、もう駄目……！」
+					PRINTFORMW 「……, 이제 타목……！」
+;OriginalString : 「%CNAME(MASTER, TARGET)%も、限界そうだね……っ」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%도, 한계 그렇다……」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDEVENT(3, 11)
+				CASE 0
+;OriginalString : 「顔、見ないで……っ」
+					PRINTFORMW 「얼굴, 보지 마……」
+;OriginalString : 「%CNAME(MASTER, TARGET)%よりは、ましだけどさぁ……っ！」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%보다는, 좋지만……！」
+				CASE 1
+;OriginalString : 「出るよ……っ！」
+					PRINTFORMW 「나와……！」
+;OriginalString : 「そんな声出されると、私また……」
+					PRINTFORMW 「그런 소리 나오면(자), 나 또……」
+				CASE 2
+;OriginalString : 「良く、참다できたねえ……」
+					PRINTFORMW 「자주(잘), 참을 수 있었어요……」
+;OriginalString : 「今、出してあげるからね……っ！」
+					PRINTFORMW 「지금, 내 주니까요……！」
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;죠교대상が남자の場合、PRINTFORMW 「子供、できちゃうかもねえ」は不味いので条件で弾きます@/L
+	;=================================================
+	;COMが안에 내!
+	;=================================================
+	IF 구상記入チェック(100) && IS_NOWCOMNAME("안에 내!") && !TALENT:MASTER:남자
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDEVENT(3, 12)
+				CASE 0
+;OriginalString : 「出ちゃ……っ！」
+					PRINTFORMW 「나옵니다……！」
+;OriginalString : 「気持ち、良かったよ……」
+					PRINTFORMW 「기분, 좋았어요……」
+				CASE 1
+;OriginalString : 「あ……暖かい……」
+					PRINTFORMW 「아……따뜻하다……」
+;OriginalString : 「私の、気持ち良かった？」
+					PRINTFORMW 「 나의, 기분 좋았다？」
+				CASE 2
+;OriginalString : 「うあ……っ、搾られてるよ……」
+					PRINTFORMW 「아……, 짜지고 있어……」
+;OriginalString : 「本当に、欲張りなんだから……」
+					PRINTFORMW 「정말로, 욕심장이이니까……」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDEVENT(3, 13)
+				CASE 0
+;OriginalString : 「お望み通り、出했다げるよ……っ！」
+					PRINTFORMW 「소망 대로, 방편야……！」
+;OriginalString : 「良い締め付けだったねえ」
+					PRINTFORMW 「좋은 억압이었다 응」
+				CASE 1
+;OriginalString : 「子供、できちゃうかもねえ」
+					PRINTFORMW 「아이, 할 수 있어버릴까도 응」
+;OriginalString : 「ちゃんと、育てるんだよ？」
+					PRINTFORMW 「분명하게, 길러？」
+				CASE 2
+;OriginalString : 「ふ、ぅ……っ」
+					PRINTFORMW 「,……」
+;OriginalString : 「%CNAME(MASTER, TARGET)%の中、一杯にしてあげる……」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 안, 가득하게 해 준다……」
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;죠교대상が남자の場合、PRINTFORMW 「責任は、絶対取るから……」は微妙な感じなので条件で弾きます@/L
+	;=================================================
+	;COMが안에 내면 안돼!
+	;=================================================
+	IF 구상記入チェック(100) && IS_NOWCOMNAME("안에 내면 안돼!") && !TALENT:MASTER:남자
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDEVENT(3, 14)
+				CASE 0
+;OriginalString : 「あ、出ちゃっ、た……」
+					PRINTFORMW 「아, 나오면,……」
+;OriginalString : 「責任は、絶対取るから……」
+					PRINTFORMW 「책임은, 절대 취하기 때문에……」
+				CASE 1
+;OriginalString : 「참다、できなくて……」
+					PRINTFORMW 「인내, 할 수 없어서……」
+;OriginalString : 「ごめんね……」
+					PRINTFORMW 「미안해요……」
+				CASE 2
+;OriginalString : 「%CNAME(MASTER, TARGET)%が、良すぎるからぁ……」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%가, 너무 좋기 때문……」
+;OriginalString : 「仕方が無かったんだよっ……」
+					PRINTFORMW 「어쩔 수 없었다야……」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDEVENT(3, 15)
+				CASE 0
+;OriginalString : 「気持ち良かったでしょ？」
+					PRINTFORMW 「기분 좋았겠죠？」
+;OriginalString : 「感謝して欲しいぐらいだなあ」
+					PRINTFORMW 「감사해 주었으면 할 정도다 」
+				CASE 1
+;OriginalString : 「何泣いてるのさ？」
+					PRINTFORMW 「무엇 울어？」
+;OriginalString : 「%CNAME(MASTER, TARGET)%の使い道なんて、これくらいだよね」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 용도는, 이 정도지요」
+				CASE 2
+;OriginalString : 「良かったよ……」
+					PRINTFORMW 「좋았어요……」
+;OriginalString : 「これからも、出했다げるからさ」
+					PRINTFORMW 「앞으로도, 방편매움」
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDEVENT(3, 16)
+			CASE 0
+;OriginalString : 「これっ、凄いよ……」
+				PRINTFORMW 「이것, 굉장해……」
+;OriginalString : 「%CNAME(MASTER, TARGET)%の、吸い付いて……っ！」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%의, 달라붙어……！」
+			CASE 1
+;OriginalString : 「中に、出しちゃうねっ」
+				PRINTFORMW 「안에, 내버린다」
+;OriginalString : 「全部、受け止めて……！」
+				PRINTFORMW 「전부, 받아 들여……！」
+			CASE 2
+;OriginalString : 「やだぁ……激しすぎだって……」
+				PRINTFORMW 「이나다……너무 격렬하다고……」
+;OriginalString : 「気持ち、良いよお……」
+				PRINTFORMW 「기분, 좋아……」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDEVENT(3, 17)
+			CASE 0
+;OriginalString : 「どう、気持ち良い？」
+				PRINTFORMW 「어떻게, 기분 좋다？」
+;OriginalString : 「中に出てるの、わかるでしょ？」
+				PRINTFORMW 「안에 나와, 알겠죠？」
+			CASE 1
+;OriginalString : 「%CNAME(MASTER, TARGET)%の体、暖かいねえ」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 몸, 따뜻하구나」
+;OriginalString : 「思わず、中で出しちゃったよ」
+				PRINTFORMW 「무심코, 안으로 내 버렸다」
+			CASE 2
+;OriginalString : 「そんなに、締め付けられるとさあ」
+				PRINTFORMW 「그렇게, 단단히 조일 수 있으면(자) 자」
+;OriginalString : 「出ちゃっ……たぁ……！」
+				PRINTFORMW 「나오면…………！」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;동시절정
+;────────────────────────────────────
+;・죠교자と죠교대상がともに절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TRUECHECK(NOWEX:MASTER:Ｃ절정, NOWEX:MASTER:Ｖ절정, NOWEX:MASTER:Ａ절정, NOWEX:MASTER:Ｂ절정) > 0 && TRUECHECK(NOWEX:Ｃ절정, NOWEX:Ｖ절정, NOWEX:Ａ절정, NOWEX:Ｂ절정) > 0
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDEVENT(3, 20)
+			CASE 0
+;OriginalString : 「凄いの、来ちゃ……っ」
+				PRINTFORMW 「굉장한 것, 래……」
+;OriginalString : 「私と、一緒に……！」
+				PRINTFORMW 「 나와 함께……！」
+			CASE 1
+;OriginalString : 「これ、蕩けちゃうよ……」
+				PRINTFORMW 「이것, 녹아버린다……」
+;OriginalString : 「%CNAME(MASTER, TARGET)%も、良いんだね……？」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%도, 좋다……？」
+			CASE 2
+;OriginalString : 「もう、弄らないで……っ」
+				PRINTFORMW 「 이제, 만지작거리지 마……」
+;OriginalString : 「負けないよっ……」
+				PRINTFORMW 「지지 않아……」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDEVENT(3, 21)
+			CASE 0
+;OriginalString : 「く、ぅ……っ」
+				PRINTFORMW 「구,……」
+;OriginalString : 「みっともないね……っ！」
+				PRINTFORMW 「보기 흉하다……！」
+			CASE 1
+;OriginalString : 「いいよ、それ……」
+				PRINTFORMW 「좋아, 그것……」
+;OriginalString : 「お返し、했다げるよ……っ」
+				PRINTFORMW 「답례, 야……」
+			CASE 2
+;OriginalString : 「上손되었다ねえ」
+				PRINTFORMW 「능숙하게 되었어요」
+;OriginalString : 「ちょっと、悔しいなあ……！」
+				PRINTFORMW 「조금, 분하다……！」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교대상사정
+;────────────────────────────────────
+;・죠교대상が사정する場合に表示
+;・사정量による分岐は필요に応じ加減して使うのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && NOWEX:MASTER:사정
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDEVENT(3, 30)
+			CASE 0
+;OriginalString : 「あはっ……出てきたっ」
+				PRINTFORMW 「아는……나온」
+;OriginalString : 「これ、熱いんだねえ……」
+				PRINTFORMW 「이것, 뜨겁다 응……」
+			CASE 1
+;OriginalString : 「きゃ……っ」
+				PRINTFORMW 「꺄……」
+;OriginalString : 「凄い、勢いだあ……」
+				PRINTFORMW 「굉장한, 기세다……」
+			CASE 2
+;OriginalString : 「気持ち良さそうな顔、してるねえ……」
+				PRINTFORMW 「기분 좋음 그런 얼굴, 하고 있구나……」
+;OriginalString : 「何だか私も、嬉しくなっちゃうよ……」
+				PRINTFORMW 「무엇인가 나도, 기뻐져버린다……」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDEVENT(3, 31)
+			CASE 0
+;OriginalString : 「うひゃぁ……っ」
+				PRINTFORMW 「……」
+;OriginalString : 「いきなりだと、驚いちゃうんだけどさあ」
+				PRINTFORMW 「갑자기라고, 놀라버리는 이지만 자」
+			CASE 1
+;OriginalString : 「あ……汚れちった……」
+				PRINTFORMW 「아……더러워지고 흩어졌다……」
+;OriginalString : 「どう責任取ってくれるのかな？」
+				PRINTFORMW 「어떻게 책임 집어 주는 것일까？」
+			CASE 2
+;OriginalString : 「呑気な顔、してるねえ……」
+				PRINTFORMW 「태평한 얼굴, 하고 있구나……」
+;OriginalString : 「どんな状況か、わかってるのかなあ」
+				PRINTFORMW 「어떤 상황인가, 알고 있을까」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교자사정
+;────────────────────────────────────
+;・죠교자が사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+IF 구상記入チェック(100) && NOWEX:사정 && TC_PLAYER(1) != 0           ;애무物有りの場合に限定します@/L
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDEVENT(3, 40)
+			CASE 0
+;OriginalString : 「出るよ……っ」
+				PRINTFORMW 「나와……」
+;OriginalString : 「全部、出しちゃうからねっ」
+				PRINTFORMW 「전부, 내버리니까」
+			CASE 1
+;OriginalString : 「あぁ……気持ち、良いよ……」
+				PRINTFORMW 「아……기분, 좋아……」
+;OriginalString : 「汚しちゃった、ねえ……」
+				PRINTFORMW 「더럽혀 버렸다, 응……」
+			CASE 2
+;OriginalString : 「こんな、凄いの……っ」
+				PRINTFORMW 「이런, 굉장한거야……」
+;OriginalString : 「もっと、出했다いよっ……」
+				PRINTFORMW 「 좀 더, 내고 싶어……」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDEVENT(3, 41)
+			CASE 0
+;OriginalString : 「零했다ら、許さないよ？」
+				PRINTFORMW 「흘리면(자), 허락하지 않아？」
+;OriginalString : 「全部、受け止めて……」
+				PRINTFORMW 「전부, 받아 들여……」
+			CASE 1
+;OriginalString : 「汚れちゃうねえ……」
+				PRINTFORMW 「더러워져버린다 응……」
+;OriginalString : 「ほら、綺麗にしてよ」
+				PRINTFORMW 「이봐요, 깨끗이 해」
+			CASE 2
+;OriginalString : 「ふぁ……っ、良い、ねえ……」
+				PRINTFORMW 「……, 좋은, 응……」
+;OriginalString : 「もっと、悦ばせてよ……？」
+				PRINTFORMW 「 좀 더, 기쁨키라고……？」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교대상절정
+;────────────────────────────────────
+;・죠교대상が절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TRUECHECK(NOWEX:MASTER:Ｃ절정, NOWEX:MASTER:Ｖ절정, NOWEX:MASTER:Ａ절정, NOWEX:MASTER:Ｂ절정) > 0
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDEVENT(3, 50)
+			CASE 0
+;OriginalString : 「気持ち、良いんだね？」
+				PRINTFORMW 「기분, 좋다？」
+;OriginalString : 「凄く、震えてるよ……」
+				PRINTFORMW 「굉장히, 떨리고 있어……」
+			CASE 1
+;OriginalString : 「참다、しないで……？」
+				PRINTFORMW 「인내, 하지 말아줘……？」
+;OriginalString : 「いくらでも、良くしてあげるからさあ……」
+				PRINTFORMW 「얼마든지, 자주(잘) 해 주기 때문에 자……」
+			CASE 2
+;OriginalString : 「ふふっ、抱き付いてくるなんて、ねえ？」
+				PRINTFORMW 「후후, 달라붙어 오다니 응？」
+;OriginalString : 「いつでも、抱きしめてあげるからね？」
+				PRINTFORMW 「언제라도, 꼭 껴안아 주니까요？」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDEVENT(3, 51)
+			CASE 0
+;OriginalString : 「何、しがみついちゃってさあ」
+				PRINTFORMW 「무엇, 매달려 버려서 자」
+;OriginalString : 「優しくするとでも、思ったのかなあ」
+				PRINTFORMW 「상냥하게 하다고, 생각했는지」
+			CASE 1
+;OriginalString : 「随分안쓰러운顔だあね」
+				PRINTFORMW 「상당히 야무지지 못한 얼굴이다 언니(누나)」
+;OriginalString : 「これ以上やったら、どうなるのかなあ」
+				PRINTFORMW 「더 이상 하면(자), 어떻게 되는지」
+			CASE 2
+;OriginalString : 「そんなに気持ち良かったの？」
+				PRINTFORMW 「그렇게 기분 좋았어？」
+;OriginalString : 「一応これ、%CNAME(MASTER, TARGET)%の為にやってる訳じゃあないんだけどさあ」
+				PRINTFORMW 「일단 이것,%CNAME(MASTER, TARGET)%(을)를 위해 하고 있는 (뜻)이유 자 없지만 자」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교자절정
+;────────────────────────────────────
+;・죠교자が절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TRUECHECK(NOWEX:Ｃ절정, NOWEX:Ｖ절정, NOWEX:Ａ절정, NOWEX:Ｂ절정) > 0
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDEVENT(3, 60)
+			CASE 0
+;OriginalString : 「これ、来ちゃ……っ」
+				PRINTFORMW 「이것, 래……」
+;OriginalString : 「見ないで、よお……」
+				PRINTFORMW 「보지 말고,……」
+			CASE 1
+;OriginalString : 「そこ、良いよ……」
+				PRINTFORMW 「거기, 좋아……」
+;OriginalString : 「私の気持ち良い所、覚えてくれたんだね……っ」
+				PRINTFORMW 「 나의 기분 좋은 곳, 기억해 주었군요……」
+			CASE 2
+;OriginalString : 「もう、참다できないよ……っ！」
+				PRINTFORMW 「 이제, 참을 수 없어……！」
+;OriginalString : 「私だけ、ごめんね……！」
+				PRINTFORMW 「 나만, 미안해요……！」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDEVENT(3, 61)
+			CASE 0
+;OriginalString : 「く、あぁ……」
+				PRINTFORMW 「구, 아……」
+;OriginalString : 「何、にやついてるのかなあ……っ？」
+				PRINTFORMW 「무엇, 히쭉거리고 있을까……？」
+			CASE 1
+;OriginalString : 「んん……っ！」
+				PRINTFORMW 「응응……！」
+;OriginalString : 「もっと、私を、良くしなよ……っ！」
+				PRINTFORMW 「 좀 더, 나를, 자주(잘) 해……！」
+			CASE 2
+;OriginalString : 「気持ち良く、なんて……」
+				PRINTFORMW 「기분 좋게, 뭐라고 하는……」
+;OriginalString : 「絶対、なってないからぁっ……！」
+				PRINTFORMW 「절대, 되어 있지 않기 때문에……！」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｃ절정
+;────────────────────────────────────
+;・죠교대상がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:MASTER:Ｃ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｖ절정
+;────────────────────────────────────
+;・죠교대상がＶ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:MASTER:Ｖ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ａ절정
+;────────────────────────────────────
+;・죠교대상がＡ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:MASTER:Ａ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｂ절정
+;────────────────────────────────────
+;・죠교대상がＢ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:MASTER:Ｂ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교자Ｃ절정
+;────────────────────────────────────
+;・죠교자がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;・사정は사정구상の分岐で書くのが望ましい
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:Ｃ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교자Ｖ절정
+;────────────────────────────────────
+;・죠교자がＶ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:Ｖ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교자Ａ절정
+;────────────────────────────────────
+;・죠교자がＡ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:Ａ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교자Ｂ절정
+;────────────────────────────────────
+;・죠교자がＢ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:Ｂ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상시오후키
+;────────────────────────────────────
+;・죠교대상が시오후키の場合に表示
+;・現状、ACT손가락삽입한다時にＧスポット責めに派生했다場合にのみ起きる
+;・주인님の시오후키は無い
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:MASTER:시오후키
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상실금
+;────────────────────────────────────
+;・죠교대상が실금する場合に表示
+;・죠교대상に素質:오줌싸개が無ければ発生しない
+;・Ｃ절정なしで실금だけというのは稀にあるケース
+;-------------------------------------------------
+;IF 구상記入チェック(0) && NOWEX:MASTER:방뇨
+;ENDIF

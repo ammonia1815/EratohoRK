@@ -1,0 +1,2256 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;				지문제어ファイル
+;
+;		全ての地の文を一括制御する為のファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;================================================================-
+;EVENT_Kより…
+;地の文구상@KOJO_MESSAGE
+;地の文を置換する구상です
+;この구상が呼ばれ、真の値をRETURN했다場合、통상の地の文が呼び出されません
+;また、RETURNにいれた値はFLAG:지문제어に格納されます
+;ACT구상と連携する際に利用してください
+;
+;地の文구상@KOJO_MESSAGE2
+;上記とほぼ同じですが、こちらはリアクションの地の文を置き換えます
+;リアクション구상と連携する場合は구상内でFLAG:지문제어に数値を代入してください
+;================================================================-
+
+;────────────────────────────────────
+;000,지금 기분을 묻다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_0
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_0
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_0
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_0
+RETURN 0
+
+;────────────────────────────────────
+;001,自分の事をどう思うかを聞く
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_1
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_1
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_1
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_1
+RETURN 0
+
+;────────────────────────────────────
+;002,성에 관한 이야기를 하다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_2
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_2
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_2
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_2
+RETURN 0
+
+;────────────────────────────────────
+;003,상냥하게 위로한다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_3
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_3
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_3
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_3
+RETURN 0
+
+;────────────────────────────────────
+;004,엄하게 위협한다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_4
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_4
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_4
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_4
+RETURN 0
+
+;────────────────────────────────────
+;005,服を脱いで/服を着てと命じる
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_5
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_5
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_5
+[SKIPSTART]
+本体の仕様が定まらなった頃の名残。現在はACTION_APPLY, TRAIN_MESSAGEも修正され統一されている
+;服を脱いでの場合
+IF TFLAG:ACT파생 == 0
+	;소극적으로 한다なら一枚脱ぐ
+	IF IS_COMGRONAME("소극적으로 한다")
+		RETURN 0
+	;적극적으로 한다なら二枚脱ぐ
+	ELSEIF IS_COMGRONAME("적극적으로 한다")
+		RETURN 0
+	;リアクションがぼーっとするなら脱げない←こういうのを突然追加당했다りして混乱했다思い出。変更箇所を明示しないからなｗ
+	ELSEIF IS_NOWCOMNAME("이루는대로")
+		RETURN 0
+	;その他リアクションなら脱がない
+	ELSE
+		;恥ずかしくて脱げなかった
+		IF PALAM:MASTER:치정 > PALAM:MASTER:반항
+			PRINTFORMW %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 탈의 할 수 없었다…
+			RETURN 2
+		;嫌がった（拒絶）
+		ELSE
+			PRINTFORMW %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다…
+			RETURN 2
+		ENDIF
+	ENDIF
+;服を着ての場合
+ELSE
+	;소극적으로 한다なら一枚脱ぐ
+	IF IS_COMGRONAME("소극적으로 한다")
+		RETURN 0
+	;적극적으로 한다なら二枚脱ぐ
+	ELSEIF IS_COMGRONAME("적극적으로 한다")
+		RETURN 0
+	;リアクションがぼーっとするなら脱げない
+	ELSEIF IS_NOWCOMNAME("이루는대로")
+		RETURN 0
+	;その他リアクションなら脱がない
+	ELSE
+		;PRINTFORMW %CALLNAME:MASTER%は嫌がって%CALLNAME:TARGET%의 要求に応じなかった…
+		RETURN 0
+	ENDIF
+ENDIF
+[SKIPEND]
+RETURN 0
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_5
+RETURN 0
+
+;────────────────────────────────────
+;006,합의를 요구한다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_6
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_6
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_6
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_6
+RETURN 0
+
+;────────────────────────────────────
+;007,징계한다고 위협한다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_7
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_7
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_7
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_7
+RETURN 0
+
+;────────────────────────────────────
+;008,고함치다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_8
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_8
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_8
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_8
+RETURN 0
+
+;────────────────────────────────────
+;009,기분나쁘게 웃다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_9
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_9
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_9
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_9
+RETURN 0
+
+;────────────────────────────────────
+;010,애무/수음する
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_10
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_10
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_10
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_10
+RETURN 0
+
+;────────────────────────────────────
+;011,가슴애무/乳首吸い/乳の揉み合い
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_11
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_11
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_11
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_11
+RETURN 0
+
+;────────────────────────────────────
+;012,クンニ/펠라する
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_12
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_12
+;ACT파생が펠라
+IF TFLAG:ACT파생 == 1
+	IF TCVAR:MASTER:가버려
+		RETURN 0
+	ELSEIF TFLAG:ACT == TFLAG:전ACT
+		RETURN 0
+	ELSEIF TEQUIP:밀어넘어지는중
+		RETURN 0
+	ELSE
+		RETURN 2
+	ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_12
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_12
+RETURN 0
+
+;────────────────────────────────────
+;013,항문애무
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_13
+[SKIPSTART]
+;항문바이브、항문비즈
+IF TFLAG:ACT파생 == 2
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 %ANUS_DESCRIPTION(MASTER)_K14%하지만 질불공평응이다\@ TEQUIP:항문바이브 ? 바이브 # 비즈 \@(을)를 잡으면(자),
+	;남자以外
+	SIF !TALENT:MASTER:남자
+		PRINT 질벽을 그 뒤로부터 켜도록(듯이)
+	PRINTFORML \@ TENSION(TARGET, 8) == "高い" ? 격렬하고 # 끈적 \@움직였다…
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+[SKIPEND]
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_13
+;전립선자극
+IF TFLAG:ACT파생 == 1
+	PRINTFORM %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 %ANUS_DESCRIPTION(MASTER)%에
+	;항문비즈、항문바이브あり
+	IF TEQUIP:항문비즈 || TEQUIP:항문바이브
+		PRINTFORML 파묻혔다\@ TEQUIP:항문비즈 ? 항문비즈 # 항문바이브 \@(을)를 움직여,
+	;その他
+	ELSE
+		;하반신服装が要押し退けかつ죠교자に벽통과素質有り
+		SIF PANTSCHECK(1, 1) && TALENT:벽통과
+			PRINT 천을 무시해
+		PRINTL 손가락을 진입시켜,
+	ENDIF
+	PRINTFORML 전립선을 직접 자극했다…
+	PRINTFORML %CALLNAME:MASTER%의 페니스가 강제적으로 발기 당한다…
+	RETURN 2
+;항문바이브、항문비즈
+ELSEIF TFLAG:ACT파생 == 2
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 %ANUS_DESCRIPTION(MASTER)%하지만 질불공평응이다\@ TEQUIP:항문바이브 ? 바이브 # 비즈 \@(을)를 잡으면(자),
+	;남자限定
+	SIF TALENT:MASTER:남자
+		PRINT 전립선을 뜨도록(듯이)
+	;남자以外
+	SIF !TALENT:MASTER:남자
+		PRINT 질벽을 그 뒤로부터 켜도록(듯이)
+	PRINTFORML \@ TENSION(TARGET, 8) == "高い" ? 격렬하고 # 끈적 \@움직였다…
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_13
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_13
+RETURN 0
+
+;────────────────────────────────────
+;014,항문펠라
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_14
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_14
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_14
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_14
+RETURN 0
+
+;────────────────────────────────────
+;015,키스
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_15
+;初回
+IF FIRSTACTMESSAGE(0)
+	;사쿠야170弱、엘리스160強、そんな個人的イメージ
+	PRINTFORML %CALLNAME:TARGET%(은)는 당황한다%CALLNAME:MASTER%에 가까워지면(자)
+	PRINTFORML 그 목에 손을 돌려 발가락 서가 되면서, 살그머니 입술을 거듭했다…
+	PRINTL
+	RETURN 2
+;その他の場合はデフォルト地の文
+ELSE
+	RETURN 0
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_15
+IF GET_STAIN("입", "정액", TARGET) || GET_STAIN("입", "愛液", TARGET) || GET_STAIN("입", "항문", TARGET)
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 머리를 잡아, 끌어 들이면서 정열적인 키스를 해 왔다…
+	IF PENIS(MASTER) && TCVAR:MASTER:전회턴사정
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+				PRINTFORML %CALLNAME:TARGET%(은)는 못된 장난 같은 미소를 띄우면(자), 조금 전 입안에서 받아 들였다%SEMEN_DESCRIPTION(MASTER)%(을)를 구전으로 흘려 넣어 왔다…
+			CASE "一般"
+				PRINTFORML %CALLNAME:TARGET%(은)는 조금 전 입안에 발해졌다%SEMEN_DESCRIPTION(MASTER)%(을)를,%CALLNAME:MASTER%에 구전으로 먹이려고 했다…
+			CASE "低い"
+				PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 입안에, 조금 전 발해졌다%SEMEN_DESCRIPTION(MASTER)%(을)를 흘려 넣어 왔다…
+		ENDSELECT
+		RETURN 2
+	ELSEIF IS_PREVACTNAME("입으로 애무/항문펠라") && TCVAR:MASTER:전회턴사정 < 1
+		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 체액 투성이가 된 그 입으로 입술을 비틀어 열어 혀를새와 관련되어 왔다…
+		RETURN 3
+	ELSE
+		RETURN 0
+	ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_15
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_15
+RETURN 0
+
+;────────────────────────────────────
+;016,貝あわせ/스마타する
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_16
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_16
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_16
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_16
+RETURN 0
+
+;────────────────────────────────────
+;017,파이즈리한다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_17
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_17
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_17
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_17
+RETURN 0
+
+;────────────────────────────────────
+;018,풋잡하기
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_18
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_18
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_18
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_18
+RETURN 0
+
+;────────────────────────────────────
+;019,손가락삽입한다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_19
+;Ｇスポット刺激
+IF TFLAG:ACT파생 == 1
+	PRINTFORML %CALLNAME:TARGET%(은)는 \@ TCVAR:MASTER:위치전후 == 2 ? 뒤로부터 허리를 안아 # \@%CALLNAME:MASTER%의 질내에
+	PRINTL 손가락을 진입시키고Ｇ스포트를 직접 자극했다…
+	RETURN 2
+;손가락삽입한다
+ELSEIF !TFLAG:ACT파생
+	;안면승마中以外
+	IF !TEQUIP:안면승마 || !TEQUIP:안면승마항문
+		PRINTFORM %CALLNAME:TARGET%(은)는 \@ TCVAR:MASTER:위치전후 == 2 ? 뒤로부터 허리를 안아, # \@
+	;안면승마中
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%에 \@ TEQUIP:안면승마 ? 비순 # 엉덩이 \@(을)를 빨게 한이면서 몸을 앞에 두고 넘어뜨리면(자)
+	ENDIF
+	;하반신服装が要押し退け
+	IF PANTSCHECK(1, 1)
+		;하반신겉옷が要押し退け
+		SIF LOWERJACKET(1) == 1
+			PRINTFORM %OUTER_B(MASTER, 0, 1)%(을)를 걸어
+		;하반신속옷が要押し退け
+		SIF LOWERUNDER(1)
+			PRINTFORM %INNER_B(MASTER)%(을)를 비켜 놓아
+	ENDIF
+	PRINTFORML %CALLNAME:MASTER%의 질구에 손가락끝을 나누어주어, 살그머니 안쪽에 밀어넣었다…
+	RETURN 2
+;바이브出し入れはRETURN 0
+ELSE
+	RETURN 0
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_19
+;Ｇスポット刺激
+IF TFLAG:ACT파생 == 1
+	PRINTFORML %CALLNAME:TARGET%(은)는 \@ TCVAR:MASTER:위치전후 == 2 ? 뒤로부터 허리를 안아 # \@%CALLNAME:MASTER%의 질내에
+	PRINTL 손가락을 진입시키고Ｇ스포트를 직접 자극했다…
+	RETURN 2
+;손가락삽입한다
+ELSEIF !TFLAG:ACT파생
+	;안면승마中以外
+	IF !TEQUIP:안면승마 || !TEQUIP:안면승마항문
+		PRINTFORM %CALLNAME:TARGET%(은)는 \@ TCVAR:MASTER:위치전후 == 2 ? 뒤로부터 허리를 안아, # \@
+	;안면승마中
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%에 \@ TEQUIP:안면승마 ? 비순 # 엉덩이 \@(을)를 빨게 한이면서 몸을 앞에 두고 넘어뜨리면(자)
+	ENDIF
+	;하반신服装が要押し退け
+	IF PANTSCHECK(1, 1)
+		;하반신겉옷が要押し退け
+		SIF LOWERJACKET(1) == 1
+			PRINTFORM %OUTER_B(MASTER, 0, 1)%(을)를 걸어
+		;하반신속옷が要押し退け
+		SIF LOWERUNDER(1)
+			PRINTFORM %INNER_B(MASTER)%(을)를 비켜 놓아
+	ENDIF
+	PRINTFORML %CALLNAME:MASTER%의 질구에 손가락끝을 나누어주어, 살그머니 안쪽에 밀어넣었다…
+	RETURN 2
+;바이브出し入れはRETURN 0
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_19
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_19
+RETURN 0
+
+;────────────────────────────────────
+;020,로터
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_20
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_20
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_20
+;この条件は現在の仕様だとREACT분류:태연하게 한다扱いになる
+;で、この場合@TRAIN_MESSAGE2_20でIS_COMGRONAME("적극적으로 한다/태연하게 한다")の括りで処理される訳だがこれは好ましくない
+;そんな訳で取り敢えず@TRAIN_MESSAGE2_20を殺す。ACT_MESSAGEにも何らかの손入れが필요であると思うが、まぁ後回しということで
+IF IS_NOWCOMNAME("서투르다고 모욕한다") && IS_COMIMPNAME("悪印象大")
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_20
+IF IS_NOWCOMNAME("서투르다고 모욕한다") && IS_COMIMPNAME("悪印象大")
+	RETURN 1
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;021,바이브
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_21
+;解除時
+IF TFLAG:ACT파생 == 1
+	PRINTFORML %CALLNAME:TARGET%(은)는 %WET_DESCRIPTION(MASTER)%%CALLNAME:MASTER%의 %VAGINA_DESCRIPTION2(MASTER)%(으)로부터,
+	PRINTFORML 준구바이브래이터를 천천히 뽑아 내려고 했다…
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_21
+;解除時
+IF TFLAG:ACT파생 == 1
+	PRINTFORML %CALLNAME:TARGET%(은)는 %WET_DESCRIPTION(MASTER)%%CALLNAME:MASTER%의 %VAGINA_DESCRIPTION2(MASTER)%(으)로부터,
+	PRINTFORML 준구바이브래이터를 천천히 뽑아 내려고 했다…
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_21
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_21
+RETURN 0
+
+;────────────────────────────────────
+;022,항문바이브
+;────────────────────────────────────
+;PALAMで状況毎の分岐を
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_22
+;解除時
+IF TFLAG:ACT파생 == 1
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 %ANUS_DESCRIPTION(MASTER)%(으)로부터 어널 바이브래이터를 뽑아 내려고 했다…
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_22
+;解除時
+IF TFLAG:ACT파생 == 1
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 %ANUS_DESCRIPTION(MASTER)%(으)로부터 어널 바이브래이터를 뽑아 내려고 했다…
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_22
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_22
+RETURN 0
+
+;────────────────────────────────────
+;023,항문비즈
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_23
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_23
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_23
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_23
+RETURN 0
+
+;────────────────────────────────────
+;024,클리캡/오나홀
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_24
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_24
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_24
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_24
+;受容となる場合
+IF IS_COMGRONAME("소극적으로 한다/受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다")
+	;派生によって分岐
+	SELECTCASE TFLAG:ACT파생
+		;클리캡장착
+		CASE 0
+			PRINTFORML %CALLNAME%(은)는 손가락끝으로 가죽을 벗겨 누르게 한이면서, 노출되었다%CALLNAME:MASTER%의 음핵에 캡을 끼어 넣어 간다
+			PRINTFORML 이윽고 클리토리스가 감싸지고%CALLNAME%(은)는 지만 손을 떼어 놓으면(자), 그 근원은 조를 수 있어 전체가 흡인된다…
+			RETURN 2
+		;클리캡解除		この派生の場合は1を返す
+		CASE 1
+			RETURN 1
+		;오나홀장착
+		CASE 2
+			;台詞を入れたかったのでPRINTCOLOR
+;OriginalString : (COLOR_K14("엘리스"), @"「%RAND_SPLIT("さて、始めるわよ/ほら、いくわよ/それじゃ、入れるわよ")%」")
+			CALL PRINTCOLORW(COLOR_K14("엘리스"), @"「%RAND_SPLIT("그런데, 시작해요/이봐요, 가요/그러면, 넣어요")%」")
+			PRINTFORML %CALLNAME%(은)는 지만 오나호르를 귀두에 나누어주어,%RAND_SPLIT("양손/편손")%그리고 천천히 가라앉혀 간다…
+			;죠교대상의 페니스に愛液、정액の汚れありの場合
+			IF TRUECHECK(GET_STAIN("페니스", "愛液", MASTER), GET_STAIN("페니스", "정액", MASTER)) > 0
+				PRINT 페니스에 부착했다
+				;愛液、정액の汚れあり
+				IF ALLSAMES(1, GET_STAIN("페니스", "愛液", MASTER), GET_STAIN("페니스", "정액", MASTER))
+					PRINT 정액과 애액이
+				;정액の汚れあり
+				ELSEIF GET_STAIN("페니스", "정액", MASTER)
+					PRINT 정액이
+				;愛液の汚れあり
+				ELSEIF GET_STAIN("페니스", "愛液", MASTER)
+					PRINT 애액이
+				ENDIF
+				PRINT 로션과 서로 섞여
+			;その他
+			ELSE
+				PRINT 오나호르에 충분히따라진 로션이
+			ENDIF
+			PRINTFORML ,%RAND_SPLIT("질척질척/질척질척")%(와)과 추잡한 소리를 미치게 한다…
+			RETURN 2
+		;오나홀解除
+		CASE 3
+			;정액汚れあり
+			IF GET_STAIN("페니스", "정액", MASTER)
+				PRINTFORML %CALLNAME%(은)는 지만 오나호르를 천천히 뽑아 내면(자), 안에 충분히 추방해진 정액이 넘쳐 나오고 했다…
+			;その他
+			ELSE
+				PRINTFORML %CALLNAME%(은)는 %CALLNAME:MASTER%의 모습을 엿보면서, 오나호르를 천천히 뽑아 내 간다…
+			ENDIF
+			RETURN 2
+	ENDSELECT
+;その他なら0を返す
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;025,유두캡
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_25
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_25
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_25
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_25
+;受容となる場合
+IF IS_COMGRONAME("소극적으로 한다/受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다")
+	;장착時
+	IF !TFLAG:ACT파생
+		PRINTL 유두에 클립이 장착되면(자), 그, 마치 손가락끝으로 깎아질 것 같은 자극에,
+		PRINTFORM %CALLNAME:MASTER%(은)는 \@ IS_COMGRONAME("소극적으로 한다/받아들인다/적극적 따른다/태연하게 따른다") ? 무심코 # \@
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				PRINTL 단 소리를 흘려 버린다…
+			CASE "受け入れる"
+				PRINTL 단 한숨을 흘렸다…
+			CASE "소극적으로 한다"
+				PRINTL 작은 소리를 흘렸다…
+			CASE "용서를 빌다"
+				PRINTFORML 이제 허락해와%CALLNAME%에 호소했다…
+		ENDSELECT
+		RETURN 2
+	;解除時
+	ELSE
+		PRINTFORML %CALLNAME%(은)는 지만 살그머니 클립 로터를 제외하면(자),%NIPPLE_DESCRIPTION(MASTER)%유두가 이슬 악어 된다
+		RETURN 2
+	ENDIF
+;その他なら0を返す
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;026,페니스밴드
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_26
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_26
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_26
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_26
+;장착時
+IF !TFLAG:ACT파생
+	;受容かつ처녀상실となる場合
+	IF ALLSAMES(1, !IS_COMGRONAME("날뛴다"), !IS_COMGRONAME("거부"), TCVAR:MASTER:처녀상실)
+		PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME%에 거역하는 일 없이,
+		PRINTL 파과의 아픔에 참으면서, 쌍두의 디 루도를 그 몸에 대었다…
+		RETURN 2
+	;受容となる場合
+	ELSEIF IS_COMGRONAME("소극적으로 한다/受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다")
+		PRINTFORM %CALLNAME:MASTER%(은)는 
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				PRINTL 질내를 확대할 수 있는 감각에 단 소리를 높이면서,
+				PRINTL 페니스 밴드를 몸에 대었다…
+			CASE "受け入れる"
+				PRINTL 질내를 확대할 수 있는 감각에 단 한숨을 흘리면서,
+				PRINTL 페니스 밴드를 몸에 대었다…
+			CASE "소극적으로 한다"
+				PRINTFORML 당황하면서도%CALLNAME%에 따라, 페니스 밴드를 몸에 대었다…
+			CASE "용서를 빌다"
+				PRINTFORML %CALLNAME%에 거역하지 못하고, 어쩔 수 없이 페니스 밴드를 몸에 대었다…
+		ENDSELECT
+		RETURN 2
+	;その他
+	ELSE
+		RETURN -1
+	ENDIF
+;解除時
+ELSE
+	;受容となる場合
+	IF IS_COMGRONAME("소극적으로 한다/受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다")
+		PRINTFORM %CALLNAME:MASTER%(은)는 뽑아 내질 때에 돌기가 가져온다
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				PRINTL 관능을 속편와 비비는 감각에 넋을 잃어
+				PRINTL 무심코 단 소리를 높여 버린다…
+			CASE "受け入れる"
+				PRINTL 요염한까지의 단 감각에 무릎을 금액 학도 시키면서,
+				PRINTL 얌전하고%CALLNAME%에 따랐다…
+			CASE "소극적으로 한다"
+				PRINTL 관능의 쑤셔에 당황하면서도,
+				PRINTFORML 얌전하고%CALLNAME%에 따랐다…
+			CASE "용서를 빌다"
+				PRINTL 조크리로 할 것 같은 감각에 무서워져,
+				PRINTL 이제 허락해 주세요간절히 원함 했다…
+		ENDSELECT
+		RETURN 2
+	;その他
+	ELSE
+		RETURN -1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;027,밀어 넘어트린다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_27
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_27
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_27
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_27
+IF IS_NOWCOMNAME("쾌감을 받아들인다/허리를 흔든다/적극적으로 한다/태연하게 한다") && TEQUIP:성교봉사중
+	SELECTCASE TRAINNAME:SELECTCOM
+		CASE "쾌감을 받아들인다"
+			PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME%에 연결된 채로 밀기도개개,
+			PRINTFORML %CALLNAME%의RAND_SPLIT%("妖しい/なまめかしい")%허리 사용이 가져오는, 녹는 것 같은 고기의 쾌락에 몸을 바쳤다…
+		CASE "허리를 흔든다"
+			PRINTFORML 연결된 채로%CALLNAME:MASTER%(을)를 밀어 넘어뜨린다%CALLNAME%에 대해,
+			PRINTFORML %CALLNAME:MASTER%(은)는 격렬한 허리 값어치 응했다…
+		CASE "적극적으로 한다", "태연하게 한다"
+			PRINTFORML 연결된 채로%CALLNAME:MASTER%(을)를 밀어 넘어뜨린다%CALLNAME%에 대해,
+			PRINTFORML %CALLNAME:MASTER%(은)는 \@ IS_NOWCOMNAME("적극적으로 한다") ? 적극적인 # 어딘가 여유가 있다 \@허리 값어치 응했다…
+	ENDSELECT
+	RETURN 2
+ELSE
+	RETURN -1
+ENDIF
+
+;────────────────────────────────────
+;030,정상위
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_30
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_30
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_30
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_30
+RETURN 0
+
+;────────────────────────────────────
+;031,후배위
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_31
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_31
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_31
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_31
+RETURN 0
+
+;────────────────────────────────────
+;032,기승위
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_32
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_32
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_32
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_32
+RETURN 0
+
+;────────────────────────────────────
+;033,대면좌위
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_33
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_33
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_33
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_33
+RETURN 0
+
+;────────────────────────────────────
+;034,배면좌위
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_34
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_34
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_34
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_34
+RETURN 0
+
+;────────────────────────────────────
+;035,항문섹스
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_35
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_35
+;初回
+IF FIRSTACTMESSAGE(0)
+	PRINTFORML %CALLNAME:TARGET%(은)는 \@ TEQUIP:죠교자페니스밴드 ? 그 몸에 걸쳤다%DHARNESS_DESCRIPTION(TARGET)% # %PENIS_DESCRIPTION(TARGET)%페니스 \@를 과시하면서,
+	PRINTFORML %CALLNAME:MASTER%에 엉덩이를 향하듯이 명했다…
+	RETURN 2
+;その他
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_35
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_35
+RETURN 0
+
+;────────────────────────────────────
+;103,역강간
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_103
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_103
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_103
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_103
+RETURN 0
+
+;────────────────────────────────────
+;040,자위
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_40
+RETURN 0
+
+@KOJO_TRAIN_MESSAGE_K14_40
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_40
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_40
+RETURN 0
+
+;────────────────────────────────────
+;041,비패개장
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_41
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_41
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_41
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_41
+RETURN 0
+
+;────────────────────────────────────
+;042,자위과시
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_42
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_42
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_42
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_42
+RETURN 0
+
+;────────────────────────────────────
+;043,수치플레이
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_43
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_43
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_43
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_43
+RETURN 0
+
+;────────────────────────────────────
+;044,야외플레이
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_44
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_44
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_44
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_44
+RETURN 0
+
+;────────────────────────────────────
+;045,방뇨
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_45
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_45
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_45
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_45
+IF IS_COMGRONAME("태연하게 한다")
+	SELECTCASE GET_COM_RANK()
+		CASE "自然な행동"
+			PRINTFORML %CALLNAME:MASTER%(은)는 \@ TENSION(TARGET, 8) == "高い" ? 만족인 # 서늘한 \@%CALLNAME%의 시선을 신경쓰는 무사히,
+			PRINTFORML 아무렇지도 않은 얼굴로 그 자리에서 방뇨해 보였다…
+		CASE "無理のない행동"
+			PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME%의 시선을 신경쓰지 않게 해,
+			PRINTFORML 명령 대로 그 자리에 방뇨했다…
+		CASE "無理を했다행동"
+			;実は見られて嬉しい！
+			IF COMCOR_POSI()
+				PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME%의 시선을 신경쓰면서도,
+				PRINTFORML 그것을 뽐내지지 않게 평정을 가장하면서, 명령 대로에 방뇨했다…
+			;本当は嫌
+			ELSE
+				PRINTFORML %CALLNAME:MASTER%(은)는 흥미심에 응시한다%CALLNAME%의 시선에 부끄러움을 기억하면서도,
+				PRINTFORML 필사적으로 평정을 가장하면서, 명령 대로에 방뇨했다…
+			ENDIF
+	ENDSELECT
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;046,코스프레
+;────────────────────────────────────
+;@KOJO_NO9_MS_TRAIN_MESSAGE_K14_46
+;@KOJO_TRAIN_MESSAGE_K14_46
+;미구현
+
+;────────────────────────────────────
+;050,수음/애무強制
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_50
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_50
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_50
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_50
+RETURN 0
+
+;────────────────────────────────────
+;051,펠라チオ/クンニ強制
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_51
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_51
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_51
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_51
+RETURN 0
+
+;────────────────────────────────────
+;052,파이즈리
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_52
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_52
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_52
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_52
+RETURN 0
+
+;────────────────────────────────────
+;053,스마타
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_53
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_53
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_53
+RETURN 0
+
+@KOJO_TRAIN_MESSAGE2_K14_53
+RETURN 0
+
+;────────────────────────────────────
+;054,발コキ
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_54
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_54
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_54
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_54
+RETURN 0
+
+;────────────────────────────────────
+;055,발핥기강제
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_55
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_55
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_55
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_55
+[SKIPSTART]
+;リアクションが자위를 시작한다の場合
+IF IS_NOWCOMNAME("자위를 시작한다")
+	PRINTFORML %CALLNAME:MASTER%(은)는 오로지 자신을 위로해,%CALLNAME:TARGET%에 봉사하자도 하지 않았다.%CALLNAME:TARGET%(은)는 불만 그렇다…
+	RETURN 2
+;REACT분류が要求に応じないの場合(拒絶)
+ELSEIF IS_COMGRONAME("거부/날뛴다/逃げる")
+	;치정先行
+	IF PALAM:MASTER:치정 > PALAM:MASTER:반항
+		PRINTFORML %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 봉사할 수 없었다.%CALLNAME:TARGET%(은)는 불만 그렇다…
+	;반항先行
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 불만 그렇다…
+	ENDIF
+	RETURN 2
+;その他の場合(受容)
+ELSEIF IS_COMGRONAME("적극적으로 한다/태연하게 한다")
+	;REACT분류が적극적으로 한다の場合
+	PRINTFORM %CALLNAME:MASTER%(은)는 
+	;무릎으로 서있다
+	SIF TCVAR:MASTER:자세 == 10
+		PRINTFORML 빠져들도록(듯이) 히자타테가 되어,
+	PRINTFORML 적극적으로 %CALLNAME:TARGET%에 봉사했다…
+	RETURN 2
+;その他の場合
+ELSE
+	;SELECTCOMが싫어한다・날뛴다の場合
+	IF IS_NOWCOMNAME("싫어한다/날뛴다")
+		PRINTFORML %CALLNAME:TARGET%(은)는 발버둥 친다%CALLNAME:MASTER%에 상관하지 않고 봉사를 강요했다…
+	;それ以外
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%(은)는 어쩔 수 없이%CALLNAME:TARGET%의 명령 대로에 봉사했다…
+	ENDIF
+	RETURN 2
+ENDIF
+[SKIPEND]
+RETURN 0
+
+;────────────────────────────────────
+;056,이라마치오 FIRSTACTMESSAGE(0)
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_56
+;初回
+IF FIRSTACTMESSAGE(0)
+	;初回のみ、구상ファイル側で捏造する
+	;구상ファイルで処理する場合のRESULT値は1に統一。その他の場合、RESULT値は2と定める
+	;正の値なら何でもいいけど、とりあえず俺ルールということで
+	RETURN 1
+;その他
+ELSE
+	;初回以外のRESULTは負の値にしておく
+	RETURN -1
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_56
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_56
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_56
+RETURN 0
+
+;────────────────────────────────────
+;057,가슴애무강제
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_57
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_57
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_57
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_57
+RETURN 0
+
+;────────────────────────────────────
+;060,스펭킹
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_60
+;연속실행
+IF TFLAG:ACT == TFLAG:전ACT
+	;하반신속옷が要押し退け
+	IF PANTSCHECK(1, 1)
+		PRINTFORM %CALLNAME:TARGET%(은)는 
+		;服の上から
+		IF LOWERJACKET(1) == 1
+			PRINTFORML %OUTER_B(MASTER, 0, 1)%의 위로부터%CALLNAME:MASTER%의 계속 격려 했다…
+			RETURN 2
+		;속옷の上から
+		ELSEIF LOWERUNDER(1) == 1
+			PRINTFORML %PANTY_DESCRIPTION(MASTER)%%INNER_B(MASTER)%의 위로부터%CALLNAME:MASTER%의 계속 격려 했다
+			PRINTFORML 작 차는 것 같은 예통은 점차 쾌감으로 바뀌어,%CALLNAME:MASTER%의 신체를 침식해 간다…
+			RETURN 2
+		ENDIF
+	;구상ファイル側で地の文捏造
+	ELSE
+		RETURN 1
+	ENDIF
+;눈가리개장착中
+ELSEIF TEQUIP:눈가리개
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 쌍 좌석을 두드리려고 했다…
+	;마조끼4以上
+	IF ABL:MASTER:마조끼 >= 4
+		PRINTFORML 시야를 빼앗겼다%CALLNAME:MASTER%(은)는, 피학에의 요염한 기대에 그 신체를 불 비출 수 있고 있다…
+		RETURN 2
+	;その他
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%(은)는 시야를 빼앗겨 불안감에 시달리고 있다…
+		RETURN 2
+	ENDIF
+;밧줄장착中
+ELSEIF TEQUIP:밧줄
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 쌍 좌석을 두드리려고 했다…
+	;마조끼4以上
+	IF ABL:MASTER:마조끼 >= 4
+		PRINTFORML 구속되어 움직임을 봉쇄되었다%CALLNAME:MASTER%(은)는, 피학에의 요염한 기대에 그 신체를 불 비출 수 있고 있다…
+		RETURN 2
+	;その他
+	ELSE
+		PRINTFORML 구속되어 움직임을 봉쇄되었다%CALLNAME:MASTER%(은)는,%CALLNAME:TARGET%에 날카로운 시선을 던지고 있다…
+		RETURN 2
+	ENDIF
+;관장中
+ELSEIF TEQUIP:관장그릇＋플러그
+	PRINTFORML %CALLNAME:TARGET%(은)는 관장액을 따라져 복부의 압박감에 허덕이는 %CALLNAME:MASTER%의 쌍 좌석을 두드리려고 했다…
+	RETURN 2
+;その他条件はデフォルト地の文
+ELSE
+	RETURN 0
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_60
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_60
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_60
+RETURN 0
+
+;────────────────────────────────────
+;061,채찍
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_61
+;연속실행
+IF TFLAG:ACT == TFLAG:전ACT
+	;구상ファイルで地の文捏造
+	RETURN 1
+;눈가리개장착中
+ELSEIF TEQUIP:눈가리개
+	PRINTFORML 채찍을 손에 넣었다%CALLNAME:TARGET%(은)는 지만%CALLNAME:MASTER%에 천천히 가까워져 간다
+	;마조끼4以上
+	IF ABL:MASTER:마조끼 >= 4
+		PRINTFORML 시야를 빼앗겼다%CALLNAME:TARGET%(은)는, 피학에의 요염한 기대에 그 신체를 불 비출 수 있고 있다…
+		RETURN 2
+	;その他
+	ELSE
+		PRINTFORML %CALLNAME:TARGET%(은)는 시야를 빼앗겨 불안감에 시달리고 있다…
+		RETURN 2
+	ENDIF
+;밧줄장착中
+ELSEIF TEQUIP:밧줄
+	PRINTFORML 채찍을 손에 넣었다%CALLNAME:TARGET%(은)는 지만%CALLNAME:MASTER%에 천천히 가까워져 간다
+	PRINTFORM 구속되어 움직임을 봉쇄되었다%CALLNAME:MASTER%(은)는,
+	;마조끼4以上
+	IF ABL:MASTER:마조끼 >= 4
+		PRINTFORML 피학에의 요염한 기대에 그 신체를 불 비출 수 있고 있다…
+		RETURN 2
+	;その他
+	ELSE
+		PRINTFORML %CALLNAME:TARGET%에 날카로운 시선을 던지고 있다…
+		RETURN 2
+	ENDIF
+;その他条件はデフォルト地の文
+ELSE
+	RETURN 0
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_61
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_61
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_61
+RETURN 0
+
+;────────────────────────────────────
+;062,바늘
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_62
+;ちょっと変則的
+;地の文の表示タイミングを変えたかったのでこの箇所ではなく구상ファイルの当該ACTで処理する
+IF FIRSTACTMESSAGE(0)
+	RETURN 1
+;この条件の場合のみデフォルトの処理
+ELSEIF ABL:MASTER:마조끼 >= 3
+	RETURN 0
+ELSEIF TEQUIP:눈가리개
+	RETURN 1
+ELSE
+	RETURN 1
+ENDIF
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_62
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_62
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_62
+RETURN 0
+
+;────────────────────────────────────
+;063,밧줄
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_63
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_63
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_63
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_63
+RETURN 0
+
+;────────────────────────────────────
+;064,눈가리개
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_64
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_64
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_64
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_64
+RETURN 0
+
+;────────────────────────────────────
+;065,볼개그
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_65
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_65
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_65
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_65
+RETURN 0
+
+;────────────────────────────────────
+;066,매도
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_66
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_66
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_66
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_66
+RETURN 0
+
+;────────────────────────────────────
+;067,삼각목마
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_67
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_67
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_67
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_67
+RETURN 0
+
+;────────────────────────────────────
+;068,관장그릇＋플러그
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_68
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_68
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_68
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_68
+RETURN 0
+
+;────────────────────────────────────
+;070,피스트퍽
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_70
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_70
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_70
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_70
+RETURN 0
+
+;────────────────────────────────────
+;071,애널피스트
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_71
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_71
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_71
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_71
+RETURN 0
+
+;────────────────────────────────────
+;072,양쪽피스트
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_72
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_72
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_72
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_72
+RETURN 0
+
+;────────────────────────────────────
+;073,방치플레이
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_73
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_73
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_73
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_73
+RETURN 0
+
+;────────────────────────────────────
+;074,공중육변기플레이
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_74
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_74
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_74
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_74
+RETURN 0
+
+;────────────────────────────────────
+;080,촉수소환
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+;@KOJO_NO9_MS_TRAIN_MESSAGE_K14_80
+;@KOJO_TRAIN_MESSAGE_K14_80
+;미구현
+
+;────────────────────────────────────
+;090,휴식시킨다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_90
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_90
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_90
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_90
+RETURN 0
+
+;────────────────────────────────────
+;091,영양제를 먹인다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_91
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_91
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_91
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_91
+RETURN 0
+
+;────────────────────────────────────
+;092,치료한다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_92
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_92
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_92
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_92
+RETURN 0
+
+;────────────────────────────────────
+;095,정상위시킨다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_95
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_95
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_95
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_95
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;096,후배위시킨다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_96
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_96
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_96
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_96
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;097,대면좌위시킨다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_97
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_97
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_97
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_97
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;098,배면좌위시킨다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_98
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_98
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_98
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_98
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;099,항문섹스시킨다
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_99
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_99
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_99
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSE
+	RETURN 0
+ENDIF
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_99
+IF IS_COMGRONAME("날뛴다/逃げる/거부")
+	CALL 성교봉사拒絶処理_K14
+	RETURN 2
+ELSEIF IS_COMGRONAME("受け入れる")
+	;가버려상태
+	IF TCVAR:MASTER:가버려
+		;本体側の地の文は容認できないんで구상側で捏造する;p
+		SELECTCASE GET_COM_RANK()
+			CASE "自然な행동"
+				PRINTFORML %CALLNAME:MASTER%(은)는 배설 기관을%RAND_SPLIT("범해지고/후벼파지고")%%RAND_SPLIT("嬌/艶かしい")%소리를 지른다%CALLNAME%의 %RAND_SPLIT("치태/추잡한 모습")%에 흥분해,
+				PRINTFORML 새로운 쾌감을 추구해 자기를 잊고 열중함으로 허리를 계속 부딪혔다…
+			CASE "無理のない행동"
+				PRINTFORML %CALLNAME:MASTER%(은)는 지만%ANUS_DESCRIPTION(TARGET)%에\@ TEQUIP:페니스밴드 ? 의욕형 # 페니스 \@(을)를 찔러 넣을 때,
+				PRINTFORML %CALLNAME%(은)는 열락의 불길에 몸을 맡겨\@ PALAM:쾌Ａ > 8500 ? 숨도 끊어질듯 끊어질듯하게 되면서 # \@격렬하게 허덕이고 있다…
+				PRINTFORML 두 명은 도착적인 섹스에 빠져 흥분해, 열중해 얽히고 있다…
+			CASE "無理を했다행동"
+				PRINTFORML %CALLNAME%의 %ANUS_DESCRIPTION(TARGET)%에 삽입해 버렸다%CALLNAME:MASTER%(은)는, 이상한 행위를 자각하면서도
+				PRINTFORML 그 매끄러운 감촉과 배설 기관을 관철해지고 개개 허덕이는 %CALLNAME%의 도착적인 치태에 흥분해, 오로지 허리를 계속 거절했다…
+		ENDSELECT
+		RETURN 2
+	ENDIF
+ELSE
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;300,Ｗ수음
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_300
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_300
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_300
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_300
+RETURN 0
+
+;────────────────────────────────────
+;301,Ｗ펠라
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_301
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_301
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_301
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_301
+RETURN 0
+
+;────────────────────────────────────
+;302,Ｗ키스
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_302
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_302
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_302
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_302
+RETURN 0
+
+;────────────────────────────────────
+;303,Ｗ스마타
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_303
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_303
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_303
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_303
+RETURN 0
+
+;────────────────────────────────────
+;304,Ｗ파이즈리
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_304
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_304
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_304
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_304
+RETURN 0
+
+;────────────────────────────────────
+;305,Ｗ풋잡
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_305
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_305
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_305
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_305
+RETURN 0
+
+;────────────────────────────────────
+;306,騎乗二穴責め
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_306
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_306
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_306
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_306
+RETURN 0
+
+;────────────────────────────────────
+;307,대면二穴責め
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_307
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_307
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_307
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_307
+RETURN 0
+
+;────────────────────────────────────
+;308,노니는모난
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_308
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_308
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_308
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_308
+RETURN 0
+
+;────────────────────────────────────
+;309,항문二穴責め
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_309
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_309
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_309
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_309
+RETURN 0
+
+;────────────────────────────────────
+;310,Ｗ역강간
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_310
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_310
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_310
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_310
+RETURN 0
+
+;────────────────────────────────────
+;311,타니와타리
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_311
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_311
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_311
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE2_K14_311
+RETURN 0
+
+;────────────────────────────────────
+;312,이중이라마치오
+;────────────────────────────────────
+;★リアクション前★[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE_K14_312
+RETURN 0
+
+;★リアクション前★[一般]
+@KOJO_TRAIN_MESSAGE_K14_312
+RETURN 0
+
+;☆リアクション後☆[대상限定]
+@KOJO_NO9_MS_TRAIN_MESSAGE2_K14_312
+RETURN 0
+
+;☆リアクション後☆[一般]
+@KOJO_TRAIN_MESSAGE_K142_312
+RETURN 0
+
+;-------------------------------------------------
+;汎用処理用関数
+;-------------------------------------------------
+@성교봉사拒絶処理_K14
+IF IS_COMGRONAME("날뛴다/逃げる")
+	;성교봉사중に拒絶
+	IF (IS_NOWACTNAME("정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다") && V_SEX(MASTER)) || (IS_NOWACTNAME("항문섹스시킨다") && A_SEX(MASTER))
+		PRINTFORML %CALLNAME:MASTER%(은)는 허리를 편차라고 말해졌지만,\@ TEQUIP:페니스밴드 ? 의욕형 # 페니스 \@(을)를 다시 삽입하지 않고
+		PRINTFORML %CALLNAME%(으)로부터 멀어져 버렸다…
+	;その他
+	ELSE
+		PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME:TARGET%의 명령에 응하지 않았다…
+	ENDIF
+ELSEIF IS_COMGRONAME("거부")
+	;성교봉사중に拒絶
+	IF (IS_NOWACTNAME("정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다") && V_SEX(MASTER)) || (IS_NOWACTNAME("항문섹스시킨다") && A_SEX(MASTER))
+		PRINTFORML %CALLNAME:MASTER%(은)는 더 이상\@ V_SEX(MASTER) ? 성교 # 엉덩이에서의 행위 \@(을)를 계속하는 것을 싫어해,\@ TEQUIP:페니스밴드 ? 의욕형 # 페니스 \@(을)를 다시 삽입하지 않고
+		PRINTFORML %CALLNAME%(으)로부터 멀어져 버렸다…
+	;その他
+	ELSE
+		;BASE:7, 초조함で三項
+		PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 \@ TENSION(TARGET, 7) == "高い" ? 화나 있는 듯 # 불만인 것 같다 \@(이)다…
+	ENDIF
+ENDIF

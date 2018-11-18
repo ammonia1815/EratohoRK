@@ -1,0 +1,804 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;	히나구상 ショップ이벤트구상ファイル
+
+;	SHOPから呼び出される구상をまとめたファイル
+
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;ショップ이벤트구상
+;========================================================================
+
+;────────────────────────────────────
+;EV101, 의상変更
+;────────────────────────────────────
+;・ショップから의상変更を行った場合に表示
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_101(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=
+;　一の位…（0, もう着てる、1, 着替えた、2, 恥ずかしくて着られない、3, 嫌がって着ない、9, 持ってない）
+;　十の位…（0, 통상、10, 반라、20, 전라、30, 속옷無し）
+;　百の位…코스프레のために保留
+;　千の位…（0, 죠교자, 1000, 죠교대상）
+;　例（죠교대상が恥ずかしがって전라にできなかった＝1022）
+;-------------------------------------------------
+#DIM 상사상애
+상사상애 = GET_KFLAG_K39("상사상애")
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が着替えた
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG < 1000 && (ARG % 10) == 1
+	SELECTCASE ARG
+		;통상되었다
+		CASE 1
+			IF 상사상애
+				;フォント操作しないならHTML系より使い勝손が良い。改行なしで使えるのもGOOD。HTML系にない利点
+				CALL COLORPRINT("「やっぱりこの__0xC0C0C0__『__0x64F86A__厄__0xC0C0C0__』__0xB5213B__の印が無いとね")
+				CALL PRINT_SYMBOL_K39
+			ELSE
+;OriginalString : 「やっぱりこれが一番似合うでしょうか？」
+				PRINTFORMW 「역시 이것이 제일 어울릴까요？」
+			ENDIF
+			RETURN 2
+		;반라되었다
+		CASE 11
+			IF 상사상애
+;OriginalString : 「裸より속옷姿の方が好きなの？」
+				PRINTFORMW 「알몸보다 속옷 모습을 좋아해？」
+			ELSE
+;OriginalString : 「ちょっと恥ずかしいですけど、仕方ありませんね」
+				PRINTFORMW 「조금 부끄럽지만, 어쩔 수 없겠네요」
+			ENDIF
+			RETURN 2
+		;전라되었다
+		CASE 21
+			IF 상사상애
+;OriginalString : 「ジロジロ見られると、ちょっと恥ずかしい…」
+				PRINTFORMW 「빤히 볼 수 있으면(자), 조금 부끄럽다…」
+			ELSE
+;OriginalString : 「あの、そんなに見られると恥ずかしいです…」
+				PRINTFORMW 「저, 그렇게 볼 수 있으면(자) 부끄럽습니다…」
+			ENDIF
+			RETURN 2
+		[SKIPSTART]
+		;……すーすーする		現在は実装されていない
+		CASE 31
+			IF 상사상애
+;OriginalString : 「これ…ちょっと落ち着かないかも…」
+				PRINTFORMW 「이것…조금 초조할지도…」
+			ELSE
+;OriginalString : 「なんか落ち着かないですね…」
+				PRINTFORMW 「 어쩐지 초조하네요…」
+			ENDIF
+			RETURN 2
+		[SKIPEND]
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が恥ずかしがって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG < 1000 && (ARG % 10) == 2
+	SELECTCASE ARG
+		;반라だって恥ずかしい
+		CASE 12
+			IF 상사상애
+;OriginalString : 「そんな恥ずかしい格好は嫌…」
+				PRINTFORMW 「그렇게 부끄러운 모습은 혐…」
+			ELSE
+;OriginalString : 「それはちょっと嫌、です…」
+				PRINTFORMW 「그건 좀 싫고,입니다…」
+			ENDIF
+			RETURN 2
+		;普段から전라はちょっと……
+		CASE 22
+			IF 상사상애
+;OriginalString : 「そんな馬鹿っぽいのは嫌…」
+				PRINTFORMW 「그런 바보 같은 것은 혐…」
+			ELSE
+;OriginalString : 「お断りします…」
+				PRINTFORMW 「거절합니다…」
+			ENDIF
+			RETURN 2
+		[SKIPSTART]
+		;パンツが無いから恥ずかしいもん！
+		CASE 32
+			IF 상사상애
+;OriginalString : 「落ち着かないから嫌…」
+				PRINTFORMW 「초조하기 때문에 혐…」
+			ELSE
+;OriginalString : 「そんな落ち着かない格好は嫌です…」
+				PRINTFORMW 「그렇게 초조한 모습은 싫습니다…」
+			ENDIF
+			RETURN 2
+		[SKIPEND]
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が嫌がって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG < 1000 && (ARG % 10) == 3
+	SELECTCASE ARG
+		;반라は嫌
+		CASE 13
+			IF 상사상애
+;OriginalString : 「そんなの嫌…」
+				PRINTFORMW 「그런 것 혐…」
+			ELSE
+;OriginalString : 「嫌です…」
+				PRINTFORMW 「싫습니다…」
+			ENDIF
+			RETURN 2
+		;普段から전라なんて嫌
+		CASE 23
+			IF 상사상애
+;OriginalString : 「嫌よ、そんな馬鹿みたいな格好…」
+				PRINTFORMW 「싫어요, 그렇게 바보 같다 모습…」
+			ELSE
+;OriginalString : 「私を辱めたいんですか？」
+				PRINTFORMW 「 나를 송구스러운 싶습니까？」
+			ENDIF
+			RETURN 2
+		[SKIPSTART]
+		;すーすーするのは嫌
+		CASE 33
+			IF 상사상애
+;OriginalString : 「駄目！　そんなの絶対にだめっ！」
+				PRINTFORMW 「타목！ 그런 것 절대로 안돼！」
+			ELSE
+;OriginalString : 「そんなの駄目です…」
+				PRINTFORMW 「그런 것 안됩니다…」
+			ENDIF
+			RETURN 2
+		[SKIPEND]
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が着替えるのをやめた		FIRSTEVENT(30)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;%CALLNAME:TARGET%의 의상はすでに[　　]に設定されています
+;------------------------------------------------
+IF 구상記入チェック(100) && ARG < 1000 && (ARG % 10) == 0
+	SELECTCASE ARG
+		[SKIPSTART]
+		;통상のまま
+		CASE 0
+		;반라のまま
+		CASE 10
+		;전라のまま
+		CASE 20
+		[SKIPEND]
+		CASEELSE
+;OriginalString : 「うーん。やっぱりこのままでいい\@ 상사상애 ? かしら # でしょうか \@」
+			PRINTFORMW 「응. 역시 이대로 좋다\@ 상사상애 ? 일까 # 그럴까요 \@」
+			RETURN 2
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상を着替え시켰다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG >= 1000 && (ARG % 10) == 1
+	SELECTCASE ARG
+		;통상되었다
+		CASE 1001
+			IF 상사상애
+;OriginalString : 「やっぱりその格好が似合ってるわね」
+				PRINTFORMW 「역시 그 모습이 어울려」
+			ELSE
+;OriginalString : 「うふ、よく似合ってますよ」
+				PRINTFORMW 「우대신, 잘 어울리고 있어요 」
+			ENDIF
+			RETURN 2
+		;반라되었다
+		CASE 1011
+			IF 상사상애
+;OriginalString : 「そういうのも嫌いじゃないわよ？」
+				PRINTFORMW 「그러한 것도 싫지 않아요？」
+			ELSE
+;OriginalString : 「これはこれで良いと思います」
+				PRINTFORMW 「이것은 이것대로 좋다고 생각합니다」
+			ENDIF
+			RETURN 2
+		;전라되었다
+		CASE 1021
+			IF 상사상애
+;OriginalString : 「ふふ、イヤラシイわね
+				PRINTFORM 「후후, 이야라시이원이군요
+			ELSE
+;OriginalString : 「あの、恥ずかしくありませんか？」
+				PRINTFORMW 「저, 부끄럽지 않습니까？」
+;OriginalString : 「당신が良ければそれでいいんですが
+				PRINTFORM 「당신이 좋다면 그것으로 좋습니다만
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+			RETURN 2
+		[SKIPSTART]
+		;……すーすーする
+		CASE 1031
+			IF 상사상애
+;OriginalString : 「モジモジしちゃって。落ち着かないの？　クスクス」
+				PRINTFORMW 「모지모지 해 버려서. 초조한거야？ 킥킥」
+			ELSE
+;OriginalString : 「落ち着きませんか？　うふっ」
+				PRINTFORMW 「침착하지 않습니까？ 우대신」
+			ENDIF
+			RETURN 2
+		[SKIPEND]
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が恥ずかしがって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG >= 1000 && (ARG & 10) == 2
+	SELECTCASE ARG
+		;반라だって恥ずかしい
+		CASE 1012
+			IF 상사상애
+;OriginalString : 「駄目なの？　仕方無いわね…」
+				PRINTFORMW 「안돼？ 방법 없네요…」
+			ELSE
+;OriginalString : 「恥ずかしいですか？　仕方ありませんね…」
+				PRINTFORMW 「부끄럽습니까？ 어쩔 수 없겠네요…」
+			ENDIF
+			RETURN 2
+		;普段から전라なんて恥ずかしい
+		CASE 1022
+			IF 상사상애
+;OriginalString : 「まぁ、気持ちは分からなくも無いけど…」
+				PRINTFORMW 「아무튼, 기분은 모르지도 없는데…」
+			ELSE
+;OriginalString : 「残念ですが、仕方無いですね…」
+				PRINTFORMW 「유감입니다만, 방법 없네요…」
+			ENDIF
+			RETURN 2
+		[SKIPSTART]
+		;パンツがないから恥ずかしいもん！
+		CASE 1032
+			IF 상사상애
+;OriginalString : 「今更恥ずかしいなんて、ちょっと変じゃない？」
+				PRINTFORMW 「이제 와서 부끄럽다니, 조금 이상하지 않다？」
+			ELSE
+;OriginalString : 「嫌だと言うのなら無理強いはしませんけど…」
+				PRINTFORMW 「싫다고 말한다면 강요는 하지 않지만…」
+			ENDIF
+			RETURN 2
+		[SKIPEND]
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が嫌がって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG >= 1000 && (ARG & 10) == 3
+	SELECTCASE ARG
+		;반라は嫌
+		CASE 1013
+			IF 상사상애
+;OriginalString : 「ねぇ、どうしても駄目なの？」
+				PRINTFORMW 「응, 아무래도 안돼？」
+;OriginalString : 
+				PRINTFORMW
+			ELSE
+;OriginalString : 「駄目、ですか…」
+				PRINTFORMW 「타목, 입니까…」
+			ENDIF
+			RETURN 2
+		;普段から전라なんて嫌
+		CASE 1023
+			IF 상사상애
+;OriginalString : 「恥ずかしいのは分かるけど、今更じゃないの？」
+				PRINTFORMW 「부끄러운 것은 알지만, 이제 와서가 아닌거야？」
+			ELSE
+;OriginalString : 「そんなに嫌なら仕方無いですね…」
+				PRINTFORMW 「그렇게 싫으면 방법 없네요…」
+			ENDIF
+			RETURN 2
+		[SKIPSTART]
+		;すーすーするのは嫌
+		CASE 1033
+			IF 상사상애
+;OriginalString : 「あっ、そう！ そこまで嫌なら別にいいけど」
+				PRINTFORMW 「아, 그렇게！ 거기까지 싫으면 별로 좋은데」
+			ELSE
+;OriginalString : 「そう、ですか…仕方無いですね…」
+				PRINTFORMW 「그렇게, 입니까…방법 없네요…」
+			ENDIF
+			RETURN 2
+		[SKIPEND]
+		CASEELSE
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상を着替え시킨다のをやめた FIRSTEVENT(70)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;%CALLNAME:MASTER%의 의상はすでに[　　]に設定されています
+;ARG(=1000,통상のまま/=1010,반라のまま/=1020,전라のまま)
+;------------------------------------------------
+IF 구상記入チェック(100) && ARG >= 1000 && (ARG % 10) == 0
+;OriginalString : 「とりあえず、\@ ARG == 1020 ? 裸 # そ \@のままで良い\@ 상사상애 ? かしら # でしょうか \@」
+	PRINTFORMW 「우선,\@ ARG == 1020 ? 알몸 # 그래 \@인 채로 좋다\@ 상사상애 ? 일까 # 그럴까요 \@」
+;OriginalString : 「%CNAME(MASTER, TARGET)%もその格好が気に入ってるみたい\@ 상사상애 ? だし # ですし \@ね…
+	PRINTFORM 「%CNAME(MASTER, TARGET)%도 그 모습이 마음에 들어있는 것 같다\@ 상사상애 ? 이고 # 이고 \@그런데…
+	CALL PRINT_SYMBOL_K39
+	RETURN 2
+ENDIF
+
+
+;────────────────────────────────────
+;EV102, 죠교자変更
+;────────────────────────────────────
+;・죠교자を交代시켰다ときに表示
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_102(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(0, 구상主が他のキャラに任せた、1, 구상主が죠교자되었다)
+;前죠교자は「%CALLNAME:SHOP_OLDTARGET%」、新죠교자は「%CALLNAME:SHOP_NEWTARGET%」で参照できる
+;구상主はTARGET
+;-------------------------------------------------
+;このバリアントでは반항각인等は죠교자毎に관리される仕様なので
+;MARK:MASTER:반항각인は0にしかならないので注意。
+;-------------------------------------------------
+#DIM 新죠교자
+#DIM 前죠교자
+新죠교자 = SHOP_NEWTARGET
+前죠교자 = SHOP_OLDTARGET
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;他の죠교자に交代
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0 && TALENT:TARGET:주인님
+	IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+		SELECTCASE RANDEVENT(2, 0)
+			CASE 0
+;OriginalString : 「あっ、そう！　そういう事するんだ」
+				PRINTFORMW 「아, 그렇게！ 그러한 일 한다」
+;OriginalString : 「ま、精々%CNAME(新죠교자, TARGET)%に可愛がってもらえば？」
+				PRINTFORMW 「뭐,정령들%CNAME(新죠교자, TARGET)%에 귀여워해 주면？」
+;OriginalString : 「べ、別にそんな事、大して気にしないからいいけど…」
+				PRINTFORMW 「, 별로 그런 일, 그다지 신경쓰지 않기 때문에 좋은데…」
+			CASE 1
+				;오토모드時には弾く		というか오토の時はSHOP系を考慮する필요はなかった。まぁいいけど
+				IF !FLAG:오토모드
+;OriginalString : 「それってどういう事？　まさか%CNAME(新죠교자, TARGET)%に心変わり했다とか？」
+					PRINTFORMW 「그 거 어떤 일？ 설마%CNAME(新죠교자, TARGET)%에 변심 했다든가？」
+;OriginalString : 「ほら、はっきり言いなさいよ」
+					PRINTFORMW 「이봐요, 분명히 말하세요」
+;OriginalString : 
+					PRINTL
+;OriginalString : [0] そんな事ある訳ない！　히나様一筋です！
+					PRINTFORMDL [0] 그런 일 있는 것 않다！ 추님 외곬입니다！
+;OriginalString : [1] 答えない
+					PRINTFORMDL [1] 대답하지 않는다
+					CALL INPUTINTD(0, 1)
+					SELECTCASE RESULT
+						CASE 0
+;OriginalString : 「なっ！？…」
+							PRINTFORMW 「！？…」
+;OriginalString : 「ま、まぁ、そこまで言うなら、少し位なら認めてあげてもいいわよ？」
+							PRINTFORMW 「뭐, 아무튼, 거기까지 말한다면, 조금 위라면 인정해 주어도 괜찮아요？」
+						CASE 1
+;OriginalString : 「……面白いわね？　フ、フフフ…」
+							PRINTFORMW 「……재미있네요？ 후, 후후후…」
+;OriginalString : 히나の周囲で禍々しい厄が渦巻き始めた……
+							PRINTFORMDW 병아리의 주위로 재난들주위액이 소용돌이치기 시작했다……
+;OriginalString : 「ねぇ、もう一度答えるチャンスをあげてもいいけど、どうする？」
+							PRINTFORMW 「응, 한번 더 대답할 찬스를 주어도 괜찮지만, 어떻게 한다？」
+;OriginalString : 
+							PRINTL
+;OriginalString : [0] ご免なさいご免なさい히나様一筋です許して下さい！
+							PRINTFORMDL [0] 면없음 바둑면없음 있고 추님 외곬입니다 허락해 주세요！
+							CALL INPUTINTD(0)
+							SELECTCASE RESULT
+								CASE 0
+;OriginalString : 「はい、良く出来ま했다
+									PRINTFORM 「네, 자주(잘) 할 수 있었습니다
+									CALL PRINT_SYMBOL_K39
+;OriginalString : 「ていうか、最初からそう言いなさいよねっ！」
+									PRINTFORMW 「이라고 말하는지, 최초부터 그렇게 말하세요！」
+							ENDSELECT
+					ENDSELECT
+				;오토모드でない場合
+				ELSE
+					;PRINTW
+				ENDIF
+		ENDSELECT
+	ELSE
+		IF MARK:TARGET:반항각인 >= 1
+;OriginalString : 「思ったようにはいかないわ……」
+			PRINTFORMW 「생각한 것처럼은 가지 않아요……」
+;OriginalString : 「暫くの間、%CNAME(新죠교자, TARGET)%に任せた方がいいかしら」
+			PRINTFORMW 「잠시의 사이,%CNAME(新죠교자, TARGET)%에 맡기는 것이 좋을까」
+		ELSE
+;OriginalString : 「では%CNAME(新죠교자, TARGET)%、あとはよろしくお願い」
+			PRINTFORMW 「에서는%CNAME(新죠교자, TARGET)%, 나머지는 아무쪼록 부탁」
+;OriginalString : 「こういう事を人に任せるのって、ちょっとどうかとも思うけど……」
+			PRINTFORMW 「이런 일을 사람에게 맡기는 것은, 조금 제발이라고도 생각하는데……」
+		ENDIF
+	ENDIF
+	RETURN 2
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さまが죠교자되었다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	;히나が주인님
+	IF TALENT:TARGET:주인님
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+;OriginalString : 「やっぱりこういうのって、人任せにするものじゃないわね」
+			PRINTFORMW 「역시 이런 것은, 임무 전가로 하는 것이 아니네요」
+;OriginalString : 「ん、なによ。%CNAME(MASTER, TARGET)%まさか……」
+			PRINTFORMW 「응, 뭐야.%CNAME(MASTER, TARGET)%설마……」
+;OriginalString : 「%CNAME(前죠교자, TARGET)%の方が良かったとか言わないわよね？」
+			PRINTFORMW 「%CNAME(前죠교자, TARGET)%(분)편이 좋았다고 말하지 않아요？」
+		ELSE
+;OriginalString : 「お世話様、%CNAME(前죠교자, TARGET)%。後は私が」
+			PRINTFORMW 「보살핌,%CNAME(前죠교자, TARGET)%. 후는 내가」
+;OriginalString : 「うん、まぁ…なんとかなると思うけど……」
+			PRINTFORMW 「응, 아무튼…어떻게든 된다고 생각하는데……」
+		ENDIF
+	;その他
+	ELSE
+		SELECTCASE RANDEVENT(2, 10)
+			CASE 0
+;OriginalString : 「まぁ%CNAME(前죠교자, TARGET)%がどうしてもと言うのなら…」
+				PRINTFORMW 「아무튼%CNAME(前죠교자, TARGET)%가 아무래도라고 말한다면…」
+;OriginalString : 「でも、本当にそれでいいのかしら？」
+				PRINTFORMW 「 그렇지만, 정말로 그것으로 좋은 것일까？」
+			CASE 1
+;OriginalString : 「こういう事を人任せにする%CNAME(前죠교자, TARGET)%も、ちょっとどうかと思うけど…」
+				PRINTFORMW 「이런 일을 임무 전가로 한다%CNAME(前죠교자, TARGET)%도, 조금 어떨까라고 생각하는데…」
+;OriginalString : 「でも、頼まれたからには仕方ないわね」
+				PRINTFORMW 「 그렇지만, 부탁받은 이상에는 어쩔 수 없네요」
+		ENDSELECT
+	ENDIF
+	RETURN 2
+ENDIF
+
+;=================================================
+;EV110, 마력使用
+;=================================================
+;・마력を消費して何らかの特典を購入했다ときに表示
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_110(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(0, 마력使用前、1, 죠교기교、2, 지식を得る前、3, 배합지식취득、4, 매혹취득、5, 금단의지식취득、
+;     6, 도구능숙취득、7, 技術を得る前、8, 혀기술취득、9, 손가락기술취득、10, 긴박능숙、
+;     11, 새드消去/새드취득、12, 더러움무시취득、 38, 착의플레이선호、39, 허리기술)
+;
+;이벤트구상：アイテム
+;引数内訳…
+;ARG=(13, アイテム練成前、14, 로터練成、15,바이브練成、16, 항문비즈練成、 17, 페니스밴드練成、
+;     18, 항문바이브練成、19, 클리캡練成、 20, 유두캡練成、21, 오나홀練成)
+;
+;이벤트구상：責め具錬成
+;引数内訳…
+;ARG=(22, 責め具練成前、23, 눈가리개練成、24, 채찍練成、 25, 밧줄練成、 26, 볼개그練成、27, 바늘練成、
+;     28, 관장세트練成、29, 삼각목마練成、 30, 거울練成、 31, 개목걸이練成、 32, 도구をカスタマイズ했다)
+;
+;その他이벤트
+;引数内訳…
+;ARG=(33, 후타나리化/戻す、34, 거유化/戻す、35, 빈유化/戻す、36, 精力の限界値上昇)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さま마력使用前
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「마력は便利だけど、使いすぎるのも考え物ね」
+		PRINTFORMW 「마력은 편리하지만, 너무 사용하는 것도 생각할 일이군요」
+	ELSE
+;OriginalString : 「折角の마력ですから、使わないと勿体無いですね
+		PRINTFORM 「모처럼의 마력이기 때문에, 사용하지 않으면 과분하네요
+		CALL PRINT_SYMBOL_K39
+	ENDIF
+	RETURN 2
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さまの죠교기교がアップ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「どう？　早速試してみる？　うふっ」
+		PRINTFORMW 「어때？ 조속히 시험해 본다？ 우대신」
+	ELSE
+;OriginalString : 「これでもっと愉しんで貰えそうですね
+		PRINTFORM 「이것에서 좀 더 즐겨 받을 수 있을 것 같네요
+		CALL PRINT_SYMBOL_K39
+	ENDIF
+	RETURN 2
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さまＳＭグッズ練成
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && INRANGE(ARG, 23, 31)
+	IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「この마력ってほんと不思議な力ね」
+		PRINTFORMW 「이 마력은 정말 이상한 힘이군요」
+;OriginalString : 「まぁでも…、これでもっと愉しめそうね
+		PRINTFORM 「아무튼에서도…, 이것에서 좀 더 즐거운 하구나
+		CALL PRINT_SYMBOL_K39
+	ELSE
+;OriginalString : 「마력でこんなものまで練成出来てしまうなんて…」
+		PRINTFORMW 「마력으로 이런 것까지 연성 생기게 되다니…」
+;OriginalString : 「でも、これでもっと愉しめそうですね
+		PRINTFORM 「 그렇지만, 이것에서 좀 더 즐거운 하네요
+		CALL PRINT_SYMBOL_K39
+	ENDIF
+	RETURN 2
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さま도구をカスタマイズ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 32
+;OriginalString : 「도구をカスタマイズってどういうこと\@ GET_KFLAG_K39("상사상애") ? なのかしら # なんでしょう \@？」
+	PRINTFORMW 「도구를 커스터마이즈는 무슨 일\@ GET_KFLAG_K39("상사상애") ? 일까 # 무엇일까요 \@？」
+;OriginalString : 「良く判らない\@ GET_KFLAG_K39("상사상애") ? わね # ですね \@……」
+	PRINTFORMW 「자주(잘) 알지 않는다\@ GET_KFLAG_K39("상사상애") ? 원이군요 # (이)군요 \@……」
+	RETURN 2
+ENDIF
+
+;生や했다ところでこの구상では機能しない事になっているという
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さま후타나리化or후타나리消去
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 33
+	;후타나리化
+	IF TALENT:TARGET:후타나리
+		;1/2
+		IF RAND:2
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「ねぇ、覚悟はいい？」
+				PRINTFORMW 「응, 각오는 좋다？」
+;OriginalString : 「もう後悔しても遅いからね？　うふっ」
+				PRINTFORMW 「 이제 후회해도 늦으니까？ 우대신」
+			ELSE
+;OriginalString : 「これで突いて欲しいんですね？」
+				PRINTFORMW 「이것으로 찔렀으면 좋네요？」
+;OriginalString : 「いいですよ、楽しみにしていて下さいね
+				PRINTFORM 「좋아요, 기대하고 있어 주세요
+				CALL PRINT_SYMBOL_K39
+			ENDIF
+		[SKIPSTART]
+		남자限定なので機能しない
+		;죠교대상が처녀
+		ELSEIF TALENT:MASTER:처녀
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「ほんと良く出来てるわね、コレ」
+				PRINTFORMW 「정말 좋게 되어있어요, 코레」
+;OriginalString : 「ほら、触ってみる？　クスクス」
+				PRINTFORMW 「이봐요, 손대어 본다？ 킥킥」
+			ELSE
+;OriginalString : 「本当にいいんですか？」
+				PRINTFORMW 「정말로 좋습니까？」
+;OriginalString : 「後悔しないでくださいね
+				PRINTFORM 「후회하지 말아 주세요
+				CALL PRINT_SYMBOL_K39
+			ENDIF
+		[SKIPEND]
+		;1/2
+		ELSE
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「なんか凄い違和感があるんだけど…」
+				PRINTFORMW 「 어쩐지 굉장한 위화감이 있는데…」
+;OriginalString : 「でも折角だから、コレで楽しむ事にするわ
+				PRINTFORM 「 그렇지만 모처럼이니까, 코레로 즐기는 일로 해요
+			ELSE
+;OriginalString : 「なんだか不思議な感じがしますね」
+				PRINTFORMW 「어쩐지 이상한 느낌이 들네요」
+;OriginalString : 「でも折角ですから、精々楽しませてもらいますよ
+				PRINTFORM 「 그렇지만 절각이기 때문에, 정령들 즐겁게 해 주어요
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+		ENDIF
+	;후타나리消去
+	ELSE
+		IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「やっぱりこの方が落ち着く感じね」
+			PRINTFORMW 「역시 이 (분)편이 침착하는 느낌이군요」
+		ELSE
+;OriginalString : 「やはり元のままが１番でしょうか」
+			PRINTFORMW 「역시 원인 채가１차례입니까」
+		ENDIF
+	ENDIF
+	RETURN 2
+ENDIF
+
+;남자限定구상にしてしまったので、箇所によっては死に구상になっているという
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さま거유化or통상に戻す
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 34
+	;거유化
+	IF TALENT:TARGET:거유
+		;1/2
+		IF RAND:2
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「うふ、これで가슴を使って色々出来そうね」
+				PRINTFORMW 「우대신, 이것으로 가슴을 사용해 여러가지 할 수 있을 것 같구나」
+;OriginalString : 「楽しませてあげるから、期待しててね
+				PRINTFORM 「즐겁게 해 주기 때문에, 기대하고 있어
+				CALL PRINT_SYMBOL_K39
+			ELSE
+;OriginalString : 「やはり가슴は大きい方が良いものなのでしょうか？」
+				PRINTFORMW 「역시 가슴은 큰 것이 좋은 것일까요？」
+			ENDIF
+		[SKIPSTART]
+		;죠교대상が거유
+		ELSEIF TALENT:MASTER:거유
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「ねぇ、ちょっと大きさを比べてみない？」
+				PRINTFORMW 「응, 조금 크기를 비교해 보지 않는다？」
+;OriginalString : 「う～ん、殆ど一緒みたいね
+				PRINTFORM 「～응, 대부분 함께 같구나
+				CALL PRINT_SYMBOL_K39
+			ELSE
+;OriginalString : 「ふふ、これでお揃いですね♪」
+				PRINTFORMW 「후후, 이것으로 갖춤이군요♪」
+			ENDIF
+		[SKIPEND]
+		;1/2
+		ELSE
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「ほら、触ってみて？」
+				PRINTFORML 「이봐요, 손대어 봐？」
+;OriginalString : 「偽者じゃない本物のおっぱいよ
+				PRINTFORM 「가짜가 아닌 진짜의 젖가슴이야
+				CALL PRINT_SYMBOL_K39
+;OriginalString : 「この마력ってほんとに何でも出来るのね」
+				PRINTFORMW 「이 마력은 정말 뭐든지 할 수 있군요」
+			ELSE
+;OriginalString : 「가슴は大きい方がいいですか？」
+				PRINTFORMW 「가슴은 큰 것이 좋습니까？」
+			ENDIF
+		ENDIF
+	;元に戻す
+	ELSE
+		IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「元の姿が一番落ち着くわね」
+			PRINTFORMW 「원의 모습이 제일 침착해요」
+		ELSE
+;OriginalString : 「自分本来の姿が一番落ち着きますね」
+			PRINTFORMW 「자신 본래의 모습이 제일 침착하네요」
+		ENDIF
+	ENDIF
+	RETURN 2
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;히나さま빈유化or통상に戻す
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 35
+	;빈유化
+	IF TALENT:TARGET:빈유
+		;1/2
+		IF RAND:2
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「普通は大きい方が好きなんじゃないの？」
+				PRINTFORMW 「보통은 큰 것이 좋아하는 것이 아닌거야？」
+;OriginalString : 「당신ってちょっと変わり者だったりする？」
+				PRINTFORMW 「당신은 조금 괴짜이기도 한다？」
+			ELSE
+;OriginalString : 「どうやら変わった嗜好をお持ちのようですね？」
+				PRINTFORMW 「아무래도 바뀐 기호를 가지고 계신 같네요？」
+			ENDIF
+		[SKIPSTART]
+		;죠교대상が거유
+		ELSEIF TALENT:MASTER:거유
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「ねぇ、なんでニヤニヤしてるの？」
+				PRINTFORMW 「응, 어째서 능글능글 해？」
+;OriginalString : 「ほらっ、ちゃんと説明しなさいよっ！」
+				PRINTFORMW 「이봐요 , 분명하게 설명해 주세요！」
+			ELSE
+;OriginalString : 「ちょっと複雑な気持ちになりますね…」
+				PRINTFORMW 「조금 복잡한 기분이 되네요…」
+			ENDIF
+		;죠교대상が빈유
+		ELSEIF TALENT:MASTER:빈유
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「自分より大きい가슴を見せつけられるのが嫌なの？」
+				PRINTFORMW 「자기보다 큰 가슴을 보게 되는 것이 싫어？」
+			ELSE
+;OriginalString : 「妬みの感情は厄を生み出す元ですけど」
+				PRINTFORMW 「질투의 감정은 액을 낳는 원이지만」
+;OriginalString : 「これは流石にちょっと…」
+				PRINTFORMW 「이것은 유석에 조금…」
+			ENDIF
+		[SKIPEND]
+		;1/2
+		ELSE
+			IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「ねぇ、よく変わり者って言われない？」 
+				PRINTFORMW 「응, 자주(잘) 괴짜라고 말을 듣지 않는다？」 
+			ELSE
+;OriginalString : 「ちょっと変わった嗜好をお持ちのようですね？」
+				PRINTFORMW 「조금 바뀐 기호를 가지고 계신 같네요？」
+			ENDIF
+		ENDIF
+	;元に戻す
+	ELSE
+		IF GET_KFLAG_K39("상사상애")
+;OriginalString : 「%RAND_SPLIT("ふふ、やっぱり元の姿の方が良いでしょう？/元のままが良いって事？/この方が楽でいいわね")%」
+			PRINTFORMW 「%RAND_SPLIT("후후, 역시 원래의 모습이 좋을 것입니다？/원래인 채가 좋다는 일？/이 (분)편이 편하고 좋네요")%」
+		;それ以外
+		ELSE
+;OriginalString : 「%RAND_SPLIT("元の姿が一番ですね/やっぱり、この方が落ち着きますね")%」
+			PRINTFORMW 「%RAND_SPLIT("원래의 모습이 제일이군요/역시, 이 (분)편이 침착하네요")%」
+		ENDIF
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;EV111, 주인님として新しい죠교자を雇った
+;────────────────────────────────────
+@KOJO_MALE_EVENT_K39_111(ARG)
+;-------------------------------------------------
+;・新しい죠교자がTARGETになっているため、구상主はTARGETではないので注意
+;・구상主を参照했다い場合はFLAG:주인님で
+;-------------------------------------------------
+;戻り値（1,表示、2,表示して加入했다キャラの加入구상をスキップ）
+IF 구상記入チェック(100)
+	;相손が니토리でなければ"さん"付け。니토리なら呼び捨て。茨歌仙の宴会場面でも何気に一緒に居たし何らかの交流はありそう的な
+	SIF NO:TARGET != 40 && CALLNAME:TARGET != "니토리"
+		CSTR:(FLAG:주인님):호칭목록 = %CALLNAME:TARGET%_%CALLNAME:TARGET%さん/%CSTR:(FLAG:주인님):호칭목록%
+	IF !GET_KFLAG_K39("상사상애")
+;OriginalString : 「わざわざ来てくれてありがとう、%CNAME(TARGET, (FLAG:주인님))%」
+		PRINTFORMW 「일부러 와 주어 고마워요,%CNAME(TARGET, (FLAG:주인님))%」
+;OriginalString : 「うん、なんていうかその……、ちょっと손伝って欲しいんだけど」
+		PRINTFORMW 「응, 이라고 할까 그……, 조금 도왔으면 좋지만」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV112, 히나さまが죠교자として加入했다
+;────────────────────────────────────
+@KOJO_EVENT_K39_112(ARG)
+;-------------------------------------------------
+;・주인님の名前は「FLAG:주인님」で参照できる
+;・주인님が雇用구상で戻り値2を返していると表示されない
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SIF NO:(FLAG:주인님) != 40 && CALLNAME:(FLAG:주인님) != "니토리"
+		CSTR:TARGET:호칭목록 = %CALLNAME:(FLAG:주인님)%_%CALLNAME:(FLAG:주인님)%さん/%CSTR:TARGET:호칭목록%
+	SELECTCASE NO:(FLAG:주인님)
+		;니토리
+		CASE 40
+;OriginalString : 「珍しいわね。急に呼び出했다りしてどう했다の？」
+			PRINTFORMW 「드물네요. 갑자기 호출하거나 해 왜？」
+;OriginalString : 「先に言っておくけど、河童たちの面倒事に巻き込まれるのは御免だからね！」
+			PRINTFORMW 「먼저 말하지만 , 갓빠들의 귀찮음일에 말려 들어가는 것은 면이니까！」
+		;その他
+		CASEELSE
+;OriginalString : 「どうも、%CNAME((FLAG:주인님), TARGET)%。厄神に何か御用ですか？」
+			PRINTFORMW 「아무래도,%CNAME((FLAG:주인님), TARGET)%. 액신에 무엇인가 용무입니까？」
+	ENDSELECT
+	RETURN 1
+ENDIF

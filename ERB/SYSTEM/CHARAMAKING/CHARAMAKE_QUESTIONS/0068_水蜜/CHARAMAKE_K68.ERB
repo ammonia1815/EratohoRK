@@ -1,0 +1,77 @@
+﻿;ムラサ＠CPMの人
+@CHARAMAKE_K68(ARG)
+;OriginalString : 「もし…………もしもーし」
+PRINTFORML 「만약…………만약-해」
+;OriginalString : 「お目覚めでしょうか。ちょっとお聞き했다い事がございまして」
+PRINTFORMW 「눈을 뜨고입니까. 조금 묻고 싶은 일이 있어서」
+;OriginalString : 
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+;OriginalString : 
+PRINTL 
+;OriginalString : 「はい、ありがとうございます。簡単……ってわけでないですけど、正解は無いのでお気楽に」
+PRINTFORML 「네, 감사합니다. 간단……라는 (뜻)이유가 아니지만, 정답은 없기 때문에 느긋하게」
+;OriginalString : 「貴方は頼りない板切れ一枚で辛うじて海に浮かんでいます」
+PRINTFORMW 「당신은 믿음직스럽지 못한 널조각 한 장으로 가까스로 바다에 떠올라 있습니다」
+;OriginalString : 「そして目の前には溺れかけている人が助けを求めて손を伸ばしています」
+PRINTFORMW 「그리고 눈앞에는 빠지고 있는 사람이 도움을 요구해 손을 뻗고 있습니다」
+;OriginalString : 「しかし、掴んでいる板切れは二人分の体重を支えられそうにありませんし、板無しでは貴方は溺れてしまいます」
+PRINTFORMW 「그러나, 잡고 있는 널조각은 두 명 분의 체중을 유지될 것 같게 않고, 판 없이는 당신은 빠져 버립니다」
+;OriginalString : 「さて、貴方ならどうしますか？」
+PRINTFORMW 「그런데, 당신이라면 어떻게 합니까？」
+;OriginalString : 
+PRINTL 
+;OriginalString : [0] 答えない
+PRINTFORMDL [0] 대답하지 않는다
+;OriginalString : [1] 板を譲って、目の前の人を助ける
+PRINTFORMDL [1] 판을 양보해, 눈앞의 사람을 돕는다
+;OriginalString : [2] 自分が助かるために、目の前の人を見殺しにする
+PRINTFORMDL [2] 자신이 살아나기 위해서(때문에), 눈앞의 사람을 죽게 내버려 둠으로 한다
+;OriginalString : [3] やってみなければ支えきれないかどうか分からないので、目の前の人を助ける
+PRINTFORMDL [3] 해 보지 않으면 지지하지 못할 화도인가 모르기 때문에, 눈앞의 사람을 돕는다
+;OriginalString : [4] 溺れかけている人が子供なら、板を譲って助ける
+PRINTFORMDL [4] 빠지고 있는 사람이 아이라면, 판을 양보해 돕는다
+CALL INPUTINTD(0, 1, 2, 3, 4)
+SELECTCASE RESULT
+	CASE 0
+;OriginalString : 「そうね。これは難しくて答えのない問題。黙りを責められる者は居ないわ」
+		PRINTFORML 「그렇구나. 이것은 어려워서 대답하고가 없는 문제. 묵를 꾸짖을 수 있는 사람은 없어요」
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 1
+;OriginalString : 「優しいのね。願わくば、その優しさが報われんことを」
+		PRINTFORML 「상냥하구나. 원원, 그 상냥함이 보답받지 않는 일을」
+		CALLF CM_PROF("被虐", 20)
+		CALLF CM_PROF("プライド", -10)
+		CALLF CM_PROF("倒錯", 10)
+		CALLF CM_PROF("モラル", 20)
+		CALLF CM_PROF("潔癖", 20)
+	CASE 2
+;OriginalString : 「貴方みたいな人って……嫌いじゃないわ」
+		PRINTFORML 「당신같은 사람은……싫지 않아요」
+		CALLF CM_PROF("衝動", 20)
+		CALLF CM_PROF("攻撃", 20)
+		CALLF CM_PROF("プライド", 10)
+		CALLF CM_PROF("モラル", -20)
+		CALLF CM_PROF("倒錯", 10)
+	CASE 3
+;OriginalString : 「哀れ二人は冷たい海の底へ……現実はそう言うものよ」
+		PRINTFORML 「가련 두 명은 차가운 바다의 바닥에……현실은 그렇게 말하는 것이야」
+		CALLF CM_PROF("楽観", 20)
+		CALLF CM_PROF("知性", -20)
+		CALLF CM_PROF("衝動", 10)
+		CALLF CM_PROF("호기심", 10)
+	CASE 4
+;OriginalString : 「ふうん……貴方は“優等生”ね」
+		PRINTFORML 「식응……당신은“우등생”그런데」
+		CALLF CM_PROF("潔癖", 10)
+		CALLF CM_PROF("プライド", 20)
+		CALLF CM_PROF("モラル", 10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("知性", 20)
+ENDSELECT
+;OriginalString : 「変な質問しちゃってごめんなさいね。おやすみなさい」
+PRINTFORMW 「이상한 질문해 버려서 미안해요. 안녕히 주무십시오」
+RETURN 1

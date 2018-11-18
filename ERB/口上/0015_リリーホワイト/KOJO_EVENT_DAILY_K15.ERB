@@ -1,0 +1,1572 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	[%CALLNAME:DAILY_TARGET%ホワイト]구상 일상이벤트구상ファイル
+;
+;	일상이벤트で呼び出される구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=================================================
+;※구상記入チェックについて
+;	・初期상태では구상記入チェック(0)となったおり、この상태では決して真になることはありません
+;	・()内に数値1~100を指定することによって、当該分岐はその数値に応じた確率で真になります
+;	・IF 구상記入チェック()と括弧内を省略했다場合はIF 구상記入チェック(100)と同じ動作になります
+;	・条件分岐を思いついたけど内容を書くのは後に했다い。
+;		という場合はIF 구상記入チェック(100) && （分岐条件）としておくと空のPRINTに食われたりする事がありません
+;	・구상を書いた部分は(0)となっていないか、一度確認すると良いでしょう
+;	・数値 0を目立つ色(背景色等、環境によって変わるでしょうが)で強調表示するように設定しておくと判り易いかもしれません
+;	・구상を書いた箇所を何らかの事情で구상記入チェック(0)とする場合、その理由を併記しておく事が望ましいです
+;		単なるチェック漏れなのか、理由があるのか。第三者(場合によっては당신自信が)が修正する際に悩まないで済みます
+;=================================================
+
+;-------------------------------------------------;-------------------------------------------------
+[SKIPSTART]
+※RESULTについて
+	・システムは구상から返ってくるRESULT値によって、구상が表示당했다か否かを判別しています
+	・RETURN 1としてRESULT値,1を返すとシステム側は구상が表示당했다と判定し、それ以降の구상を呼び出しません
+	・分岐を増や했다場合はRETURN 1の箇所に注意して下さい。통상であれば終端でRETURN 1としておけばOKです
+	例えば…
+		IF HOGE
+;OriginalString : なんたら
+			PRINTW 등
+		ELSE
+;OriginalString : かんたら
+			PRINTW 등
+		ENDIF
+		RETURN 1
+	のような形で
+
+	これを
+		IF HOGE
+;OriginalString : なんたら
+			PRINTW 등
+		ELSE
+;OriginalString : かんたら
+			PRINTW 등
+			RETURN 1
+		ENDIF
+	としてしまうとHOGEが真(true)であった場合にRESUL値が返らず、システムは구상が表示されていないと判定してしまいます
+	この場合は偽(false)であるELSEで処理당했다場合にのみRESULT値1が返ります
+	
+	以下のようなやり方もあります
+		IF HOGE
+;OriginalString : なんたら
+			PRINTW 등
+			RETURN 1
+		ELSE
+;OriginalString : かんたら
+			PRINTW 등
+			RETURN 1
+		ENDIF
+	条件毎に確実にRESULTを返せますがRESULT値が同一なら少々面倒で無駄の多いやりかたではあります
+	
+	また
+		SELECTCASE HOGE
+			CASE 0
+;OriginalString : なんたら
+				PRINTW 등
+				RETURN 1
+			CASE 1
+;OriginalString : かんたら
+				PRINTW 등
+				RETURN 1
+			CASEELSE
+				;HOGEが0,1以外なら処理しない
+				RETURN 0
+		ENDSELECT
+	のように特定の条件毎に異なったRESULT値を返すことも可能です
+	この場合はCASEELSEでRETURN 0を返했다時点でシステムは구상呼び出し処理を中断します
+
+	ネストは開放했다い(しておきたい)。でも状況によっては구상表示시켰다くないという場合は
+		SIF HOGE
+			RETURN 0
+	と、구상関数の直下でやっておけば、HOGEが真である場合に구상が表示される事はありません
+	本体に新しい要素が追加당했다が今は구상を対応시킨다余裕がない、またはそのつもりがないという場合に有効な손です
+	
+	RETURNする箇所、RETURNする値によって多彩な事ができるシステムですが
+	取り扱いには十分注意してください
+[SKIPEND]
+;-------------------------------------------------;-------------------------------------------------
+;========================================================================
+;일상이벤트구상
+;========================================================================
+;굴복각인*5％で実行 굴복각인は죠교자毎に判別される
+;이벤트が発生했다際の内訳はスキンシップ67％、일상33％
+;システム側の処理はERB\SYSTEM\EVENT_DAILY.ERB内
+;-------------------------------------------------
+;・介抱の場合、구상主は죠교자(TARGET)になっている
+;・その他の이벤트(スキンシップ等)の場合、구상主はDAILY_TARGET
+;・조수である場合や、죠교自体に参加していない場合もあるのでTARGETや(ASSI:1)等では参照できないので注意
+;-------------------------------------------------
+;参考用にシステム側の地の文を掲載している箇所がありますが、
+;そこで使用されている"ARG"や"LOCAL"はシステムで使用しているローカル変数です
+;구상側からシステム側で使用しているローカル変数を直接参照することはできません
+;参考用地の文は一旦구상を書いたなら(邪魔なので)削除するのを推奨します
+;-------------------------------------------------
+;────────────────────────────────────
+;EV201, 介抱		DAILY_LIFE_NURSING
+;────────────────────────────────────
+;・조교중気絶했다後
+;-------------------------------------------------
+@KOJO_EVENT_K15_201(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,실신で조교중止되었다場合/=1,疲労で조교중止되었다場合)
+;-------------------------------------------------
+;・介抱の場合、구상主は죠교자(TARGET)になっている
+;・@FAVORや@AFFECTION等の호감도参照用関数は、引数を省略するとTARGETを見に行くので죠교部分と同じ使い方でOK
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;介抱0, 실신
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	;最初に地の文
+		;%CALLNAME:MASTER%が目を覚ますと\@ TALENT:마음씨착한 || ALI(0) ? 心配そうな顔を했다 # \@%CALLNAME:TARGET%と目が合った
+;
+		IF RAND:2 == 0
+			PRINTFORMW 「%RAND_SPLIT("저, 괜찮습니까？/좋았다…깨달아…")%」
+			PRINTFORMW 「무리시켜 버려서%RAND_SPLIT("미안해요/미안합니다로했다")%…」
+		ELSE
+			PRINTFORMW 「아, 그…신체의 상태는 어떻습니까？」
+			PRINTFORMW 「릴리, 스윗치가 들어가면(자) 멈추지 않게 되어 버려서…%RAND_SPLIT("미안합니다/미안해요")%…」
+		ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;PRINTFORMW 조교중に意識を失った%CALLNAME:MASTER%を自分の寝室まで運び介抱してくれたらしい…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;介抱1, 疲労困憊
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	;最初に地の文
+		;%CALLNAME%は疲労困憊했다%CALLNAME:MASTER%を寝室まで運んでくれた
+;
+		IF RAND:2 == 0
+			PRINTFORMW 「응 실마리…와…이봐요,%RAND_SPLIT("방에 벌궖했다/말랑말랑한 이불이에요")%？」
+			PRINTFORMW 「천천히 쉬어, 신체를 쉴 수 있어 주세요…」
+		ELSE
+			PRINTFORMW 「%RAND_SPLIT("좀 더체력붙이지 않으면 안됩니다/가득 짜 지금했다로부터")%…」
+			PRINTFORMW 「이봐요, 릴리가 머리를 쓰다듬고 있어 줄테니까…천천히 쉬어 주세요？」
+		ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;その表情はどこか\@ TALENT:마음씨착한 || ALI(0) ? 心配げ # 不満げ \@なものに%CALLNAME:MASTER%には見えた…
+ENDIF
+
+;========================================================================
+;EV202~211, スキンシップ
+;========================================================================
+;@DAILY_LIFE_1_0～からランダムで選ぶ　RETURN 0されると再抽選、RETURN 1(0以外)で抽選から抜ける
+;-------------------------------------------------
+;・スキンシップの場合、구상主がTARGETであるとは限らない
+;・(ASSI:1)や(ASSI:2)である場合もあったり、ASSIですらない場合もある
+;・この箇所での구상主の参照(キャラ번호の指定)はDAILY_TARGETで
+;・@FAVORや@AFFECTION等の호감도参照用関数及びその他多くの関数は、引数を省略するとTARGETを参照してしまうので
+;・この箇所に於いてはキャラ번호を指定する필요がある
+;-------------------------------------------------
+;※多次元配列変数について…
+;	・TALENT等の多次元配列変数は省略するとTARGET扱いになる(TALENT:HOGEはTALENT:TARGET:HOGEと同じである)ので注意
+;	・この箇所で구상主の素質を参照する場合は"TALENT:DAILY_TARGET:HOGE"のように行うこと
+;	・その他の変数を使用する場合も、一通り調べておいた方が幸せになれます
+;	・このバリアントの구상用플래그：KFLAGも多次元配列変数です
+;	・この箇所でKFLAG:nとしてしまうと、意図했다通りの動作をしない可能性があります。KFLAG:DAILY_TARGET:nとすればOKです
+;-------------------------------------------------
+
+[SKIPSTART]
+〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+DAILY_TARGETについての補발
+〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+※호감도参照
+	//例えば@AFFECTIONで호감도で見る場合…
+		IF AFFECTION("상사상애", DAILY_TARGET)
+	//で구상主とMASTERの호의、호감도が3000, 3000の상태を拾うことができます
+	//同じ상태を@FAVORでで拾うなら
+		IF FAVOR(3000, 3000, DAILY_TARGET)
+	//となります
+
+※名前、呼称
+	//%CALLNAME:MASTER%はそのまま죠교대상の名前が出力されますが、구상主は%CALLNAME:DAILY_TARGET%とする필요があります
+	//そして@CNAME等を使用する場合に於いては
+		PRINTFORMW 「%CNAME(MASTER, DAILY_TARGET)%～」
+	//のようにキャラ번호を指定してやる필요があります。キャラ번호を省略すると@CNAMEはTARGETを参照します
+	//即ち、구상主がTARGETで無い場合かつTARGETの구상でCNAMEに代入が行われていたりする場合、
+	//他の구상で定義당했다呼び名が出力されてしまう可能性があったりする訳です
+	//その他の場合はキャラcsvで定義당했다呼び名が出力されることになります
+	
+	//구상主が『주인님』である場合を参照する時は
+		IF TALENT:DAILY_TARGET:주인님
+	//などとして、分岐を切り分ける필요があります。そう했다上で
+		IF TALENT:DAILY_TARGET:주인님 && AFFECTION("상사상애", (FLAG:주인님))
+	//や
+		IF TALENT:DAILY_TARGET:주인님
+			PRINTFORMW 「%CNAME(MASTER, (FLAG:주인님))%」
+	//のようにする事も可能ではありますが、통상であれば(FLAG:주인님)でなくともDAILY_TARGETで구상主を参照します
+	
+	//구상主が主人であるか否かを分岐で切り分けない상태で
+		IF AFFECTION("상사상애", (FLAG:주인님))
+	//などとしてしまうと、구상主が主人であるか否かに関わらず、関数はFLAG:주인님との호감도を参照してしまいます
+
+※その他
+	変数：DAILY_TARGET及び変数：DAILY_SUBTARGETは-1でリセットされます
+	일상이벤트発生時に대상のキャラ번호が代入される仕様です
+	일상이벤트以外の箇所でこれらの変数を使った場合、-1で範囲外エラーを吐いてEmueraが落ちるので注意して下さい
+	変数が正しい使われ方をしなかった場合、エラー落ち했다方が問題を炙り出しやすいとの考えから、このような実装にしてあります
+[SKIPEND]
+
+;────────────────────────────────────
+;EV202, スキンシップ0
+;────────────────────────────────────
+;・台所でセクハラ
+;-------------------------------------------------
+@KOJO_EVENT_K15_202(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,股間まさぐり/=1,おっぱいまさぐり/=2,無視했다ら諦めて出て行った/=3,身をゆだねて股間でイかされ
+;              =4,身をゆだねておっぱいで/=5,ぱんつお着替えさせてくれま했다)
+;-------------------------------------------------
+
+;最初に以下の地の文
+;	台所に立つ%CALLNAME:MASTER%は背後からの甘い吐息に気がつき振り返る
+;	…%CALLNAME:ARG%だ
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ0_0 股間まさぐり
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が남자の場合。そうでなければ1/2の確率
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 0
+;
+		IF RAND:2 == 0
+			PRINTFORMW 「그대로…%RAND_SPLIT("움직여서는 안됩니다/에헤헤에")%」
+			PRINTFORMW 「응…응……응 , 딱딱해졌어요♪」
+		ELSE
+			PRINTFORMW 「이거 참, 분명하게 전 보지 않으면 메예요？ 후후」
+			PRINTFORMW 「%RAND_SPLIT("부비부비…부비부비/스윽스윽…스윽스윽")%…♪　%RAND_SPLIT("えへへ/あはは")%, 나무 해 버렸다♪」
+		ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%は%CALLNAME:MASTER%의 背中に体を密着시킨다と股間をまさぐり始めた…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ0_1 おっぱいまさぐり
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が여자の場合
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 1
+;
+		IF RAND:2 == 0
+			PRINTFORMW 「그대로…%RAND_SPLIT("움직여서는 안됩니다/에헤헤에")%」
+			PRINTFORMW 「응…응……응, 나 짚인가있고♪」
+		ELSE
+			PRINTFORMW 「이거 참, 분명하게 전 보지 않으면 메예요？ 후후」
+		ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%は뒤에서 %CALLNAME:MASTER%を抱きしめて가슴をもんできた…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ0_2 無視했다ら諦めて出て行った
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 2
+			PRINTFORMW 「……%RAND_SPLIT("……/지금은 안됩니까")%？」
+			PRINTFORMW 「%RAND_SPLIT("므우/무무무")%……」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%はしつこく애무を続けたが%CALLNAME:MASTER%が無視を決め込むと諦めて出て行った…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ0_3 身をゆだねて股間でイかされ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が남자の場合。남자以外の場合は1/2の確率
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 3
+	IF RAND:2 == 0
+		PRINTFORMW 「응…후~……응, 이대로…이있을까요♪」
+		PRINTFORM 「괜찮아, 전부%CALLNAME:DAILY_TARGET%의 라고 손으로 받아 들여 주니까요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「…부엌에서 하는 것, 어쩐지 흥분있는군요♪」
+		PRINTFORMW 「이봐요,%CALLNAME:DAILY_TARGET%하지만 기분 좋게%RAND_SPLIT("시켜/쫄깃쫄깃 해/누키누키 해")%줄테니까……」
+		PRINTFORM 「당신은 분명하게 앞을 봐, 「일」에 집중해 주세요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ0_4 身をゆだねておっぱいで
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 4
+	IF RAND:2 == 0
+		PRINTFORMW 「응…후~……응, 이대로…이있을까요♪」
+	ELSE
+		PRINTFORMW 「이거 참, 분명하게 전 보지 않으면 메예요？ 후후」
+		PRINTFORM 「……키친에 서는 뒷모습은, 어째서 이렇게 불쾌하겠지요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;スキンシップ（0_3/0_4）の구상表示後、以下の地の文
+	;%CALLNAME:MASTER%が抵抗しないことを確認すると%CALLNAME:ARG%は淫蕩な笑みを浮かべて절정まで導いた…
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ0_5 ぱんつお着替えさせてくれま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 5
+	;죠교대상に페니스あり
+	IF PENIS(MASTER)
+		PRINTFORM 「%RAND_SPLIT("응/아")%, 네에에♪　팬츠 중(안)에서%RAND_SPLIT("사정し/ぴゅっぴゅし/イっ")%있었어요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORMW 「도……이봐요, 여기 향해？ 벗어 해요♪」
+		PRINTFORM 「%CNAME(MASTER, DAILY_TARGET)%의 부끄러운 흘리는 팬츠,%CALLNAME:DAILY_TARGET%하지만 갈아입게 해 아군요
+		CALL HEARTCB
+		PRINTFORMW 」
+		;구상表示後、以下の地の文
+			;%CALLNAME:ARG%は정액でどろどろ되었다%CALLNAME:MASTER%의 아래着を脱がせると
+			;新しい속옷を持ってきてくれま했다…
+	;その他
+	ELSE
+		PRINTFORM 「루등 해 버렸습니다인가？ %RAND_SPLIT("우후후/아하하")%
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORMW 「도……이봐요, 여기 향해？ 벗어 해요♪」
+		PRINTFORM 「%CNAME(MASTER, DAILY_TARGET)%의 부끄러운 흘리는 팬츠,%CALLNAME:DAILY_TARGET%하지만 갈아입게 해 아군요
+		CALL HEARTCB
+		PRINTFORMW 」
+		;구상表示後、以下の地の文
+			;%CALLNAME:ARG%は愛液でどろどろ되었다%CALLNAME:MASTER%의 아래着を脱がせると
+			;新しい속옷を持ってきてくれま했다…
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV203, スキンシップ1
+;────────────────────────────────────
+;・食堂でお茶하면서
+;-------------------------------------------------
+@KOJO_EVENT_K15_203(ARG)
+;-------------------------------------------------
+;引数…ARG(=0,お紅茶いかが？/=1,미약で무라무라おっぱい気になる/=2,おっぱい見せつけられま했다
+;          =3,あわてて逃げま했다/=4,むしゃぶりついてご봉사했다らご褒美にぱいずりorクンニでイかされちゃいま했다
+;-------------------------------------------------
+
+;最初に地の文
+	;食堂で휴식していると%CALLNAME:ARG%がティーポットとお菓子を載せたお盆を持って来て隣に座った
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ1_0 お紅茶いかが？
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+;食堂で휴식していると%CALLNAME:ARG%がティーポットとお菓子を載せたお盆を持って来て隣に座った
+	IF RAND:2 == 0
+		PRINTFORMW 「홍차를 엄응이지만%CNAME(MASTER, DAILY_TARGET)%도 어떻습니까？」
+		PRINTFORMW 「지금이라면%RAND_SPLIT(@"%CALLNAME:DAILY_TARGET%노손만들기/맛있다")%과자도 따라 와요♪」
+	ELSE
+		PRINTFORMW 「%RAND_SPLIT("드물다/재미있다")%차잎을 받았습니다만,%CNAME(MASTER, DAILY_TARGET)%도 어떻습니까？」
+		PRINTFORMW 「이봐요, 매우 좋은 향기가 나요♪」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%と紅茶を飲みながら談笑していると、次第に体の中心から정욕が滾ってきた…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ1_1 미약で무라무라おっぱい気になる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+;食堂で휴식していると%CALLNAME:ARG%がティーポットとお菓子を載せたお盆を持って来て隣に座った
+	IF RAND:2 == 0
+		PRINTFORMW 「%RAND_SPLIT("응응～/이것은 꽤…")%맛있는 홍차군요♪」
+		PRINTFORMW 「어떻습니까？ 분명하게 맛보고 있습니다？ 후후♪」
+	ELSE
+		PRINTFORMW 「좋은 향기…」
+		PRINTFORMW 「응,%CALLNAME:DAILY_TARGET%하지만 엄홍차, 어떻습니까♪」
+		PRINTFORMW 「……%RAND_SPLIT("응/응우/므우/이제(벌써)")%, 어디 봐？」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;구상主が거유なら
+			;隣りに앉다%CALLNAME:ARG%の豊かな가슴元から目が離せない
+		;そうでなければ
+			;無防備にも服の隙間からチラチラと見える乳首に目が奪われる
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ1_2 おっぱい見せつけられま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 2
+;食堂で휴식していると%CALLNAME:ARG%がティーポットとお菓子を載せたお盆を持って来て隣に座った
+	;地の文
+	IF TALENT:DAILY_TARGET:거유
+		PRINTFORMDW %CALLNAME:DAILY_TARGET%의 풍부한 가슴 팍이 새하얀 케이프의 천을 울창한북돋워
+		PRINTFORMDW %RAND_SPLIT("흔들/출렁/부들부들")%(와)과 과연 부드러운 듯이  흔들리고 있었다
+	ELSE
+	ENDIF
+	IF RAND:2 == 0
+		PRINTFORMW 「%CALLNAME:DAILY_TARGET%의 %RAND_SPLIT("젖가슴/오가슴")%하지만 신경이 쓰입니까？　네에에♪」
+		PRINTFORM 「휴게중인데…%RAND_SPLIT("어쩔 수 없는 아이/응석꾸러기씨")%(이)군요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「그런%RAND_SPLIT("엣치한/추잡하다")%눈으로 볼 수 있으면(자)……」
+		PRINTFORMW 「어와…그렇게 %CALLNAME:DAILY_TARGET%의 %RAND_SPLIT("젖가슴/오가슴")%, 보고 싶습니까…？」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;視線に気がついた%CALLNAME:ARG%は\@ TALENT:ARG:수줍음 || TALENT:ARG:청초 ? 恥ずかしそうに # \@가슴をはだけて%CALLNAME:MASTER%의 目の前に差し出했다…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ1_3 あわてて逃げま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 3
+;食堂で휴식していると%CALLNAME:ARG%がティーポットとお菓子を載せたお盆を持って来て隣に座った
+	IF RAND:2 == 0
+		PRINTFORMW 「응, 어쩐지%RAND_SPLIT("신체가 따끈따끈/불끈불끈")%해 오지 않습니까？」
+	ELSE
+		PRINTFORMW 「%RAND_SPLIT(" . 저것/이런/무무/와와")%？　얼굴이 새빨갛지만 어떻게 했습니까？」
+		PRINTFORM 「……응, ·
+		CALL HEARTCB
+		PRINTFORM  %CALLNAME:DAILY_TARGET%하지만 「조력」해 줄까요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;선택肢を経由
+			;一服もられたことに気がついた%CALLNAME:MASTER%はなんとか理由をつけて食堂から出ていきま했다
+		;선택肢を経由しない場合
+			;一服もられたことに気がついた%CALLNAME:MASTER%は회화をそうそうに切り上げ食堂から出ていきま했다
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ1_4 むしゃぶりついてご봉사했다ら;ご褒美にぱいずりorクンニでイかされちゃいま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 4
+;食堂で휴식していると%CALLNAME:ARG%がティーポットとお菓子を載せたお盆を持って来て隣に座った
+	;%CALLNAME:ARG%は夢中になって봉사する%CALLNAME:MASTER%に만족すると
+	;죠교대상に페니스があれば파이즈리
+	IF PENIS(MASTER)
+		IF RAND:2 == 0
+			PRINTFORMW 「%RAND_SPLIT("좋고 성과했다읏/좋은 아이 좋은 아이")%♪　이봐요, 와…」
+			PRINTFORM 「%CNAME(MASTER, DAILY_TARGET)%의 정말 좋아하는 젖가슴으로%RAND_SPLIT("즐겁게 해/누키누키 해")%주네요
+			CALL HEARTCB
+			PRINTFORMW 」
+		ELSE
+			PRINTFORM 「아…팥고물……젖가슴%RAND_SPLIT("지릿지릿 합니다/기분이 좋다입니다")%…
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTFORMW 「이봐요…자지, 이제 참을 수 없을 것입니다？」
+			PRINTFORM 「능숙하게 할 수 있던 오- 에…당신의 정말 좋아하는%RAND_SPLIT(@"당신의 정말 좋아하는 젖가슴/%CALLNAME:DAILY_TARGET%의 유등인가파이즈리")%그리고, 마음껏%RAND_SPLIT("사정/発射/ぴゅｐっぴゅ")%시켜 주네요
+			CALL HEARTCB
+			PRINTFORMW 」
+		ENDIF
+		;구상表示後以下の地の文
+		;ご褒美とばかりに唾液でヌルヌル되었다가슴\@TALENT:빈유 ? で페니스를こすり # で페니스를はさみ\@、사정시켰다…
+	
+	;죠교대상に페니스なしの場合はクンニ
+	ELSE
+		PRINTFORMW 「해 젖어 버렸어？」
+		PRINTFORMW 「후후♪ %RAND_SPLIT("엣치한/하했다없다")%자……」
+		PRINTFORM 「이것은 조금, 교육이 필요같네요
+		CALL HEARTCB
+		PRINTFORMW 」
+		;구상表示後以下の地の文
+		;ご褒美とばかりに愛液をあふれ시켰다%CALLNAME:MASTER%의 秘所に舌を這わせ절정시켰다…
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV204, スキンシップ2
+;────────────────────────────────────
+;・廊下で無理やり키스
+;-------------------------------------------------
+@KOJO_EVENT_K15_204(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,廊下で주인님に呼び止められま했다/=1,いきなりちゅぅ/=2,数分後만족してばいばい)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ2_0 廊下で주인님に呼び止められま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	IF RAND:2 == 0
+		PRINTFORMW 「아,%CNAME(MASTER, DAILY_TARGET)%」
+		PRINTFORMW 「%RAND_SPLIT("에헤헤/아이참-")%…찾았어요？」
+	ELSE
+		PRINTFORMW 「%RAND_SPLIT("있지있지/당·신")%♪」
+	ENDIF
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%が廊下を歩いていると뒤에서 %CALLNAME:ARG%に呼び止められた
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ2_1 いきなりちゅぅ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	;以下の地の文の後구상呼び出し
+		;%CALLNAME:ARG%はにこにこ하면서 %CALLNAME:MASTER%に近づくと、\@ TALENT:ARG:수줍음 || TALENT:ARG:청초 ? 少했다めらいながら # 不意に\@%CALLNAME:MASTER%의 頭をつかんで
+	;ちょっと変則的な구상呼び出しタイミング
+	PRINTFORMW 「%RAND_SPLIT("츗/응츗")%……네에에%RAND_SPLIT("ぇ/")%♪」
+	PRINTFORMW 「%RAND_SPLIT("틈입니다/잘 먹었어요로했다")%♪」
+	RETURN 1
+	;구상表示後以下の地の文
+		;입술을 빼았았다…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ2_1 数分後만족してばいばい
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 2
+	IF RAND:2 == 0
+		PRINTFORMW 「짠다…%RAND_SPLIT("츗, 응/응츗, 앗, 츄루")%……%RAND_SPLIT("うふふっ/ぷぇっ")%♪」
+		PRINTFORM 「%RAND_SPLIT("조금/장난")%의 작정(생각)이었던 것이지만……열중해 버렸습니다
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「짠다…%RAND_SPLIT(", 츄무/하아, 응츄")%……%RAND_SPLIT("ぷぇっ/うふふっ")%♪」
+		PRINTFORMW 「응, 개-분해 버렸습니다인가？」
+		PRINTFORM 「다음은%RAND_SPLIT("침대의 위/또 나머지")%그리고…그런데
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%は数分間%CALLNAME:MASTER%의 입内を蹂躙すると만족했다のか
+		;放心する%CALLNAME:MASTER%を残して去っていった…
+ENDIF
+
+;────────────────────────────────────
+;EV205, スキンシップ3
+;────────────────────────────────────
+;・廊下でおっぱい揉み揉み
+;-------------------------------------------------
+@KOJO_EVENT_K15_205(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,いきなり背中から抱きつかれたなう/=1,おっぱい揉まれてるなう/=2,만족していなくなったお…)
+;-------------------------------------------------
+;・죠교대상が남자なら発生しない
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ3_0 いきなり背中から抱きつかれたなう
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	PRINTFORMW 「%RAND_SPLIT("개-가마-천민//틈입니닷")%」
+	PRINTFORMW 「그대로…라고 시켜 주세요♪」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%が廊下を歩いていると뒤에서 %CALLNAME:ARG%に襲われた
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ3_1 おっぱい揉まれてるなう
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	PRINTFORMW 「젖가슴%RAND_SPLIT("설마～이/기분 있고입니까？")%…후후」
+	RETURN 1
+	;구상表示後以下の地の文
+		;죠교대상が빈유の場合
+			;%CALLNAME:ARG%は%CALLNAME:MASTER%を後ろから抱きすくめ、平坦な가슴をまさぐっている…
+		;その他の場合
+			;%CALLNAME:ARG%は%CALLNAME:MASTER%を後ろから抱きすくめると、襟元に손を差し入れて
+			;가슴を揉みだ했다…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ3_1 만족していなくなったお…
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 2
+	PRINTFORMW 「-로 하고 있으면, 장난 요정에 먹을 수 있게 되어요♪」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%はひとしきり%CALLNAME:MASTER%의 喘ぎ声を堪能すると
+		;放心する%CALLNAME:MASTER%を残して去っていった…
+ENDIF
+
+;────────────────────────────────────
+;EV206, スキンシップ4
+;────────────────────────────────────
+;・食事中にしゃぶられ
+;-------------------------------------------------
+@KOJO_EVENT_K15_206(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お食事ご一緒いいかしら？/=1,マッハで食って逃げま했다/=2,テーブルの下でしゃぶられてます
+;              =3,どくんどくん/=4,倍プッシュだ)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ4_0 お食事ご一緒いいかしら？
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	IF RAND:2 == 0
+		PRINTFORMW 「아,%RAND_SPLIT("찾고 있었던 것이에요/식사중에서했다인가")%」
+		PRINTFORMW 「%CALLNAME:DAILY_TARGET%도 함께 해도 좋습니까？」
+	ELSE
+		PRINTFORMW 「아, 또 혼자서%RAND_SPLIT("먹고 있는/밥")%입니까？」
+		PRINTFORMW 「 이제……언제나 권해달라고 말해…」
+		PRINTFORMW 「%CALLNAME:DAILY_TARGET%도 함께 해도 괜찮습니까？」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%が食事を取っていると%CALLNAME:ARG%が相席してもいいかと尋ねてきた
+			;地の文表示の後に선택肢
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ4_1 マッハで食って逃げま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	PRINTFORMW 「%RAND_SPLIT("므우/앗, 이제(벌써)")%……도망가 버렸습니다인가…」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%は残りの料理を猛烈な勢いで平らげるとそそくさと食堂から逃げ出했다
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ4_2 テーブルの下でしゃぶられてます
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 2
+	IF RAND:2 == 0
+		PRINTFORM 「네에에
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「그러면,%CALLNAME:DAILY_TARGET%도 「%RAND_SPLIT("밥/식사")%」에 시켜 주네요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「감사합니다♪ 그렇지만,%CALLNAME:DAILY_TARGET%하지만 먹고 싶은 것은……」
+		PRINTFORM 「당신의%RAND_SPLIT("자지 밀크/부들부들 정액/자지/엣치한 국물")%이예요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%が快諾し料理を取り分けようとすると、%CALLNAME:ARG%は
+		;テーブルの下に潜り込み손馴れた손つきで肉棒を取り出ししゃぶり始めた…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ4_3 どくんどくん
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 3
+	IF RAND:2 == 0
+		PRINTFORM 「%RAND_SPLIT("응쿳읏응우…/응응――！！ /진하고 진하고…")%
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「역시 일발눈은 진해서, 목에 관련되네요……네에에
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「 이제 한입, 정상있네요……아--
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORM 「%RAND_SPLIT("…아므/응츄…")%응응응…응응″！！……
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「…………맛있다
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;あっという間に高められ%CALLNAME:ARG%の입内に사정するも、
+		;민감되었다페니스に吸付き次の사정を促してくる
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ4_4 倍プッシュだ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 4
+	IF RAND:2 == 0
+		PRINTFORM 「%RAND_SPLIT("응쿳읏응우…/응응――！！ /진하고 진하고…")%
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「응～……점점 얇아졌어요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「이대로 전부……%CALLNAME:DAILY_TARGET%의 구있어요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORM 「%RAND_SPLIT("…아므/응츄…")%응응응…응응″！！………
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「%RAND_SPLIT("목의 안쪽/치약펠라/살짝 깨물기 되어/끝 날름날름 되어/딥스로트")%하지만 좋아하네요？……아～
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「응…응…구멍은의 취지인 뺨뺨에, 있고 는 있고 팔아 히에 버무리고 위
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;結局、%CALLNAME:MASTER%が食事を終えるまで搾られ続けま했다…
+ENDIF
+
+;────────────────────────────────────
+;EV207, スキンシップ5
+;────────────────────────────────────
+;・皿洗い손伝い→ファックの流れ
+;-------------------------------------------------
+@KOJO_EVENT_K15_207(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お皿洗いを손伝ってくれるようです/=1,おとこわりします/=2,一緒に頑張って終わらせま했다
+;              =3,おくちにほしいなーオーラ/=4,おいしかったです/=5,お손伝い했다んだからお尻犯せよ
+;              =6,お尻でヤってしまいま했다/=7,謝礼はまんまん銀行に突っ込んでくれ/=8,確かに受け取った)
+;-------------------------------------------------
+;선택肢[1] - お願いする 以降素質/ABLによって分岐
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_0 お皿洗いを손伝ってくれるようです
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	PRINTFORMW 「네, 식기는 이것으로 전부 야」
+	PRINTFORMW 「…혼자는 대단하고,%CALLNAME:DAILY_TARGET%도 도울까요？」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%が洗い物をしようとすると%CALLNAME:ARG%が皿を運んできてくれた
+		;…どうやら손伝ってくれるらしい
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_1 お断りします
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	PRINTFORMW 「그렇습니까？ 사양하지 않아도 괜찮은데」
+	PRINTFORMW 「그러면%CALLNAME:DAILY_TARGET%하%RAND_SPLIT("소파로 뒹굴뒹굴 해/테이블 닦아 먼 바다")%무릎♪」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%は%CALLNAME:ARG%の申し出を丁寧に断り一人で洗い物を片付けた
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_2 一緒に頑張って終わらせま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 2
+	PRINTFORMW 「둘이서 줄서 빨랫감은……%RAND_SPLIT("우후후/에헤헤")%」
+	PRINTFORMW 「마치%RAND_SPLIT("신혼씨/연인끼리")%같네요♪」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%が손伝ってくれたおかげでいつもより早く終えることができた
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_3 おくちにほしいなーオーラ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;구상主が素質：청초/수줍음/정조관념/일선을넘지않음/처녀持ちである場合
+;%CALLNAME:DAILY_TARGET%は처녀のみ所持よ！なんちて！
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 3
+	;구상表示前
+		;%CALLNAME:ARG%が熱い視線を向けながら何か言いたげにらもじもじしている…
+	IF RAND:2 == 0
+		PRINTFORMW 「아, 저기요……」
+		PRINTFORM 「조력 혀 오-……%RAND_SPLIT("받을 수 있습니까/갖고 싶은데")%
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「저기요,%CNAME(MASTER, DAILY_TARGET)%의 근처로 할 수 있는 가는거야……」
+		PRINTFORM 「그…%RAND_SPLIT("그것/자지/정액/오입에 말이야")%……갖고 싶어져버릴 하물며…네에에
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後
+		;%CALLNAME:MASTER%が黙って頷くと%CALLNAME:ARG%は嬉々として跪き
+		;股間から페니스를取り出してしゃぶり始めた
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_4 おいしかったです
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 4
+	PRINTFORM 「%RAND_SPLIT("…아므/응츄…")%응응응…응응″！！………
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORM 「네에에
+	CALL HEARTCB
+	PRINTFORM  응……진하고…진하고 응……
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORM 「 히-했다
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+	;구상地の文
+		;%CALLNAME:MASTER%が放った정액を美味しそうに飲み込むと
+		;また손伝ってあげるねと言い残し去っていった…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_5 お손伝い했다んだからお尻犯せよ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 5
+;			PRINTFORMW %CALLNAME:ARG%は当然のように労働の対価を要求してきた
+	IF RAND:2 == 0
+		PRINTFORM 「%RAND_SPLIT("읏,/쥬룻, 응쥬루루우")%♪　%RAND_SPLIT("カチカチに硬くなり/上손におっきでき/立派な大人ちんぽになり")%했군요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「영차…와. 그러면, 접시닦이의 포상 타임입니다
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「이봐요,%CALLNAME:DAILY_TARGET%의 %RAND_SPLIT("엣치한/부끄럽다")%엉덩이의 구멍에……%CNAME(MASTER, DAILY_TARGET)%의 포상 정액, 따라 주세요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORM 「%RAND_SPLIT("읏,/쥬룻, 응쥬루루우")%♪　%RAND_SPLIT("お입でイクのは/これ以上は/ぴゅっぴゅは")%·아·두·
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「이키 싶습니까？ 이제, 어쩔 수 없는 아이군요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「……자
+		CALL HEARTCB
+		PRINTFORM  여기의 구멍에서, 좋아할 뿐(만큼)%RAND_SPLIT("해/자지국물 토해내/--해")%좋아요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:ARG%은(는) %CALLNAME:MASTER%의 페니스를입に含んで準備を整えると
+		;立っ하며 尻たぶを広げて期待に引くつく엉덩이を見せつけている
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_6 お尻でヤってしまいま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 6
+;			PRINTFORMW %CALLNAME:ARG%は当然のように労働の対価を要求してきた
+	IF RAND:2 == 0
+		PRINTFORMDW %CALLNAME:DAILY_TARGET%하%RAND_SPLIT("키친대/테이블")%에 손을 붙으면(자), 스커트를 걷어 올려%CALLNAME:MASTER%에 봉사를 졸랐다…
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%의 %RAND_SPLIT("가는 허리/엉덩이살")%(을)를 잡아, 씩씩하다%RAND_SPLIT("男根/剛直")%(을)를%RAND_SPLIT("난폭/단숨")%에 근원까지 찔러 넣었다…
+	ELSE
+		PRINTFORMDW %CALLNAME:DAILY_TARGET%(은)는 에이프런을 몸에 댄 채로 손재주가 있게 스커트와 속옷을 벗어 떠나면(자),
+		PRINTFORMDW %RAND_SPLIT("키친대/테이블")%에 손을 다해 %CALLNAME:MASTER%에 접시닦이의%RAND_SPLIT("対価/報酬/ご褒美")%(을)를 졸랐다…
+	ENDIF
+
+	;おしり！？
+	IF RAND:2 == 0
+		PRINTFORM 「응″″！？ 아, 나！ 그쪽이 아니고！ 아히
+		CALL HEARTCB
+		PRINTFORM 아아
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「엉덩이
+		CALL HEARTCB
+		PRINTFORM  억지로 하
+		CALL HEARTCB
+		PRINTFORM  히응
+		CALL HEARTCB
+		PRINTFORMW 」
+	;おしりぃ♪
+	ELSE
+		PRINTFORM 「응우우
+		CALL HEARTCB
+		PRINTFORM  아
+		CALL HEARTCB
+		PRINTFORM  엉덩이 왔다
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+
+	IF RAND:2 == 0
+		PRINTFORMDW 고육을 밀어 헤치고 난폭하게 질리를 꾸짖어 주면(자),
+		PRINTFORMDW %CALLNAME:DAILY_TARGET%(은)는 보는 동안에 전신을 가크가크와 경련시켜 쾌락의 정점으로 달했다…
+	ELSE
+		PRINTFORMDW %CALLNAME:DAILY_TARGET%(은)는인가 스친 단 비명을 올리면서, 어린 지체를 가크가크와 경련시켜 쾌락의 정점으로 달했다…
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%は%CALLNAME:ARG%の엉덩이の強烈な締め付けに
+		;為す術も無く、大量の정액を搾られてしまった…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_7 謝礼はまんまん銀行に突っ込んでくれ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 7
+	;구상表示前
+		;%CALLNAME:ARG%は当然のように労働の対価を要求してきた
+	IF RAND:2 == 0
+		PRINTFORM 「%RAND_SPLIT("읏,/쥬룻, 응쥬루루우")%♪　%RAND_SPLIT("カチカチに硬くなり/上손におっきでき/立派な大人ちんぽになり")%했군요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「영차…와. 그러면, 접시닦이의 포상 타임입니다
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「%CALLNAME:DAILY_TARGET%의 더 보지에…%CNAME(MASTER, DAILY_TARGET)%의 포상 정액, 따라 주세요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「나머지군요, 할 수 있으면입니다만…. 「접시닦이 노력했군요」라고 해 아이 좋은 아이 하면서해 주었으면 한다
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORM 「%RAND_SPLIT("읏,/쥬룻, 응쥬루루우")%♪　%RAND_SPLIT("お입でイクのは/これ以上は/ぴゅっぴゅは")%·아·두·
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「접시닦이의 포상은……이봐요, 여기예요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORMW 「%CNAME(MASTER, DAILY_TARGET)%가 「%CALLNAME:DAILY_TARGET%도와 고마워요」라는 느낌 아마만,
+		PRINTFORM  좋아할 뿐(만큼)%RAND_SPLIT("해/자지국물 토해내/--해")%주세요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後
+		;%CALLNAME:ARG%은(는) %CALLNAME:MASTER%의 페니스를입に含んで準備を整えると
+		;젖음秘所を左右に開き%CALLNAME:MASTER%의 페니스를 誘っている
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ5_8 確かに受け取った
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 8
+;	PRINTFORMW %CALLNAME:ARG%は当然のように労働の対価を要求してきた
+	PRINTFORMDW %CALLNAME:DAILY_TARGET%하%RAND_SPLIT("키친대/테이블")%에 손을 붙으면(자), 스커트를 걷어 올려%CALLNAME:MASTER%에 봉사를 졸랐다…
+	PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%의 세요를 잡아, 씩씩하다%RAND_SPLIT("남근/강직")%(을)를%RAND_SPLIT("乱暴/一気")%에 근원까지 찔러 넣었다…
+
+	PRINTFORM 「응″！！ 응, 하, 후~, 아
+	CALL HEARTCB
+	PRINTFORM  좀 더 안쪽, -꿀꺽꿀꺽 시켜 창고 차이
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORM 「둔다
+	CALL HEARTCB
+	PRINTFORM  자지로 , 가득한으로 어루만지고 해
+	CALL HEARTCB
+	PRINTFORM  아――
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%は%CALLNAME:ARG%のもたらす快感に
+		;為す術も無く、大量の정액を搾られてしまった…
+ENDIF
+
+;────────────────────────────────────
+;EV208, スキンシップ6
+;────────────────────────────────────
+;・入浴中に襲われる
+;-------------------------------------------------
+@KOJO_EVENT_K15_208(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お風呂場強襲/=1,背中を流します泡踊り/=2,ちんこは触ってあげない/3,가게해줘！
+;              =4,참다してたら焦らすの面倒되었다ようです/=5,どくんどくん/=6,전신ぬるぬる気持ちいい？/=7,びくんびくん)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_0 お風呂場強襲
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	PRINTFORMW 「네에에♪ 응,%CALLNAME:DAILY_TARGET%도 함께 들어가 있고입니까？」
+	RETURN 1
+	;구상表示後以下の地の文
+		;%CALLNAME:MASTER%が風呂で体を洗っていると\@ TALENT:ARG:수줍음 || TALENT:ARG:청초 ? タオルで体を隠했다 # 전라の \@%CALLNAME:ARG%が入ってきた
+		;背中を流してくれるそうだ
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_1 背中を流します泡踊り
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	IF RAND:2 == 0
+		PRINTFORMW 「등 흘리네요♪」
+		PRINTFORM 「%RAND_SPLIT("응우/하아")%
+		CALL HEARTCB
+		PRINTFORM  응,%RAND_SPLIT("아와아와/쓱쓱")%기분 있고입니까
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「이봐요, 뒤 향해 주세요♪」
+		PRINTFORM 「보디 소프를……%RAND_SPLIT("읏/하아")%
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「그러면, 즐거움의 조조타임이에요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+	;구상表示後以下の地の文
+		;嫌な予感を感じながらも%CALLNAME:MASTER%が背を向けると、%CALLNAME:ARG%は自分の体で
+		;石鹸を泡立たせて、抱きついてきた…
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_2 ちんこは触ってあげない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・죠교대상に페니스ありの場合
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 2
+	PRINTFORM 「%RAND_SPLIT("아와아와～/쓱쓱/～")%
+	CALL HEARTCB
+	PRINTFORM …응…후~…%RAND_SPLIT("우쿳/아읏")%
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORM 「이것…로션과도 달라, 이상한 느낌이군요
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORMDW %CALLNAME:DAILY_TARGET%(은)는 뜨거운 한숨을 흘리면서, 서들 까는 어린 신체를 문질러 온다…
+	PRINTFORMW 「그러면, 이제 부끄러운 장소세있어요？」
+	PRINTFORM 「소프～거품이 일게 해, 차분히 정중하게 껴 해 주네요
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;その行為は次第にエスカレートしていき、\@ TALENT:MASTER:남자 ? 陰嚢 # 비순 \@や엉덩이にまで손を伸ばしてきたが、
+	;%CALLNAME:MASTER%의 페니스には一切손を触れようとしない
+
+;このあとINPUT[0] - 耐える　[1] - お願いするで分岐
+	;[0] - 耐える     => スキンシップ6_4へ
+	;[1] - お願いする => スキンシップ6_3へ
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_3 가게해줘！
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 3
+	IF RAND:2 == 0
+		PRINTFORMW 「%CALLNAME:DAILY_TARGET%의 라고 손하고 싶은거야？」
+		PRINTFORM 「%RAND_SPLIT("이제(벌써)/에헤헤에")%…감씨이니까
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「자지 참을 수 없게 되어 버렸습니다인가？」
+		PRINTFORM 「%RAND_SPLIT("이제(벌써)/에헤헤에")%…어쩔 수 없는 아이군요
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:MASTER%が泣きそうな声で懇願すると%CALLNAME:ARG%は背中に抱きつい하며 
+	;페니스를握り一気にしごき立てた…
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_4 참다してたら焦らすの面倒되었다ようです
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 4
+	PRINTFORM 「저기요……미끈미끈 하고 있으면(자), 어쩐지 참을 수 없게 되어 버렸습니다
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORMW 「이봐요, 미끄러지면(자) 위험하니까,%CNAME(MASTER, DAILY_TARGET)%(은)는 그대로 움직이지 말아 주세요？」
+	PRINTFORM 「가득 모인 키-역……%CALLNAME:DAILY_TARGET%하지만%RAND_SPLIT("퓻퓨/")%시켜 주니까요
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:MASTER%より先に限界が来たのか、%CALLNAME:ARG%は背中に抱きつい하며 
+	;페니스를握り一気にしごき立てた…
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_5 どくんどくん
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・6_3もしくは6_4を経由してこの箇所にくる
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 5
+	PRINTFORMDW %CALLNAME:DAILY_TARGET%의 희고 작은 손이 빵 빵에 긴장된 남근에 관련되어 다해 천천히 상하 운동을 계속하고 있다…
+	PRINTFORMDW %CALLNAME:MASTER%의 등에 부드러운 유방을 꽉 눌러 문자 그대로 전신에 극상의 쾌락을 쏟아 온다…
+	PRINTFORMW 「후~…응♪ 이제 이 기초？」
+	PRINTFORM 「좋아
+	CALL HEARTCB
+	PRINTFORM  라고라고에 뿌려
+	CALL HEARTCB
+	PRINTFORM  이네
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORM 「은～있고
+	CALL HEARTCB
+	PRINTFORM 　
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;애태움に焦ら당했다%CALLNAME:MASTER%의 페니스はあっという間に昇天し
+	;壊れた蛇입のように정액をまき散らしている…
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_6 전신ぬるぬる気持ちいい？
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・죠교대상に페니스なしの場合、6_1からこの箇所にくる
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 6
+	PRINTFORM 「%RAND_SPLIT("아와아와～/쓱쓱/～")%
+	CALL HEARTCB
+	PRINTFORM …응…후~…%RAND_SPLIT("우쿳/아읏")%
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORM 「이것…로션과도 달라, 이상한 느낌이군요
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORMDW %CALLNAME:DAILY_TARGET%(은)는 뜨거운 한숨을 흘리면서, 서들 까는 어린 신체를 문질러 온다…
+	PRINTFORMW 「그러면, 이제 부끄러운 장소세있어요？」
+	PRINTFORM 「소프～거품이 일게 해, 차분히 정중하게 껴 해 주네요
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:ARG%は가슴を%CALLNAME:MASTER%의 背中にこすりつけながら、体の隅々を撫で回してくる
+	;その行為は次第にエスカレートしていき、엉덩이や성기にまで指を潜り込ませてくる
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ6_7 びくんびくん
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 7
+	PRINTFORM 「절정에서 내릴 수 없게 되어 버렸습니다인가
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTFORM 「좋아
+	CALL HEARTCB
+	PRINTFORM  이대로%CALLNAME:DAILY_TARGET%하지만 천국에 데려 가 주네요
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:MASTER%は%CALLNAME:ARG%に抱きしめられ하며 何度も절정하게됬다…
+
+;────────────────────────────────────
+;EV209, スキンシップ7
+;────────────────────────────────────
+;・주인님が바이브で…
+;-------------------------------------------------
+@KOJO_EVENT_K15_209(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,바이브で펠라の練習/=1,！　何見てるの！？/=2,あら…試してみる？)
+;-------------------------------------------------
+;・바이브購入済みかつ죠교대상に페니스ありの場合に発生
+;・죠교대상にちんこを生やす、消去する系の実装がこのバリアントに於いてなされることはないと断言します
+;-------------------------------------------------
+
+;最初に地の文
+	;%CALLNAME:ARG%の部屋からなにやら水音が聞こえる
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ7_0 바이브で펠라の練習
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	IF TALENT:DAILY_TARGET:주인님 && AFFECTION("죠교済み", (FLAG:주인님))
+		PRINTFORMW 「%RAND_SPLIT("읏…쥬폿, 우, 구폿/쥬풋…긋…우쥿")%…………%RAND_SPLIT("ぷはっ/ぷぇっ/くぷっ")%」
+		PRINTFORMW 「%RAND_SPLIT("므우/하아, 하아")%……꽤 어렵습니다……」
+	ELSE
+		PRINTFORMW 「%RAND_SPLIT("읏…/아뭇…응츄")%………！　」
+		IF RAND:2 == 0
+			PRINTFORMW 「……턱이 지쳐 왔습니다……」
+		ELSE
+			PRINTFORMW 「후~……꽤 어렵습니다……」
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;半開き되었다扉から中を伺うと真剣な顔を했다%CALLNAME:ARG%が남성기に見立てた바이브に舌を這わせていた
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ7_1 ！　何見てるの！？
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・죠교자が素質：청초/수줍음持ちの場合
+;ないです！
+;-------------------------------------------------
+;IF 구상記入チェック(100) && ARG == 1
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ7_2 あら…試してみる？
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・죠교자が素質：청초/수줍음持ちで無い場合
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 2
+	IF TALENT:DAILY_TARGET:주인님 && AFFECTION("죠교済み", (FLAG:주인님))
+		PRINTFORM 「아……봐 버렸습니다？ 네에에 , 구의 연습중입니다
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTFORM 「절각이고,%CALLNAME:DAILY_TARGET%의 %RAND_SPLIT("취해 먼 바다/오입보지/오입")%……시험해 가지 않습니까
+		CALL HEARTCB
+		PRINTFORMW 」
+	ELSE
+		PRINTFORMW 「아……봐 버렸습니다？」
+		PRINTFORMW 「네에에, 역시 장난감은 실감이 솟아 오르지 않아서……」
+		PRINTFORM 「%CNAME(MASTER, DAILY_TARGET)%의 기분 실무렵,%CALLNAME:DAILY_TARGET%의 구가 가르쳐 줄 수 없겠습니까
+		CALL HEARTCB
+		PRINTFORMW 」
+	ENDIF
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:ARG%はしばらくの間行為に没頭していたが%CALLNAME:MASTER%의 視線に気がつくと
+	;입を卑猥な形にすぼめて誘惑してきた…
+
+;────────────────────────────────────
+;EV210, スキンシップ8
+;────────────────────────────────────
+;・入浴中二人に襲われて…
+;-------------------------------------------------
+@KOJO_EVENT_K15_210(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,二人でお風呂場強襲/=1,二人で洗いっこ/=2,見られてエスカレート/=3,のぼせてしまいま했다
+;              =4,混ぜてもらってぬるぬるまっと/=5,二人でそーぷぷれい)
+;-------------------------------------------------
+;・夜の場合に発生
+;・구상主は必ず一人目のキャラになる。この場合DAILY_TARGETで参照が可能
+;・二人目のキャラはDAILY_SUBTARGETで参照が可能
+;・구상のある二人目のキャラの台詞を구상で指定당했다文字色で出力했다い場合は@PRINT_KOJO_COLORを使えば可能
+;・この箇所に於いて、TARGET/(ASSI:1)/(FLAG:주인님)などでは登場キャラを正しく参照することはできない
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ8_0 二人でお風呂場強襲
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	IF RAND:2 == 0
+		PRINTFORMW 「응,%CALLNAME:DAILY_TARGET%들도 함께 들어가 있고입니까？ %RAND_SPLIT("우/")%후후♪」
+	ELSE
+		PRINTFORMW 「아--♪」
+		PRINTFORMW 「오늘은 세 명 사이 좋게 욕실의 날이에요♪」
+	ENDIF
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:MASTER%が入浴していると%CALLNAME:ARG%と%CALLNAME:(ARG:1)%が入ってきた
+
+;※地の文中のARGや(ARG:1)はシステム側のローカル変数なので、구상側から参照することはできません
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ8_1 二人で洗いっこ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	IF RAND:2 == 0
+		PRINTFORMW 「%CNAME(MASTER, DAILY_TARGET)%(은)는 이제 신체 씻어 버렸습니다인가？ 유감입니다…」
+		PRINTFORMW 「그러면,%CALLNAME:DAILY_TARGET%들은 여기로 씻어 넘을까요♪」
+	ELSE
+		PRINTFORMW 「%CALLNAME:DAILY_SUBTARGET%의 젖가슴유등인가～있고♪」
+		CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, "「ん…はぁ…はんぅ……ソコは、あぁっ……」", DAILY_TARGET)
+	ENDIF
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;二人は%CALLNAME:MASTER%의 目の前に魅力的な肢体を曝け出し、楽しそうに体を洗いあっている…
+
+;地の文表示後INPUT"[0] - じっくり鑑賞する　[1] - 混ぜてもらう"で分岐
+	;[0] - じっくり鑑賞する => 8_2へ
+	;[1] - 混ぜてもらう     => 8_4へ
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ8_2 見られてエスカレート
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・선택肢[0]の場合
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 2
+	CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, @"「%CALLNAME:DAILY_TARGET%ってこんなに민감だったっけ…？」", DAILY_TARGET)
+	CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, "「もしかして……可愛い노예さんに見られて感じちゃってるのかな？　ふふっ♪」", DAILY_TARGET)
+	PRINTFORM 「이나, 그런 일 말하고넣고…아…응…후~응
+	CALL HEARTCB
+	PRINTFORMW 」
+	CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, "「ほら、ひとりで愉しんでないで『コッチ』も……あんっ♪」", DAILY_TARGET)
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;ソープでぬるぬる되었다体を絡め合い、
+		;登場キャラが二人共に후타나리の場合
+			;二人의 페니스から断続的に放出される白濁液が互いの体を飾ってゆく…
+		;登場キャラのどちらかが후타나리
+			;白濁液と愛液をお互いの体に塗りつけてゆく…
+		;その他の場合
+			;二人の秘所からは愛液がとめどなく溢れでている……
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ8_3 のぼせてしまいま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・8_2を経由してこの箇所
+;-------------------------------------------------
+IF 구상記入チェック(100) && ARG == 3
+			PRINTFORM 「후~…후~…응……
+			CALL HEARTCB
+			PRINTFORMW 」
+			CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, @"「%CALLNAME:DAILY_TARGET%もイっちゃったし、次は%CNAME(MASTER, DAILY_TARGET)%と……って思ったけど」", DAILY_TARGET)
+			CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, @"「%CNAME(MASTER, DAILY_TARGET)%まで倒れてどうするの？　もう……」", DAILY_TARGET)
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:MASTER%は浴槽から出るにでられずのぼせてしまった
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ8_4 混ぜてもらってぬるぬるまっと
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 4
+	PRINTFORMW 「%CNAME(MASTER, DAILY_TARGET)%도……섞이고 싶은거야？ 후후……」
+	PRINTFORMW 「이봐요, 와……미끄러지면(자) 위험하기 때문에, 초조해 하지 않고에 말이야♪」
+	CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, "「うふふっ♪　興奮しちゃって、可愛いなぁ」", DAILY_TARGET)
+	PRINTFORMW 「%CALLNAME:DAILY_TARGET%들도경 응 하는군……영차와」
+	PRINTFORMDW 위로 향해 되었다%CALLNAME:MASTER%(을)를 양측으로부터 사이에 두어 붐비도록(듯이) 해,
+	PRINTFORMDW 소프 바를 수 있는의 %CALLNAME:DAILY_TARGET%(와)과%CALLNAME:DAILY_SUBTARGET%하지만새와 관련되어 따라 온다……
+	PRINTFORM 「그러면, 학수 고대의 「샌드위치거품 춤」……초있네요
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:ARG%は魅了され息を荒らげている%CALLNAME:MASTER%의 손をとると
+	;マットの上に누움に寝かせ、その上に%CALLNAME:(ARG:1)%が大量のソープを塗りつけていく
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ8_5 二人でそーぷぷれい
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && ARG == 5
+;CALL PRINT_KOJO_COLORW(DAILY_SUBTARGET, "「」", DAILY_TARGET)
+;%CALLNAME:DAILY_SUBTARGET%
+	IF RAND:2 == 0
+		PRINTFORMW 「%RAND_SPLIT("/")%」
+	ELSE
+		PRINTFORMW 「%RAND_SPLIT("/")%」
+	ENDIF
+	RETURN 1
+ENDIF
+[SKIPSTART]
+//구상表示後以下の地の文
+	//죠교대상に페니스あり
+		二人はすっかり準備の整った%CALLNAME:MASTER%に身を寄せ合うと体のあらゆる部分を
+		すり寄せてきた
+		密着했다体の隙間で放たれる정액が二人の욕정をさらに駆り立て、萎えるまもなく
+		次の사정にいたってしまう…
+		%CALLNAME:MASTER%は二人が만족するまで何度も사정하게됬다…
+	//その他の場合
+		%CALLNAME:MASTER%と二人はヌルヌル되었다体を絡め合い、お互いに何度も절정を繰り返했다…
+[SKIPEND]
+
+;────────────────────────────────────
+;EV211, スキンシップ9
+;────────────────────────────────────
+;・風呂から上ったらパンツが無かった
+;-------------------------------------------------
+@KOJO_EVENT_K15_211(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お風呂上りのーぱんえんかうんと/=1,ガン見されてます/=2,風邪ひかないようにね)
+;-------------------------------------------------
+;・夜の場合に発生
+;-------------------------------------------------
+[SKIPSTART]
+//最初に地の文
+	%CALLNAME:MASTER%が風呂から上がり着替えようとすると、ご丁寧に속옷だけ抜き去られていた
+	탈의所を見渡しても代わりになりそうなものは見つからない
+	%CALLNAME:MASTER%は仕方なしに、속옷を着けずに直接服を着る事に했다
+	……すーすーする
+[SKIPEND]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ9_0 お風呂上りのーぱんえんかうんと
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	IF RAND:2 == 0
+		PRINTFORMW 「아%CNAME(MASTER, DAILY_TARGET)%」
+		PRINTFORMW 「응～, 비누가 좋은 향기가 납니다…후후♪」
+	ELSE
+		PRINTFORMW 「욕실 오름입니까？」
+		PRINTFORMW 「뜨거운 물 차가운 하지 않게…후후♪」
+	ENDIF
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;탈의所を出ると、待ち構えていたかの様に%CALLNAME:ARG%が居た
+	;そそくさと前を通り過ぎようとすると、%CALLNAME:ARG%のねっとりと했다視線が가슴と股間に絡みつく
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ9_1 ガン見されてます
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(0) && ARG == 1
+;	RETURN 1
+;ENDIF
+;구상表示後以下の地の文
+	;まるで服を透かし見られているような감각に、수치で身体が熱くなる
+	;%CALLNAME:MASTER%は발早にその場から逃げ出했다……
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;スキンシップ9_2 風邪ひかないようにね
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・地の文なし
+;-------------------------------------------------
+;IF 구상記入チェック(0) && ARG == 2
+
+;========================================================================
+;일상（호감도上昇、その他소프트な경험など）
+;========================================================================
+;・구상主の参照はDAILY_TARGETで
+;-------------------------------------------------
+
+;────────────────────────────────────
+;EV212, 일상0
+;────────────────────────────────────
+;・ティータイム
+;-------------------------------------------------
+@KOJO_EVENT_K15_212(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お茶はいかが？/=1,楽しいお茶たいむで했다)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상0_0 お茶はいかが？
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(100) && ARG == 0
+;	RETURN 1
+;ENDIF
+;구상表示後以下の地の文
+	;食堂で휴식していると%CALLNAME:ARG%がティーポットとお菓子を載せたお盆を持って来て隣に座った
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상0_1 楽しいお茶たいむで했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	IF RAND:3 == 0
+		PRINTFORMW 「맛있다%RAND_SPLIT("홍차의 끓이는 방법/팬케이크의 굽는 방법/쿠키의 굽는 방법")%입니까？」
+		PRINTFORMW 「%CALLNAME:DAILY_TARGET%(을)를 신부로 하면 언제라도……어, 그렇지 않다？ %RAND_SPLIT("후후/에헤헤")%」
+		PRINTFORMW 「입으로 설명하는 것은 서툴러서,%RAND_SPLIT("내일/다음에/또 이번")%천천히 가르쳐 주네요♪」
+	ELSEIF RAND:2 == 0
+		PRINTFORMW 「보고 봐 , 드문 전떡을 받았습니다」
+		PRINTFORMW 「 「신형이 젖고 전떡」인것 같습니다만, 무엇이 새롭겠지요？」
+	ELSE
+		PRINTFORMW 「홍차를 엄응이지만,%CNAME(MASTER, DAILY_TARGET)%도 어떻습니까？」
+		PRINTFORMW 「%RAND_SPLIT("괜찮아/안심해 주세요")%, 오늘의 것은 보통 홍차이기 때문에♪」
+	ENDIF
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:MASTER%は%CALLNAME:ARG%と紅茶を飲みながら談笑し、楽しいひとときを過ごしま했다
+
+;────────────────────────────────────
+;EV213, 일상1
+;────────────────────────────────────
+;・昼寝（当然夜には発生しない）
+;・ここで寝ているのは구상主
+;・계절が夏もしくは冬の場合は発生しない
+;-------------------------------------------------
+@KOJO_EVENT_K15_213(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お昼寝発見/=1,ごゆっくりどうぞ)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상1_0 お昼寝発見
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(0) && ARG == 0
+	;最初に地の文
+		;通りすがりに、庭の日のあたる場所で%CALLNAME:ARG%を見つけた……
+;	RETURN 1
+;ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상1_1 ごゆっくりどうぞ
+;경험치とか入れないよ！
+;動かないかもしれない！
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	;地の文表示後구상呼び出し
+	;%CALLNAME:ARG%は毛布を敷いてその上で丸くなって眠っている
+	IF AFFECTION("상사상애", DAILY_TARGET)
+		PRINTFORMDW %RAND_SPLIT("새근새근/구구/스으스으")%(와)과 기분 좋음 그런 숨소리를 세운다%CALLNAME:DAILY_TARGET%에,%CALLNAME:MASTER%(은)는 ……
+		PRINTL  
+		;선택
+		PRINTFORMDL [0] - 장난 한다
+		PRINTFORMDL [1] - 살그머니 해 둔다
+		PRINTFORMDL [2] - 이것은 함정이다！
+		PRINTL  
+		CALL INPUTINTD(0, 1, 2)
+		SELECTCASE RESULT
+			;イタズラする
+			CASE 0
+				SELECTCASE RANDEVENT(3, 90)
+					;가슴揉み
+					CASE 0
+						;거유
+						IF TALENT:DAILY_TARGET:거유
+							;揉み！
+							IF RAND:2 == 0
+								PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%(을)를 일으키지 않게 세심의 주위를 기울이면서, 순백의 로브의 틈새에 손을 들어가게 할 수 있었다…
+								PRINTFORMDW 촉촉하게 달라붙는 것 같은 유육에않고에 와 손가락을 침울해지게 해 유두를 어루만지도록(듯이) 천천히 전체를 비비어 풀었다…
+							;乳首吸い！
+							ELSE
+								PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%(을)를 일으키지 않게 세심의 주위를 기울이면서, 천천히 순백의 로브의 가슴 팍을 피부 지우게 했다…
+								PRINTFORMDW 어린 얼굴과는 정반대에 불쾌하게 자란 음유가, 호흡에 맞추어 그야말로 부드러운 듯이  상하하고 있다…
+								PRINTFORMDW %CALLNAME:MASTER%(은)는 풍부한 쌍구의 정점절의 부엌이라고 주장하는 연분홍색의 유두를 입에 넣어, 그 맛을 마음껏 만끽했다…
+							ENDIF
+						;빈유揉み
+						ELSE
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%(을)를 일으키지 않게 세심의 주위를 기울이면서, 천천히 순백의 로브의 가슴 팍을 피부 지우게 했다…
+							PRINTFORMDW 완만한 쌍구의 정점절의 부엌이라고 주장하는 연분홍색의 유두에 혀를 기게 해 그 맛을 마음껏 만끽했다…
+						ENDIF
+					;펠라;
+					CASE 1
+						;죠교대상に페니스あり
+						IF PENIS(MASTER)
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 자신의 남성기를 노출시키면(자), 자고 있다%CALLNAME:DAILY_TARGET%의 입가에 그 첨단을 꽉 눌렀다…
+							PRINTFORMDW %CALLNAME:DAILY_TARGET%의 뜨거운 한숨이새와 관련되어 붙어, 라고 와 사랑스러운 입술이 귀두압에  바꾸어 간다…
+							PRINTFORMDW 극도의 흥분으로 한계까지 팽팽한 노장은 금새 절정을 맞이해 %CALLNAME:DAILY_TARGET%의 번뇌에서 벗어나 깨끗함인 잠자는 얼굴을 미숙한 백탁으로 더럽혀 버린다…
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 정액 투성이가 되었다%CALLNAME:DAILY_TARGET%의 얼굴을 정중하게 닦으면(자) , 빠른 걸음에 그 자리를 뒤로 했다…
+						;페니스なし
+						ELSE
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%(을)를 일으키지 않게 세심의 주위를 기울이면서,
+							PRINTFORMDW 매직으로 %CALLNAME:DAILY_TARGET%의 액에 「고기」와 장난 쓰기를 했다…
+						ENDIF
+					;펠라強
+					CASE 2
+						;죠교대상に페니스あり
+						IF PENIS(MASTER)
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 자신의 남성기를 노출시키면(자), 잔 채로의 %CALLNAME:DAILY_TARGET%의 입안에 천천히 삽입해 간다…
+							PRINTFORMDW %CALLNAME:DAILY_TARGET%의 혀는 %CALLNAME:MASTER%의 정령의 맛을 민감하게 감지하면(자), 저항하기는 커녕 귀두 전체를새와 빨기 시작했다…
+							PRINTFORMW 「응………………후~……응……」
+							PRINTFORMDW 중단되고 중단되고의 속상한 애무도, 흥분해 버렸다%CALLNAME:MASTER%(을)를 절정 시키기에는  너무 충분한 자극이었다…
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 작은 신음해 소리를 높여 무의식 중에 구음봉사를 계속한다%CALLNAME:DAILY_TARGET%의 후오에 미숙한 백탁을 쏟았다…
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 지만 줄어든 음경을%CALLNAME:DAILY_TARGET%의 입안으로부터 뽑아 내면(자), 반쯤 열려 있는 상태의 입으로부터 백탁이 흘러넘쳐%CALLNAME:DAILY_TARGET%의 신체를 더럽혀 갔다…
+							PRINTFORMW 「응…………응……진하고 응……후~……」
+							PRINTL  
+							PRINTFORMW 「……응……당신？ ……어？」
+							PRINTFORMDW 졸린 듯이  눈을 켜면서도 순간에 상황을 파악했다%CALLNAME:DAILY_TARGET%(은)는, 입안에 남은 정액을 삼키면(자)
+							PRINTFORMDW 「말해 준다면, 언제라도 해 주는데」라고 말해 웃어 허락해 주었다…
+						;페니스なし
+						ELSE
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%(을)를 일으키지 않게 세심의 주위를 기울이면서,
+							PRINTFORMDW 무방비에 내며진 입술에 살그머니 키스를 했다…
+						ENDIF
+				ENDSELECT
+			;そっとしておく
+			CASE 1
+				PRINTL  
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 %CALLNAME:DAILY_TARGET%(을)를 일으키지 않게, 천천히 그 자리를 떠났다…
+			;罠だ
+			CASE 2
+				PRINTL  
+				PRINTFORMDW 불안을 느꼈다%CALLNAME:MASTER%(은)는, 아무것도 하지 않고 그 자리를 떠났다…
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV214, 반항除去
+;────────────────────────────────────
+;・반항除去
+;・반항각인を持った죠교자の아라이멘도が高くなると発生
+;-------------------------------------------------
+@KOJO_EVENT_K15_214(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,懐柔당했다ようです)
+;-------------------------------------------------
+;・반항각인は죠교자毎に관리されているのがRevの仕様
+;・구상主の반항각인を参照する場合はMARK:DAILY_TARGET:반항각인で
+;・MARK:MASTER:반항각인で参照してしまうと0にしかならないので注意
+;・구상呼び出し時点で각인の処理は終了している
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;반항除去 懐柔당했다ようです
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	PRINTFORMW 「이봐요, 와……」
+	PRINTFORMW 「노력한 포상에, 좋은 아이 좋은 아이 해 주네요♪」
+	RETURN 1
+ENDIF
+;구상表示後以下の地の文
+	;%CALLNAME:ARG%に懐柔당했다ため%CALLNAME:MASTER%의 반항心が薄れま했다
+	;반항각인が{LOCAL}になりま했다

@@ -1,0 +1,2192 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	엘리스구상(대상限定) 가학系アクション구상ファイル
+;
+;		가학系アクション구상をまとめたファイル
+;
+;	EXTRA모드でNO:9사쿠야をMASTERに선택했다場合のみ表示
+;
+;Version		Reason
+;1.70			@구상記入チェック仕様に。その他細かな修正＆加筆
+;1.67			매도、삼각목마、관장等を改変
+;
+;				Curse your own stupidity!
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;가학系 ACT60～68
+;========================================================================
+;・TFLAG:ACT(60=스펭킹/61=채찍/62=바늘/63=밧줄/64=눈가리개/65=볼개그/66=매도/67=삼각목마/68=관장세트)
+;・TFLAG:ACT분류 == 6に該当
+;・汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "가학")で参照する事が可能
+;・TEQUIP系は基本、ACT開始時点で장착される
+;・ACTによっては죠교대상の反応次第で취소される事がある
+;・밧줄/눈가리개/볼개그/삼각목마はTEQUIPで관리され当該ACT/REACT以外でもTEQUIP:밧줄等で参照できる
+;-------------------------------------------------
+;・戻り値(RESULT)について
+;・システム側では구상側のRESULT(終端のRETURN 1など)によって구상が表示당했다のか否か、
+;・また箇所毎の特有の挙動(미약等구상をスキップなど)を制御しています
+;・@구상記入チェックの場合代入処理を省略できますが、RESULT値は구상側で決めうちする필요があります
+;-------------------------------------------------
+
+;────────────────────────────────────
+;ACT60, 스펭킹
+;────────────────────────────────────
+;・죠교자が죠교대상の尻を平손で叩く
+;・ACT開始時点ですでに叩いている
+;・성교봉사중には発生しない
+;・안면승마系は解除される
+;・죠교자が자위중である場合は解除される
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_60
+;-------------------------------------------------
+;このACTはいずれ派生を増や했다いところ
+;という事情もあるのでACT파생0で決めうち
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT60, 스펭킹
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0)
+		PRINTFORML 「, 엉덩이를 여기를 향하세요, 소야」
+;OriginalString : (COLOR_K14("사쿠야"), "「な、何をするつもりよ」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무, 무엇을 할 생각이야」")
+		PRINTFORML 「징계나무…」
+;OriginalString : (COLOR_K14("사쿠야"), "「は？ どういう事よ、それ…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「하？ 어떻게 말하는 일이야, 그것…」")
+		PRINTL
+		PRINTFORMW 「그러니까 말했겠지요？ 귀부인에게 징계나무를 해 주어, 소야」
+		PRINTFORMW 「 그렇지만 안심해, 손끝의 감각은 나의 생명, 그렇게 도리에 맞지 않음은 할 수 없어요」
+		PRINTFORMW 「이라고 말해도, 마법으로 부분적으로 강화하는 일은 가능하지만, 이군요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT == TFLAG:전ACT
+		;地の文の処理は本体側を殺してKOJO_TRAIN_MESSAGEでおこなう
+		;KOJO_TRAIN_MESSAGEのRESULTはFLAG:지문제어に代入されている
+		;-------------------------------------------------
+		;하반신服装が要押し退け
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && PANTSCHECK(1, 1) && FLAG:지문제어 == 2
+			;服の上から
+			IF LOWERJACKET(1) == 1
+				;PRINTFORMDW 엘리스は%OUTER_B(MASTER, 0, 1)%の上から사쿠야の尻を叩き続けた…
+				CALL QUAKE(1)
+;OriginalString : (COLOR_K14("사쿠야"), "「…っ！ くぅっ！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿠웃！」")
+				PRINTFORMW 「비명도 올리지 않고 자주(잘) 노력해요？ 유석이라고 했는데 까」
+				PRINTFORMW 「귀부인이 어디까지 견딜 수 있을까 시험해 주어요, 소야…」
+			;속옷の上から
+			ELSEIF LOWERUNDER(1) == 1
+				;PRINTFORMDL 엘리스は%PANTY_DESCRIPTION(MASTER)%%INNER_B(MASTER)%の上から사쿠야の尻を叩き続けた
+				;PRINTFORMDW 灼けるような鋭痛は次第に快感へと変わり、사쿠야の身体を蝕んでいく…
+				;濡れてる
+				IF PALAM:MASTER:윤활 >= 500
+					CALL QUAKE(1)
+					CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「…っ！ くぅ…")
+					CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　…っ ふぁっ、んッ！」")
+					PRINTFORML 「이런 일 되어 , 상당히 단 소리가 나오군요, 소야？」
+					PRINTFORMW 「속옷도 그렇게 더럽혀 버려서, 뭐라고 하는 이야라시이의 까…」
+				;その他
+				ELSE
+					;PRINTFORMDW 엘리스は%PANTY_DESCRIPTION(MASTER)%%INNER_B(MASTER)%の上から사쿠야の尻を叩き続けている…
+					CALL QUAKE(1)
+;OriginalString : (COLOR_K14("사쿠야"), "「…っ！ くぅっ！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿠웃！」")
+					PRINTFORML 「꽤 노력해요, 소야？」
+					PRINTFORMW 「조금 속옷이 젖어 온 것 같지만, 나의 기분탓일까. 후후」
+				ENDIF
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;地の文の処理は本体側を殺してKOJO_TRAIN_MESSAGEでRESULTを正の値にし、この箇所で行う
+		;って、なぜこっちでやる事に했다のか、当時どのような思惑があったのか、良く判らないのでそのまま
+		;---------------------
+		;その他
+		;---------------------
+		IF PALAM:MASTER:윤활 >= 500 && FLAG:지문제어 == 1
+			PRINTFORMDL 앨리스는 노출이 된 소야의 계속 격려 하고 있다…
+			PRINTFORMDL 새빨갛게 부어 오른 격려 해질 때, 그 몸에 새겨 붙여지는,
+			PRINTFORMDW 고통과 쾌락이 하나가 된 감각에, 소야는 신체를 진동시키면서 허덕이고 있다…
+			PRINTL
+			CALL QUAKE(1)
+			CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「…っ！ くぅ…")
+			CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　…っ ふぁっ、んッ！」")
+			PRINTFORMW 「그렇게, 좋아요. 좀 더 좋은 소리로 울어 주세요…」
+		ELSEIF FLAG:지문제어 == 1
+			PRINTFORMDL 앨리스는 노출이 된 소야의 계속 격려 하고 있다
+			PRINTFORMDW 소야는 미간을 대어 필사적으로 고통에 참고 있다…
+			PRINTL
+			CALL QUAKE(1)
+;OriginalString : (COLOR_K14("사쿠야"), "「…っ！ くぅっ！」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿠웃！」")
+			PRINTFORMW 「유석, 이 정도에서는 정말 없는 것 같구나？」
+			PRINTFORMW 「 그렇지만, 엉덩이는 이제 새빨갛게 되어버렸지만♪」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교중
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:성교중
+		CALL QUAKE(4)
+		CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「あんっ、あっ、あっ")
+		CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　はぅっ！ あぁ…」")
+		PRINTFORMW 「기분 좋음 그렇구나, 소야. 이봐요, 좀 더 자주(잘) 해 준다…」
+		PRINTFORMW 「귀부인…, 싫지 않아요？ 이런 것. 후후…」
+		PRINTFORMDW 앨리스는 몸을 구군요들 키 단 소리를 지르는 소야의 쌍 좌석을 강하게 두드리기 시작했다…
+		RETURN 1
+	ENDIF
+	
+	;そういえば、KOJO_TRAIN_MESSAGEが実装당했다のかこのあたりを書いている時だったか
+	;=================================================
+	;눈가리개장착
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:눈가리개 && FLAG:지문제어 == 2
+		;죠교대상마조끼派生
+		SELECTCASE ABL:MASTER:마조끼
+			CASE IS >= 4
+				;PRINTFORMDW 視界を奪われた사쿠야は、被虐への妖しい期待にその身体を火照らせている…
+				PRINTFORML 「이봐요, 말하지 않아도 무엇을 할까 알네요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「わ、わかったわ…こう、で、いいかしら…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아, 알았어요…이렇게, 그리고, 좋을까…」")
+				PRINTFORMW 「후후, 그것으로 좋아요. , 마음껏 즐기게 해 주어요！」
+				PRINTFORMW
+			CASEELSE
+				;PRINTFORMDW 사쿠야は視界を奪われ、不安感に苛まれている…
+				CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ、엘리스…そこに居るんでしょう？」")
+				PRINTFORMW 「괜찮아, 분명하게 있어요. 그러면, 조금 엉덩이를 향하여 받을 수 있는 것일까？」
+				CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「何をするつもりよ…」")
+				PRINTFORMW 「후후, 곧바로 알아요 소야. , 가요！」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;구속中
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:밧줄 && FLAG:지문제어 == 2
+		;죠교대상마조끼派生
+		SELECTCASE ABL:MASTER:마조끼
+			;마조끼4以上
+			CASE IS >= 4
+				;PRINTFORMDW 구속され、動きを封じられた사쿠야は、被虐への妖しい期待にその身体を火照らせている…
+				PRINTFORML 「어머나, 완전히 학수 고대라는 느낌？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そんな事、ないわよ…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일, 없어요…」")
+				PRINTFORMW 「그러한 억지인 곳은 소야인것 같다고 생각하는데…」
+				PRINTFORMW 「 나에게는 알고 있어？ 귀부인이 학대받으면(자) 흥분해버린다라는 일. 후후…」
+			;それ以外
+			CASEELSE
+				;PRINTFORMDW 구속され、動きを封じられた사쿠야は엘리스に鋭い視線を投げかけている…
+;OriginalString : (COLOR_K14("사쿠야"), "「ちょっと엘리스！ いい加減にしなさいよ！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「조금엘리스！ 적당히 하세요！」")
+				PRINTFORMW 「어떻게든 말해도 좋지만, 나는 (들)물을 생각은 없어요？ 미안하지만, 이군요」
+				PRINTFORMW 「, 징계나무의 시간이야. 각오 해 주세요, 소야…」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;ここに落ちる事あるのか疑問だけど、思いついたので書いておく
+	;=================================================
+	;관장그릇＋플러그사용중
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:관장그릇＋플러그 && FLAG:지문제어 == 2
+		;PRINTFORMDW 엘리스は관장液を注がれ、腹部の圧迫感に喘ぐ사쿠야の双臀を叩こうと했다…
+		PRINTL
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ま、待って！ 今そんな事당했다ら！」")
+		PRINTFORMW 「그런 일 되면(자)？」
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「…くっ！ そ、それは…」")
+		PRINTFORMW 「……나와버릴까도 모른다. 그러한 일이겠지？ 후후」
+		PRINTL
+		PRINTFORMW 「안심하고 있고 원이야. 나, 그런 일은 소야의 일 싫게 되거나 하지 않으니까」
+		PRINTFORMW 「그 사실이 귀부인의 위로가 될지 어떨지는 모르지만, 이군요」
+		RETURN 1
+	ENDIF
+	
+	;TEQUIP:죠교대상Ｃ사용 == 2(입으로 애무継続中)はまず成立しないと思うので考慮しない
+	;=================================================
+	;Ｃ애무継続中
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:죠교대상Ｃ사용 == 1
+		;죠교대상が가버려
+		IF TCVAR:MASTER:가버려
+			;죠교자BASE:만족派生
+			SELECTCASE TENSION(TARGET, 8)
+				CASE "高い"
+					PRINTFORMW 「에 ,%CNAME(MASTER, TARGET)%…이 기초가 되어. 어머나, 이제 와서 부정이라든지, 임종시가 나빠요」
+					PRINTFORMW 「이래, 응？ \@ PENIS(MASTER) ? 짜내 # 가게해줘 \@갖고 싶어서, 마치 섹스 하고 있는 것 같이 허리가 움직여 버린다 것에」
+					PRINTFORMW 「후후, 아하하！ 걸작, 진짜 걸작이야！」
+					PRINTFORMW 「개같은 모습으로, 엉덩이 얻어맞아 좋아져버리자(면)인가」
+					PRINTFORMW 「완전히, 어쩔 수 없네요. 이 변태…」
+				CASE "一般"
+					PRINTFORMW 「상당히 좋은 소리로 울어 주잖아. 그렇지만 그 거…, 키모치 좋을 때에 나오는 소리군요？」
+					PRINTFORMW 「이봐요,\@ PENIS(MASTER) ? 사정했다있는이지요？ 짜냈으면 좋겠지요？ # 가고 싶겠지요？ 가게해줘갖고 싶겠지요？ \@」
+					PRINTFORMW 「\@ ALI(0) ? 후후후 # 후후후 \@…, 개같은 모습의%CNAME(MASTER, TARGET)%(을)를 굴복 시키는 것도, 나쁘지 않네요…」
+				CASE "低い"
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%…, 엉덩이 얻어맞아 이 기초가 되어있는 (뜻)이유？」
+					PRINTFORMW 「거짓말 해도 쓸데없어요. 왜냐하면 이렇게\@ PENIS(MASTER) ? 움찔움찔 # 흠칫흠칫 \@시켜 버린다 것에, 군요…」
+			ENDSELECT
+			PRINTFORMDL %CALLNAME%(은)는 %CALLNAME:MASTER%의 귓전으로 속삭이면서,
+			PRINTFORMDW 절정에의 기대에\@ PENIS(MASTER) ? 움찔움찔 떨린다페니스를격렬하게 잡아당기고 # 볼록 부풀어 올랐다클리토리스를 요염한 손가락 사용으로 몰아세우고 \@, 그 굴복의 순간을 기다리고 있다…
+		;その他
+		ELSE
+			;죠교자BASE:만족派生
+			SELECTCASE TENSION(TARGET, 8)
+				CASE "高い"
+					PRINTFORMW 「어머나？ 허리가 움직이고 있는 것 같지만, 왜 그런가」
+					PRINTFORMW 「아픔으로 피한다 라고, 움직임이 아니어요？」
+					PRINTFORMW 「 나의 손의 움직임에 맞추는 것 같은, 이라고 할까…무엇인가 조르고 있는 것 같아요」
+					PRINTL
+					PRINTFORMDW %CALLNAME%(은)는 %CALLNAME:MASTER%의 귓전에 입을 대고 속삭였다…
+					PRINTFORMW 「이봐요, 키모치 좋겠지요？ 엉덩이 얻어맞아 불필요하게 흥분해버리는 지요？」
+					PRINTFORML 「정직하게 말할 수 있었다면…」
+					CALL FADEIN(13, @"「이 모습인 채\@ PENIS(MASTER) ? 뽑아 # 가게해줘 \@주어도 괜찮은거야…」")
+					CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"「\@ ALI(0) ? 후후후 # 우후후 \@…」")
+					CLEARLINE 1
+				CASE "一般"
+					PRINTFORMW 「응？ 뭐야. 엉덩이 얻어맞아 , 여기가 상당히\@ PENIS(MASTER) ? 건강같다 # 젖어 버리고 있는 것 같다 \@응」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%…, 오히려 얻어맞아 흥분해 버린다라든지？」
+					PRINTFORMW 「이봐요, 어떻게야？ 정직하게 말해 보세요…」
+				CASE "低い"
+					PRINTFORMW 「이봐요, 어때？ 개같은 모습으로 엉덩이 얻어맞으면서\@ PENIS(MASTER) ? 시고인가 # 농등 \@의」
+					PRINTFORMW 「아픈 것일까？ 키모치 좋은 것일까？ 그렇지 않으면…」
+					PRINTFORMW 「그 양쪽 모두인가 해들. 응？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;あとからPANTSCHECKを仕込まなかった事に気付いたけど、もういいやって感じに
+	;ここは죠교대상の상태변화も併用했다方が面白いのかもしれない。面倒過ぎるけど
+	;全て派生で処理했다いたのを상태毎に刻む
+	;=================================================
+	;죠교자상태변화
+	;정욕、울굴、몽롱
+	;=================================================
+	IF 구상記入チェック(100) && GROUPMATCH(GET_CONDITION(TARGET), "정욕", "울굴")
+		;죠교자만족度派生処理
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+				SELECTCASE ABL:MASTER:마조끼 ;죠교대상마조끼派生
+					CASE IS >= 4 ;마조끼4以上
+						PRINTFORM 「,
+						CALL SWEARWORDS_NO9(1)
+						PRINTFORML 에 징계나무의 시간이야！ 라고, 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「なによ」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야」")
+						PRINTFORMW 「…뭐야는. 아무것도 말대답하지 않는거야？ 조금 기색이 나쁘지만」
+;OriginalString : (COLOR_K14("사쿠야"), "「…！？ ちょ、ちょっとぼんやりしてただけよ…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…！？ 조, 조금 멍하니 하고 있던 것 뿐이야…」")
+						CALL PRINTCOLOR(COLOR_K14("엘리스"), "「ふふ、本当かしら？ ま、その答えはすぐに判るでしょうけど、ね…")
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					CASEELSE ;それ以外
+						PRINTFORML 「이 기에 이르러 바동바동 하는 것은 보기 흉해요, 소야」
+;OriginalString : (COLOR_K14("사쿠야"), "「だ、誰がじたばたなんてしてるのよ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「누, 누가 바동바동은 하고 있는거야！」")
+						PRINTFORML 「그랬던 까？ 후후, 아무튼 좋은데. 그렇지만…」
+						PRINTFORMW 「나쁘지만 지금, 귀부인을 마음껏 울릴 수 있는 싶은 기분이야. 각오 해 주세요…」
+				ENDSELECT
+			CASE "一般"
+				SELECTCASE ABL:MASTER:마조끼 ;죠교대상마조끼派生
+					CASE IS >= 4 ;마조끼4以上
+						PRINTFORM 「그러면, 좋은 소리로 울어 받아요.
+						CALL SWEARWORDS_NO9(1)
+						PRINTFORML 씨…♪」
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ、なんか凄い侮辱당했다気がするんだけど」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기, 뭔가 굉장한 모욕당했다생각이 들지만」")
+						PRINTFORML 「기분탓이 아닐까…？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうよね、엘리스がそんな事…とか、私が言うとでも思った？」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그래요,엘리스하지만 그런 일…라든지, 내가 말한다고라도 생각했다？」")
+						PRINTL
+						PRINTFORML 「별로？ 보통으로 화낸다고 생각하고 있었어」
+;OriginalString : (COLOR_K14("사쿠야"), "「素でそう言われると、何も言う気が無くなるわ…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「순수하게 그런 말을 들으면, 아무것도 말할 생각이 없어져요…」")
+						CALL PRINTCOLOR(COLOR_K14("엘리스"), "「それは結構な事ね…")
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+						PRINTFORMW 「그러면, 놀이는 여기까지. 이제 살릴 수 있어 받아요, 소야…♪」
+					CASEELSE ;それ以外
+						PRINTFORML 「이봐요, 얌전하게 해. 메스돼지같이 울릴 수 있어 주어요！ 라고, 다른 원이군요」
+						PRINTFORMW 「……돼지가 아니고 개가 아닌거야. 완전히 나도 참, 킥킥…」
+						CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ…なに一人で愉しそうにしてる訳？ 人をダシにして…」")
+						PRINTFORMW 「뭐야, 화냈어？」
+						CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「あれだけ言われて、怒らない方がどうかしてるわよ！」")
+						PRINTFORMW 「그렇게…농담이 통하지 않는 여자는 진짜 싫구나. 시시해요, 소야…」
+;OriginalString : (COLOR_K14("사쿠야"), "「殴って良い？」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「때려도 좋다？」")
+				ENDSELECT
+			CASE "低い"
+				SELECTCASE ABL:MASTER:마조끼 ;죠교대상마조끼派生
+					CASE IS >= 4 ;마조끼4以上
+						PRINTFORMW 「 아직 아무것도 말하지 않았는데 자신으로부터는, 준비가 좋네요, 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ち、違っ…！ これは…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「다, 달랏…！ 이것은…」")
+						CALL PRINTCOLOR(COLOR_K14("엘리스"), "「ふふ、すっかり取り乱しちゃって、可愛らしい事…")
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+						PRINTFORMW 「 그렇지만 괜찮아, 안심해？ 나는 소야가 어떻게 되어도 싫어 하거나 경멸하거나는 하지 않는다」
+						PRINTFORMW 「언제까지나 옆에 있어 주어요. 비유하고 어떤 변태가 되었다고 해도, 군요」
+						PRINTL
+						CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ엘리스…」")
+						PRINTFORMW 「뭐야」
+;OriginalString : (COLOR_K14("사쿠야"), "「自分では良い事を言ったつもりなんでしょうけど……最後の一言で全部台無しよ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「스스로는 좋은 일을 말한 생각이지요지만……마지막 한마디로 전부 엉망이야！」")
+						PRINTFORMW 「어머나, 생각이 잘 미치지 않아서 미안해요…♪」
+					CASEELSE ;それ以外
+						CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ちょ、ちょっと엘리스！ 待ちなさいよ！」")
+						PRINTFORMW 「미안해요. 나, 조금 스윗치 들어가 버렸다 같아」
+						PRINTFORMW 「, 좋은 소리로 울어 받아요, 소야…」
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が분노
+	;=================================================
+	IF 구상記入チェック(100) && T_COND("분노")
+		SELECTCASE RANDACT(2, 0)
+			CASE 0
+				PRINTFORML 「조금 아픈 눈에 맞추어 주어요, 소야」
+				PRINTFORMW 「각오 해 주세요…」
+			CASE 1
+				PRINTFORML 「됨됨이가 나 메이드에게는 징계나무가 필요같구나」
+				PRINTFORMW 「각오 없음 있고, 소야…」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;죠교자만족度派生処理
+	SELECTCASE TENSION(TARGET, 8)
+		CASE "高い"
+			;죠교대상마조끼派生
+			SELECTCASE ABL:MASTER:마조끼
+				CASE IS >= 4
+					;죠교대상が정욕
+					SIF M_COND("정욕")
+;OriginalString : (COLOR_K14("사쿠야"), "「そ、それじゃぁ…ヨロシク…お願い」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그, 그러면…잘 부탁드립니다…부탁」")
+					PRINTFORMW 「어머나, 상당히 적극적이군요？ 자신으로부터 엉덩이를 향하다니」
+					PRINTFORMW 「좋아요, 소야가 만족할 때까지 교제해 준다…♪」
+				CASEELSE
+					PRINTFORM 「,
+					CALL SWEARWORDS_NO9(1)
+					PRINTFORMW 에 포상이야！ 고맙게 생각하세요」
+					
+					CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「そのテンションもいい加減鬱陶しいけど…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「一体何をありがたく思えばいいのか判らないわね！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「도대체 무엇을 고맙게 생각하면 좋은 것인지 알지 않네요！」")
+					PRINTL
+					PRINTFORMW 「그렇게？ 나, 소야는 여기 방면의 소질이 있다고 생각하고 있었지만」
+;OriginalString : (COLOR_K14("사쿠야"), "「ああそう、勝손に思ってればいいわ」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아 그렇게, 승손로 생각하고 있으면 좋아요」")
+					PRINTFORMW 「후후, 자그렇게 시켜 받아요, 소야…♪」
+			ENDSELECT
+		CASE "一般"
+			;죠교대상마조끼派生
+			SELECTCASE ABL:MASTER:마조끼
+				CASE IS >= 4
+					CALL PRINTCOLOR(COLOR_K14("엘리스"), "「さ、こっちにおしりを向けて。そう、それでいいわよ…")
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					
+					PRINTFORMW 「 그렇지만, 귀부인으로서는은 너무 솔직해요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「…！？ ぐ、偶然よ…そう、ただの偶然…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…！？ 우, 우연히야…그래, 단순한 우연…」")
+					PRINTFORML 「……우연히, 군요. 나로서는 이론을 사이에 두고 싶으면 개이지만…」
+					PRINTFORMW 「좋아요, 그러한 일로 해 두어 준다…♪」
+				CASEELSE
+					PRINTFORML 「이봐요, 얌전하게 해. 빈틈없이 예의범절을 가르쳐 주기 때문에…♪」
+;OriginalString : (COLOR_K14("사쿠야"), "「躾けられる謂れなんてないわよ！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「예의범절을 가르칠 수 있는 까닭은 없어요！」")
+					PRINTFORML 「어머나, 개를 예의범절을 가르치는 것은 주인의 일이야？ 후후」
+;OriginalString : (COLOR_K14("사쿠야"), "「言いたい放題言ってくれるわね。覚えてなさいよ、엘리스…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「말하고 싶은 마음껏 말해 주어요. 기억해 주세요,엘리스…」")
+					
+					CALL PRINTCOLOR(COLOR_K14("엘리스"), "「ええ、精々忘れないよう努力するわ。何の保障も出来ないけど、ね…")
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			ENDSELECT
+		CASE "低い"
+			;죠교대상마조끼派生
+			SELECTCASE ABL:MASTER:마조끼
+				CASE IS >= 4
+					PRINTFORML 「, 징계나무…(이)가 아니어서, 이것은 포상이라는 곳일까. 응 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「言ってる意味が判らないわね…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「말하고 있는 의미가 알지 않네요…」")
+					PRINTFORMW 「후후, 시치미를 떼어도 안되어요…♪」
+				CASEELSE
+					PRINTFORML 「괜찮아요, 소야. 조금 아프게 할 뿐(만큼)이니까…♪」
+;OriginalString : (COLOR_K14("사쿠야"), "「何が大丈夫なのか、さっぱり判らないわね…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무엇이 괜찮은 것인가, 전혀 알지 않네요…」")
+			ENDSELECT
+	ENDSELECT
+	RETURN 1
+ENDIF
+;NO9_ACT60, 스펭킹
+
+;────────────────────────────────────
+;ACT61, 채찍
+;────────────────────────────────────
+;・죠교자が채찍を大きく振り上げ思いっきり振り下ろす
+;・ACT開始時点ですでに叩いている
+;・턴방침が"소프트"だと発生しない
+;・성교중/성교봉사중には発生しない
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_61
+;-------------------------------------------------
+;ACT파생なし
+;-------------------------------------------------
+
+;ACT파생がない箇所はACT파생0できめうちしておくという思想
+;将来的にACTが改変されても整合性は保障されるとかそんなところ
+;손入れする人間が馬鹿だと無駄だけど、まぁ既存部分は派生0で追加するなら1からと考えてくれるものと期待
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT61, 채찍 
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0)
+;OriginalString : (COLOR_K14("사쿠야"), "「ちょ、ちょっと！ 本当にやるつもり？ そんなもので叩かれたら…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「조, 조금！ 정말로 할 생각？ 그런 것으로 얻어맞으면…」")
+		PRINTFORML 「피가 나올지도…」
+;OriginalString : (COLOR_K14("사쿠야"), "「簡単に言ってくれるわね…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「간단하게 말해 주어요…」")
+		PRINTFORML 「어머나, 소야는 피를 아주 좋아하다고 생각했지만？」
+;OriginalString : (COLOR_K14("사쿠야"), "「…なっ！？ 何を根拠に、そんな事！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…낫！？ 무엇을 근거로, 그런 일！」")
+		PRINTL
+		PRINTFORML 「후후, 내가 깨닫지 않다고 생각했다？ 피를 보았을 때, 귀부인의 눈의 색이 변한 일에…」
+		PRINTFORMW 「 나의 피를 보았을 때의 소야, 분명하게 보통이 아니었어요. 귀부인, 정말로 인간인가 해들？」
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「私は人間よ！」")
+		PRINTFORMW 「그렇구나？ 보았는데 보통으로 살아있는 존재이고, 흡혈귀는 아닌 것은 확실하구나」
+		PRINTFORMW 「 그렇지만, 소야가 피에 집착 해도 확실히. 그런 귀부인이라면, 반드시 자신의 피에서도 흥분해버리자(면) 생각해요…」
+		RETURN 1
+	ENDIF
+	
+	;とりあえず마조끼派生を挟んだけど고통중독の方がいいのかも知れない
+	;というかまぁ연속실행自体まず成立しないと考えられる
+	;とは言え、一度書いておけば구상側からの操作で如何様にもできるんだけど
+	;=================================================
+	;연속실행
+	;=================================================
+	;SELECTCASE GET_CONDITION(TARGET)で派生処理するのは駄々長いので刻んでみる
+	;地の文は当該箇所にて捏造する
+	;-------------------------------------------------
+	IF 구상記入チェック(100) && TFLAG:ACT == TFLAG:전ACT && FLAG:지문제어 == 1
+		;最初に汎用地の文
+		PRINTFORMDL 앨리스가 채찍을 거절해 내릴 때에, 짧은, 여운이 없는 소리가 방에 울렸다…
+		;-------------------------------------------------
+		;죠교자が정욕、울굴、몽롱
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && GROUPMATCH(GET_CONDITION(TARGET), "정욕", "울굴", "몽롱")
+			PRINTFORMDW 앨리스의 신체는 정욕에 불탄 의리, 그 넓적다리를 뜨거운 밀액이 머무는 무사히 타 떨어지고 있다…
+			;만족度派生処理
+			SELECTCASE TENSION(TARGET, 8)
+				CASE "高い"
+					;죠교대상마조끼派生
+					SELECTCASE ABL:MASTER:마조끼
+						CASE IS >= 4
+							CALL QUAKE(2)
+							CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「あっ、はァッ")
+							CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　ん゛っ、あぅっ…あぁっ！」")
+							PRINTFORMDW 소야는 피학미 로 가득 찬 신체를 구군요들 키, 요염한 쾌락을 계속 탐내고 있다…
+							PRINTL
+							PRINTFORML 「그렇게 모습 보일 수 있으면(자), 나도 쑤셔 와버리는 원…」
+							PRINTFORMW 「 이제, 머리가 어떻게든 되어 그래요, 소야…」
+						CASEELSE
+							CALL QUAKE(4)
+;OriginalString : (COLOR_K14("사쿠야"), "「…んっ！ くぅっ！ ん゛…っ！ あぅっ、あぁ…」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿠웃！ 응″…읏！ 아웃, 아아…」")
+							PRINTFORMW 「지금의 귀부인, 매우 깨끗해요. 소야…」
+							PRINTFORMW 「 나도 조크조크 해 버려서, 이상해질 것 같다―」
+					ENDSELECT
+				CASE "一般"
+					SELECTCASE ABL:MASTER:마조끼
+						CASE IS >= 4
+							CALL QUAKE(2)
+							CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「あっ、はァッ")
+							CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　ん゛っ、あぅっ…あぁっ！」")
+							PRINTFORMW 「그렇게 좋으면, 좀 더 두드려 주어요. 소야…」
+						CASEELSE
+							CALL QUAKE(4)
+;OriginalString : (COLOR_K14("사쿠야"), "「…んっ！ くぅっ！ ん゛…っ！ あぅっ、あぁ…」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿠웃！ 응″…읏！ 아웃, 아아…」")
+							PRINTFORMW 「후후, 귀부인 최고야, 소야. , 좀 더 나를 즐기게 해…」
+					ENDSELECT
+				CASE "低い"
+					SELECTCASE ABL:MASTER:마조끼
+						CASE IS >= 4
+							CALL QUAKE(2)
+							CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「あっ、はァッ")
+							CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　ん゛っ、あぅっ…あぁっ！」")
+							PRINTFORMW 「그런 소리 나오면(자), 나도 멈추지 않게 되어버리는 원, 소야…」
+						CASEELSE
+							CALL QUAKE(4)
+;OriginalString : (COLOR_K14("사쿠야"), "「…んっ！ くぅっ！ ん゛…っ！ あぅっ、あぁ…」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿠웃！ 응″…읏！ 아웃, 아아…」")
+							PRINTFORMW 「그런 것은 안되어요, 소야…이봐요, 좀 더 좋은 소리를 듣게 해…」
+					ENDSELECT
+			ENDSELECT
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;죠교자が분노
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && T_COND("분노")
+			PRINTFORMDW 앨리스는 마음껏 팔을 치켜들어 힘껏에 채찍을 쳐 내리고 있다…
+			CALL QUAKE(2)
+;OriginalString : (COLOR_K14("사쿠야"), "「あぅっ、あ゛あ゛ぁっ！ いやぁぁっ！ もうっ、もう許してっ！」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아웃, 아″아″！ 싫어엇！ 이제(벌써), 이제(벌써) 허락햇！」")
+			PRINTFORMW 「타목…나를 화나게 한 보상, 그 신체로 하고 받기 때문에…」
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;죠교자が싫증
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && T_COND("싫증")
+			PRINTFORMW 「응, 좀 더 좋은 소리 듣게 해 주지 않으면 싫증해버리는 원. 소야…」
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;죠교자が피폐、쇠약、무기력
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && GROUPMATCH(GET_CONDITION(TARGET), "피폐", "쇠약", "무기력")
+			PRINTFORMDW %CALLNAME%의 전신으로부터 땀이 분 나무이고, 그 숨은 오르고 있다…
+			PRINTFORMW 「하, 하…소야보다 먼저 내가 질려 버려요, 이것…」
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他
+		;-------------------------------------------------
+		;만족度派生処理
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+				SELECTCASE ABL:MASTER:마조끼
+					CASE IS >= 4 ;마조끼4以上
+						PRINTFORMDW 소야는 피학미 로 가득 찬 신체를 구군요들 키, 요염한 쾌락을 탐내고 있다
+						CALL QUAKE(2)
+						CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「あっ、はァッ")
+						CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　ん゛っ、くぅ…っ！」")
+						PRINTFORMW 「뭐야, 그것…그렇게 모습 보일 수 있으면(자), 나…」
+					CASEELSE ;それ以外
+						CALL QUAKE(2)
+;OriginalString : (COLOR_K14("사쿠야"), "「…んっ！ くっ！ ん゛…っ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿳！ 응″…읏！」")
+						PRINTFORMW 「꽤 노력해요, 소야…」
+						PRINTFORMW 「, 언제가 되면 사랑스러운 비명을 들을만해 줄까？」
+				ENDSELECT
+			CASE "一般"
+				SELECTCASE ABL:MASTER:마조끼
+					CASE IS >= 4 ;마조끼4以上
+						CALL QUAKE(2)
+						CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「あっ、はァッ")
+						CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　ん゛っ、くぅ…っ！」")
+						PRINTFORMW 「이나다…그런 소리 나오면(자), 이상한 기분이 되어 버린다…」
+					CASEELSE ;それ以外
+						CALL QUAKE(2)
+;OriginalString : (COLOR_K14("사쿠야"), "「…んっ！ くっ！ ん゛…っ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿳！ 응″…읏！」")
+						PRINTFORMW 「간단하게 죽는 소리를 하지 않는 것은, 유석이라고 했다 곳일까？」
+						PRINTFORMW 「꽤 즐기게 해 주어요, 소야…」
+				ENDSELECT
+			CASE "低い"
+				SELECTCASE ABL:MASTER:마조끼
+					CASE IS >= 4 ;마조끼4以上
+						CALL QUAKE(2)
+						CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「あっ、はァッ")
+						CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　ん゛っ、くぅ…っ！」")
+						PRINTFORMW 「이런 심한 일 되어도 기쁨응으로 끝내군요, 소야…」
+					CASEELSE ;それ以外
+						CALL QUAKE(2)
+;OriginalString : (COLOR_K14("사쿠야"), "「…んっ！ くっ！ ん゛…っ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！ 쿳！ 응″…읏！」")
+						PRINTFORMW 「비명1개(살) 주지 않는 것은 칭찬해 주어요, 소야…」
+						PRINTFORMW 「 그렇지만, 이 앞도 견딜 수 있는 것일까？」
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;눈가리개장착
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:눈가리개 && FLAG:지문제어 == 2
+		;죠교대상마조끼派生
+		SELECTCASE ABL:MASTER:마조끼
+			CASE IS >= 4
+				;PRINTFORMDW 視界を奪われた사쿠야は、被虐への妖しい期待にその身体を火照らせている…
+				PRINTFORML 「후후, 안보여도 무엇이 시작될까 알고 있는 것 같구나」
+;OriginalString : (COLOR_K14("사쿠야"), "「そ、そんな事無い、わよ…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그, 그런 일 없는, 원이야…」")
+				PRINTFORMW 「이제 와서 숨기지 않아도 괜찮아요. 귀부인의 바래, 내가 채워 주기 때문에…」
+			CASEELSE
+				;PRINTFORMDW 사쿠야は視界を奪われ、不安感に苛まれている…
+				CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ、엘리스…そこに居るんでしょう？」")
+				PRINTFORMW 「괜찮아, 분명하게 있기 때문에. 이봐요, 움직이면(자) 위험해요, 거기 무지개로서라고 주세요」
+				CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「な、何をするつもりよ…」")
+				PRINTFORMW 「후후, 곧바로 알아요 소야. , 가요！」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;구속中
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:밧줄 && FLAG:지문제어 == 2
+		;죠교대상마조끼派生
+		SELECTCASE ABL:MASTER:마조끼
+			CASE IS >= 4 ;마조끼4以上
+				;PRINTFORMDW 구속され、動きを封じられた사쿠야は、被虐への妖しい期待にその身体を火照らせている…
+				PRINTFORML 「어머나, 완전히 학수 고대라는 느낌？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そんな事、ないわよ…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일, 없어요…」")
+				PRINTFORMW 「그러한 억지인 곳은 소야인것 같다고 생각하는데…」
+				PRINTFORMW 「 나에게는 알고 있어？ 귀부인이 학대받으면(자) 흥분해버린다라는 일…」
+			CASEELSE ;それ以外
+				;PRINTFORMDW 구속され、動きを封じられた사쿠야は엘리스に鋭い視線を投げかけている…
+;OriginalString : (COLOR_K14("사쿠야"), "「ちょっと엘리스！ いい加減にしなさいよ！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「조금엘리스！ 적당히 하세요！」")
+				PRINTFORMW 「어떻게든 말해도 좋지만, 나는 (들)물을 생각은 없어요？ 미안하지만, 이군요」
+				PRINTFORMW 「, 징계나무의 시간이야. 각오 해 주세요, 소야…」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;------------------------------
+	;以下その他、죠교자상태변화派生
+	;------------------------------
+	
+	;=================================================
+	;죠교자が정욕、울굴、몽롱
+	;=================================================
+	IF 구상記入チェック(100) && GROUPMATCH(GET_CONDITION(TARGET), "정욕", "울굴", "몽롱")
+		;죠교자만족度派生処理
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+				;죠교대상마조끼派生
+				SELECTCASE ABL:MASTER:마조끼
+					CASE IS >= 4
+						CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「なによ、どうせやるならさっさと始めなさいよ」")
+;OriginalString : (COLOR_K14("엘리스"), "「사쿠야…私、まだ何も言ってないわよ」")
+						CALL PRINTCOLORW(COLOR_K14("엘리스"), "「사쿠야…나, 아직 아무것도 말하지 않아요」")
+						
+						CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「…っ！？ 嘘っ、さっき言ったじゃない！」")
+;OriginalString : (COLOR_K14("엘리스"), "「残念だけどそれは気のせいよ。そんなに징계해欲しいのかしら？」")
+						CALL PRINTCOLORW(COLOR_K14("엘리스"), "「유감이지만 그것은 기분탓이야. 그렇게징계해갖고 싶은 것일까？」")
+						
+						CALL PRINTCOLOR(COLOR_K14("엘리스"), "「ま、私としてはそれはそれで構わないけど、ね…")
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					CASEELSE
+						CALL PRINTCOLOR(COLOR_K14("엘리스"), "「さぁ言うのよ、사쿠야。『")
+						CALL SWEARWORDS_NO9(1)
+;OriginalString : (COLOR_K14("엘리스"), "に罰を与えて下さい！』って」")
+						CALL PRINTCOLORW(COLOR_K14("엘리스"), "에 벌을 주세요！』는」")
+;OriginalString : (COLOR_K14("사쿠야"), "「貴女…私がそんな事言う訳無いって判って言ってるでしょう」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당신…내가 그런 일 말할 이유 없다고 알아 하고 있겠지요」")
+						CALL PRINTCOLOR(COLOR_K14("엘리스"), "「ま、そうなんだけど…♪ でも、ものは試しってね…")
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+				ENDSELECT
+			CASE "一般"
+				;죠교대상마조끼派生
+				SELECTCASE ABL:MASTER:마조끼
+					CASE IS >= 4
+						PRINTFORMW 「어머나, 어쩐지 기쁜 듯하구나. 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「馬鹿な事言わないで頂けるかしら。誰がこんな事で嬉しがるのよ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「바보같은 일 말하지 않아 받을 수 있을까. 누가 이런 일로 기뻐하는거야！」")
+						PRINTFORMW 「누구는…소야 밖에 없을 것입니다？」
+						PRINTL
+						CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ엘리스…」")
+						PRINTFORMW 「뭐야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そういう事、真顔で言われても困るから…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일, 진지한 얼굴로 말해져도 곤란하기 때문에…」")
+					CASEELSE
+						PRINTFORMW 「그러면 그러한 (뜻)이유로, 좋은 소리로 울어 주세요. 소야～♪」
+						
+						CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「何が『")
+						CALL PRINTFONTSTYLE(COLOR2_K14("SAKUYA"), "そういう訳", 1)
+;OriginalString : (COLOR_K14("사쿠야"), "』だか判らないわね…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "』일까 알지 않네요…」")
+						
+						PRINTFORMW 「세세한 일 신경쓰고 있다고(면) 주름이 증가해요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「……面白い事を言ってくれるわね。そもそも皺なんてないわよ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「……재미있는 일을 말해 주어요. 원래주름 같은거 없어요！」")
+						
+						CALL PRINTCOLOR(COLOR_K14("엘리스"), "「ふふ、そうだったわね…")
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+				ENDSELECT
+			CASE "低い"
+				;죠교대상마조끼派生
+				SELECTCASE ABL:MASTER:마조끼
+					CASE IS >= 4
+						PRINTFORMW 「응 소야, 상당히 솔직한 생각이 드는데？」
+;OriginalString : (COLOR_K14("사쿠야"), "「！？ き、気のせいよ。そう、気のせい…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「！？ 기, 기분탓이야. 그래, 기분탓…」")
+						PRINTFORMW 「후후, 기분탓, 응？ 킥킥」
+;OriginalString : (COLOR_K14("사쿠야"), "「なっ、何がおかしいのよ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무, 무엇이 이상한거야！」")
+						PRINTFORMW 「별로？ 다만, 솔직하지 않다고 생각해, 군요…♪」
+					CASEELSE
+						PRINTFORMW 「임종시가 나빠요, 소야. 얌전하고 없음 있고」
+;OriginalString : (COLOR_K14("사쿠야"), "「言ってくれるわね…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「말해 주어요…」")
+						PRINTFORMW 「후후, 좋은 눈을 하고 있는 원. 그렇지만, 그것이 몇시까지 계속되는 것일까？」
+;OriginalString : (COLOR_K14("사쿠야"), "「大했다事ないわよ、こんなの」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「대했다일 없어요, 이런 건」")
+						PRINTFORMW 「그렇게…그렇다면 나도 사양은 하지 않아요. 마음껏 맛봐 주세요…」
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が분노 RANDACT(0)
+	;=================================================
+	IF 구상記入チェック(100) && T_COND("분노")
+		SELECTCASE RANDACT(2, 0)
+			CASE 0
+				PRINTFORML 「조금 아픈 눈에 맞추어 주어요, 소야」
+				PRINTFORMW 「각오 해 주세요…」
+			CASE 1
+				PRINTFORML 「됨됨이가 나 메이드에게는 징계나무가 필요같구나」
+				PRINTFORMW 「각오 없음 있고, 소야…」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が싫증
+	;=================================================
+	IF 구상記入チェック(0) && T_COND("싫증")
+		PRINTFORMW 「응 소야, 나 같은 것 질려 왔어요…」
+;OriginalString : (COLOR_K14("사쿠야"), "「好き放題やったあげくその台詞？ 呆れて物も言えないわね」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「자기 마음대로 한 끝에 그 대사？ 기가 막혀 말도 할 수 없네요」")
+		PRINTFORMW 「그렇구나？ 돌려주는 말도 없어요. 그렇지만…갑자기 무언가에 질린다 라는 일, 있겠지요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ならやめれば？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「라면 그만두면？」")
+		PRINTFORMW 「그것과 이것과는 이야기가 구별…왜냐하면, 일시적인 것은 알고 있으니, 군요♪」
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;죠교자만족度派生処理
+	SELECTCASE TENSION(TARGET, 8)
+		CASE "高い"
+			PRINTFORM 「,
+			CALL SWEARWORDS_NO9(1)
+			PRINTFORMW 에 채찍의 포상이야！」
+			CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ엘리스」")
+			PRINTFORMW 「뭐야？ 이야기의 중도에서 방해하지 않으면 좋지만」
+			PRINTL
+			;죠교대상마조끼派生
+			SELECTCASE ABL:MASTER:마조끼
+				CASE IS >= 4
+					CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「いや、そんな事はどうでもいいから。だけど…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「なんでそれがご褒美になるのか聞いてもいいかしら？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어째서 그것이 포상이 되는지 (들)물어도 괜찮을까？」")
+					PRINTL
+					PRINTFORML 「이제 와서 그런 일 말하면(자) 무덤을 파요, 소야…」
+;OriginalString : (COLOR_K14("사쿠야"), "「なによ、墓穴って」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야, 무덤은」")
+					PRINTFORMW 「이라도 그렇겠지요？ 언제나 채찍으로 얻어맞을 때에 앙앙(잡지) 울어 버린다 것에, 이제 와서…」
+;OriginalString : (COLOR_K14("사쿠야"), "「ああもう判ったわよ！ その先は言わなくていいから！！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아 벌써 알았어요！ 그 앞은 말하지 않아도 괜찮으니까！！」")
+					PRINTFORMW 「후후, 불필요한 일 말하지 않으면 좋았을텐데 , 군요…♪」
+				CASEELSE
+;OriginalString : (COLOR_K14("사쿠야"), "「その鬱陶しいテンション、なんとかして頂戴」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그 음울한 텐션, 어떻게든 해 줘」")
+					PRINTFORMW 「방법 없지요？ 정말로 즐겁기 때문에…♪」
+			ENDSELECT
+		CASE "一般"
+			;죠교대상마조끼派生
+			SELECTCASE ABL:MASTER:마조끼
+				CASE IS >= 4
+					PRINTFORMW 「이봐요, 움직이면(자) 위험해요. 얌전하게 하고 있어」
+;OriginalString : (COLOR_K14("사쿠야"), "「こう、でいいかしら…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이렇게, 그리고 좋을까…」")
+					PRINTFORMW 「후후, 그것으로 좋아요. , 좋은 소리로 울어 받아요！」
+				CASEELSE
+					PRINTFORMW 「, 정령들 좋은 소리로 울어 즐기게 해 주세요. 소야…」
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ엘리스、こんな事まだ続けるつもり？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기엘리스, 이런 일 아직 계속할 생각？」")
+					PRINTFORMW 「물론 그럴 생각이야？ 귀부인이 망가져버린다까지 몇 번이라도, 몇 번이라도, 군요…」
+			ENDSELECT
+		CASE "低い"
+			;죠교대상마조끼派生
+			SELECTCASE ABL:MASTER:마조끼
+				CASE IS >= 4
+					PRINTFORML 「무슨 기쁜 듯하구나, 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ば、馬鹿なこと言わないで頂けるかしら…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「바, 바보같은 일 말하지 않아 받을 수 있을까…」")
+					PRINTFORML 「…바보같은 일, 이군요. 후후」
+;OriginalString : (COLOR_K14("사쿠야"), "「何笑ってるのよ」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무엇 웃고 있는거야」")
+					PRINTFORMW 「어머나, 신경쓰지 않아도 돼요？ 여기의 이야기이니까…♪」
+				CASEELSE
+					PRINTFORMW 「그렇게 예응이라도 안되어요？ 나, 그만둘 생각은 없는 것」
+;OriginalString : (COLOR_K14("사쿠야"), "「覚えてなさいよ、엘리스…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「기억해 주세요,엘리스…」")
+					PRINTFORMW 「예, 자주(잘) 기억해 두어요. 소야가 보기 흉하게 울부짖는 모습을, 이군요」
+			ENDSELECT
+	ENDSELECT
+	RETURN 1
+ENDIF
+;NO9_ACT61, 채찍
+
+;────────────────────────────────────
+;NO9_ACT62, 바늘
+;────────────────────────────────────
+;・乳首と성기に바늘を突き刺す
+;・ACT開始時点ですでに刺している
+;・죠교대상に페니스がある場合は페니스に、無い場合は클리토리스に突き刺す
+;・가슴と성기(페니스/바기나)から出血し、血液汚れが追加される
+;・턴방침が"소프트", "노멀"だと発生しない
+;・성교중/성교봉사중には発生しない
+;・안면승마系、자위系は解除される
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_62
+;-------------------------------------------------
+;ACT파생なし
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT62, 바늘
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;바늘とかどのバリアントにも当たり前にあったりするけどなんだかな感
+;ただ突き刺すとか凡庸の極み。他にいくらでやりようはある
+;바늘自体も派生2つ位増えていい
+;まぁ가학系自体、まとめて손入れ했다いなと思いつつ、손が回らなくて悲しいところ
+;-------------------------------------------------
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;無茶苦茶いってるｗ
+	;でもこういうの書くのは実に楽しい
+	;=================================================
+	;初回 지문제어:1
+	;=================================================
+	IF 구상記入チェック(100) && !TEQUIP:눈가리개 && FIRSTACT(0) && FLAG:지문제어 == 1
+		PRINTFORMW 「봐 소야. 이것을 귀부인의 민감한 곳에 찔러…」
+;OriginalString : (COLOR_K14("사쿠야"), "「冗談、でしょう…？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「농담, 이지요…？」")
+		PRINTFORMW 「유감이구나. 농담은 아닌거예요 , 이것이」
+;OriginalString : (COLOR_K14("사쿠야"), "「こんな事して、一体何の意味があるのよ！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 일 해, 도대체 무슨 의미가 있는거야！」")
+		PRINTFORML 「？」
+;OriginalString : (COLOR_K14("사쿠야"), "「さぁ？ って、貴女……」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「자？ 읏, 당신……」")
+		PRINTFORML 「 「의미등 요구하지 말아라. 그 방면의 것은이라고에 광기가 있다」라는 어딘가에서 (들)물은 생각도 드는데」
+		PRINTFORMW 「뭐, 실제…, 그런 일은 아무래도 좋거나 해」
+		PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「엘리스、貴女……、ふざけてるの」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엘리스, 당신……, 장난치고 있어」")
+		PRINTFORMW 「그렇게 보인 것이라면 의외이구나？ 나는 매우 성실해요. 아무튼……」
+		PRINTFORMW 「이 내가 그러한 있고, 라고 생각한 것만으로 이유 부여로서는 충분히」
+		PRINTFORMW 「그 자체에 의미가 있는라면 대답이 되는 것일까？」
+;OriginalString : (COLOR_K14("사쿠야"), "「なる訳ないでしょう、そんなもの…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「될 이유 없을 것입니다, 그런 것…」")
+		PRINTFORMW 「뭐, 그래요？ 그렇지만……, 귀부인에게 선택의 여지는 없어, 나쁜데」
+		PRINTFORMW 「, 얌전하게 하고 있어 주세요. (이)가 아니면 심한 일이 된다고 생각하기 때문에. 응 소야……」
+		PRINTL
+		PRINTFORMDL %CALLNAME%(은)는 그렇게 말하면(자), 조용히%CALLNAME:MASTER%의 신체에 바늘을 찔러 세웠다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;マゾッ気
+	;=================================================
+	IF 구상記入チェック(100) && ABL:MASTER:마조끼 >= 3
+		SELECTCASE ABL:MASTER:마조끼
+			;마조끼5以上
+			CASE IS >= 5
+				PRINTFORMW 「굉장히 통들주위 모습이지만…」
+				PRINTFORMW 「후후……,%CNAME(MASTER, TARGET)%(은)는 기쁨응 나와. 이 변태♪」
+			;마조끼3以上
+			CASEELSE
+				PRINTFORMW 「아픔에도 상당히 익숙해져 온 느낌 까？」
+				PRINTFORMW 「가끔 단 소리가 섞이는 것, 내가 (들)물어 놓칠 리 없지요？　후후후…」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;눈가리개장착中
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:눈가리개 && FLAG:지문제어 == 1
+		PRINTFORMW 「언제, 어떤 느낌에 찔리는지, 모르는 것은 어떤 느낌 까？」
+		PRINTFORMW 「눈 가림 제외하면(자), 만회가 붙지 않는 것이 되고 있어도……」
+;OriginalString : (COLOR_K14("사쿠야"), "「楽しそうで何よりね、엘리스…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「즐거운 듯 해 무엇보다,엘리스…」")
+		PRINTFORMW 「예, 덕분에. 소야…」
+		PRINTL
+		CALL NO9_ACTMESSAGE62
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(100) && FLAG:지문제어 == 1
+		PRINTFORMW 「,%CNAME(MASTER, TARGET)%가 보기 흉하게 울부짖는 모습…, 나에게 보이게 해 주세요」
+		CALL NO9_ACTMESSAGE62
+		RETURN 1
+	ENDIF
+ENDIF
+;NO9_ACT62, 바늘
+
+;────────────────────────────────────
+;NO9_ACT63, 밧줄
+;────────────────────────────────────
+;・죠교대상を밧줄で縛ろうとする
+;・地の文は"縛ろうと했다…"となっているが処理的にはACT開始時点で縛られている
+;・TEQUIP:밧줄 で縛りの強度を参照できる
+;・既に装備していた場合は解除になる
+;・既に장착済み、かつTFLAG:징계・플래그が立っている場合は発生しない(即ち、解除されない)
+;・TEQUIP:밧줄自体はREACT분류が"용서를 빌다"の場合に解除される
+;・0616版時点の仕様でこの挙動を確実に参照する손段なし。本体側の改善が求められる
+;・(REACT63以外でも취소処理になる場合がある為)
+;・성교중/성교봉사중には発生しない
+;・구속時に자위や안면승마、죠교대상의 페니스사용중は解除される
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_63
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=장착/1=解除)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT63_0, 밧줄장착 FIRSTACT(0)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && !TEQUIP:눈가리개 && FIRSTACT(0)
+;OriginalString : (COLOR_K14("사쿠야"), "「何よ、それ。私を縛るつもり？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야, 그것. 나를 묶을 생각？」")
+		CALL PRINTCOLOR(COLOR_K14("엘리스"), "「正解")
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　判ってるなら話が早いわ。さぁ、大人しくして頂戴」")
+		PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「簡単に言ってくれるわね…というかそれ、痣になると思うんだけど」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「간단하게 말해 주어요…그렇다고 할까 그것, 반점이 된다고 생각하지만」")
+		PRINTFORMW 「어머나, 걱정 필요하지 않아요？ 피부가 손상되지 않게, 오일을 스며들게 해 있기 때문에」
+		PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ엘리스、一つ聞いていいかしら？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기엘리스, 1개 (들)물어도 좋을까？」")
+		PRINTFORMW 「뭐？」
+;OriginalString : (COLOR_K14("사쿠야"), "「何でそんな事知ってるのよ」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무엇으로 그런 일 알고 있는거야」")
+		PRINTL
+		PRINTFORMW 「바보같은 질문이군요？ 마법사는 모든 것에 정통하고 있는 것이야」
+		PRINTFORMW 「일견 무의미하게 생각되는 것에서의, 저희들 마법사에게 있어서는 그렇지 않는거야」
+		PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「…なるほど。そうやってムダ지식が豊富になっていく訳ね？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…과연. 그렇게 헛일지식하지만 풍부하게 되어 가는 것이네？」")
+;OriginalString : (COLOR_K14("사쿠야"), "「もう一人、そんな人物に心当たりがあるわ…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「또 한사람, 그런 인물에게 짐작이 있어요…」")
+		PRINTL
+		PRINTFORMW 「덧붙여서 줄의 직경은7밀리야, 야외용은4밀리 정도가 좋은 것 같지만, 이군요」
+;OriginalString : (COLOR_K14("사쿠야"), "「はいはい、ムダ지식をどうもありがとう…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「네네, 헛일지식를 정말로 고마워요…」")
+		CALL PRINTCOLOR(COLOR_K14("엘리스"), "「どういたしまして")
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　じゃ、そんな訳、で…さっそく始めさせて貰うわ♪」")
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;눈가리개장착中
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:눈가리개
+		SELECTCASE ABL:MASTER:구속중독
+			CASE IS > 4
+				PRINTFORMDW 시야를 빼앗긴 소야는, 피학에의 기대에 그 신체를 불 비출 수 있고 있다…
+				PRINTL
+				PRINTFORMW 「상당히 얌전하구나, 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「当然でしょう、何も見えないのに…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당연하겠지요, 아무것도 안보이는데…」")
+				PRINTFORMW 「후후, 정말로 그 만큼 까, 응？」
+;OriginalString : (COLOR_K14("사쿠야"), "「どういう意味よ」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어떤 의미야」")
+				PRINTFORMW 「…어떤 의미는. 아무튼, 그러한 의미야. 키득」
+			CASEELSE
+				PRINTFORMDW 시야를 빼앗긴 소야는 불안감에 시달리고 있다…
+				PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「なによ、これ…一体何をするつもりよ」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야, 이것…도대체 무엇을 할 생각이야」")
+				PRINTFORML 「묶는 것, 귀부인을…」
+				PRINTFORMW 「보는 일도, 움직이는 일도 할 수 없는 상태로 나의 완구가 되어 받아요」
+;OriginalString : (COLOR_K14("사쿠야"), "「好き放題してくれるわね…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「자기 마음대로해 주어요…」")
+				PRINTFORMW 「어머나, 이것은 귀부인이기 때문에라도 있어. 소야」
+;OriginalString : (COLOR_K14("사쿠야"), "「どういう意味よ」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어떤 의미야」")
+				PRINTFORMW 「…의미. 그렇구나, 귀부인이 숨겨진 욕망을 개방 해 주는, 이라는 곳일까？」
+				PRINTFORM 「스스로도 깨닫지 않은 것 같지만, 나에게는 알고 있어. 소야가 사실은 무엇을 바라고 있는지, 군요…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;全て派生で見ていたのを刻んでみる
+	;=================================================
+	;縛り強度2以上
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:밧줄 >= 2
+		;죠교대상구속중독派生
+		;-------------------------------------------------
+		;구속중독8以上
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && ABL:MASTER:구속중독 >= 8
+			PRINTFORMDW 줄 할 수 있어 붙는 단단히 묶을 수 있었던 소야는, 피학에의 요염한 기대에 그 신체를 불 비출 수 있고 있다…
+			;죠교자만족度派生処理
+			SELECTCASE TENSION(TARGET, 8)
+				CASE "高い"
+					PRINTFORMW 「줄이 먹혀들어 굉장히 이야라시이원이군요…」
+					;濡れてる
+					IF PALAM:MASTER:윤활 >= 500
+						PRINTFORMW 「이봐요, 코코도 이렇게 적셔 버려서. 자신이 얼마나 상스러운지, 가르쳐 준다…♪」
+						PRINTFORMDL 앨리스는 소야의%VAGINA_DESCRIPTION2(MASTER)%(으)로부터 넘쳐 나오는 밀액을 그 손가락에 걸면(자)
+						PRINTFORMDW 그대로소야의 입안에 밀어넣었다…
+						PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「…っ！？ んんっ！」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！？ 응읏！」")
+						PRINTFORMW 「잘 맛봐 주세요. 이것이 귀부인의 맛이야, 소야…」
+						
+						;フェードアウト 指舐めなんて個別処理は無いので펠라で代用
+						CALL FADE(20, COLOR2_K14("SAKUYA"), COLOR_K14("black"), KOJO_RAND_K14(("펠라"), 2))
+						CLEARLINE 1
+						
+						PRINTFORMW 「이나다, 그렇게 빨 수 있으면(자) 나도 이상한 기분이 되어 버린다…」
+						PRINTFORMDW 앨리스가 얼굴을 접근하고 그 입술을 빼앗으면(자) 소야도 적극적으로 혀를 걸어 두 명은 언제까지나 서로의 입을 탐냈다…
+						;죠교대상の입に愛液汚れ追加
+						CALL SET_STAIN("입", "愛液", MASTER)
+						CALL SET_KISS
+					;濡れてない
+					ELSE
+						PRINTFORMW 「이봐요, 이 정도 힘들게 묶으면 만족할까, 응 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ハァ、ハァ…」")
+						CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「하, 하…」")
+						PRINTFORMW 「어머나, 완전히 완성되어 버린다 같구나…♪」
+					ENDIF
+				CASE "一般"
+					CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ほら、もっときつく締めるんでしょう？ やるなら、さっさとしなさいよ…」")
+					PRINTFORMW 「소야등 주위 산등성이다 의 방법이라는 곳일까？ 나쁘지 않네요, 그러한 것도…♪」
+					CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「べ、別にそんなつもりじゃないわよ！」")
+					PRINTFORMW 「좋아, 고집은 치지 않아서. 소야가 무엇을 바라고 있는지, 나, 전부 알고 있으니…」
+					PRINTL
+					CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「そんな事、言わないでよ…」")
+					PRINTFORMW 「어째서？ 혹시 부끄럽다든가？」
+					CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「う、ウルサイわね！」")
+					
+					PRINTFORM 「……적중, 이군요
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					
+					PRINTFORMW 「뭐, 더 이상 말하는 것은 멋없기 때문에 그만두어 주어요, 소야…♪」
+				CASE "低い"
+					PRINTFORMW 「소야는 이 정도는 어딘지 부족할 것입니다？ 좀 더 단단히 조여 주어요」
+;OriginalString : (COLOR_K14("사쿠야"), "「いい、わよ…さっさとしなさいよ…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「좋은, 원이야…빨리 하세요…」")
+					
+					PRINTFORM 「그러면, 소망 대로에…
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					
+					PRINTL
+					CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「んぁぁっ")
+					CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　あぅっ、うぅ…」")
+					
+					PRINTFORMW 「상당히 상스러운 소리가 나오군요, 소야…」
+;OriginalString : (COLOR_K14("사쿠야"), "「全部貴女のせいよ、엘리스…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「전부 당신의 탓이야,엘리스…」")
+					PRINTFORMW 「그렇구나, 전부 나의 탓…그렇지만, 분명하게 책임은 취해 주어요…」
+			ENDSELECT
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;구속중독4以上
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && ABL:MASTER:구속중독 >= 4
+			PRINTFORMDW 줄 할 수 있어 붙는 단단히 묶을 수 있었던 소야는 고민의 표정을 띄우면서도, 단 한숨을 흘리고 있다…
+			;죠교자만족度派生処理
+			SELECTCASE TENSION(TARGET, 8)
+				CASE "高い"
+;OriginalString : (COLOR_K14("사쿠야"), "「あぅっ！ あぁ…そんなに締められたら…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아웃！ 아아…그렇게 잡을 수 있으면…」")
+					PRINTFORMW 「소야의 피학심에 파급되어버린다, 라는 곳일까？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そ、そんな事っ！ ない、わよ…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그, 그런 일！ 없는, 원이야…」")
+					PRINTFORMW 「그렇게 고집부려 버려서…그렇지만, 귀부인다워요. 감등 돌아가셔버린다…」
+					PRINTFORMDW 앨리스는 구속되어 동작할 수 없는 소야의 머리를 끌어 들이면(자) 입술을 빼앗았다…
+;OriginalString : (COLOR_K14("사쿠야"), "「…っ！？ いやっ！ 今、키스당했다ら…んんっ、んくっ！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…읏！？ 아니！ 지금,키스당했다들…응읏, 응쿳！」")
+					CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), "츄쿠…츗…") ;フェードアウト
+					CLEARLINE 1
+					PRINTFORMW 「후후, 완전히 얌전해져. 좋아요, 그대로 얌전하게 하고 있어 주세요…♪」
+					CALL SET_KISS
+				CASE "一般"
+					PRINTFORMW 「여기까지 잡으면(자) 유석에 자국이 남을지도…라고, 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「んんっ、くっ！ あぅっ」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「응읏, 쿳！ 아웃」")
+					PRINTFORMW 「어머나, 완전히 즐기고 있는 것 같구나？ 불필요한 걱정이었던 까」
+;OriginalString : (COLOR_K14("사쿠야"), "「なに、よ…今、何か言った？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐,…지금, 뭔가 말했다？」")
+					
+					PRINTFORM 「후후…좋아, 신경쓰지 마. 그대로 만끽하고 있어 주세요, 소야…
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+				CASE "低い"
+					PRINTFORML 「조금 힘들게 잡아요, 소야. 참아 주세요」
+;OriginalString : (COLOR_K14("사쿠야"), "「はぅっ！ んっ、くっ！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「하웃！ 읏, 쿳！」")
+					PRINTFORMW 「괴로운 것뿐은 소리가 아니네요？ 속박되는 것이 좋아져 버렸어 까？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そ、そんな事ある訳ッ！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그, 그런 일 있다！」")
+					;濡れてる
+					IF PALAM:MASTER:윤활 >= 500
+						PRINTFORMW 「그렇게는 말해도？ 코코를 이렇게 적시고 있는 버릇에」
+					;濡れてない
+					ELSE
+						PRINTFORMW 「어머나？ 눈을 글썽 글썽 시키고 있는 버릇에, 부정하군요」
+					ENDIF
+					PRINTL
+					PRINTFORMW 「응 소야, 적당 편해져 버리면(자)？ 몇시까지도 자신을 속이는 것은 괴로울 것입니다？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そんなの、私の勝손よ！」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 것, 나 승손！」")
+					PRINTFORMW 「그렇게, 라면 마음대로 하면？ 소야의 그런 곳은 싫지 않고, 군요…」
+			ENDSELECT
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他
+		;-------------------------------------------------
+		PRINTFORMDW 줄 할 수 있어 붙는 단단히 묶을 수 있었던 소야는, 그 괴로움에 허덕이고 있다…
+		;죠교자만족度派生処理
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+				PRINTFORMW 「이봐요, 좀 더 단단히 조여요？ 조금 아프겠지만, 참아 주세요」
+;OriginalString : (COLOR_K14("사쿠야"), "「うぅっ、くっ！ こんな事して…覚えてなさいよ、엘리스…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「우웃, 쿳！ 이런 일 해…기억해 주세요,엘리스…」")
+				PRINTFORMW 「예, 잊지 않아요. 귀부인의 그 모습, 눈에 새겨 두어요…♪」
+			CASE "一般"
+				PRINTFORMW 「유석에 이만큼 단단히 조이면(자) 조금 괴로울까, 응 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「当たり前の事、聞かないで頂けるかしら…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당연한 일, (듣)묻지 않아 받을 수 있을까…」")
+				
+				PRINTFORM 「그것도 그렇구나？ 그렇지만 그 모습, 자주(잘) 어울리고 있는 원이야…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			CASE "低い"
+;OriginalString : (COLOR_K14("사쿠야"), "「んっ、くぅっ！ ちょっと엘리스！ 締めすぎよ！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「읏, 쿠웃！ 조금엘리스！ 너무 잡았어！」")
+				
+				PRINTFORM 「어머나, 미안해요
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　사쿠야ならこの程度、何でもないと思ったんだけど」")
+				
+;OriginalString : (COLOR_K14("사쿠야"), "「そう言いながら緩める気はないのね…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇게 말하면서 느슨하게할 생각은 없는거네…」")
+				PRINTFORMW 「당연하겠지요？ 귀부인에게 움직여지면(자) 형편이 나쁜거야. 다양하게, 군요…♪」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;以下、その他죠교대상구속중독派生
+	;=================================================
+	;구속중독8以上
+	;=================================================
+	IF 구상記入チェック(100) && ABL:MASTER:구속중독 >= 8
+		;죠교자만족度派生処理
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+				PRINTFORMDW 줄로 구속된 소야는 피학에의 요염한 기대에, 그 신체를 뜨겁고 불 비출 수 있고 있다…
+;OriginalString : (COLOR_K14("사쿠야"), "「ハァ、ハァ…ねぇ、엘리스。早く…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「하, 하…저기,엘리스빨리…」")
+				PRINTFORMW 「은 이야라시이의, 소야…그렇게 모습 보일 수 있으면(자), 나도 이상해질 것 같다…」
+			CASE "一般"
+				PRINTFORMW 「응, 줄로 속박되어 나에게 완구로 되는 것이 그렇게 기쁜거야？ 소야…」
+;OriginalString : (COLOR_K14("사쿠야"), "「い、言わないでよっ！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「마, 말하지 말아！」")
+				PRINTFORMW 「이나다, 그렇게 사랑스러운 반응되면(자) 감등 돌아가셔버린다…」
+				PRINTFORMDW 앨리스는 구속되어 동작할 수 없는 소야의 머리를 끌어 들이면(자) 입술을 빼앗았다…
+				CALL SET_KISS
+			CASE "低い"
+				PRINTFORMW 「조금 뒤를 향해 받을 수 있는 것일까？ 그래, 그것으로 좋아요」
+				PRINTFORMW 「 그렇지만, 소야가 자신으로부터 진행되어 속박되다니？ 후후」
+;OriginalString : (COLOR_K14("사쿠야"), "「全部貴女のせいよ、엘리스…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「전부 당신의 탓이야,엘리스…」")
+				PRINTFORMW 「그렇구나, 그것은 인정해요. 그렇지만 괜찮아, 분명하게 책임은 취해 주어요. 소야…」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;구속중독4以上
+	;=================================================
+	IF 구상記入チェック(100) && ABL:MASTER:구속중독 >= 4
+		;죠교자만족度派生処理
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+				PRINTFORMW 「얼굴이 붉어요, 소야. 속박되어 흥분하고 있는 거나？」
+;OriginalString : (COLOR_K14("사쿠야"), "「だっ、誰が縛られて興奮なんてするのよ！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「누, 누가 속박되어 흥분 같은거 하는거야！」")
+				PRINTFORMW 「어머나, 재미있는 일을 말하군요？ 그런 것 소야 밖에 없을 것입니다」
+;OriginalString : (COLOR_K14("사쿠야"), "「本気で言ってるのか、冗談なのか、凄く微妙な気分になるわ…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「진심으로 말하고 있는지, 농담인 것인가, 굉장히 미묘한 기분이 되어요…」")
+				PRINTFORMW 「후후, 불필요한 일은 생각하지 않는 한정해요…♪」
+			CASE "一般"
+				PRINTFORMW 「이 정도의 묶는 방법은 소야는 불만일까？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ엘리스…何でそう思うのか聞かせて」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기엘리스…무엇으로 그렇게 생각하는지 들려줘」")
+				PRINTFORMW 「정말로 말해도 좋은거야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ああ、やっぱり言わないで。聞きたくないわ…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아아, 역시 말하지 마. (듣)묻고 싶지 않아요…」")
+				
+				PRINTFORM 「그렇게, 소야를 (듣)묻고 싶지 않으면 입다물고 있는 원…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			CASE "低い"
+				PRINTFORMW 「어머나, 저항하지 않구나？ 나로서는 편하고 좋은데」
+;OriginalString : (COLOR_K14("사쿠야"), "「いいから…さっさと済ませなさいよ」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「좋으니까…빨리 끝마치세요」")
+				PRINTFORMW 「진짜는 이런 것도 나쁘지 않다고 느껴 왔다가 아닌거야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そ、そんな事ある訳ないでしょう！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그, 그런 일 있을 이유 없을 것입니다！」")
+				PRINTFORMW 「후후, 좋아요. 그러한 일로 해 두어 준다…♪」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;죠교자만족度派生処理
+	SELECTCASE TENSION(TARGET, 8)
+		CASE "高い"
+			PRINTFORMW 「사실, 줄이 자주(잘) 어울리고 있는 원이야. 소야…♪」
+;OriginalString : (COLOR_K14("사쿠야"), "「こんな事で褒められても嬉しくないわよ！」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 일로 칭찬할 수 있어도 기쁘지 않아요！」")
+			
+			PRINTFORM 「후후, 그것은 그렇겠지요. 그렇지만, 나쁘지 않은 경치예요
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		CASE "一般"
+			PRINTFORMW 「어떻게든 해들？ 이 정도라면 아프지 않을 것입니다？」
+;OriginalString : (COLOR_K14("사쿠야"), "「それはまぁ、そうだけど…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그것은 아무튼, 그렇지만…」")
+			PRINTFORMW 「뭐？ 혹시, 이래서야 불만이야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「誰もそんな事言ってないわよ！」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아무도 그런 일 말하지 않아요！」")
+			
+			PRINTFORM 「어머나, 미안해요
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		CASE "低い"
+			PRINTFORML 「, 얌전하게 해 주세요」
+			PRINTFORMW 「이라고 하는지, 얌전하게 시키기 위해 묶는데 이상한 이야기군요？ 후후」
+;OriginalString : (COLOR_K14("사쿠야"), "「愉しそうで何よりね…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「즐거운 것 같아 무엇보다네…」")
+			
+			PRINTFORM 「그렇구나？ 그렇지만, 귀부인도 즐길 수 있게 되어요. 그러던 중, 이군요
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT63_1, 밧줄解除 FIRSTACT(1)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;밧줄解除に派生했다時点で、"TEQUIP:밧줄 = 0"となるので解除時に縛り強度は参照できない
+;장착と強度で同じTEQUIPを使いまわしている為、このようになってしまう
+;参照できると色々と面白そうではあるけど、まぁ現状では손が回らない
+;-------------------------------------------------
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) & FIRSTACT(1)
+		PRINTFORM 「지치고님…
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "愉しんで貰えたかしら？」")
+		
+;OriginalString : (COLOR_K14("사쿠야"), "「こんなもの、愉しめる訳が無いでしょう…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 것, 즐길 수 있을 이유가 없을 것입니다…」")
+		PRINTFORMW 「어머나, 그것은 유감이구나. 다음으로부터는 좀 더 즐겨 받을 수 있도록 노력해요…♪」
+;OriginalString : (COLOR_K14("사쿠야"), "「……やれやれ、ね」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「……아휴」")
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;以下、죠교대상상태변화
+	;-------------------------
+	
+	;今ならGET_CONDITIONで統一するという손もないではない
+	;とはいえSELECTCASEで派生を見る場合でもない限り、M_COND/T_CONDの方が無難あると考える
+	
+	;"몽롱"は쾌락によって引き起こされるということなのでこの箇所に持ってきた
+	;=================================================
+	;죠교대상が정욕/몽롱
+	;=================================================
+	IF 구상記入チェック(100) && GROUPMATCH(GET_CONDITION(MASTER), "정욕", "몽롱")
+		SELECTCASE ABL:MASTER:구속중독
+			CASE IS >= 8
+				PRINTFORMW 「마지막이라고 하면(자) 마지막이야, 소야. 그다지 타들을 빚지 마」
+;OriginalString : (COLOR_K14("사쿠야"), "「その訳の判らない一人芝居、やめて頂けるかしら…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그 (뜻)이유가 알지 않는 한사람 연극, 그만두어 받을 수 있을까…」")
+				PRINTFORMW 「어머나, 마음에 드셔 받을 수 없었던 것 같고 유감이구나…♪」
+				PRINTFORMW 「 그렇지만, 진짜는 좀 더 계속하고 싶겠지요？ 거짓말해도 안되어요」
+;OriginalString : (COLOR_K14("사쿠야"), "「なっ！？ なにを根拠にそんな事ッ！」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「낫！？ 무엇을 근거로 그런 일！」")
+				
+				PRINTFORM 「후후, 그 당황하고 모습이 무엇보다의 증거야. 알기 쉽네요, 소야…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			CASE IS >= 4
+				PRINTFORML 「즐기고 있다고(면) 개 나쁘지만 물고기(생선) 마지막이야, 소야」
+;OriginalString : (COLOR_K14("사쿠야"), "「こんなもの、愉しんでる訳が無いでしょう…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 것, 즐기고 있을 이유가 없을 것입니다…」")
+				PRINTFORMW 「사실일까？ 무엇이라면 계속해 주어도 괜찮지만…라고, 지금 일순간 기쁜 듯한 얼굴 한 원이군요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「し、してないわよ！ 馬鹿な事言わないで頂けるかしら…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「하, 하고 있지 않아요！ 바보같은 일 말하지 않아 받을 수 있을까…」")
+				PRINTFORML 「후후, 완전해 소쇄인 종자씨도 의외로겨드랑이가 달네요？」
+				
+				PRINTFORM 「아무튼에서도, 그러한 곳도 귀부인다우면 말할 수 없는 것도 없네요, 소야…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			CASEELSE
+				PRINTFORMW 「완전히 흥분하고 있는 것 같구나？ 그렇지만 유감, 이것으로 마지막이야」
+;OriginalString : (COLOR_K14("사쿠야"), "「べ、別に残念じゃないわよ」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「벼, 별로 유감이지 않아요」")
+				
+				PRINTFORM 「후후, 사실일까, 군요…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;"고양"から"울굴"に変わったのはなんだかな感
+	;=================================================
+	;죠교대상が"울굴"
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("울굴")
+		PRINTFORMW （눈이 이상하네요, 이대로 줄을 풀지 않는 것이 좋을까…）
+;OriginalString : (COLOR_K14("사쿠야"), "「なによ、밧줄を解くなら早くして貰いたいわね」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야,밧줄를 푼다면 빨리 해 받고 싶네요」")
+		PRINTFORMW 「아, 응…조금 걱정거리를 했어. 미안해요」
+;OriginalString : (COLOR_K14("사쿠야"), "「そう、別にいいけど。フフ…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그래, 별로 좋지만. 후후…」")
+		PRINTFORMW （싫은 예감이 해요…）
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が"분노"
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("분노")
+		PRINTFORMW 「상당히 기분이 나쁜 것 같구나？ 줄을 풀리는 것이 그렇게 싫은가 해들 」
+;OriginalString : (COLOR_K14("사쿠야"), "「誰もそんな事言ってないでしょう…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아무도 그런 일 말하지 않을 것입니다…」")
+		PRINTFORML 「그렇구나？ 그렇지만 이 경우……」
+		PRINTFORMW 「그렇게 사소한 일은, 꼭 좋았던 것이었다」
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「どうでも良くない！ …って」")
+;OriginalString : (COLOR_K14("사쿠야"), "「こんな話、前にも했다気がするわね……」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 이야기, 전에도했다생각이 들어요……」")
+		CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), "「킥킥…」")
+		CLEARLINE 1
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が"싫증"
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("싫증")
+		PRINTFORMW 「무슨 싫증하구나？ 이제 이 정도는 소야에는 어딘지 부족한 것일까…」
+;OriginalString : (COLOR_K14("사쿠야"), "「コラコラ…何一人で勝손に納得してるのよ」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「코라코라…무엇 혼자서 승손에 납득하고 있는거야」")
+		PRINTFORMW 「뭐야, 나의 혼잣말을 몰래 엿듣기하는 것은 그만두어 받고 싶네요」
+;OriginalString : (COLOR_K14("사쿠야"), "「聞きたくなくても聞こえるのよ、馬鹿っ！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「(듣)묻고 싶지 않아도 들리는거야, 바봇！」")
+		
+		PRINTFORM 「어머나, 그것은 실례한 원이군요…
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が피폐/쇠약/무기력
+	;=================================================
+	IF 구상記入チェック(100) && GROUPMATCH(GET_CONDITION(MASTER), "피폐", "쇠약", "무기력")
+		PRINTFORM 「네, 지치고님…
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　って、ホントに疲れてるみたいね？」")
+		
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ハァ、ハァ…いくらなんでもやりすぎよ、엘리스…」")
+		PRINTFORMW 「미안해요…그렇지만, 손대중 하면(자) 소야가 화내기 때문에…」
+		PRINTL
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ엘리스…」")
+		PRINTFORMW 「네？」
+;OriginalString : (COLOR_K14("사쿠야"), "「しれっと했다顔で嘘をつくのはやめて頂けるかしら…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「태연히했다얼굴로 거짓말하는 것은 그만두어 받을 수 있을까…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「私はそんな事で怒った覚えは無いわよっ！！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나는 그런 일로 화낸 기억은 없어요！！」")
+		PRINTFORMW 「후후, 그랬던 까, 군요…♪」
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	SELECTCASE ABL:MASTER:구속중독
+		CASE IS >= 8
+			PRINTFORMW 「응 소야…줄을 풀지 말고, 이대로의 (분)편이 좋다？」
+;OriginalString : (COLOR_K14("사쿠야"), "「どういう意味よ」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어떤 의미야」")
+			PRINTFORMW 「이래 소야…줄과 푼다 라고 하면(자) 굉장히 유감스러운 얼굴 하고 있으니」
+;OriginalString : (COLOR_K14("사쿠야"), "「なっ！？ そ、そんな顔する訳無いでしょう！」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「낫！？ 그, 그런 얼굴 할 이유 없을 것입니다！」")
+			
+			PRINTFORM 「대강, 완전히 어질러…
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　らしくないわよ、사쿠야。ふふっ」")
+		CASE IS >= 4
+			PRINTFORMW 「, 풀어 주어요…라고, 조금 불만 그렇구나, 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「訳が判らない事、言わないで頂戴…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「(뜻)이유가 알지 않는 것, 말하지 말아줘…」")
+			PRINTFORMW 「…(뜻)이유가 알지 않는 것, 이군요. 후후」
+;OriginalString : (COLOR_K14("사쿠야"), "「なによ、感じ悪いわね」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야, 느끼고 나쁘네요」")
+			PRINTFORMW 「별로？ 신경쓰는 일 없어요, 소야…♪」
+		CASEELSE
+			PRINTFORMW 「, 풀어 주기 때문에 움직이지 말고 주세요」
+	ENDSELECT
+	RETURN 1
+ENDIF
+;NO9_ACT63_1, 밧줄解除
+
+;────────────────────────────────────
+;ACT64, 눈가리개 FIRSTACT(0)(1)
+;────────────────────────────────────
+;・죠교자が눈가리개を着けさせようとする
+;・地の文では"着けさせようと했다…"となっているが処理上はACT開始時点で장착されている
+;・既に装備していた場合は解除になる
+;・既に장착済み、かつTFLAG:징계・플래그が立っている場合は発生しない(即ち、解除されない)
+;・TEQUIP:눈가리개はREACT분류が"용서를 빌다"であった場合に解除される
+;・0616版時点の仕様でこの挙動を確実に参照する손段なし。本体側の改善が求められる
+;・(REACT64以外でも취소処理になる場合がある為)
+;・성교중/성교봉사중には発生しない
+;・안면승마系は解除される
+;・죠교자が자위중であった場合は解除される
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_64
+;-------------------------------------------------
+;・TFLAG:ACT派性(0=장착/1=解除)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT64_0, 눈가리개장착
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0)
+		PRINTFORML 「그러면 그러한 (뜻)이유로, 소야에는 이것을 붙여 받아요」
+;OriginalString : (COLOR_K14("사쿠야"), "「何が『じゃそういう訳』なのか判らないんだけど…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무엇이 『그러면 그러한 (뜻)이유』인가 알지 않지만…」")
+		PRINTFORMW 「어머나, 세세한 일 신경쓰군요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「…気にするって。まぁいいわ。どうせやめるつもりないんでしょうから、好きにしなさいよ」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…신경쓴다고. 뭐 좋아요. 어차피 그만둘 생각 없을테니까, 좋을대로 하세요」")
+		PRINTFORMW 「후후, 언제나 그 정도 이해력이 좋으면 나도 편하지만…♪ 그렇지 않으면 조금 기대하고 있는 거나？」
+;OriginalString : (COLOR_K14("사쿠야"), "「一体何に期待するって言うのよ！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「도대체 무엇에 기대한다 라고 말하는거야！」")
+		
+		PRINTFORM 「？ 그것은 소야가 제일 좋게 알고 있는 것은 아닐까, 군요…
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が자위중
+	;=================================================
+	IF 구상記入チェック(100) && GETBIT(TEQUIP:자위중, 0)
+		PRINTFORML 「즐기고 있다고(면) 개 나쁘지만, 이것을 붙여 받아요」
+;OriginalString : (COLOR_K14("사쿠야"), "「ん、なによ」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「응, 뭐야」")
+		PRINTFORMW 「무엇은, 눈 가림…」
+		PRINTFORMW 「소야라면 반드시 즐겨 받을 수 있다고 생각해요…♪」
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;以下、죠교대상상태변화
+	;-------------------------
+	
+	;=================================================
+	;죠교대상が정욕/몽롱
+	;=================================================
+	IF 구상記入チェック(100) && GROUPMATCH(GET_CONDITION(MASTER), "정욕", "몽롱")
+		;죠교대상마조끼派生		구속중독か마조끼か、ちょっと悩みどころ
+		SELECTCASE ABL:MASTER:마조끼
+			CASE IS >= 8
+				PRINTFORMW 「눈 가림되어 흥분해버린다는, 진짜 구제할 길 없네요, 소야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「全部貴女が悪いのよ、엘리스…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「전부 당신이 나쁜 것,엘리스…」")
+				PRINTFORML 「그것은 인정해요. 그렇지만 소야가 어떻게 되려고, 나의 기분은 변함없다」
+				PRINTFORMW 「언제까지나 옆에 있어 주어요…」
+				PRINTFORMDW 앨리스는 그렇게 말하면(자) 시야를 빼앗긴 소야의 얼굴을 끌어 들이고 입술을 빼앗았다…
+			CASE IS >= 4
+				PRINTFORMW 「응 소야, 시야를 빼앗긴다 라고 어떤 느낌인가 해들？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そんな事聞いて何になるのよ」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일 (들)물어 무엇이 되는거야」")
+				PRINTFORMW 「…무엇에는. 어떻게 하면 귀부인이 기쁨인가, 참고가 될까하고 생각하며」
+;OriginalString : (COLOR_K14("사쿠야"), "「どうだっていいでしょう、そんな事…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어떻든지 좋을 것입니다, 그런 일…」")
+				PRINTFORM 「어머나, 그런 일 없어요？ 나로서도 소야에 좋은 소리로 울어 받고 싶고, 군요…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			CASEELSE
+				PRINTFORMW 「그렇게 흥분해 버려서. 이야라시이원이군요, 소야…」
+;OriginalString : (COLOR_K14("사쿠야"), "「う、ウルサイわね…」")
+				CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「우, 시끄럽네요…」")
+				PRINTFORM 「후후, 부정은 하지 않구나. 언제나 그 정도 솔직하다면 좋은데, 군요…
+				CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が울굴
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("울굴")
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「次は何をするのかしら？ どうせなら、さっさとして貰いたいわね」")
+		PRINTFORMW （소야, 또 이상한 스윗치가 들어가. 귀찮구나…）
+;OriginalString : (COLOR_K14("사쿠야"), "「なに？ 今何か言った？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐？ 지금 뭔가 말했다？」")
+		PRINTFORMW 「별로 굳이…이봐요, 붙여 주기 때문에 움직이지 마」
+;OriginalString : (COLOR_K14("사쿠야"), "「また目隠し？ 私はもっと別の事がシたいわ」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「또 눈가리개？ 나는 좀 더 다른 일이 시 싶어요」")
+		PRINTFORML 「뭐야, 다른 일은」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうねぇ、例えば…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇구나, 예를 들면…」")
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「엘리스を네발로 엎드림にさせて、あんな事やこんな事…」")
+		PRINTFORMW 「네, 거기까지！ 이제 (듣)묻고 싶지 않아요…」
+		CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「そう？ それは残念ね…")
+		CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"))
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が분노
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("분노")
+		PRINTFORMW 「어머나, 기분 나쁜 것 같구나？ 눈 가림하면 조금은 침착하는 것일까」
+;OriginalString : (COLOR_K14("사쿠야"), "「一体どういう理屈よ！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「도대체 어떤 도리야！」")
+		PRINTFORMW 「이나다, 조금 흥분시켜 버렸다 같구나. 빨리 초조하게 하면」
+;OriginalString : (COLOR_K14("사쿠야"), "「人の話聞いてる？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「사람의 이야기 (듣)묻고 있다？」")
+		PRINTFORMW 「이것으로 좋아, 라고…♪ 폭들어맞지 않고, 우선 안심이라고 곳일까」
+		CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「")
+		CALL PRINTFONTSTYLE(COLOR2_K14("SAKUYA"), "だ　か　ら", 1)
+;OriginalString : (COLOR_K14("사쿠야"), "、人の話を聞きなさいよっ、馬鹿っ！！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), ", 사람의 이야기를 들으세요, 바봇！！」")
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が싫증
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("싫증")
+		PRINTFORML 「싫증하구나, 소야？ 이제 보통은 만족할 수 없구나…」
+;OriginalString : (COLOR_K14("사쿠야"), "「一人で勝손に納得しないで貰いたいわね」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「혼자서 승손에 납득하지 않고 받고 싶네요」")
+		PRINTFORML 「본인에게 그 마음이 있었다고 해도, 나에게도 책임이 있어…」
+;OriginalString : (COLOR_K14("사쿠야"), "「いや、だから…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아니, 그러니까…」")
+		PRINTFORMW 「 그렇지만 괜찮아！ 소야가 어떤 변태라도 나는 버리거나 하지 않으니까！」
+		
+		CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「")
+		CALL PRINTFONTSTYLE(COLOR2_K14("SAKUYA"), "いい加減にしなさいよ", 1)
+;OriginalString : (COLOR_K14("사쿠야"), "」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "」")
+		
+		PRINTFORM 「후후, 미안해요…
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	SELECTCASE ABL:MASTER:마조끼
+		CASE IS >= 8
+			PRINTFORMW 「숨이 난폭하네요, 흥분해？」
+;OriginalString : (COLOR_K14("사쿠야"), "「し、してないわよ！」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「하, 하고 있지 않아요！」")
+			
+			PRINTFORM 「상당히 여유가 없네요. 답지 않지만, 나쁘지 않아요？ 그러한 것도…
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		CASE IS >= 4
+			PRINTFORMW 「네, 소야의 정말 좋아하는 눈 가림이야」
+;OriginalString : (COLOR_K14("사쿠야"), "「こんなものが好きって言った覚えはないけど？」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 것을 좋아한다고 말한 기억은 없지만？」")
+			PRINTFORMW 「그랬던 까？ 소야는 눈 가림하고 있는 때, 평소보다 응석부린 소리 내고 있었던이라고 생각했지만」
+;OriginalString : (COLOR_K14("사쿠야"), "「勝손に話を作らないで頂けるかしら…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「승손에 이야기를 만들지 않아 받을 수 있을까…」")
+			PRINTFORMW 「후후, 스스로 깨닫지 않는 것일까. 좋아요, 곧바로 알게 해 주기 때문에…♪」
+		CASEELSE
+			PRINTFORMW 「새는 시야를 빼앗기면(자) 어른 깐데 완만한 것 같지만, 개도 같은 같구나？」
+			CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「ねぇ엘리스、私の気のせいかしら？」")
+;OriginalString : (COLOR_K14("사쿠야"), "「今、聞き捨てならない台詞が聞こえた気がするんだけど」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「지금, 묵과할 수 없는 대사가 들린 것 같지만」")
+			PRINTFORMW 「기분탓이지요？ 아무도 귀부인의 이야기는 하지 않아요, 소야…♪」
+			CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「今更そんな戯言が通じると…」")
+			PRINTFORMW 「생각하지 않은데？」
+;OriginalString : (COLOR_K14("사쿠야"), "「あぁそう…そこまであっさり開き直られると言葉が無いわ…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아그렇게…거기까지 시원스럽게 정색해진다고 말이 없어요…」")
+			
+			PRINTFORM 「그렇게 자주, 그렇게 얌전하게 하고 있어 주세요. 개같이, 군요…
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			
+			CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「")
+			CALL PRINTFONTSTYLE(COLOR2_K14("SAKUYA"), "本気で殴るわよ", 1)
+;OriginalString : (COLOR_K14("사쿠야"), "」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "」")
+	ENDSELECT
+	RETURN 1
+ENDIF
+;NO9_ACT64, 눈가리개
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT64_1, 눈가리개解除
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(1)
+		PRINTFORMW 「응, 어땠어요？ 안보이면 감각이 잘 갈아져, 조금 괜찮은 느낌이지요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「し、知らないわよ。そんなの…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「모, 몰라요. 그런 것…」")
+		PRINTFORM 「후후, 그 나름대로 즐겨 받을 수 있던 것 같구나…
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상상태변화
+	;=================================================
+	;죠교대상상태변화派生処理
+	SELECTCASE GET_CONDITION(MASTER)
+		CASE "정욕", "몽롱"
+			PRINTFORMW 「어머나, 떼어지는 것이 불만 그렇구나？」
+;OriginalString : (COLOR_K14("사쿠야"), "「誰もそんな事言ってないでしょう」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아무도 그런 일 말하지 않을 것입니다」")
+			PRINTFORM 「말하지 않아도 보면 알아요. 솔직하지 않아, 소야…
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		CASE "울굴"
+			PRINTFORMW （(이)나다, 스윗치가 들어간 눈을 하고 있다. 이것은 실패였는지 해들…）
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ엘리스、眩しいわ。もっと部屋を暗くして欲しいわね」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기엘리스, 눈부셔요. 좀 더 방을 어둡게 했으면 좋네요」")
+			PRINTFORML 「도리에 맞지 않음 말하지 말아. 거기에…」
+			PRINTFORMW 「지금 그런 일 하면(자), 굉장히 위험한 생각이 들어요」
+;OriginalString : (COLOR_K14("사쿠야"), "「あら、そんな事ないわよ？ フフ…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아라, 그런 일 없어요？ 후후…」")
+			PRINTFORMW （상당키 비쳐요, 이것…）
+		CASE "분노"
+			PRINTFORMW 「어머나, 기분 나쁠 것 같다. 그렇게 떼어지는 것이 싫어？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そんな事一言も言ってないわよ！」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일한마디도 말하지 않아요！」")
+			PRINTFORMW 「그러면어째서 화내？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ウルサイわね。そんなの私の勝손よ」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「시끄럽네요. 그런 것 나 승손」")
+			PRINTFORMW 「그렇게, 아무튼별로 좋은데. 그렇지만 나, 소란스러운 것은 싫어. 조용하게 해 주세요…」
+		CASE "싫증"
+			PRINTFORMW 「뭐야, 상당히 싫증하구나？ 이제 이런 일은 만족 할 수 없다는 것이야？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そんな事言ってないでしょう…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일 말하지 않을 것입니다…」")
+			PRINTFORMW 「…그렇지만 싫증. 그래요？」
+;OriginalString : (COLOR_K14("사쿠야"), "「まぁそれは、そう、なんだけど…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아무튼 그것은, 그렇, 지만…」")
+			PRINTFORMW 「아휴, 군요. 소야를 만족시키는 것은 편하지 않아요」
+;OriginalString : (COLOR_K14("사쿠야"), "「ホント、好き勝손言ってくれるわね」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「정말, 좋아승손말해 주어요」")
+			PRINTFORM 「이제 와서？ 이런 것이라고 생각해 단념해 주세요, 소야…
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		CASE "피폐", "쇠약", "무기력"
+			PRINTFORMW 「어머나, 상당히 지친 것 같구나. 괜찮아？」
+;OriginalString : (COLOR_K14("사쿠야"), "「…まったく。誰のせいでこうなったと思ってるのよ」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…완전히. 누구의 탓으로 이렇게 되었다고 생각하고 있는거야」")
+			PRINTFORM 「후후, 미안해요…
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		CASE "통상"
+			PRINTFORMW 「, 제외해 주어요.…그리고？ 즐겨 받을 수 있었는지 해들？」
+;OriginalString : (COLOR_K14("사쿠야"), "「愉しめる訳ないでしょう、こんなもの」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「즐길 수 있을 이유 없을 것입니다, 이런 것」")
+			PRINTFORMW 「후후, 사실일까, 군요…♪」
+	ENDSELECT
+	RETURN 1
+ENDIF
+;NO9_ACT64_1, 눈가리개解除
+
+;────────────────────────────────────
+;NO9_ACT65, 볼개그
+;────────────────────────────────────
+;・죠교자が볼개그を嵌めさせようとする
+;・地の文では"嵌めさせようと했다…"となっているが処理上はACT開始時点で장착されている
+;・既に装備していた場合は解除になる
+;・既に장착済み、かつTFLAG:징계・플래그が立っている場合は発生しない(即ち、解除されない)
+;・TEQUIP:볼개그はREACT분류が"용서를 빌다"であった場合に解除される
+;・0616版時点の仕様でこの挙動を※確実に参照する손段なし。本体側の改善が求められる
+;・※REACT64以外でも취소処理になる場合がある為
+;・턴방침が"소프트", "노멀"の場合は発生しない
+;・성교중/성교봉사중には発生しない
+;・안면승마系は解除される
+;・죠교자が자위중であった場合は解除される
+;-------------------------------------------------
+;@KOJO_NO9_MS_ACT_K14_65
+;-------------------------------------------------
+;・TFLAG:ACT派性(0=장착/1=解除)
+;-------------------------------------------------
+;구상側の設定により、대상限定구상ではこのコマンド自体発生しない
+
+;────────────────────────────────────
+;ACT66, 매도
+;────────────────────────────────────
+;・挑発するように죠교대상の痴態を声に出す
+;・회화系から発生する場合もある
+;・턴방침が"소프트"だと発生しない
+;・회화系から派生する場合もある
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_66
+;-------------------------------------------------
+;・ACTの派生なし
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT66, 매도
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;一般구상からの使い回し。まぁ시간ができたら손入れ했다い感じ
+;------------------------------------------------
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0)
+		PRINTFORMW 「그렇구나 , 지금의%CNAME(MASTER, TARGET)%(을)를 표현한다면…」
+		PRINT 「
+		;매도語表現関数を呼ぶ。関数は대상限定専用の処理有り
+		CALL SWEARWORDS_NO9(1)
+		PRINTFORMW 이렇게 말했는데 우두머리군요」
+		
+		PRINTFORMW 「어머나, 이론이 있다면 (들)물어 주어도 괜찮아요？ 다만…」
+		PRINT 「말한 일을 철회할 생각은 없지만, 이군요
+		CALL PRINT_SYMBOL_K14
+		RETURN 1
+	ENDIF
+	
+	;TEQUIP分岐はもうちょっと充実시켰다い。まぁ現状はこんな感じでお茶を濁しておく
+	;=================================================
+	;죠교대상が자위중
+	;=================================================
+	IF 구상記入チェック(100) && GETBIT(TEQUIP:자위중, 0) && !GETBIT(TEQUIP:자위중, 1) ;죠교자が자위중の場合は弾く。話が合わなくなるんでｗ
+		PRINTFORMW 「얼간이인 얼굴 해 버려서…남의 앞에서 자주(잘) 아무렇지도 않게 자위할 수 있는 것？」
+		PRINTFORMW 「\@ TCVAR:MASTER:가버려 ? 게다가%CNAME(MASTER, TARGET)%, 이제 이 기초가 되고 있잖아 # …완전히. 철면피에도 정도가 있어요 \@」
+		PRINTFORMW 「싫으면 그만두어도 괜찮지만,%CNAME(MASTER, TARGET)%에 그럴 생각은 없어？」
+		PRINTFORMW 「%RAND_SPLIT("정말/사실")%, 어쩔 수 없는 변태군요\@ TENSION(TARGET, 8) == "高い" ? っ！ # … \@」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;안면승마中
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
+		;전회REACT분류派生
+		SELECTCASE PREVCOMGRONAME()
+			CASE "적극적으로 한다", "受け入れる", "태연하게 한다"
+				PRINTFORMW 「대강, 기쁜듯이%RAND_SPLIT("날름날름 빨고/빨아 무심코")%는…, 진짜개같구나」
+			CASE "소극적으로 한다/용서를 빌다"
+				PRINTFORMW 「이봐요, 좀 더 확실히 맛보세요. 남편님에게혀로 봉사할 수 있다니 개로서는 행복하겠지요？」
+			CASEELSE
+				PRINTFORMW 「싫어한다면 억지로 꽉 누를 때까지. 이봐요, 남편님의 소중한 곳…, 맛보세요」
+		ENDSELECT
+		
+		;シックスナイン상태、若しくは죠교대상が가버려
+		IF GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2) || TCVAR:MASTER:가버려
+			PRINTFORMW 「은%CNAME(MASTER, TARGET)%…, 이제\@ PENIS(MASTER) ? 사정해 # 행 \@그렇게 되고 있잖아」
+			PRINTFORM 「완전히 철면피로 야비하다
+			;죠교대상が남자
+			IF TALENT:MASTER:남자
+				PRINTFORM \@ TALENT:MASTER:작은체형 ? 사내 아이 # 남자 \@
+			;その他
+			ELSE
+				PRINTFORM \@ TALENT:MASTER:작은체형 ? 여자 # 여자 \@
+			ENDIF
+			PRINTW 그런데！」
+		;その他
+		ELSE
+			PRINTFORMW 「아무튼에서도…%CNAME(MASTER, TARGET)%에는 잘 어울리는 모습이야. 정말로, 군요」
+			CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"「\@ ALI(0) ? 후후후 # 킥킥 \@…」")
+			CLEARLINE 1
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他 RANDACT(0)
+	;-------------------------
+	SELECTCASE RANDACT(2, 0)
+		CASE 0
+			PRINT 「보통,
+			CALL SWEARWORDS_NO9(1)
+			PRINTW …」
+			
+			PRINTFORMW 「…(이)라고 말을 들어, 누구의 일인가 눈치채지 못할 수록%RAND_SPLIT("바보/저인가/우둔")%(이)가 아니다고는 생각하는데」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 경우, 조금 이상하다%RAND_SPLIT("의군요/원이군요？")%」
+		CASE 1
+			PRINTFORMW 「응, 그렇구나. 지금의%CNAME(MASTER, TARGET)%(은)는 막바지」
+			PRINT 「
+			CALL SWEARWORDS_NO9(1)
+			PRINTFORMW (이)라는 느낌이군요」
+			
+			PRINTFORMW 「어머나, 사실을 말했을 뿐？ 미안한데」
+	ENDSELECT
+	CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"「\@ ALI(0) ? 킥킥 # 우후후 \@…」")
+	CLEARLINE 1
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT67, 삼각목마
+;────────────────────────────────────
+;・죠교대상を木馬に乗せようとする
+;・地の文は"乗せようと했다…"となっているが処理上はACT開始時点で乗せられている
+;・実は쾌Ｃではなく쾌Ｖが入る(生えてる木馬！？)
+;・MASTERが처녀なら、처녀상실が起こる(@ACTION_APPLY2で処理。REACT분류が용서를 빌다の場合は回避される)
+;・죠교대상が남자の場合は発生しない
+;・턴방침が"소프트", "노멀"時には発生しない
+;・TEQUIP(바이브/항문바이브/항문비즈/관장그릇＋플러그/페니스밴드)장착時には発生しない
+;・성교중/성교봉사중には発生しない
+;・야외플레이時には発生しない
+;・밀어넘어지는중には発生しない
+;・이상系から発生する場合もある
+;・既に装備していた場合は解除になる
+;・既に장착済み、かつTFLAG:징계・플래그が立っている場合は発生しない(即ち、解除されない)
+;・TEQUIP:삼각목마はREACT분류が"용서를 빌다"であった場合に解除される
+;・0616版時点の仕様でこの挙動を※確実に参照する손段なし。本体側の改善が求められる
+;・※REACT67以外でも취소処理になる場合がある為
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_67
+;-------------------------------------------------
+;TFLAG:ACT파생(0=장착/1=解除)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT67_0, 삼각목마장착
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;初回 FIRSTACT(0)
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0)
+		PRINTFORMW 「응,%CNAME(MASTER, TARGET)%(은)는 이것 알고 있어 해들…？」
+		PRINTFORMW 「원래는 고문용이었던 것 같은 것이지만…　나도 그렇게 자세한 것은 아닌거예요 」
+		
+		PRINTFORM 「그런 (뜻)이유이니까……%CNAME(MASTER, TARGET)%시키등일로 해요…
+		CALL PRINT_SYMBOL_K14
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;階層이벤트x3 全部見たらCASEELSE以降で処理
+	SELECTCASE ORDERACT(0)
+		CASE 0
+			PRINTFORMW 「이것, 경우에 따라서는 찢어지는 것 같은거야」
+			PRINTFORM 「%CNAME(MASTER, TARGET)%의 경우
+			IF 0
+			ELSEIF TALENT:MASTER:장신
+				PRINTFORMW 그 몸집이 큰 신체라고, 조금 큰 일이어요」
+			ELSEIF TALENT:MASTER:작은체형
+				PRINTFORMW 체중도 가볍고, 부담은 그렇게 없을지도이지만」
+			ELSE
+				PRINTFORMW , 날뛰지 않으면 그렇게 심한 일은 되지 않는다고 생각하는데」
+			ENDIF
+			PRINTFORML 「그런데, 이제 타 주어요」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 그 피학취미, 마음껏 만족시켜 주어요…」
+		CASE 1
+			PRINTFORMW 「이번 쳐 키의 부분에 조금 폭과 둥그스름을 갖게 해 보았어」
+			PRINTFORMW 「너무 고통이 너무 큰 것도 어떨까라고 생각해？」
+			PRINTFORMW 「 나로서도…,%CNAME(MASTER, TARGET)%가 고통과 쾌락의 틈에서 번민모습을 즐기고 싶고, 응」
+		CASE 2
+			PRINTFORMW 「전회는 조금 너무 편했는지도, 는 일로 추를 준비했어요」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 경우, 이 정도가 아니면 만족하지 않을까 생각해？」
+			PRINTFORM 「, 시작해요. 오늘은 어떤 소리로 울어 줄까. 즐겨, 군요
+			CALL PRINT_SYMBOL_K14
+		;その他でRANDACT
+		CASEELSE
+			SELECTCASE RANDACT(3, 0)
+				CASE 0
+					PRINTFORMW 「아무튼 그러나…, 도착적이라고 하는지, 기학 취미도 여기에 극히라는 느낌이죠」
+					PRINTFORMW 「정직, 나는 그만큼 좋아하지도 않지만%CNAME(MASTER, TARGET)%…, 정말 좋아합니다 것이군요？」
+					PRINTFORMW 「어머나, 이제 와서 부정하는 일 없어요. 나, 분명하게 알고 있기 때문에」
+					PRINTFORMW 「오늘도 상냥하고, 그렇지만 철저하게 학째라고 주어요…」
+				CASE 1
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%…,\@ !TEQUIP:눈가리개 ? 목마를 본 순간, 눈의 색이 바뀌었어요 # 지금부터 무엇이 시작될까 찰했다여어 \@그런데？」
+					PRINTFORMW 「후후, 거짓말 하는 필요하다니 않아요」
+					PRINTFORMW 「조크조크 해버리는 지요？ 이제 쑤셔 버려서 괴롭겠지요？」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 소망……, 이 내가 실현되어 주어요…」
+				CASE 2
+					PRINTFORMW 「그러나, 라고 할까…원래 고문용이었던 것을 기학 취미에 활용하자이라니, 도대체 누가 생각했는지 해들 」
+					PRINTFORMW 「진짜, 바보같아요. 인간은. 아무튼에서도…」
+					PRINTFORMW 「 나도 그다지 타인의 일 말할 수 있던 의리가 아니지만, 이군요」
+					PRINTFORMW 「어머나, 조금 잡담이 지났는지 해들. 후후…그러면, 이제 시작해요」
+			ENDSELECT
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT67_1, 삼각목마解除
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+	;=================================================
+	;初回 FIRSTACT(1)
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(1)
+		PRINTFORMW 「어때？ 처음으로 탄 감상은. 라고…」
+		PRINTFORM 「지금, 그런 일 (듣)묻는 것은 촌스러울까. 그런데
+		CALL PRINT_SYMBOL_K14
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	PRINTFORMW 「%RAND_SPLIT("네/후후")%, 수고 하셨습니다. 지금, 내려 주어요」
+	;죠교대상상태변화派生
+	SELECTCASE GET_CONDITION(MASTER)
+		CASE "피폐"
+			PRINTFORMW 「어머나, 상당히 소모한 것 같구나？ 조금 너무 하드했는지 해들…」
+		CASE "쇠약"
+			PRINTFORMW 「이나다, 조금 불쌍함일 정도 쇠약해…」
+		CASE "무기력"
+			PRINTFORMW 「무슨…, 빈껍질같이 되어 버렸다 원이군요」
+		CASE "몽롱"
+			PRINTFORMW 「멍하니 해 버려서…, 아직 여운에 잠겨」
+		CASE "정욕"
+			PRINTFORMW 「후후, 아직 흥분이 식지 않는 것 같구나」
+		CASE "분노"
+			PRINTFORMW 「기분 나쁜 것 같구나. 그렇게 싫었던가 해들 」
+		CASE "싫증"
+			PRINTFORMW 「뭐야, 그렇게 싫증했던 (뜻)이유？」
+		CASE "통상"
+			PRINTFORMW 「어때？ 즐겨 받을 수 있었는지 해들 」
+	ENDSELECT
+	SELECTCASE GET_CONDITION(MASTER)
+		CASE "몽롱", "정욕", "통상"
+			PRINTFORMW 「뭐, 그러한 (뜻)이유로…다음의 기회를 즐거움으로 하고 있어」
+		CASE "피폐", "쇠약", "무기력"
+			PRINTFORMW 「다음번은 너무 하지 않게 하지 않으면 타목같구나」
+		CASEELSE
+			PRINTFORMW 「다음은 좀 더 취향을 집중시킬 필요가 있는지도…」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;NO9_ACT68, 관장세트
+;────────────────────────────────────
+;・관장液の注入/追加/排出
+;・最初の注入時(ACT파생=0)は量1～3。追加時(ACT파생=2)は量1～4。それぞれランダムで処理される
+;・;既に装備している場合、관장液追加になる
+;・관장液が5本入っている場合、관장プラグ解除になる
+;・관장液の分量はTEQUIP:관장그릇＋플러그で参照できる
+;・TEQUIP(항문바이브/항문비즈/페니스밴드/삼각목마)장착時には発生しない
+;・성교중/성교봉사중には発生しない
+;・턴방침が"소프트"だと発生しない
+;・도구系から派生する場合もある
+;-------------------------------------------------
+@KOJO_NO9_MS_ACT_K14_68
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=장착/1=解除/2=관장液追加)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT68_0, 관장그릇＋플러그장착
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;AUTOORDERに統合してもよさそう
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0)
+		PRINTFORMW 「우선 연성해 보았지만…」
+		PRINTFORMW 「 실은, 나도 자주(잘) 몰라」
+		PRINTFORM 「이라고 말하는 것으로……%CNAME(MASTER, TARGET)%그리고 시험하게 해 주는 일로 해요…
+		CALL PRINT_SYMBOL_K14
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;階層이벤트x3 全部見たらCASEELSE以降で処理
+	SELECTCASE ORDERACT(0)
+		CASE 0
+			PRINTFORMW 「전회로 조금은 익숙해졌는지 해들？ 라고의도 이상한 이야기군요. 후후」
+			PRINTFORMW 「이봐요, 얌전하게 해. 분명하게 마개를 하지 않으면 흘러넘쳐 와버리는 원」
+			CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"「\@ ALI(0) ? 킥킥 # 우후후 \@…」")
+			CLEARLINE 1
+		CASE 1
+			PRINTFORM 「이기도 해？ 
+			IF TALENT:MASTER:작은체형
+				PRINTFORM 작은\@ TALENT:MASTER:남자 ?  남자 # 여자 \@의 아이
+			ELSE
+				PRINTFORM \@ TALENT:MASTER:남자 ? 대단한 남자 # %CNAME(MASTER, TARGET)%같은 아이 \@
+			ENDIF
+			PRINTFORMW 하지만 관장액을 따라져, 엉덩이 진동시키고 있는 모습…, 조금 감등 없어요」
+			PRINTFORMW 「이라고 하는지, 좀 더\@ ALI(0) ? 괴롭히고 싶고 # 심한 일했다쿠 \@되어버린다의」
+			PRINTFORMW 「스스로도 어떻게든 하고 있다고 생각하지만, 뭐, 방법 없지요\@ ALI(0) ? ？ # 에？ \@」
+			CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"「\@ ALI(0) ? 킥킥 # 후후후 \@…」")
+			CLEARLINE 1
+		CASE 2
+			PRINTFORM 「이제 상당히 익숙해져 왔지 않는다？ 라고, 그러한 문제가 아닌 생각도 드는데
+			CALL PRINT_SYMBOL_K14
+			PRINTFORMW 「뭐, 정직…, 이런 것은, 조금 어떨까라고 생각하지 않는 것도 아니지만. 그런데…」
+			PRINTFORMW 「치욕에 비뚤어진다%CNAME(MASTER, TARGET)%의 표정, 나…, 정말 좋아해」
+			PRINTFORMW 「이봐요, 가만히 해 주세요. 여기서 흘러넘치게 한 구는 없을 것입니다？」
+			CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"「\@ ALI(0) ? 쿠스 # 후후 \@읏…」")
+			CLEARLINE 1
+		CASEELSE
+			;죠교자に페니스あり、もしくは페니스밴드장착中時に1/2の確率で真
+			IF TRUECHECK(PENIS(TARGET), TEQUIP:죠교자페니스밴드) > 0 && !RAND:2
+				SELECTCASE RANDACT(2, 0)
+					CASE 0
+						PRINTFORMW 「날달걀을 풀어 관장하자면？ 다음에 삽입할 때 순조롭게 아무리 주위의 것」
+						PRINTFORMW 「뭐,%CNAME(MASTER, TARGET)%나름이지만…조금 시험해 본다？ 후후후…」
+					CASE 1
+						PRINTFORMW 「모처럼 이런 일 하기 때문에, 깨끗이 하면(자)%CNAME(MASTER, TARGET)%의 엉덩이로 즐기고 싶은 것？」
+						PRINTFORMW 「%CNAME(MASTER, TARGET)%(을)를 \@ TALENT:MASTER:남자 ? 여자같이 # 엉덩이로 \@울릴 수 있는 일 생각하면(자), 두근두근해버리는 원」
+						
+						PRINTFORM 「아무튼에서도, 그 때의 기분 나름이니까…정말 말할 수 없는데. 그런데
+						CALL PRINT_SYMBOL_K14
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDACT(3, 1)
+					CASE 0
+						PRINTFORMW 「어때？ 나의 솜씨도 상당히 좋아져 왔다고 생각하지 않는다？」
+						PRINTFORMW 「-응이라고 말했더니, 지금의%CNAME(MASTER, TARGET)%에 대답할 여유는 없을까. 응？」
+					CASE 1
+						PRINTFORMW 「익숙해져버리자(면) 당연과 같은 일에 생각되어 오는데…」
+						PRINTFORMW 「자주(잘) 생각하면(자), 조금 보통이 아니어요？ 다양한 의미로」
+					CASE 2
+						PRINTFORMW 「주입의 방법도 여러가지 있는 것 같아.%CNAME(MASTER, TARGET)%, 알고 있었는지 해들 」
+						PRINTFORMW 「한꺼번에 들어갈 수 있으면(자) 굉장히 효과가 있는 것 같지만, 조금 시험해 본다？」
+				ENDSELECT
+				CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"「\@ ALI(0) ? 우후후 # 우후후 \@…」")
+				CLEARLINE 1
+			ENDIF
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT68_1, 관장그릇＋플러그解除
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+	;階層이벤트x3 全部見たらCASEELSE以降で処理
+	SELECTCASE ORDERACT(1)
+		CASE 0
+			PRINTFORMW 「마개를 뽑으면 당장이라도 흘려버릴 것 같구나？」
+			PRINTFORMW 「어머나 무엇？ 화장실？ 후후…, 안되어요.%CNAME(MASTER, TARGET)%에는 여기서, 나의 눈앞으로 하고 받아요」
+			PRINTFORMW 「그렇게…사람으로서 제일 부끄러운 모습을 이 나에게 보이게 해」
+			PRINTFORMW 「이봐요, 이제 빠져요.%CNAME(MASTER, TARGET)%의 모두, 드러내 주어요…」
+		CASE 1
+			PRINTFORMW 「걱정하지 않아 좋아요. 이런 일로,%CNAME(MASTER, TARGET)%%RAND_SPLIT("를 싫어하거나는 하지 않으니까/에 환멸했다하지 않으니까")%」
+			PRINTFORMW 「이래…응？ 이런 일까지 받아들인다%CNAME(MASTER, TARGET)%(은)는, 나에게 있어 얻기 어려운 존재인거야」
+			PRINTFORMW 「아무리 비참하고 보기 흉해서 모습에서도 받아들여, 전력으로\@ AFFECTION("상사상애") ? 사랑해 # 귀여워해 \@준다」
+			PRINTFORMW 「이 나에 따르고 있는 한계는……, (이)군요」
+		CASE 2
+			PRINTFORMW 「지금,%CNAME(MASTER, TARGET)%(은)는 무엇을 생각할까？」
+			PRINTFORMW 「한심한 모습을 볼 수 있는 부끄러움？ 해방감에의 기대？」
+			PRINTFORMW 「그렇지 않으면, 그 양쪽 모두인가 해들？ 뭐, 어쨌든…」
+			PRINTFORMW 「곧바로 편하게 해 준다.%CNAME(MASTER, TARGET)%의 제일 부끄러운 모습, 나에게 보이게 해 주세요…」
+		CASEELSE
+			SELECTCASE RANDACT(3, 2)
+				CASE 0
+					PRINTFORMW 「%RAND_SPLIT("어때/괴로운 것 같구나")%？ 이제 흘려버릴 그렇게？ 그렇지만…」
+					PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 귓전에 입을 대어 속삭였다…
+					CALL FADEIN(13, "「…승손에 루등했다들징계·하기 때문에」")
+					WAIT
+					PRINTL
+					PRINTFORMW 「마개는 뽑아 주기 때문에, 내가 좋다고 말할 때까지 참아. 좋네요？」
+					PRINTFORMW 「…, 지금 편하게 해 준다. 마음껏, 해방감을 맛원%RAND_SPLIT("/와")%좋아요」
+				CASE 1
+					PRINTFORMW 「…한심한 얼굴 해 버려서. 이제 한계일까？」
+					PRINTFORMW 「, 학수 고대. 마개를 뽑아 주어요…」
+					PRINTFORMW 「이봐요, 마음껏 따돌릴 수 있어.%RAND_SPLIT("보기 흉하다/잔혹한")%모습을 나에게 보이게 해 주세요. 다만…」
+					PRINTFORMW 「분명하게 소정의 장소에서 하지 않으면 나중에 청소시키기 때문에」
+					CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), "「킥킥…」")
+					CLEARLINE 1
+				CASE 2
+					PRINTFORMW 「응, 배 괴롭다？ 이봐요, 어떻게야…？」
+					PRINTFORMDW 앨리스는 팽창해 버렸다%CALLNAME:MASTER%의 하복부를 압박하면서 속삭여 왔다…
+					PRINTFORMW 「좋아요, 곧바로 편하게 해 준다. 그렇지만…」
+					PRINTFORMW 「마개를 뽑아도 곧 내 안되어요？ 내가 좋다고 말할 때까지 인내 없음 있고」
+					
+					PRINTFORM 「다만…지금의%CNAME(MASTER, TARGET)%에, 그것이 생긴다고도 생각되지 않지만. 그런데
+					CALL PRINT_SYMBOL_K14
+			ENDSELECT
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_ACT68_2, 관장液追加
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+	;관장液分量派生			嫌な派生だなｗ
+	SELECTCASE TEQUIP:관장그릇＋플러그
+		CASE IS >= 4
+			SELECTCASE RANDACT(2, 3)
+				CASE 0
+					PRINTFORMW 「어때？ %CNAME(MASTER, TARGET)%(이)라면 아직 안되네요…？」
+					PRINTFORMW 「네, 무엇…죽어버린다？ 후후, 괜찮아」
+					
+					PRINTFORM 「이 정도로 죽는 일은 없을 것？ 안심하고 즐겨 주세요
+					CALL PRINT_SYMBOL_K14
+				CASE 1
+					PRINTFORMW 「유석에 조금 괴로운 느낌 까？ 그렇지만%CNAME(MASTER, TARGET)%(이)라면…」
+					PRINTFORMW 「좀 더 안되네요？ \@ ALI(0) ? 후후 # 후후 \@…」
+			ENDSELECT
+		CASE 3
+			SELECTCASE RANDACT(2, 4)
+				CASE 0
+					PRINTFORMW 「배가 부풀어 임신하고 있는 것 같다…」
+					SIF TALENT:MASTER:남자
+						PRINTFORMW 「남자의 버릇에, 군요？ 후후후…」
+					PRINTFORMW 「응, 어떻게야？ 괴로운거야？ 그렇지 않으면……」
+				CASE 1
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%에는, 아직 어딘지 부족할 것입니다？」
+					
+					PRINTFORM 「이봐요, 아직 여유가 있을 것 같다. 이제 한 개분 추가 해 주어요…
+					CALL PRINT_SYMBOL_K14
+			ENDSELECT
+		CASE 2
+			PRINTFORMW 「, 이제 한 개 넣어요」
+			
+			PRINTFORM 「어머나, 무엇인가 말했는지 해들？ 후후…미안해요. 자주(잘) 들리지 않아요…
+			CALL PRINT_SYMBOL_K14
+		;ELSEはたぶん無意味
+		CASEELSE
+			PRINTFORMW 「후후…괴로운 것 같구나」
+			PRINTFORMW 「그러면좀 더 넣어 주어요」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;-------------------------------------------------
+;呼び出すタイミングを変えたかったので、구상側からここで呼ぶ
+;-------------------------------------------------
+@NO9_ACTMESSAGE62
+PRINTFORMDL %CALLNAME%(은)는 %TARGET_DESCRIPTION("시작하면서 、")% %CALLNAME:MASTER%의
+PRINTFORMDL 유두나 클리토리스에 바늘을 찔러 세웠다…

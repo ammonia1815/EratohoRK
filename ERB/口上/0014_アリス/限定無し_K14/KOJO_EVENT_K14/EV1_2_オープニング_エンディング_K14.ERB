@@ -1,0 +1,990 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	엘리스구상 オープニング、エンディング구상ファイル
+;
+;	オープニング, エンディング이벤트구상のファイル
+;
+;Version		Reason
+;1.71			@구상記入チェック仕様に。その他細かな修正。두명をちょっと弄る
+;1.70			EV2をMSに
+;1.69			모드毎に分かれていたGAMEBASE参照処理を구상関数直下に統合
+;1.67Rel5		KFLAG:(FLAG:주인님):102によるED경과判定処理を追加
+;1.61			OP開幕のエフェクトにREDRAW 0。一部処理の関数化。その他
+;1.60			単体ファイルとして独立
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;EV1, オープニング구상	Oh I can't escape
+;========================================================================
+;・구상主(TARGET)が主人である場合にのみ表示される
+;・戻り値を2と했다場合はOP後の本体側のタイトルロゴは表示されない
+;・노멀모드以外の場合、죠교대상がNO:MASTER == 0(いわるゆる당신)でない可能性あり
+;-------------------------------------------------
+;関連変数…
+;FLAG:모드(0=통상/1=샌드박스/9=엑스트라)
+;-------------------------------------------------
+@KOJO_EVENT_K14_1(ARG)
+;-------------------------------------------------
+;Revの場合죠교대상がMASTERである事に注意。죠교자はTARGETである
+;そしてTARGETが주인님で無い場合がある事にも注意を向ける필요がある
+;その場合は(FLAG:2)を使えば주인님を参照できる。これを使えば주인님がTARGETでない場合も引き合いに出す事が可能
+;CNAMEは%CNAME(名前を表示시켰다い대상(MASTER, TARGET, (FLAG:2), ASSI等), それを呼ぶ人物(TARGET, ASSI, (FLAG:2)等)%となっている
+;呼ぶ人物を指定しない場合は自動的にTARGETとなる
+;TARGETがMASTERを呼ぶ場合には%CNAME(MASTER, TARGET)% 조수を呼ぶ場合には%CNAME(ASSI)%でok
+;플레이ヤーがどのような設定にするか分からない以上
+;%CALLNAME:MASTER%は地の文での使用に留め、회화文では呼び名を代入했다%CNAME(MASTER, TARGET)%を使う事を強くお勧めする
+;「%CALLNAME:MASTER%！　あんた云々」みたいな事は避けたい。「%CALLNAME:MASTER%さん」みたいなのも悲惨である
+;CNAMEなら구상側で定義してやれば、それらを避ける事が出来る。"さん"付けだろうが"様"だろうが如何様にも定義出来る
+;readmeに"名前を設定して下さい"云々等も書く필요もなく、구상側で全て完結する事が可能。
+;-------------------------------------------------
+#LOCALSIZE 3
+
+;---------------------------------------------
+;バリアント判定処理
+;---------------------------------------------
+CALL CHK_GAMEBASE_K14
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;노멀모드時
+;RESULT値(1,OPを表示했다後本体のタイトルロゴを表示/2, 本体のタイトルロゴを表示しない)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && FLAG:모드 == 0
+	;-------------------------------------------------
+	;소환가능조수代入
+	;-------------------------------------------------
+	CSTR:소환가능조수 = 레이무/마리사/파츄리/사쿠야/레밀리아/유카리/메디슨/유카/히나/早苗/サニーミルク/ルナチャイルド/스타사파이어/
+	
+	NO_14_두명 = \@ RAND:2 ? 七色の人形遣い # 雹の人形遣い \@
+	
+	;-------------------------------------------------
+	;各種봉인処理
+	;-------------------------------------------------
+	;이상系はまず出る事ないんで不要な気もするけど、万が一出られても困るんで봉인。そもそもこれらのコマンドは大嫌い
+	;現状対応できないんで손가락삽입한다を봉인
+	CFLAG:1019 = 100
+	;피스트퍽を봉인
+	CFLAG:1070 = 100
+	;애널피스트を봉인
+	CFLAG:1071 = 100
+	;양쪽피스트を봉인
+	CFLAG:1072 = 100
+	;공중육변기플레이を봉인
+	CFLAG:1074 = 100
+	;항문섹스시킨다を봉인(상사상애時に처녀でなければ해방)
+	CFLAG:1099 = 100
+	;修正당했다臭いんでコメントアウト
+	;성기마찰한다の挙動が怪しいので봉인(상사상애時に처녀でなければ해방)
+	;CFLAG:1016 = 100
+	
+	;------------------------------------------------------------------------------------------------------
+	;MASTERの呼び名を代入(整合性の観点から회화文中で플레이ヤーの定義했다名前を表示시켰다くないので強制的に貴方or貴女にする)
+	;------------------------------------------------------------------------------------------------------
+	;플레이ヤーが名前を設定している場合
+	IF NO:MASTER == 0 && CALLNAME:MASTER != "당신"
+		;名前入力済みかつ男
+		IF TALENT:MASTER:남자
+			CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴方/%CSTR:(TARGET):호칭목록%
+		;名前入力済みかつ후타나리
+		ELSEIF TALENT:MASTER:후타나리
+			CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+		;名前入力済みかつそれ以外（女）
+		ELSE
+			CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+		ENDIF
+	;男の場合
+	ELSEIF TALENT:MASTER:남자
+		CSTR:(TARGET):호칭목록 = 당신_貴方/%CSTR:(TARGET):호칭목록%
+	;후타나리の場合
+	ELSEIF TALENT:MASTER:후타나리
+		CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+	;それ以外（女）
+	ELSE
+		CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+	ENDIF
+	
+	[SKIPSTART]
+	;---------------------------------------------
+	;OPスキップ処理
+	;---------------------------------------------
+	PRINTFORMDW  오프닝을 스킵 합니까？
+	PRINTL
+	PRINTFORMDL [0] 네
+	PRINTFORMDL [1] 아니오
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		CASE 0
+			GOTO SKIP
+		CASE 1
+			PRINTL
+	ENDSELECT
+	[SKIPEND]
+	
+	;背景色を夜用に
+	SETBGCOLOR 0, 0, 20
+	;---------------------------------------------
+	;全画面カットイン用の一連の処理
+	;---------------------------------------------
+	;文字色リセット
+	RESETCOLOR
+	;フォントをセット
+	CALL SETFONT_K14
+	
+	LOCAL:2 = CURRENTREDRAW()
+	REDRAW 0
+	
+	;中央で表示
+	ALIGNMENT CENTER
+	;FULLCUTIN를 강요表示(TIMES, 1で一度のみ)
+	CALLF ANIME_CONFIG("TIMES", 1)
+	;全画面カットイン
+	CALL FULLCUTIN2(0, 17, "어느 밤, 마법의 숲의 일각에서――")
+	;左寄せに戻す
+	ALIGNMENT LEFT
+	CALL KOJO_COLOR(TARGET)
+	;フォントを戻す
+	CALL RESETFONT_K14
+	;コメントアウト
+	;CALL TWAIT1_K14
+	
+	;---------------------------------------------
+	;OP用エフェクト
+	;---------------------------------------------
+	FOR LOCAL:1, 0, 10
+		SIF LOCAL:1 > 1 && (GLOBAL:11 & 8) == 0
+			SETBGCOLOR 65536*13*LOCAL:1 + 256*13*LOCAL:1 + 13*LOCAL:1
+		TWAIT (350 - LOCAL:1*30), 1
+		CLEARLINE 1
+		PRINTL  
+		PRINTL  
+		PRINTL  
+		SIF LOCAL:1 > 5
+			PRINTL  
+	NEXT
+	;REDRAWを戻す
+	REDRAW LOCAL:2
+	;背景色を夜用に
+	SETBGCOLOR 0, 0, 20
+	;-------------------------------------------------------------------------------------
+	;各種テスト用エリア
+	;-------------------------------------------------------------------------------------
+	[SKIPSTART]
+	[SKIPEND]
+	
+	;---------------------------------------------
+	;OP開始
+	;---------------------------------------------
+	PRINTFORMW 「어머나, 깨어난 것 같구나」
+	PRINTL
+	;------------------------------------------------------------------------------------------------------
+	;キャラカットイン CSVで定義당했다ものが呼ばれる。
+	;(CSTR:ASSI:10, CSTR:ASSI:11, CSTR:ASSI:12)のような事も可能。CSVCSTRで任意のキャラのカットインを呼ぶ事も可能
+	;------------------------------------------------------------------------------------------------------
+	CALL CHARA_CUTIN(NO_14_두명, CSTR:등장명, CSTR:로마자)
+	PRINTL
+	PRINTFORMDW 소리(분)편에 뒤돌아 보면(자), 거기에는 깨끗한 블론드의 머리카락을 한 아름다운 소녀의 모습이 있었다.
+	PRINTFORMDW 그래, 확실히 아름답다고 말해도 좋다. 하지만 가련한 외관과 정반대인, 보통이 아닌 무엇인가를 느낀다.
+	PRINTFORMDW 그리고 심한 두통도 한다. 현재의 상황을 삼킬 수 없다.
+	PRINTL
+	PRINTFORMW 「그다지 빤히 보지 않으면 좋은 것. 추접하다…」
+	PRINTL
+	;------------------------------------------------------------------------------------------------------
+	;ＢＧＭカットイン(CSTR:13, CSTR:14でCSVで定義당했다ものを呼び、直接記述する事で任意の内容に変更する事も出来る)
+	;------------------------------------------------------------------------------------------------------
+	CALL BGM_CUTIN("Romantic Children", 1)
+	PRINTFORMDW 소녀의 말에 %CALLNAME:MASTER%(은)는 일순간 딱 되었지만, 그녀의 도 말해지지 않는 위압감에 압도 되고 침묵을 지켰다.
+	PRINTFORMDW 라고 거기서 %CALLNAME:MASTER%(은)는 문득 나에게 돌아갔다. 자신이 왜, 어떤 경위로 현재가 상황에 있는 것인가.
+	PRINTFORMDW 그리고, 어제밤부터의 기억이 풋트리와 중단되고 있는 일을 알아차린다.
+	PRINTFORMDW 마을의 변두리에 있는 자택에 돌아가는 도중까지는 생각해 낼 수 있지만, 그 이후의 기억이 없다…
+	PRINTL
+	PRINTFORMW 「간신히 그 둔한 머리에서도, 물건이 생각되게 되었는지 해들…？」
+	PRINTL
+	PRINTFORMDW 이번이야말로 무엇인가 말대답하려고 했지만, 그녀가 찌르는 것 같은 시선에 꼼짝 못하게 할 수 있어 말을 뽑을 수가 없다.
+	PRINTFORMDW 그리고 %CALLNAME:MASTER%(은)는 있는 일을 알아차린다. 그래, 자신은 그녀를 알고 있다. 그녀에게는 본 기억이 있다.
+	PRINTFORMDW 마을로 인형재주를 피로하고 있던 인형 조종사, 마법의 숲에 산다고 말해지는 마법사…
+	PRINTL
+	PRINTFORMW 「후후… 간신히 깨달아 줄 수 있던 듯」 
+	PRINTFORMW 「 난 앨리스야. 앨리스·마가트로이드. 칠색의 인형사라고 불리는 일도 있어요」
+	PRINTL
+	PRINTFORMDW %CALLNAME:MASTER%(은)는 그녀로부터 느끼고 있던 위화감에 납득 함과 동시에, 안도에 가슴을 쓸어내렸다.
+	PRINTFORMDW 그래, 그녀는 사람은 아니지만 사람에게 해 하는 존재는 아니면 들어서 알고 있다.
+	PRINTL
+	PRINTFORMW 「우선, 상황을 설명시켜 주어요」
+	PRINTFORMDW 앨리스는 말하기 시작했다.
+	PRINTL
+	PRINTFORMW 「이 숲에서 쓰러져 있는 %CNAME(MASTER, TARGET)%(을)를, 우연히 우연히 지나간 내가 찾아냈어」
+	PRINTFORMW 「밤, 마을의 밖에 있는 것이, 얼마나 위험한가는 %CNAME(MASTER, TARGET)%도 알고 있는 원이군요…？」
+	PRINTFORMW 「버리기에는 아깝고, 그렇다고 %CNAME(MASTER, TARGET)%의 집을 알고 있는 것도 아니니까…」
+	PRINTFORMW 「우선 우리 집에 초대한, 거라곤 하지만…」
+	PRINTL
+	PRINTFORMDW 태도는 약간 난감하지만, 소문 대로 위험한 종류의 마법사는 아닌 것 같다.
+	PRINTFORMDW 간신히 상황을 이해한 %CALLNAME:MASTER%(은)는, 도와 준 예를 하기 위해 앨리스에게 다시 적합하려고 했다.
+	PRINTFORMDW 그러나 움직일 수 있는 것은 머리만으로, 몸은 말하는 것을 듣지 않는다…
+	PRINTL
+	PRINTFORMW 「후후…쓸데없어요. 지금의 %CNAME(MASTER, TARGET)%(은)는 자유롭게 움직이는 일은 할 수 없어요」
+	CALL BGM_CUTIN("the Grimoire of Alice", 1)
+	PRINTL
+	PRINTFORMDW %CALLNAME:MASTER%(은)는 앨리스의 말의 의미를 꾀하기 어렵지, 잠깐 혼란했다.
+	PRINTL
+	PRINTFORMW 「어머나, 미련하구나. 모르는 것일까…？」
+	PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 나의 지배하에 있어. 나의 의지를 거역해 움직이는 일은 할 수 없다. 안되지만…」
+	PRINTL
+	PRINTFORMDW 바로 그때 앨리스의 분위기는 어두워져, 방의 공기는 일변했다.
+	PRINTL 
+	PRINTFORMW 「처음은 아침이 되면 돌아가 줄 생각이었지만」
+	PRINTFORMW 「갑자기 기분이 바뀌었어요. 스스로도 잘 모르는 것이지만…」
+	PRINTFORMW 「변덕？ 기분의 미혹？ 약간의 호기심？ 응…」
+	PRINTFORMW 「마음의 요동을 언어화하는 것은, 의외로 어렵네요…♪」
+	PRINTL
+	PRINTFORMDW 앨리스는 즐거운 듯이 이야기하고 있지만, 그 숨겨지지 않은 광기에 %CALLNAME:MASTER%(은)는 전율 했다…
+	PRINTL
+	PRINTFORMW 「아무튼, 그런 일은 어때라고 해 원」
+	PRINTFORMW 「그리고 %CNAME(MASTER, TARGET)%에는 말하는 것이 있어…」
+	PRINTL
+	PRINTFORMDW 앨리스는 잠깐 침묵한 후에 입을 열었다
+	PRINTL
+	;ＢＧＭカットイン 人形裁判　～ 人の形弄びし少女
+	CALL BGM_CUTIN(CSTR:곡１, 1)
+	PRINTFORMW 「%CNAME(MASTER, TARGET)%에는 나의 인형이 되어 주어요」
+	PRINTFORMW 「 나의 의지에 충실한 경우에 한정해, %CNAME(MASTER, TARGET)%의 몸의 안전은 보장한다…」
+	PRINTFORMW 「다만, %CNAME(MASTER, TARGET)% 자신을 위해도, 이상한 생각은 일으키지 않는 것이 좋다고 생각해요…？」
+	PRINTL
+	PRINTFORMDW 그렇게 말하는 앨리스의 모습은 바야흐로 마녀 그 자체의 분위기로 가득 차고 흘러넘치고 있다…
+	PRINTL
+	PRINTFORMW 「그렇게, 도망치려고 해도 쓸데없으니까…？」
+	PRINTFORMW 「유일한 출입구는, 나의 마력에 반응하는 이외 방법에서는 열리지 않으니까」
+	PRINTFORMW 「그러면, 오늘 밤은 늦기 때문에 천천히 쉬면 좋아요. 아침이 되면 또 만납시다…♪」
+	PRINTL
+	PRINTFORMDW 방을 나가는 앨리스의 뒷모습을 보류하면서, %CALLNAME:MASTER%(은)는 당신의 운명에 절망해 흐느껴 웠다…
+	PRINTL
+	CALL TWAIT3_K14
+	;コメントアウト
+	;$SKIP
+	;OP경과判定(以降모드判定に用いる)
+	KFLAG:(FLAG:주인님):50 = 1
+	;RESULT値2を返してタイトルロゴを表示させない
+	RETURN 2
+ENDIF
+
+;노멀모드以外の場合はCNAMEに代入했다上で本体の汎用OPに飛ばす
+;汎用OPに飛ば했다際はこの箇所の戻り値に関わらずタイトルロゴが表示される
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;샌드박스または엑스트라모드時
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && FLAG:모드 != 0
+	;---------------------------------------------
+	;CNAMEへの代入処理
+	;---------------------------------------------
+	IF NO:MASTER == 0 && CALLNAME:MASTER != "당신"        ;플레이ヤーが名前を設定している場合
+		;名前入力済みかつ男
+		IF TALENT:MASTER:남자
+			CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴方/%CSTR:(TARGET):호칭목록%
+		;名前入力済みかつ후타나리
+		ELSEIF TALENT:MASTER:후타나리
+			CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+		;名前入力済みかつそれ以外（女）
+		ELSE
+			CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+		ENDIF
+	ELSEIF TALENT:MASTER:남자 ;男の場合
+		CSTR:(TARGET):호칭목록 = 당신_貴方/%CSTR:(TARGET):호칭목록%
+	ELSEIF TALENT:MASTER:후타나리 ;후타나리の場合
+		CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+	ELSE ;それ以外（女）
+		CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+	ENDIF
+	;RETURN 0で汎用に投げる
+	RETURN 0
+ENDIF
+
+;========================================================================
+;EV2, エンディング이벤트구상
+;========================================================================
+;・開始30日以降、日時の更新時にシステム側からEVENT2が呼び出される
+;・戻り値1が返ると本体側でFLAG:END달성が立ち、以降はシステム側から呼び出される事はない
+;・現状では戻り値1以外は同じ扱いなので0でも2でもED경과扱いにはならない
+;・という訳で、LOCAL = 2 RETURN LOCAL等では複数回EDが表示される事に
+;・LOCAL = 1 RETURN LOCALなり終端でRETURN 1してしまうのが望ましいです
+;・FIRSTEVENTを使っておくと万が一の保険にはなりますし、仕様変更にも強いです
+;-------------------------------------------------
+;カットインは結果的にアレンジが多目な結果に
+;ピンとこない人は曲名で検索すると幸せになれるかも知れない
+;Ending No. 2は勿忘草の花言葉を知ってるとより理解し易いかも
+;カットイン含めて俺得爆発してるけど異論は受け付けない
+;他の条件のEDは納得いくものができなかったので止めた
+;ED後にゲーム続行했다場合に整合性のとれないED No.2とNo.4は強制的に終了
+;-------------------------------------------------
+;v1.60でED条件を改変。KFLAG:(FLAG:주인님):101の代入により分岐시킨다事に
+;何となく少し손入れ했다い気分。ちょっと考えてみよう
+;-------------------------------------------------
+@KOJO_MS_EVENT_K14_2(ARG)
+;-------------------------------------------------
+;0617安定版だと別枠処理は不要なんでコメントアウト
+;0617安定版は本体側でED경과の判定はしていないんで初回判定関数等を通しておかないと何度も表示される
+;現行のtest版は本体側で플래그立つようになっている
+;-------------------------------------------------
+;とりあえず保険の意味でFIRSTEVENTを噛ませておく。何があっても確実だし
+;-------------------------------------------------
+;V1.70で呼び出しをMSで決めうち
+;-------------------------------------------------
+
+;最終的には特定の이벤트をトリガーにインクリメントしてEDへ、という感じにもっていきたい感
+;CFLAG:의존도による他のED分岐やら考えはするけど、손間的にもなかなかおいつかなくてもどかしい現状
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NORMALエンディング
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && KFLAG:(FLAG:주인님):100 == 1 && FLAG:오토모드표시설정 == 0 && FIRSTEVENT(0)
+	CALL ENDING_K14
+	;エンディング경과플래그
+	KFLAG:(FLAG:주인님):102 = 1
+	;戻り値は関数内で分岐毎に決めうちしてRETURN RESULTの方がいいのかも
+	RETURN 1
+ENDIF
+
+;コメントアウト
+;=================================================
+;@KOJO_EVENT_K14_11_ENDING
+;==================================================
+;IF KFLAG:(FLAG:주인님):100 == 1 && FIRSTTIME(0)
+;	CALL ENDING_K14
+;	RETURN 1
+;ENDIF
+
+;-------------------------------------------------
+;エンディング関数
+;-------------------------------------------------
+@ENDING_K14
+#LOCALSIZE 1
+CALL TWAIT3_K14
+PRINTFORMW 「응, 조금 와 받을 수 없을까」
+CALL BGM_CUTIN("With Tears In Your Eyes")
+PRINTL
+PRINTFORMDW 그 말했을 때의 앨리스는 평상시와 조금 모습이 차이가 났다.
+PRINTFORMDW 말해지는 대로 따라가면(자) 아무래도 지하실로 향하는 것 같았다.
+PRINTFORMDW 거기는  이전에는 %CALLNAME:MASTER%(은)는 지만 감금되고 있던 방. 하지만 지금은 완전히 양상이 바뀌고 있었다.
+PRINTL
+PRINTFORMDW 방의 중심으로는 매직 스퀘어 같은 것이 그려져 있었다. 
+PRINTFORMDW 거기에는,YEVH,yod he vau he의 문자. 진의 중심으로는en to pan(와)과 그려져 있다.
+PRINTL
+PRINTFORMDW en to pan（모든 것은 하나든지） 3개의 말과 7개의 문자…
+PRINTFORMDW 수비술적으로 말하면(자)3+7=10되어 그것은（모든 것）(을)를 의미해1(으)로 환원된다…
+PRINTFORMDW 이전 앨리스가 배울 수 있었던 말의 의미를 조금씩 생각해 낸다. 
+PRINTL
+PRINTFORMDW yod he vau he(은)는 확실히4 오모토소를 나타내는 것이다. 그것이 모든 것은 하나를 의미하는 말을 거쳐
+PRINTFORMDW 1그렇다고 하는 숫자에 집약되면(자)… 그래, 수비술은 숫자가 1자리수가 될 때까지 계산되는 것.
+PRINTFORMDW 3개의 말과 7개의 문자로 구성된다en to pan(은)는 최종적으로는1(이)가 된다.
+PRINTL
+PRINTFORMDW 1(은)는 최초의 수이며 덧셈에 의해 홀수를 짝수로 바꾸어 짝수를 홀수로 바꾼다.
+PRINTFORMDW 그리고1에1(을)를 걸쳐도 나누어도1그렇다고 하는 숫자는 변함없다.
+PRINTFORMDW 그것이 나타내는 것은 지배, 불굴, 창조, 유일한 것이며, 또 모든 근원을 나타내는 것이기도 하다.
+PRINTL
+PRINTFORMDW 한편 앨리스는 아직도 말을 발표하지 않고, 이쪽에 등을 돌려 내내 서 있고 있다.
+PRINTFORMDW 그녀의 진심은 여전히 모르지만, 이것이 보통이 아닌 상황인 것은 이해할 수 있었다…
+PRINTL
+PRINTFORMW 「최초로１개 말하게 하며」
+PRINTFORMDW 앨리스가 뜻을 결정된 것처럼 뒤돌아 봐 말했다.
+PRINTL
+CALL BGM_CUTIN("不思議の国の엘리스 - Piano Arrangement")
+PRINTFORMW 「사랑하고 있는 원. 지금까지도, 그리고 앞으로도…」
+PRINTFORMW 「내가 사랑하는 것은%CNAME(MASTER, TARGET)%가 최초로 최후. 비록 어떤 일이 되어도 계속 영원히 사랑해요」
+PRINTL
+PRINTFORMDW 마치 이승의 이별일 것 같은 앨리스의 말에,%CALLNAME:MASTER%(은)는 당황스러움을 느꼈다…
+PRINTL
+PRINTFORMW 「마녀는 본래 고독한 것. 나도 그것은 이해하고 있기도 했고, 그런 처지를 받아들여도 있었어요」
+PRINTFORMW 「 그렇지만 나는%CNAME(MASTER, TARGET)%(와)과 만나 버렸다. 사랑하는 기쁨, 사랑받는 기쁨을 알아 버렸다…」
+PRINTFORMW 「그리고%CNAME(MASTER, TARGET)%(은)는 인간. 매우 취약해 그 생은 너무 짧아요」
+PRINTL
+PRINTFORMW 「처음은 이대로도 좋다고 생각했다. 둘이서 세월을 거듭해 가는 것도 나쁘지 않다고」
+PRINTFORMW 「 그렇지만,%CNAME(MASTER, TARGET)%(은)는 썩어 가 버린다. 머지않아 나를 남겨 떠나 가 버린다…」
+PRINTFORMW 「 나 무서운거야！ 괴로운거야！ 이제%CNAME(MASTER, TARGET)%없음으로 살아가다니 생각할 수 없는거야！」
+PRINTL
+PRINTFORMW 「몸을 거듭하고 있을 때도 불안했다. 채워지는 것과 동시에 마음이 욱신욱신 아파서…」
+PRINTFORMW 「 나, 이제……이런 건……견딜 수  없다！」
+PRINTL
+PRINTFORMDW 그렇게 말해 앨리스는 쓰러져 울었다. 오열을 흘려 어깨를 진동시키고 계속 울었다…
+PRINTFORMDW 어깨를 안아 침착하게 하려고 하지만, 걸어야 할 말은 발견되지 않았다.
+PRINTL
+PRINTFORMW 「미안해요. 나,%CNAME(MASTER, TARGET)%에 폐를 끼치고만…」
+PRINTFORMDW 앨리스는 자조 기색에 말하면(자), 무엇인가를 결의한 것 같은 표정으로 바뀌었다.
+PRINTL
+PRINTFORMW 「응, 이것을 봐.%CNAME(MASTER, TARGET)%기억하고 있어 해들…？」
+PRINTFORMDW 그렇게 말해 앨리스는 2가지 개체의 인형을 꺼냈다.
+PRINTL
+PRINTFORMDW 그것은 이전, 앨리스가 인형 만들기를 하고 있는 방을 들여다 보았을 때에 본 것이었다
+PRINTFORMDW 마침내 완성했던 것이다. 그리고 최고 걸작으로 한다고 한 말에 다르지 않는 훌륭한 솜씨다.
+PRINTFORMDW 인형은 앨리스 자신과%CALLNAME:MASTER%(을)를 본떠 만들어지고 있는 것 같았다.
+PRINTFORMDW 다만, 그것이 인형이라고 하려면  너무나 정밀하고 생생한 것이 마음에 걸린다…
+PRINTL
+PRINTFORMW 「깨달은 것 같구나… 그래, 이것은 저희들을 가능한 한 재현 해 만들어 있다」
+PRINTFORMW 「그리고 단순한 인형이 아니다. 말하자면, 그렇게…수용하고 것이라고 했는데 까…？」
+PRINTL
+PRINTFORMDW 순간에는 몰랐다. 무엇인가를 수납할 수 있는 것 같은 느낌에는 안보인다.
+PRINTFORMDW 거기에 인형에게 도대체 무엇을 수용한다는 것일 것이다.
+PRINTL
+PRINTFORMW 「영혼이야……그래, 이것은 영혼이 수용하고 것……」
+PRINTL
+PRINTFORMW 「이것은 살아 있는  온갖 것의 영혼을 정착시킬 수가 있도록(듯이) 만들어 있어…」
+PRINTFORMW 「영혼을 봉하면(자) 결계가 전개해 주위로부터 보호되어요. 다소의 일에서는 꿈쩍도 하지 않은 정도로」
+PRINTFORMW 「그리고 원의 육체는 본래의 존재로서의 형태를 두지 않게 된다…」
+PRINTL
+PRINTFORMW 「이후는 영혼이 비추는 그림자라고도 말해야 할 것이 된다. 그것은 영적 신체로 불리는 일도 있어요」
+PRINTFORMW 「썩는 무사히 본래의 자연적 신체가 가지는 모든 항쇄로부터 개방된다」
+PRINTFORMW 「그것은 언제까지나 자신 본래의 이미지를 구현화한 것계속 이어요」
+PRINTL
+PRINTFORMW 「통상적인 의미에서는 거의 영원의 존재… 그렇지만, 영혼이 멸망하면 그 그림자에 지나지 않는 영적 신체도 소멸해」
+PRINTFORMW 「실제로 영혼이라는 것이 최종적으로 어떻게 될까 라고, 아무도 모르는 것이지만…」
+PRINTFORMW 「영원 불멸은 아니고 머지않아 썩어 소멸한다고 하는 설도 있는 것은 확실해」
+PRINTFORMW 「지금의 나에게도 그 이상의 일은 몰라요…」
+PRINTL
+PRINTFORMW 「그리고%CNAME(MASTER, TARGET)%에는 선택했으면 좋은거야」
+PRINTFORMW 「 나와 함께 영원히 계속 있는지 아닌지 를…」
+PRINTL
+PRINTFORMW 「%CNAME(MASTER, TARGET)%인 만큼 희생을 강요할 생각은 없어요. 그 때는 나도 함께」
+PRINTFORMW 「한없이 불로 불사에 가까운 마녀가 그렇게 하는 의미가 적은 것은 인정해요」
+PRINTFORMW 「거기에 자신에게 방법을 거는 것은, 불확정 요소도 많고 리스크가 있는 것도 확실하지만…」
+PRINTFORMW 「그런데도 각오는 할 수 있고 있는 원. 이것은 나나름의 케지메야」
+PRINTL
+PRINTFORMW 「 그렇지만 최종적으로는%CNAME(MASTER, TARGET)%나름이야. 나는%CNAME(MASTER, TARGET)%가 어떤 선택을 해도 받아들인다」
+PRINTFORMW 「거기에%CNAME(MASTER, TARGET)%가 본심으로부터 바라지 않는 한 이 방법은 성립되지 않아요」
+PRINTFORMW 「다만, 그 선택은 지금이 아니면 안돼…」
+PRINTL
+PRINTFORMW 「지금 인 채의 상태가 계속되면, 반드시 나는 망가져 버린다…」
+PRINTFORMW 「그렇게 되어 늦고, 나의 그런 모습……%CNAME(MASTER, TARGET)%에만은 보여 주고 싶지 않은거야……」
+PRINTL
+PRINTFORMW 「응, 대답을 듣기 전에 답례를 말하게 하며」
+PRINTFORMW 「 나, 행복했다.%CNAME(MASTER, TARGET)%(와)과 보낸 나날의 일은 쭉 잊지 않아요. 고마워요……」
+PRINTFORMW 「지금의 정직한 기분이야. 결과가 어떻게 저것 나의 이 생각이 변함없는 것만은 믿었으면 좋은거야…」
+PRINTL
+PRINTFORMW 「 나의 각오는 할 수 있고 있다. 부탁해요, 정직하게 대답하며」
+PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 이런 나라도 받아들여 준다？」
+PRINTW
+PRINTL
+IF KFLAG:(FLAG:주인님):101 == 1
+	;상사상애エンド1 Ｂパート 선택で分岐	Tell me, tell me your final wish?
+	CALL HTMLPRINTDL(@"%HTMLBUTTON("[0] 엘리스と共に永遠を生きる", "0", "Ending, 0001へ")%")
+	CALL HTMLPRINTDL(@"%HTMLBUTTON("[1] 限りある命でもいい。自分は人間でいたい", "1", "Ending, 0002へ")%")
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		;エンディング1
+		CASE 0
+			CALL TWAIT3_K14
+			PRINTFORMDW 집안을 달리는 소란스러운 소리가 들린다. 앨리스일까…？
+			CALL BGM_CUTIN("raison d'etre", 1)
+			PRINTFORMDW 그러나 앨리스가 집안을 돌아다니는 모습은 상상해 두등 있고 해, 자주(잘) 들어 보면 발소리도 다르다.
+			PRINTL
+			PRINTFORMDW 인형일까？ 하지만 기본적으로 소란스러운 일을 싫어하는 앨리스가, 스스로 조종하는 인형을
+			PRINTFORMDW 태들 달리게 하는 이유가 생각해내지 못하다. 창시 비치는 동안에도, 소리는 점차 이쪽에 가까워져 온다.
+			PRINTL
+			PRINTFORMDW 문이 열린다. 그러나 발소리의 주요하 같은 모습은 안보인다, 라고 생각한 찰나, 발밑에 달려 온다”무엇인가”(을)를 알아차린다.
+			PRINTFORMDW 놀라움과 약간의 공포에 몸을 움츠린다. 그리고 그”무엇인가”(은)는 가슴 팍에 뛰어들어 왔다！
+			PRINTFORMDW 순간, 무심코 눈을 감고는 끝낸다. 하지만, 아무래도 이쪽에 대한 해의는 없는 것 같다.
+			PRINTFORMDW 뜻을 결코 눈을 떠 본다. 그러자(면) 거기에 있던 것은 샹하이였다…
+			PRINTL
+			PRINTFORMDW 아무래도 앨리스의 못된 장난이었던 것 같다면, 무심코 안심 가슴을 쓸어내린다.
+			PRINTFORMDW 그러자(면) 바로 그 앨리스가 못된 장난 같은 미소를 띄우면서 방에 들어 왔다.
+			PRINTL
+			PRINTFORMW 「미안해요. 놀래켜 버렸다 까…？」
+			PRINTL
+			PRINTFORMDW 그런 일을 말하면서도, 해 주거나라고 하는 분위기는 숨길려고도 하지 않는다.
+			PRINTFORMDW 당하고 있을 뿐에서는 재미있지 않다. 분하기 때문에 조금 분개한 체를 해 보인다.
+			PRINTL
+			PRINTFORMW 「후후… 그렇게 화낸 모습을 해도 안되어요？ 제대로 알고 있기 때문에」
+			PRINTL
+			PRINTFORMDW 확실히 앨리스가 말하는 대로였다…
+			PRINTFORMDW 그래…영혼을 인형으로 옮겨 바꾼 그 날……두 명의 영혼은 일부 서로 녹아 버린 것에서 만났다.
+			PRINTFORMDW 이래, 말하지 않고와도 서로의 기분을 알 수 있게 되어 있었다.
+			PRINTL
+			PRINTFORMDW (이)라고 해도소문에 나타카 있고 각요괴와 같이, 상대의 마음 속을 모두 읽어낼 수 있는 것은 아니다.
+			PRINTFORMDW 필요 이상의 일은 알지 못하고, 그러나 상대의 미묘한 마음의 기미는 감지할 수 있다…
+			PRINTFORMDW 그런 거리감은 꽤 기분 좋은 것으로 있어, 그것은 앨리스에 있어서도 같이인 것 같았다.
+			PRINTL
+			PRINTFORMW 「응,%CNAME(MASTER, TARGET)%(은)는 아직 눈치채지 못한 것일까…？」
+			PRINTFORMW 「샹하이는 조금 언덕같아요」
+			PRINTL
+			PRINTFORMDW 앨리스의 말에 촉구받고 샹하이의 (분)편을 바라본다. 확실히 조금 화내고 있는 것 같다.
+			PRINTFORMDW 하지만 아무래도 모습이 이상하다. 앨리스의 조술은 훌륭해 인형의 표정을 조작하는 일 등
+			PRINTFORMDW 아주 간단하게, 그것도 자연스럽게 해치운다.
+			PRINTFORMDW 그러나 지금의 샹하이로부터는, 그것만으로는 설명할 수 없는 무엇인가가 느껴졌다.
+			PRINTL
+			PRINTFORMW 「후후, 둔하다%CNAME(MASTER, TARGET)%그렇지만 간신히 깨달은 것 같구나」
+			PRINTFORMDW 오랫만에”둔하다”이렇게 말해진 것 같다. 부정할 수 없는 것이 분하지만 정직 조금 패인다.
+			PRINTL
+			PRINTFORMW 「이나다, 그렇게 낙담하지 말아. 가벼운 농담이 아니다」
+			PRINTFORMW 「그런 일보다, 샹하이를 잘 봐 주어 주세요」
+			PRINTFORMW 「내가 움직이고 있는 (뜻)이유는 아닌거예요. 지금의 샹하이는 자율 하고 있어」
+			PRINTL
+			PRINTFORMDW 앨리스가 그러한과 샹하이는 허리에 양손을 대어 조금 득의에 찬 얼굴인 표정을 해 보였다.
+			PRINTFORMDW 손을 내며 보면 만면의 미소로 장난하고 따라 온다.
+			PRINTFORMDW 조금 손가락으로 쿡쿡 찔러 본다. 조금 귀찮을 것 같은 모습이면서도 즐거운 듯 하다.
+			PRINTFORMDW 한층 더 손가락으로 쿡쿡 찔러 본다. 아무래도 화나게 해 버린 것 같아, 머리카락을 끌려갔다…
+			PRINTL
+			PRINTFORMW 「이거 참, 너무 학엄청 안되어요」
+			PRINTFORMDW 앨리스에게 다짐을 받아졌다. 샹하이는 앨리스의 뒤로부터 떨어지고 자랑한 것 같은 표정으로 이쪽을 보고 있다…
+			PRINTL
+			PRINTFORMDW 그렇다 치더라도 감정의 표현이 실로 풍부하다.
+			PRINTFORMDW 과연, 확실히 지금의 샹하이가 자율 하고 있는 것은 틀림없는 것 같다.
+			PRINTFORMDW 그렇게 말하면 자율 인형을 만드는 것이 목표라고, 이전 앨리스는 말했다.
+			PRINTFORMDW 그렇게 되면(자), 마침내 염원 가나라고 하는 일인 것일까？
+			PRINTL
+			PRINTFORMW 「이 아이의 자율은 아직 완전하지 않아」 
+			PRINTFORMW 「 아직 개선의 여지가 많이 있어. 아마 가져 오늘 밤까지, 라는 곳일까」
+			PRINTL
+			PRINTFORMW 「머지않아 조금씩 자율 하고 있을 수 있는 시간을 연장시킬 수 있게 된다고 생각하는데」
+			PRINTFORMW 「지금은 하루 정도가 한계야. 미안해요 샹하이」
+			PRINTL
+			PRINTFORMDW 앨리스의 말에 샹하이는 활기 차게 수긍했다.
+			PRINTFORMDW 제한부의 자율이라고 해도, 지금은 자유롭게 움직일 수 있는 것이 기뻐서 견딜 수 없는 모습이었다.
+			PRINTL
+			PRINTFORMDW 앨리스와 샹하이의 그런 교환을 봐 미소까는 생각하면서, 행복을 악문다.
+			PRINTL
+			PRINTFORMDW 그 때, 자신이 잡은 선택은 잘못되어 있지 않은 것처럼 생각된다.
+			PRINTFORMDW 결과, 자신과 앨리스는 이미 사람도 요도 아닌 존재가 되었지만.
+			PRINTL
+			PRINTFORMDW 지금부터 앞, 얼마나의 세월을 거듭하는 일이 되는 것인가…
+			PRINTFORMDW 머지않아 영원이라고도 할 수 있는 생에 싫증나게 되는 것인가…
+			PRINTFORMDW 아무 불안도 없다고 말하면 거짓말이 되는 것은 확실하다.
+			PRINTL
+			PRINTFORMDW 하지만 지금은, 작은 사건에도 행복을 느끼는 일을 할 수 있는, 이 날마다가 견딜 수 없게 사랑 아깝다.
+			PRINTFORMDW 원원, 쭉 이대로 있었으면 좋겠다.
+			PRINTFORMDW 마치 모자와 같은 앨리스와 샹하이의 모습을 보면서, 그렇게 간절히 바랐다.
+			PRINTL
+			PRINTFORMW 「멍하니 하고 있다고(면) 개 나쁘지만, 이제 식사의 시간이야」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 테이블의 준비를 부탁. 샹하이는 나를 도와 주세요」
+			PRINTFORMDW 있어에 현실에 되돌려진다. 떨어지고 때에 앨리스가 웃는 얼굴로 뒤돌아 봐 말했다.
+			PRINTFORMW 「오늘의 저녁식사는 하나마르한바그야♪」
+			;-------------------------------------
+			;タイトル:人形少女言葉無し
+			;原曲:プラスチックマインド
+			;サークル:Minstrel
+			;ヴォーカル:3L
+			;アルバム:夢と幻と泡と影
+			;-------------------------------------
+			CALL BGM_CUTIN("人形少女言葉無し", 1)
+			CALL TWAIT3_K14
+			;フォントをセット
+			CALL SETFONT_K14
+			
+			;フェードアウトx3		ここは"FORCE"でもいいかも知れないｗ
+			CALL FADE(40, COLOR_K14("white"), COLOR_K14("black"), "          어느덧 마법의 숲에 사는 인형견 있고의 이야기는 전설이 되어 갔다…",)
+			CLEARLINE 1
+			CALL FADE(35, COLOR_K14("white"), COLOR_K14("black"), "             마녀의 배우자와 함께 많은 인형들에게 둘러싸이고")
+			CLEARLINE 1
+			CALL FADE(50, COLOR_K14("white"), COLOR_K14("black"), "          지금도 거기서 조용하게, 그리고 행복하게 살고 있다고 한다……")
+			CLEARLINE 1
+			
+			PRINTL
+			PRINTL
+			;デフォルトカラーにする
+			RESETCOLOR
+			;太字にする
+			FONTSTYLE 1
+			CUSTOMDRAWLINE -=
+			;エンディングタイトル
+			CALL SCROLLTEXT("　　　　　　　【Ending No. 0001】(七色の人形遣い）", 2, 6, 117, 0, 1)
+			;フォントを戻す
+			CALL RESETFONT_K14
+			PRINTL
+			PRINTL
+			PRINTL
+			;ゲームオーバー(선택肢x3)
+			CALL GAME_OVER_K14
+		;エンディング2	 I can't forget
+		CASE 1
+			CALL TWAIT3_K14
+			PRINTFORMDW 눈을 떴을 때는 아직 심야였다. 심한 두통이 난다.
+			PRINTFORMDW 무엇인가 꿈을 꾸고 있던 것 같은 생각이 든다. 행복한 꿈을. 그렇지만 분명히는 생각해 낼 수 없다.
+			PRINTFORMDW 있어에 사람과 그리움을 기억 방을 바라보지만, 원래 천애고의 몸. 누군가가 있을 리도 없다.
+			PRINTL
+			PRINTFORMDW 밤바람에 이끌려 문득 창 밖을 본다.
+			PRINTFORMDW 거기에는 달빛에 비추어져 근처 일면에 흐드러지게 피는 푸른 물망초의 모습이 있었다.
+			PRINTFORMDW 스스로 심은 기억은 없고, 조금 위화감을 기억했지만 두통의 탓도 있어 그대로 자는 일로 한다.
+			PRINTL
+			PRINTFORMDW 이튿날 아침집의 밖에 나오면(자) 물망초의 모습이 눈에 들어왔다. 아무래도 꿈은 아니었던 것 같다.
+			PRINTFORMDW 본래꽃을 사랑 나오는 취미는 없었지만, 이 물망초에는 왠지 사랑 아까움을 느낀다.
+			PRINTFORMDW 그리고 매우 중요하지만 같은 생각이 든다.
+			PRINTL
+			PRINTFORMDW 그 날 이래, 매일 빠뜨리지 않고 손질을 할게가 되었다.
+			PRINTFORMDW 매년 초봄에는 아름답게 꽃을 피워 그 모양은 마을에서도 평판이 되어 갔다.
+			PRINTFORMDW 종이 천식에 효과가 있다고 하는 일로 의사에게 종을 나누어 주는 일도 종종 있었다.
+			PRINTL
+			PRINTFORMDW 그런 나날의 그 중에서 있는 일을 깨닫고 있었다.
+			PRINTFORMDW 자신의 마음에는 무엇인가가 빠져 있다. 매우 중요한 일을 잊고 있는 생각이 든다.
+			PRINTFORMDW 하지만, 그것이 무엇으로 있을까에 대해서는 아무래도 생각해 낼 수 없었다…
+			PRINTL
+			PRINTFORMDW 그렇게 말하면, 이전에는마을로 종종 인형극을 피로하고 있던 인물을 보기 시작하지 않게 된 것 같다.
+			PRINTFORMDW 아니, 이 경우 인물이라고 하는 것보다 마녀라고 하는 것이 정확할 것일까.
+			PRINTFORMDW 마법의 숲에 사는 마녀이다고 하는 소문을 (들)물었던 적이 있다.
+			PRINTL
+			PRINTFORMDW 마녀는 변덕스러운 것일 것이다. 인간을 상대로 하는데 질렸는지, 어딘가에 떠났는가.
+			PRINTFORMDW 마을의 몇 사람인가는 그 마녀를 몇번인가 보였다고 하는 이야기도 있었지만, 어쨌든 자신에게는 관계가 없는 것.
+			PRINTFORMDW 결국은 나날의 생활속에서 매몰 해 버리는 정도의 이야기이다. 하지만 무엇인가가 걸리는 것도 확실하다.
+			PRINTL
+			PRINTFORMDW 가끔 그런 자신의 마음에 타협을 붙이는 것이 어려워진다. 중요한 무엇인가를 잊고 있는데
+			PRINTFORMDW 그것을 생각해 낼 수 없는 것도 치워 천성 항상 붙어 돌았다. 그러나 그렇게 말한 것에 구애 해
+			PRINTFORMDW 살아가는 것에도 가지 않고, 노력해 잊으려고 했다.
+			PRINTL
+			PRINTFORMDW 그리고 긴 세월이 지나가 버려 갔다……
+			CALL TWAIT3_K14
+			PRINTFORMDW 연로했다%CALLNAME:MASTER%(은)는 지금은 죽음의 마루에 있었다…
+			PRINTFORMDW 생애 고독해 아이를 이루는 일도 없고, 한사람 적막하게 죽으려 하고 있었다.
+			PRINTFORMDW 최후를 간호해 주는 상대가 없는 것이, 전혀 외롭지 않다고 말하면 거짓말이 되지만
+			PRINTFORMDW 이런 끝나는 방법도 자신답고, 생각하면 그렇게 나쁜 인생도 아니었던 생각이 든다.
+			PRINTL
+			PRINTFORMDW 희미해지고 가는 의식, 그리고 조용하게 눈감는다…
+			PRINTFORMDW 그 순간, 얼굴에 따뜻한 무엇인가의 감촉. 아무래도 사람의 손바닥과 같다.
+			PRINTL
+			PRINTFORMDW 마지막 힘을 떨쳐 짜 눈을 뜨면(자), 어렴풋한 사람의 그림자가 보인다.
+			PRINTFORMDW 여자, 젊은 여자다. 그 표정은 슬픈 듯 한 안에도 자애가 가득찬 무엇인가를 느끼게 한다.
+			PRINTFORMDW 왠지 심하고 그리운 느낌이 든다. 자신에게 있어 중요한 상대와 같은 생각이 든다.
+			PRINTFORMDW 그러나 그 이유는 모른다…
+			PRINTL
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 벌써 충분히 노력했어요…」
+			PRINTFORMW 「좋아…아무것도 걱정하지 말아줘. 천천히 쉬어……」
+			PRINTL
+			PRINTFORMDW 왠지 해들 그 말에 안도를 기억하고 조용하게 눈감았다…
+			PRINTFORMDW 그리고 그 눈은 두 번 다시 여는 일은 없었다.
+			PRINTL
+			;まぁなんというか、凋叶棕とめらみさんの組み合わせは好き過ぎる
+			;-------------------------------------
+			;タイトル：ヒカリ
+			;原曲：the Grimoire of Alice
+			;サークル：凋叶棕
+			;ヴォーカル：めらみぽっぷ
+			;アルバム：綴
+			;-------------------------------------
+			CALL BGM_CUTIN("ヒカリ", 1)
+			PRINTFORMW 「사랑했다……무엇보다도……누구보다……」
+			PRINTFORMW 「안녕히 가세요……나의 사랑스러운 사람…」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 일……잊지 않는다……쭉…언제까지나…」
+			PRINTL
+			PRINTFORMDW 집의 밖에서는 물망초가 조용하게 바람에 흔들리고 있었다.
+			PRINTFORMDW 그것은 손질을 하는 사람이 없어진 후도, 매년 아름다운 꽃을 피웠다고 한다.
+			PRINTL
+			PRINTL
+			PRINTW
+			PRINTFORMDW 그 후, 칠색의 인형견 있고의 모습을 본 것은 아무도 없다…
+			PRINTL
+			CALL TWAIT3_K14
+			PRINTL
+			;フォントをセット
+			CALL SETFONT_K14
+			
+			;ALIGNMENT CENTERでいいかも知れない
+			CALL FADE(30, COLOR_K14("white"), COLOR_K14("black"), "             히카리가 있도록")
+			CLEARLINE 1
+			CALL FADE(30, COLOR_K14("white"), COLOR_K14("black"), "             히카리와 있도록")
+			CLEARLINE 1
+			CALL FADE(30, COLOR_K14("white"), COLOR_K14("black"), "             히카리이도록")
+			CLEARLINE 1
+			CALL FADE(45, COLOR_K14("white"), COLOR_K14("black"), "             이윽고 히카리가 되도록…")
+			CLEARLINE 1
+			
+			PRINTL
+			PRINTL
+			;デフォルトカラーにする
+			RESETCOLOR
+			;太字にする
+			FONTSTYLE 1
+			CUSTOMDRAWLINE -=
+			;エンディングタイトル
+			CALL SCROLLTEXT("　　　　　　　【Ending No. 0002】（夢のあと）", 2, 6, 117, 0, 1)
+			;フォントを戻す
+			CALL RESETFONT_K14
+			PRINTL
+			PRINTL
+			PRINTL
+			;ゲームオーバー2で終了시킨다
+			CALL GAME_OVER2_K14
+	ENDSELECT
+;KFLAG:(FLAG:주인님):101に代入が行われていない場合
+ELSE
+	;상사상애エンド2 Ｂパート 선택で分岐
+	CALL HTMLPRINTDL(@"%HTMLBUTTON("[0] 엘리스と共に永遠を生きる", "0", "Ending, 0003へ")%")
+	CALL HTMLPRINTDL(@"%HTMLBUTTON("[1] 限りある命でもいい。自分は人間でいたい", "1", "Ending, 0004へ")%")
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		;エンディング3
+		CASE 0
+			CALL TWAIT3_K14
+			PRINTFORMDW 그 방에는 많은 인형이 있었다.  이전에는 생생하게 움직이고 있던 인형들.
+			PRINTFORMDW 그러나, 지금은 단순한 인형으로서 시간의 흐름안에 조용하게 그 몸을 두는 것만으로 있었다.
+			PRINTL
+			PRINTFORMDW 때를 봐 앨리스를 일으켜 준다.
+			PRINTFORMDW 그 얼굴에 표정은 없다. 열고 발해진 눈동자는 이쪽을 보는 일도 없고, 다만 멍하니 중천을 응시할 뿐.
+			PRINTFORMDW 말을 발표하는 일도 없고, 스스로 움직이는 일도 없다. 지금의 그녀는 그렇게, 바야흐로 인형 그 자체였다…
+			PRINTL
+			PRINTFORMDW 그 날 이래, 모든 것이 바뀌어 버리고 있었다.
+			PRINTFORMDW 앨리스와 함께 영원히 사는 일을 선택한 그 날로부터…
+			PRINTL
+			PRINTFORMDW 이미 자신은 사람은 아니었다.
+			PRINTFORMDW 인간 본래의 육체의 제약으로부터 풀어 발해져 지금은 식사도 수면도 필요로 하지 않는 몸이 되어 있었다.
+			PRINTFORMDW 그러한 일도 바라면 가능한 것은 않았다. 그러나, 이 상황으로 식사나 수면을 취하는 기분으로는 되지 못하고
+			PRINTFORMDW 지금은, 그러한 일에 번거롭게 해질리가 없는, 이 몸이 고마웠다.
+			PRINTL
+			PRINTFORMDW 앨리스를 창의 곁까지 옮겨, 의자에 깊게 앉게 한다. 머리카락을 빗고 하사옷을 정돈해 준다.
+			PRINTFORMDW 아침에는 일으켜, 이렇게 하는 것이 평소의 일과였다.
+			PRINTFORMDW 그리고 밤에는 침대에 옮겨 눈감게 한 재워 붙인다. 실제로 자고 있다고는 생각되지 않았지만…
+			PRINTL
+			PRINTFORMDW 일견 무의미라고도 생각되는, 이것들 일련의 일을 매일 반복한다.
+			PRINTFORMDW 하지만 비록 무의미해도, 지금은 심하고 중요한 일과 같이 생각된다.
+			PRINTL
+			PRINTFORMDW 혹은 어떤 종류의 현실 도피인지도 모르다고 생각하는 일도 있다.
+			PRINTFORMDW 그리고 그 번에, 그러한 생각을 뿌리친다. 그런 매일의 반복이었다.
+			PRINTL
+			PRINTFORMDW 빈 시간은 모두 해결책을 찾아내기 위해 소비했다.
+			PRINTFORMDW 실마리가 될 것 같은 문헌을 마구 읽어 , 각지의 마술에 조예가 깊은 사람들을 찾아 다녔다.
+			PRINTFORMDW 그런데도 해결의 실마리라고 부를 수 있는 것 같은 것에조차, 꽤 겨우 도착하는 일은 할 수 없었다.
+			PRINTL
+			PRINTFORMDW 다만, 그 과정에서 알게 된 일도 있다.
+			PRINTFORMDW 앨리스가 간 방법이 연금술에 깊게 관계가 있는 것인 것 같은 일.
+			PRINTFORMDW 그리고 그녀의 현재 상태는 방법의 반동에 의하는 것인 것 같았다.
+			PRINTFORMDW 어느 그것을 마나의 반동이라고 부르고 있었지만, 경우에 따라서는 방법자가 반동에 의해 날아가 버린다
+			PRINTFORMDW 일도 있을 수 있다고 하는 이야기였다.
+			PRINTL
+			PRINTFORMDW 방법 자체 꽤 위험한 것이며, 앨리스에 있어서도 마술사로서의 능력의 한계에 가깝다
+			PRINTFORMDW 물건이었다고 말하는 일도 알게 되었다.
+			PRINTFORMDW 그래, 지금이라면은 잘라 안다. 앨리스가 그 때 얼마나 비장한 각오로 일에 임하고 있었는지.
+			PRINTFORMDW 그리고 모집하는 초조감에, 점차 제정신을 유지하는 것이 어려워지고 있는 자신을 분발게 한다.
+			PRINTL
+			PRINTFORMDW 그런데도 해결의 실마리 산뜻함괵시는 지나 간다…
+			PRINTL
+			CALL BGM_CUTIN("世界の果て　～ Worlds End", 1)
+			PRINTFORMDW 그런 어느 날의 일, 집을 방문해 온 사람이 있었다. 머리로부터 푸드를 입어 그 표정은 묻지 못하고
+			PRINTFORMDW 그 적색의 옷은 로브와 같이도 드레스와 같이도 보여 어떻게도 어쩐지 수상하다.
+			PRINTL
+			PRINTFORMDW (들)물으면 어딘가로부터 소문을 우연히 들었는지, 앨리스를 진찰해 주자고 하는 일인것 같다.
+			PRINTFORMDW 그러나 어떻게 생각해도, 이런 어쩐지 수상한 기도사 모조의 사람을 집에 넣는 일은 할 수 없다.
+			PRINTFORMDW 만일 진곳에서, 아무것도 할 수 없을 것이다 것은 용이하게 상상할 수 있다.
+			PRINTFORMDW 어차피 결과 여하에 관련되지 않고, 고액의 보수를 요구할 생각일 것이다.
+			PRINTL
+			PRINTFORMDW 그러나 필요없는 취지를 전해 돌려 보내려고 하지만 꽤 물러나지 않는다.
+			PRINTFORMDW 귀찮게 되어 최후는 반 억지로 되물리쳐 문을 닫았다.
+			PRINTFORMDW 완전히 폐 이 이상 없다. (뜻)이유의 모르는 것에 관련되고 있는 짬은 없는 것이다.
+			PRINTL
+			PRINTFORMDW 당분간 지나, 오늘도 실마리를 찾기 위해 집을 나온다.
+			PRINTFORMDW 조금 전의 일도 있어, 평소보다 엄중하게 문단속을 했다.
+			PRINTFORMDW 떠나 때에 되돌아 봐 창가를 바라보면(자) 앨리스의 모습이 보였다.
+			PRINTFORMDW 이쪽을 보는 일도 없게 손을 흔드는 일도 없다. 다만 조용하게 거기에 앉아 있는 것만으로 있었다…
+			CALL TWAIT1_K14
+			PRINTFORMDW 결국 이 날도 굉장한 수확은 없고, 손에 들어 온 것은 희미한 정보의 단편만이었다.
+			PRINTFORMDW 그런데도 아무것도 없는 것 보다는 좋은, 그렇게 자신을 납득시키고 귀로를 서둘렀다.
+			PRINTL
+			PRINTFORMDW 숲을 누락가가 보이는 장소까지 온 그 때, 설명이 대하지 않는 위화감을 느꼈다.
+			PRINTFORMDW 스스로도 자주(잘) 모른다. 그러나 아무래도 싫은 예감이 한다…
+			PRINTL
+			PRINTFORMDW 불안에 몰아지고 집까지 전력으로 달린다. 심장은 경종을 쳐, 무서운 피로감에 습격당한다.
+			PRINTFORMDW 본래 그러한 감각으로부터 무연이어야할 몸이지만, 지금은 확실히 느끼고 취할 수 있다.
+			PRINTFORMDW 집이 가까워져 왔다. 문득 창을 보면(자) 거기에 있어야할 앨리스의 모습이 없다.
+			PRINTFORMDW 한층 더 현관의 문도 열고 발해지고 있다.
+			PRINTL
+			PRINTFORMDW 최악의 사태가 머리를 지나감과 동시에 시야가 희미하게 보여 온다…
+			PRINTFORMDW 그리고 의심스러운 인물의 내방이 있던 날에 집을 부재중으로 한 자신을 저주했다.
+			PRINTL
+			PRINTFORMDW 공포와 자책하는 마음에 중반 미칠 것 같게 되면서, 필사적인 몸부림으로 달린다.
+			PRINTFORMDW 간신히 도착해, 숨가쁘게 집에 뛰어든다. 집안은 아주 조용해져 어떤 기색도 감지할 수 없다.
+			PRINTFORMDW 전신의 힘이 빠져 간다. 이미 서 있는 것도 하지 못하고, 그 자리에 거치거나 붐비었다……
+			PRINTFORMDW 그 때, 갑자기 배후에 기색을 느꼈다. 당황해 되돌아 보면(자) 양손을 허리에 인왕립 통치한 사람의 그림자가 눈에 들어온다.
+			PRINTL
+			PRINTFORMW 「 나를 혼자 두어 어디다하고 걸었었던 것！」
+			PRINTFORMW 「완전히……정말로 사용할 수 없네요！」
+			;-------------------------------------
+			;タイトル:Can't release
+			;原曲:不思議の国の엘리스
+			;サークル:Alice Music
+			;ヴォーカル:calo
+			;アルバム:ありすほりっく
+			;-------------------------------------
+			CALL BGM_CUTIN("Can't release", 1)
+			PRINTL
+			PRINTFORMDW 매도의 말을 던지면서 상냥하게 미소짓는 그 모습…
+			PRINTFORMDW 지금, 자신이 있는 것은 모두 이 순간이기 때문에였다. 그래, 확실히 생각되었다……
+			CALL TWAIT3_K14
+;OriginalString : "『あらあら、なんか凄い場面を見ちゃったみたい♪』", COLOR2_K14("RED"))
+			CALL FPRINTW("『아라아라, 뭔가 굉장한 장면을 봐 버린 것 같다♪』", COLOR2_K14("RED"))
+;OriginalString : "『って…ちょ、ちょっと待って。もう少し見させて、ね？ 夢子ちゃ～ん』", COLOR2_K14("RED"))
+			CALL FPRINTW("『라고…조, 조금 기다려. 좀 더 보게 해？ 유메코～응』", COLOR2_K14("RED"))
+			PRINTL
+			PRINTL
+			;デフォルトカラーにする
+			RESETCOLOR
+			;太字にする
+			FONTSTYLE 1
+			CUSTOMDRAWLINE -=
+			;エンディングタイトル
+			CALL SCROLLTEXT("　　　　　　　Ending No.0003】（在るべき理由）", 2, 6, 117, 0, 1)
+			;フォントを戻す
+			CALL RESETFONT_K14
+			PRINTL
+			PRINTL
+			PRINTL
+			;ゲームオーバー(선택肢x3)
+			CALL GAME_OVER_K14
+		;エンディング4
+		CASE 1
+			CALL TWAIT3_K14
+			PRINTFORMDW 평범한 날들, 변함없는 매일, 이라고 해도 불만이 있는 것은 아니다.
+			PRINTFORMDW 결국 인생은 그런 것의 시행착오. 사치를 말해 끝이 없다.
+			PRINTFORMDW 다만, 그런 나날의 그 중에서, 어느 마음이 생기고 있었다.
+			PRINTFORMDW 자신의 마음에는 무엇인가가 빠져 있다. 매우 중요한 일을 잊고 있는 생각이 든다.
+			PRINTFORMDW 하지만, 그것이 무엇으로 있을까에 대해서는 아무래도 생각해 낼 수 없었다…
+			PRINTL
+			PRINTFORMDW 그런 때 있는 소문을 들었다.
+			PRINTFORMDW 마을로 인형극을 피로하고 있던 인형 조종사가 요즈음 모습을 보여주지 않는 것 같다.
+			PRINTFORMDW 손꼽아 기다리고 있던 아이도 여럿 있던 것 같아, 모두 한결같게 심하게 낙담하고 있다고 하는 일이었다.
+			PRINTL
+			PRINTFORMDW 그 이야기를 들었을 때, 마음 속에 무엇인가가 걸렸다.
+			PRINTFORMDW 우선 인형극도 인형견감자, 자신에게는 전혀 기억이 없었다.
+			PRINTFORMDW 그러나 마을의 다른 사람들은 인형견겉껍데기 인형극을 피로하고 있던 일을 당연한일과 같이 이야기하고 있다.
+			PRINTFORMDW 모두의 이야기를 (듣)묻는 한, 아무래도 모르는 것은 자신 혼자인 것 같았다.
+			PRINTL
+			PRINTFORMDW 빠진 마음, 결핍 한 기억, 아무래도 단순한 우연히는 아닌 것 처럼 생각된다.
+			PRINTFORMDW 그리고 모든 열쇠를 잡는 것은, 인형 부려 그 사람일 가능성이 높다.
+			PRINTL
+			PRINTFORMDW 조사해 보면 마법의 숲에 살고 있는 것 같은 일은 알았지만, 그 이상의 일을 아는 사람은
+			PRINTFORMDW 아무도 없었다. 그리고 이것은 좋은 소식이기도 해, 나쁜 소식이기도 했다.
+			PRINTL
+			PRINTFORMDW 우선 마법의 숲자체가 장독으로 가득 차고 흘러넘치고 있어 인간이 장시간 활동하는 것은 어렵다.
+			PRINTFORMDW 한층 더 그 광대한 면적에 가세해 표적이 되는 것이 없게 익숙해지지 않는 사람이 헤매는 일은 불가피하다.
+			PRINTFORMDW 일몰 이후의 위험은 말하지 않는 것이 좋음, 그러나 그런데도 할 수 밖에 없었다.
+			PRINTL
+			PRINTFORMDW 시작으로 주변부의 탐색으로부터 시작한다. 그리고 서서히 행동 반경을 넓혀 가는 일로 했다.
+			PRINTFORMDW 처음은 얼마 안되는 시간 밖에 숲의 장독에 견딜 수  없었던 몸도, 날을 쫓을 때마다 습관
+			PRINTFORMDW 조금씩 행동 범위는 확대되었다. 그리고 모두 같게 외관이라고 숲의 풍경도
+			PRINTFORMDW 익숙해져 오는에 따라 분별이 되게 되어 갔다.
+			PRINTL
+			PRINTFORMDW 사람이든 요이든, 거기에 살고 있으면 주변에 어떠한 흔적을 남길 것.
+			PRINTFORMDW 그렇게 단단하게 믿어 며칠도 탐색에 소비했다.
+			PRINTL
+			PRINTFORMDW 그리고 혹일, 간신히 흔적 같은 것을 찾아냈다. 자주(잘) 보지 않는다고 간과하는 정도의
+			PRINTFORMDW 물건이었지만 그것은 확실히 무엇인가가 걸은 자취였다.
+			PRINTFORMDW 거기는 주위보다 불과에 밟아 굳힐 수 있고 있는 것 같고, 짐승 이외의 무엇인가, 그것이 사람에 따라 다를까 보냐
+			PRINTFORMDW 사람이라면 바구니의 것에 의해 붙일 수 있었던 자취인가는 분명히 하지 않지만, 2족 보행에 의해
+			PRINTFORMDW 붙여진 자취인 것은 잘못해 없을 것 같았다.
+			PRINTL
+			PRINTFORMDW 아토를 더듬어, 한층 더 숲속으로 나간다. 낮이라고 하는데 근처는 어슴푸레하다.
+			PRINTFORMDW 잠시 하면(자) 전방으로 빛이 보여 온다. 그리고 조금 연 장소에 나왔다.
+			PRINTFORMDW 거기에는 한 채의 집이 있었다. 그다지 보아서 익숙하지 않는 구조였지만
+			PRINTFORMDW 누군가가 산다, 또는 살고 있던 장소인 일은 틀림없다고 생각되었다.
+			PRINTL
+			PRINTFORMDW 주위에 의심스러운 기색은 없는 것 같다. 그리고 뜻을 결코 집에 가까워져 간다.
+			PRINTFORMDW 가옥 상태로부터 여기가 현재에도 사용되고 있는 일은 확실한 것 같다.
+			PRINTFORMDW 문을 찾아내고 두드려 보지만 응답은 없고, 근처는 고요하게 싸였을 뿐 있었다.
+			PRINTFORMDW 하지만 문은 잠겨져 있지 않은 것 같다. 본능은 금방 여기로부터 떠나야 하는 것과 고하고 있었지만
+			PRINTFORMDW 모처럼 여기까지 왔다고 하는 생각과 호기심에는 항그림문을 열고 집안에 들어간다.
+			PRINTL
+			PRINTFORMDW 역시 안에는 아무도 없는 것 같다. 각각의 방은 청소가 두루 미치는이라고 우리
+			PRINTFORMDW 가구나 일상 생활 용품은 집주인의 취미의 좋은 점을 느끼게 했다.
+			PRINTFORMDW 불과에 문이 연 방이 있어, 신중하게 안을 본다.
+			PRINTL
+			PRINTFORMDW 거기는 공방일까에인가와 같고, 방안에는 수많은 인형이 늘어놓을 수 있고 있었다.
+			PRINTFORMDW 여기가 찾아 요구한 인형견 있고의 집인 일은, 이미 혐의가 없었다.
+			PRINTFORMDW 라고 여기서 있는 인형이 마음에 걸린다. 그것은 2가지 개체의 인형이었다.
+			PRINTFORMDW 다른 인형과 멀어진 장소에 놓여진 그것은, 아무래도 여기의 주요한 인형 부려에 있어
+			PRINTFORMDW 특별한 의미를 가지는 것인 것처럼 생각되었다.
+			PRINTL
+			PRINTFORMDW 흥미를 돋워지고 가까워져 손에 들려고 한 순간, 위화감을 눈치챘다.
+			PRINTFORMDW 2가지 개체의 인형의 쳐 도대체는 어딘가 자신을 닮아 있는 느낌이 든다.
+			PRINTFORMDW 손에 들어 자 호소에 바라보는 동안, 그것은 비슷한 등 이라는 것은 아니고
+			PRINTFORMDW 세부에 이를 때까지 자기 자신에게 본떠 만들어지고 있는 일을 눈치챘다.
+			PRINTL
+			PRINTFORMDW 그리고 이제 일체의 인형에게는 왠지 본 기억이 있었다.
+			PRINTFORMDW 가벼운 웨이브가 걸린 블론드의 머리카락, 푸른 눈동자, 어깨에는 흰 shawl를 하는 도중
+			PRINTFORMDW 파랑의 원피스의 각처에 리본을 다룬 그 모습…
+			PRINTL
+			PRINTFORMDW 자신 꼭 닮은 인형에게 어딘가 본 기억이 있는 인형…
+			PRINTFORMDW 이미 단순한 우연히로 정리할 수 있는 것은 아니었다.
+			PRINTFORMDW 지금은 모든 진실은 손을 뻗으면 닿는 거리에 있다고 생각한 찰나, 속마음으로부터
+			PRINTFORMDW 예기치 못한 감정의 격류가 분출해 왔다.
+			PRINTL
+			PRINTFORMDW 그것은 마음이 빠진 부분을, 지금 이 순간에 단번에 묻으려고 할까와 같고
+			PRINTFORMDW 그 나머지의 격렬한 감정의 흐름에 몸이 찢어질 것 같았다.
+			PRINTL
+			PRINTFORMDW (뜻)이유를 모른다. 도대체 어떻게 되어 있는지, 자신은 어째서 끝냈는가…
+			PRINTFORMDW 깨달았을 때에는 달리기 시작하고 있었다. 여기로부터 빨리 멀어지지 않으면, 자신은 미쳐 버린다.
+			PRINTL
+			PRINTFORMDW 단번에 집의 밖까지 앞질러갔더니, 다리가 뒤얽힘 화려하게 굴렀다.
+			PRINTFORMDW 호흡은 흐트러져 심장 뛰는 소리가 분명히 들린다. 전신의 힘이 빠져 일어나는 기력도 없다.
+			PRINTFORMDW 있어에 무엇인가가 뺨을 타 떨어지는 감각에 제 정신을 차린다. 이것은 눈물？ 자신은 지금 울고 있는 것인가…？
+			PRINTFORMDW 배이는 시야, 상기시켜지는 기억, 흐르고 떨어지는 눈물 한 방울 마다 여러가지 생각이 되살아나 온다.
+			PRINTL
+			PRINTFORMDW 비가 내리기 시작했다. 이윽고 나무들의 잎을 두드리는 소리는 점차 커져, 본격적인 억수가 되었다.
+			PRINTFORMDW 비에 맞으면서, 그 날의 일을 생각해 내고 있었다. 그래, 자신이 앨리스를 거절한 날의 일을.
+			PRINTFORMDW 지금, 가슴에 거래 하는 것은 후회일까, 자책하는 마음일까, 그렇지 않으면 슬픔일까.
+			PRINTFORMDW 그 대답은 자기 자신이라도, 로서 몰랐다.
+			PRINTL
+			PRINTFORMDW 비가 약해진 것 같았다.
+			PRINTFORMDW 하지만 빗소리의 격렬함은 바뀌지 않고, 그것은 주위를 바라봐도 확실했다.
+			PRINTFORMDW 있어에 무언가에 싸이는 감촉. 그것은 상냥하고, 따뜻해, 그리운 향기가 났다…
+			PRINTL
+			PRINTFORMW 「이제 울지 마……좋아……%CNAME(MASTER, TARGET)%(은)는 굳이 나쁘지 않다…」
+			PRINTL
+			PRINTFORMDW 그것은 앨리스였다…
+			PRINTL
+			PRINTFORMW 「원래 나의 제멋대로 하는 모양으로 시작한 일……그래, 나쁜 것은 전부 이 나…」
+			PRINTFORMW 「 그렇지만%CNAME(MASTER, TARGET)%(은)는 이런 나라도 사랑해 주었다. 사랑하는 기쁨, 사랑받는 기쁨을 가르쳐 주었다…」
+			PRINTFORMW 「그러니까,%CNAME(MASTER, TARGET)%가 우는 일은 없어…」
+			PRINTL
+			PRINTFORMW 「 나 그 의견찜질하고 실마리？ %CNAME(MASTER, TARGET)%가 어떤 선택을 해도 받아들인다 라고」
+			PRINTFORMW 「내가 사랑한 처음이자 마지막의 사람… 그 사람이 바란 결과인걸」
+			PRINTFORMW 「확실히 나에게 있어 유감인 결과였던 것은 부정하지 않는데…」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%에는 자신이 선택한 길에서 행복하게 되었으면 좋은, 이것은 속이고 바구니 기분이야」
+			PRINTL
+			PRINTFORMW 「나머지1개 정직하게 말하게 해 주자면,%CNAME(MASTER, TARGET)%의 기억을 빼앗은 것은 나야」
+			PRINTFORMW 「이라고 말해도, 이제 기분이 붙고 있지 지만」
+			PRINTL
+			PRINTFORMW 「 나나름대로 약삭빠르게 군 생각이었던 것이지만」
+			PRINTFORMW 「사실,%CNAME(MASTER, TARGET)%에는 폐를 끼치고만. 나…」
+			PRINTFORMW 「원망해 주어도 상관없는, 그렇지만, 그렇지만…」
+			PRINTFORMW 「싫게 되시면(자) 조금 슬픈, 일까…」
+			PRINTL
+			;-------------------------------------
+			;タイトル:RetroAtmosphere
+			;原曲:ブクレシュティの人形師
+			;サークル:efs
+			;Vocal:阿部左
+			;アルバム:Mystic Heart
+			;-------------------------------------
+			CALL BGM_CUTIN("RetroAtmosphere", 1)
+			PRINTFORMDW 그리고 앨리스는 상냥하게 입맞춤을 해 말했다.
+			PRINTFORMW 「안녕히 가세요……나, 언제까지나 잊지 않는다……」
+			CALL TWAIT3_K14
+			PRINTFORMDW 깨달았을 때에는 혼자서였다. 그리고 집이 있던 장소에는 이미 아무것도 없고
+			PRINTFORMDW 일순간꿈에서도 보고 있던 것 같은 감각에 당했지만, 기억은 선명히 남아 있었다.
+			PRINTL
+			PRINTFORMDW 앨리스는 이번은 기억을 지우지 않았다. 그 진심이 어디에 있는지 자신은 모른다.
+			PRINTFORMDW 지금은, 향후 다른 인생을 걸었다고 해도, 같은 추억을 분담할 수 있는 것이 기뻤다.
+			PRINTL
+			PRINTFORMDW 그리고 살아 있으면 언젠가 또 만날 수 있는, 그런 예감이 한다……
+			PRINTL
+			PRINTL
+			;フォントをセット
+			CALL SETFONT_K14
+		
+			;フェードアウトx4
+			CALL FADE(30, COLOR_K14("white"), COLOR_K14("black"), @"             강한척 하는 일을 기억한, 삐걱거리는 마음%CNAME(MASTER, TARGET)%에는 보이지 않는다")
+			CLEARLINE 1
+			CALL FADE(30, COLOR_K14("white"), COLOR_K14("black"), "             마음을 어디에 맡겨, 어떻게 미소지어 보이면 된다…？")
+			CLEARLINE 1
+			CALL FADE(30, COLOR_K14("white"), COLOR_K14("black"), "             내가 지나가는 숲은, 가련한 꽃도 독사의 이빨로 바꿀 수 있다")
+			CLEARLINE 1
+			CALL FADE(50, COLOR_K14("white"), COLOR_K14("black"), "             암야[闇夜]를 깊게 찢어, 지금도 하나의 달을 기다린다……")
+			CLEARLINE 1
+		
+			PRINTL
+			PRINTL
+			;デフォルトカラーに
+			RESETCOLOR
+			;太字に
+			FONTSTYLE 1
+			CUSTOMDRAWLINE -=
+			;エンディングタイトル
+			CALL SCROLLTEXT("　　　　　　　【Ending No.0004】（別離）", 2, 6, 117, 0, 1)
+			;フォントを戻す
+			CALL RESETFONT_K14
+			PRINTL
+			PRINTL
+			PRINTL
+			;ゲームオバー2で終了시킨다
+			CALL GAME_OVER2_K14
+	ENDSELECT
+ENDIF

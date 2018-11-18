@@ -1,0 +1,385 @@
+﻿;────────────────────────────────────
+;000,지금 기분을 묻다
+;────────────────────────────────────
+;リアクション前（Ｓ/Ｎ/Ｈ）[罰]（ソースなし、죠교대상の反応だけを見る）
+@ACTION_APPLY_0
+TFLAG:경과시간 += 1
+
+;リアクション後
+@ACTION_APPLY2_0
+;デフォルト(以下のどれにも該当しない反応)
+TFLAG:ACT파생 = -1
+;リアクションが강하게 응답한다の場合
+IF IS_NOWCOMNAME("강하게 응답한다")
+	;ACT파생に勇気を出して強く当たったをセット
+	TFLAG:ACT파생 = 1
+	;REACT분류に要求に応じないをセット
+	CALL SET_COMGRO("거부")
+;リアクションが빈정거린다の場合
+ELSEIF IS_NOWCOMNAME("빈정거린다")
+	;ACT파생に皮肉「今の気分は、と聞かれても」をセット
+	TFLAG:ACT파생 = 2
+	;REACT분류に要求に応じないをセット
+	CALL SET_COMGRO("거부")
+;REACT분류が소극적으로 한다の場合
+ELSEIF IS_COMGRONAME("소극적으로 한다")
+	;ACT파생に歯切れ悪く質問に答えたをセット
+	TFLAG:ACT파생 = 0
+;REACT분류が태연하게 한다の場合
+ELSEIF IS_COMGRONAME("태연하게 한다")
+	;ACT파생にまあまあ悪くはないと言ったをセット
+	TFLAG:ACT파생 = 4
+;REACT분류が적극적으로 한다の場合
+ELSEIF IS_COMGRONAME("적극적으로 한다")
+	;ACT파생にはっきりと今の気持ちを告げたをセット
+	TFLAG:ACT파생 = 3
+	;굴복각인に応じて공포SOURCE増加
+	SOURCE:MASTER:공포 += 150 + MARK:굴복각인 * 20
+;REACT분류が受け入れるの場合
+ELSEIF IS_COMGRONAME("受け入れる")
+	;ACT파생に気持ち良いこと했다いと言ったをセット
+	TFLAG:ACT파생 = 5
+	;쾌락각인に応じて열락SOURCE増加
+	SOURCE:MASTER:열락 += 50 + MARK:쾌락각인 * 20
+ENDIF
+
+;────────────────────────────────────
+;001,自分の事をどう思うかを聞く
+;────────────────────────────────────
+;リアクション前（Ｓ/Ｎ/Ｈ）（애정）
+@ACTION_APPLY_1
+;죠교대상순종*2、죠교자회화技能に応じて애정SOURCE増加
+SOURCE:MASTER:애정 = 50 + ABL:MASTER:순종 * 2 + ABL:회화
+TFLAG:경과시간 += 1
+;話題『호의』を既出とする
+TFLAG:기출의화제 |= 1
+
+;リアクション後
+@ACTION_APPLY2_1
+;デフォルト(以下のどれにも該当しない反応)
+TFLAG:ACT파생 = -1
+;リアクションが강하게 응답한다の場合
+IF IS_NOWCOMNAME("강하게 응답한다")
+	;ACT파생にそんなことあるわけない！をセット
+	TFLAG:ACT파생 = 1
+	;REACT분류に要求に応じないをセット
+	CALL SET_COMGRO("거부")
+;リアクションが빈정거린다の場合
+ELSEIF IS_NOWCOMNAME("빈정거린다")
+	;ACT파생に皮肉「困るねぇ…好きじゃないといったら怒る？」をセット
+	TFLAG:ACT파생 = 2
+	;반항각인に応じて공포SOURCE減少
+	SOURCE:MASTER:공포 -= 150 + MARK:반항각인 * 20
+	;REACT분류に要求に応じないをセット
+	CALL SET_COMGRO("거부")
+;REACT분류が소극적으로 한다の場合
+ELSEIF IS_COMGRONAME("소극적으로 한다")
+	;ACT파생に嫌いじゃない…かも知れない…をセット
+	TFLAG:ACT파생 = 0
+	;죠교자회화に応じて애정SOURCE増加
+	SOURCE:MASTER:애정 += 100 + GET_ABL(TARGET, "회화") * 2
+;REACT분류が적극적으로 한다で、죠교대상호의が少ないか、REACT분류が태연하게 한다
+ELSEIF (IS_COMGRONAME("적극적으로 한다") && CFLAG:M호의 < 1000) || IS_COMGRONAME("태연하게 한다")
+	;ACT파생にもう酷いことしなければ、もっと好きになれるかもしれないをセット
+	TFLAG:ACT파생 = 3
+	;죠교자회화に応じて애정SOURCE増加
+	SOURCE:MASTER:애정 += 150 + GET_ABL(TARGET, "회화") * 25 / 10
+;REACT분류が적극적으로 한다で、죠교대상호의が多い
+ELSEIF IS_COMGRONAME("적극적으로 한다") && CFLAG:M호의 >= 1000
+	;ACT파생にはっきりと好きと告げたをセット
+	TFLAG:ACT파생 = 4
+	;죠교자회화に応じて애정SOURCE増加
+	SOURCE:MASTER:애정 += 200 + GET_ABL(TARGET, "회화") * 5
+	;죠교대상호의に応じて공포SOURCE増加
+	SOURCE:MASTER:공포 += 150 + CFLAG:M호의 / 10
+;REACT분류が受け入れる
+ELSEIF IS_COMGRONAME("受け入れる")
+	;ACT파생にもっとすごいことしてくれば、もっと好きになれるかもをセット
+	TFLAG:ACT파생 = 5
+	;죠교자회화に応じて애정SOURCE増加
+	SOURCE:MASTER:애정 += 100 + GET_ABL(TARGET, "회화")
+	;죠교대상마조끼に応じて애정SOURCE増加
+	SOURCE:MASTER:중독충족 += 150 + GET_ABL(MASTER, "마조끼") * 2
+ENDIF
+
+;────────────────────────────────────
+;002,성에 관한 이야기를 하다（Ｓ/Ｎ/Ｈ）（죠교대상の성지식）
+;────────────────────────────────────
+@ACTION_APPLY_2
+;발기도上昇
+TCVAR:MASTER:금회발기 += 50
+TFLAG:경과시간 += 1
+;話題『지식』を既出とする
+TFLAG:기출의화제 |= 2
+
+;────────────────────────────────────
+;003,상냥하게 위로한다（Ｓ/Ｎ）（트라우마逆）
+;────────────────────────────────────
+@ACTION_APPLY_3
+;죠교자회화技能に応じて트라우마SOURCE減少
+SOURCE:MASTER:트라우마 = -50 - ABL:회화 * 5
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+TFLAG:경과시간 += 1
+;話題『慰め』を既出とする
+TFLAG:기출의화제 |= 4
+
+;────────────────────────────────────
+;004,엄하게 위협한다（Ｎ/Ｈ）(트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_4
+;죠교자가학技能に応じて트라우마SOURCE増加
+SOURCE:MASTER:트라우마 = 80 + ABL:가학 * 5
+;트라우마(각인)の元がこの죠교だった場合트라우마SOURCE1.5倍
+SIF CFLAG:MASTER:트라우마 == 4
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+TFLAG:경과시간 += 1
+;話題『脅す』を既出とする
+TFLAG:기출의화제 |= 8
+
+;────────────────────────────────────
+;005,服を脱いで/服を着てと命じる
+;────────────────────────────────────
+;リアクション前（Ｓ/Ｎ/Ｈ/Ａ）[罰]（노출）
+@ACTION_APPLY_5
+;자주탈의の処理
+;억압/수줍음/착의플레이선호素質がない場合
+IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
+	;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+	IF TALENT:해방 * 4 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 3 + RAND:3
+		;악세서리－まで자주탈의
+		TFLAG:자주탈의 = 7
+	;1/3の確率で
+	ELSEIF !RAND:3
+		;上＋下겉옷자주탈의
+		TFLAG:자주탈의 = 3
+	ENDIF
+ENDIF
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;탈의時노출SOURCE増加
+SIF TFLAG:ACT파생 == 0
+	SOURCE:MASTER:노출 = 50
+;着衣時노출SOURCE減少
+SIF TFLAG:ACT파생 == 1
+	SOURCE:MASTER:노출 = -50
+;죠교대상자위を中断
+TEQUIP:자위중 &= ~1
+TFLAG:경과시간 += 1
+
+;リアクション後（노출）
+@ACTION_APPLY2_5
+;탈의前に복장을 保存する
+CALLF CLOTHE_SAVE(TARGET)
+CALLF CLOTHE_SAVE(MASTER)
+;服を脱いでの場合
+IF TFLAG:ACT파생 == 0
+	;성교중、원피스や着物は脱げるが스커트は無理の原理
+	;소극적으로 한다なら一枚脱ぐ
+	IF IS_COMGRONAME("소극적으로 한다/受け入れる")
+		IF TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷
+			TEQUIP:MASTER:상반신겉옷 = 0
+			TEQUIP:MASTER:전신겉옷 = 0
+			SOURCE:MASTER:노출 += 300
+		ELSEIF TEQUIP:MASTER:하반신겉옷 && !GETINSERT()
+			TEQUIP:MASTER:하반신겉옷 = 0
+			SOURCE:MASTER:노출 += 200
+		ELSEIF TEQUIP:MASTER:상반신속옷
+			TEQUIP:MASTER:상반신속옷 = 0
+			SOURCE:MASTER:노출 += 400
+		ELSEIF TEQUIP:MASTER:하반신속옷 && !GETINSERT()
+			TEQUIP:MASTER:하반신속옷 = 0
+			SOURCE:MASTER:노출 += 500
+		ELSEIF TEQUIP:MASTER:신발안 || TEQUIP:MASTER:악세서리
+			TEQUIP:MASTER:악세서리 = 0
+			TEQUIP:MASTER:신발안 = 0
+			SOURCE:MASTER:노출 += 100
+		ENDIF
+	;적극적으로 한다なら二枚脱ぐ
+	ELSEIF IS_COMGRONAME("적극적으로 한다/태연하게 한다")
+		IF TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷
+			IF GETINSERT()
+				TEQUIP:MASTER:상반신속옷 = 0
+			ELSE
+				TEQUIP:MASTER:하반신겉옷 = 0
+			ENDIF
+			TEQUIP:MASTER:상반신겉옷 = 0
+			TEQUIP:MASTER:전신겉옷 = 0
+			SOURCE:MASTER:노출 += 400
+		ELSEIF TEQUIP:MASTER:하반신겉옷 && !GETINSERT()
+			TEQUIP:MASTER:상반신속옷 = 0
+			TEQUIP:MASTER:하반신겉옷 = 0
+			SOURCE:MASTER:노출 += 300
+		ELSEIF TEQUIP:MASTER:상반신속옷
+			SIF !GETINSERT()
+				TEQUIP:MASTER:하반신속옷 = 0
+			TEQUIP:MASTER:상반신속옷 = 0
+			SOURCE:MASTER:노출 += 500
+		ELSEIF TEQUIP:MASTER:하반신속옷 && !GETINSERT()
+			TEQUIP:MASTER:악세서리 = 0
+			TEQUIP:MASTER:신발안 = 0
+			TEQUIP:MASTER:하반신속옷 = 0
+			SOURCE:MASTER:노출 += 600
+		ELSEIF TEQUIP:MASTER:신발안 || TEQUIP:MASTER:악세서리
+			TEQUIP:MASTER:악세서리 = 0
+			TEQUIP:MASTER:신발안 = 0
+			SOURCE:MASTER:노출 += 100
+		ENDIF
+	;その他リアクションなら脱がない
+	ELSE
+		;REACT분류に要求に応じないをセット
+		CALL SET_COMGRO("거부")
+	ENDIF
+;服を着ての場合
+ELSE
+	;소극적으로 한다なら一枚着る
+	IF IS_COMGRONAME("소극적으로 한다/受け入れる")
+		;성교중は악세서리よりブラ우선
+		IF TEQUIP:MASTER:상반신속옷 != EQUIP:MASTER:상반신속옷 && GETINSERT()
+			TEQUIP:MASTER:상반신속옷 = EQUIP:MASTER:상반신속옷
+		ELSEIF TEQUIP:MASTER:악세서리 != EQUIP:MASTER:악세서리 || TEQUIP:MASTER:신발안 != EQUIP:MASTER:신발안
+			TEQUIP:MASTER:악세서리 = EQUIP:MASTER:악세서리
+			TEQUIP:MASTER:신발안 = EQUIP:MASTER:신발안
+		ELSEIF TEQUIP:MASTER:하반신속옷 != EQUIP:MASTER:하반신속옷 && !GETINSERT()
+			TEQUIP:MASTER:하반신속옷 = EQUIP:MASTER:하반신속옷
+		ELSEIF TEQUIP:MASTER:상반신속옷 != EQUIP:MASTER:상반신속옷 && !GETINSERT()
+			TEQUIP:MASTER:상반신속옷 = EQUIP:MASTER:상반신속옷
+		ELSEIF TEQUIP:MASTER:하반신겉옷 != EQUIP:MASTER:하반신겉옷 && !GETINSERT()
+			TEQUIP:MASTER:하반신겉옷 = EQUIP:MASTER:하반신겉옷
+		ELSEIF TEQUIP:MASTER:상반신겉옷 != EQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷 != EQUIP:MASTER:전신겉옷
+			TEQUIP:MASTER:상반신겉옷 = EQUIP:MASTER:상반신겉옷
+			TEQUIP:MASTER:전신겉옷 = EQUIP:MASTER:전신겉옷
+		ENDIF
+	;적극적으로 한다なら二枚着る
+	ELSEIF IS_COMGRONAME("적극적으로 한다/태연하게 한다")
+		;성교중は악세서리よりブラ우선
+		IF TEQUIP:MASTER:상반신속옷 != EQUIP:MASTER:상반신속옷 && GETINSERT()
+			TEQUIP:MASTER:상반신속옷 = EQUIP:MASTER:상반신속옷
+		ELSEIF TEQUIP:MASTER:악세서리 != EQUIP:MASTER:악세서리 || TEQUIP:MASTER:신발안 != EQUIP:MASTER:신발안
+			TEQUIP:MASTER:악세서리 = EQUIP:MASTER:악세서리
+			TEQUIP:MASTER:신발안 = EQUIP:MASTER:신발안
+			SIF !GETINSERT()
+				TEQUIP:MASTER:하반신속옷 = EQUIP:MASTER:하반신속옷
+		ELSEIF TEQUIP:MASTER:하반신속옷 != EQUIP:MASTER:하반신속옷 && !GETINSERT()
+			TEQUIP:MASTER:하반신속옷 = EQUIP:MASTER:하반신속옷
+			TEQUIP:MASTER:상반신속옷 = EQUIP:MASTER:상반신속옷
+		ELSEIF TEQUIP:MASTER:상반신속옷 != EQUIP:MASTER:상반신속옷
+			TEQUIP:MASTER:상반신속옷 = EQUIP:MASTER:상반신속옷
+			IF GETINSERT()
+				TEQUIP:MASTER:상반신겉옷 = EQUIP:MASTER:상반신겉옷
+				TEQUIP:MASTER:전신겉옷 = EQUIP:MASTER:전신겉옷
+			ELSE
+				TEQUIP:MASTER:하반신겉옷 = EQUIP:MASTER:하반신겉옷
+			ENDIF
+		ELSEIF TEQUIP:MASTER:하반신겉옷 != EQUIP:MASTER:하반신겉옷 && !GETINSERT()
+			TEQUIP:MASTER:하반신겉옷 = EQUIP:MASTER:하반신겉옷
+			TEQUIP:MASTER:상반신겉옷 = EQUIP:MASTER:상반신겉옷
+			TEQUIP:MASTER:전신겉옷 = EQUIP:MASTER:전신겉옷
+		ELSEIF TEQUIP:MASTER:상반신겉옷 != EQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷 != EQUIP:MASTER:전신겉옷
+			TEQUIP:MASTER:상반신겉옷 = EQUIP:MASTER:상반신겉옷
+			TEQUIP:MASTER:전신겉옷 = EQUIP:MASTER:전신겉옷
+		ENDIF
+	;その他リアクションなら着ない
+	ELSE
+		;REACT분류に要求に応じないをセット
+		CALL SET_COMGRO("거부")
+	ENDIF
+ENDIF
+;何枚脱ぎ着했다かを確認
+LOCAL:1 = 0
+FOR LOCAL, 0, 10
+	SIF CLOTHE_SAVE(MASTER, LOCAL)
+		LOCAL:1++
+NEXT
+;保持関数にて保持
+CALLF ACTION_APPLY2_5V(LOCAL:1)
+
+;変数保持関数
+@ACTION_APPLY2_5V(ARG)
+#FUNCTION
+;ARGを保持し、ARGが-1であればその値を返す
+SIF ARG != -1
+	LOCAL = ARG
+RETURNF LOCAL
+
+;────────────────────────────────────
+;006,합의를 요구한다
+;────────────────────────────────────
+;リアクション前（Ｓ/Ｎ/Ｈ）（애정）
+@ACTION_APPLY_6
+;애정SOURCE増加
+SOURCE:MASTER:애정 = 200
+TFLAG:경과시간 += 1
+;話題『합의』を既出とする
+TFLAG:기출의화제 |= 16
+
+;リアクション後
+@ACTION_APPLY2_6
+;REACT분류が소극적으로 한다・태연하게 한다の場合
+IF IS_COMGRONAME("소극적으로 한다/태연하게 한다")
+	;죠교자회화に応じて공포SOURCE増加
+	SOURCE:MASTER:공포 += 100 + GET_ABL(TARGET, "회화") * 2
+	;합의形成
+	CFLAG:합의 = 1
+;REACT분류が적극적으로 한다・受け入れるの場合
+ELSEIF IS_COMGRONAME("적극적으로 한다/受け入れる")
+	;죠교자회화に応じて애정SOURCE増加
+	SOURCE:MASTER:애정 += 400 + GET_ABL(TARGET, "회화") * 5
+	;죠교대상호의に応じて공포SOURCE増加
+	SOURCE:MASTER:공포 += 200 + CFLAG:M호의 / 10
+	;합의形成
+	CFLAG:합의 = 1
+;REACT분류がその他の場合
+ELSE
+	;REACT분류に要求に応じないをセット
+	CALL SET_COMGRO("거부")
+ENDIF
+
+;────────────────────────────────────
+;007,징계한다고 위협한다（Ｎ/Ｈ）[罰]（트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_7
+;트라우마(각인)に応じて트라우마SOURCE増加
+SOURCE:MASTER:트라우마 = 100 + MARK:MASTER:트라우마 * 50
+;트라우마(각인)の元がこの죠교だった場合트라우마SOURCE1.5倍
+SIF CFLAG:MASTER:트라우마 == 7
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+TFLAG:경과시간 += 1
+
+;────────────────────────────────────
+;008,고함치다（Ｈ/Ａ）（애정逆、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_8
+;애정SOURCE減少、트라우마SOURCE増加
+SOURCE:MASTER:애정 = -150
+SOURCE:MASTER:트라우마 = 150
+;트라우마(각인)の元がこの죠교だった場合트라우마SOURCE1.5倍
+SIF CFLAG:MASTER:트라우마 == 8
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+TFLAG:경과시간 += 1
+
+;────────────────────────────────────
+;009,기분나쁘게 웃다（Ａ）[罰]（이탈、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_9
+;1/2の確率で악세서리ー강제탈의
+SIF RAND:2
+	TFLAG:강제탈의 = 6
+;1/2の確率で악세서리ー자주탈의
+SIF RAND:2
+	TFLAG:자주탈의 = 6
+;이탈、트라우마SOURCE乱数増加
+SOURCE:MASTER:이탈 = RAND:7 * 100
+SOURCE:MASTER:트라우마 = 250 + RAND:5 * 100
+;트라우마(각인)の元がこの죠교だった場合트라우마SOURCE1.5倍
+SIF CFLAG:MASTER:트라우마 == 9
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+TFLAG:경과시간 += 1
+;話題『嗤う』を既出とする
+TFLAG:기출의화제 |= 32

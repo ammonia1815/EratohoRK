@@ -1,0 +1,792 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	엘리스구상 조수アクション＆이벤트구상ファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=================================================
+;・조수アクションが発生했다ときに表示。小分岐の増減は자유に
+;・조수이벤트はとりあえず二つのみ
+;・「구상主=ASSI」である 구상主が主人の場合はFLAG:2でもいい 分かり辛いかも知れないが
+;・流用は자유だが自己責任で
+;・本体の조수関連機能があくまでも暫定的なものなので、何か不具合があるかも知れない
+;・現状少し怪しい挙動があっても、仕様と思って諦めて欲しい
+;・突き詰めていくと､分岐がかなり多くなり肥大化しそうな気がする
+;・TALENT分岐はある程度吟味する필요アリと思われる
+;------------------------------------------------
+;関連変数…
+;TFLAG:190=(今回の조수アクションの번호)
+;TFLAG:193=(今回の조수アクションの派生内容)
+;TFLAG:104=(미약・로션使用　1,미약使用、2,로션使用、3,両方使用)
+;TALENT:ASSI:131(구상主が主人である場合)
+;TALENT:131分岐で主人をFLAG:2で参照してるがこの場合ASSIでもok
+;FLAG:2で状況に寄らず、誰が주인님かを参照できる
+;-------------------------------------------------
+
+;────────────────────────────────────
+;ASSI_1,クンニ、펠라
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_1
+;-------------------------------------------------
+;펠라
+IF TCVAR:ASSI:조수ACT파생 == 1
+	;엘리스が주인님
+	IF TALENT:ASSI:주인님
+		;상사상애
+		IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「ちゅぷっ、ちゅく…ちゅぅっ、じゅぷっ、んく…」
+			PRINTFORMW 「, 구…, , 응구…」
+;OriginalString : 「ねぇ、%CNAME(TARGET, (FLAG:주인님))%と比べてどう？」
+			PRINTFORMW 「응,%CNAME(TARGET, (FLAG:주인님))%(와)과 비교해 어때？」
+;OriginalString : 「聞くまでも無いと思うけど、一応聞かせて頂戴」
+			PRINTFORMW 「(들)물을 것도 없다고 생각하지만, 일단 들려주어 주세요」
+;OriginalString : 
+			PRINTL
+;OriginalString : [0] 엘리스の方が上손いに決まってる！
+			PRINTFORMDL [0] 앨리스가 능숙한으로 정해져 있다！
+;OriginalString : [1] えっと…
+			PRINTFORMDL [1] 어와…
+			CALL INPUTINTD(0, 1)
+			SELECTCASE RESULT
+				CASE 0
+;OriginalString : 「ま、当然だけどね！」
+					PRINTFORMW 「뭐, 당연하지만！」
+;OriginalString : 「でも、ご褒美として、少し可愛がってあげてもいいわよ？」
+					PRINTFORMW 「 그렇지만, 포상으로서 조금 귀여워해 주어도 괜찮아요？」
+				CASE 1
+;OriginalString : 「何がえっと…よ！　ちょん切られたいの…？」
+					PRINTFORMW 「무엇이 어와…！ 싹독 잘라지고 싶은거야…？」
+;OriginalString : 「どうやら躾直す필요があるみたいね！」
+					PRINTFORMW 「아무래도 예의 범절 고칠 필요가 있는 것 같구나！」
+			ENDSELECT
+		;それ以外
+		ELSE
+;OriginalString : 「ちゅぷっ、ちゅく…ちゅぅっ、じゅぷっ…」
+			PRINTFORMW 「, 구…,…」
+;OriginalString : 「ほら、%CNAME(TARGET, (FLAG:주인님))%にされるより良いでしょう？」
+			PRINTFORMW 「이봐요,%CNAME(TARGET, (FLAG:주인님))%(으)로 되는 것보다 좋을 것입니다？」
+;OriginalString : 「ウフフ…」
+			PRINTFORMW 「우후후…」
+		ENDIF
+	;普通の조수
+	ELSE
+;OriginalString : 「ちゅぷっ、ちゅく…」
+		PRINTFORMW 「, 구…」
+;OriginalString : 「ねぇ、%CNAME(TARGET, ASSI)%と比べてどうかしら？」
+		PRINTFORMW 「응,%CNAME(TARGET, ASSI)%(와)과 비교해 어떻게든 해들？」
+	ENDIF
+;クンニ
+ELSE
+	;엘리스が주인님
+	IF TALENT:ASSI:주인님
+		;상사상애
+		IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「フフ…溢れ出して止まらないわね」
+			PRINTFORMW 「후후…넘쳐 나오고 해 멈추지 않네요」
+;OriginalString : 「やっぱり私に舐められると、嬉しいのかしら？」
+			PRINTFORMW 「역시 나가 빨 수 있으면(자), 기쁜 것일까？」
+		;それ以外
+		ELSE
+;OriginalString : 「フフ…相変わらず可愛いわね」
+			PRINTFORMW 「후후…변함 없이 사랑스럽네요」
+;OriginalString : 「ほら、私の舌でもっと蕩かしてあげる…」
+			PRINTFORMW 「이봐요, 나의 혀에서 좀 더 녹여 준다…」
+		ENDIF
+	;普通の조수
+	ELSE
+;OriginalString : 「민감で中々可愛らしいわね」
+		PRINTFORMW 「민감해 꽤 사랑스럽네요」
+;OriginalString : 「%CNAME((FLAG:주인님), ASSI)%には何処まで開発されてるのかしら？」
+		PRINTFORMW 「%CNAME((FLAG:주인님), ASSI)%에는 어디까지 개발되고 있는 거나？」
+;OriginalString : 「ウフフ…」
+		PRINTFORMW 「우후후…」
+	ENDIF
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_2,貝あわせ,스마타
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_2
+;-------------------------------------------------
+;스마타
+IF TCVAR:ASSI:조수ACT파생 == 1
+	;엘리스が주인님
+	IF TALENT:ASSI:주인님
+		;상사상애
+		IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「ビクビクさせちゃって愉しそうね？」
+			PRINTFORMW 「벌벌 시켜 버려서 즐거운 것 같구나？」
+;OriginalString : 「ほら、%CNAME(TARGET, (FLAG:주인님))%とは一味違うでしょう？」
+			PRINTFORMW 「이봐요,%CNAME(TARGET, (FLAG:주인님))%(와)과는 한가닥 다르겠지요？」
+		;それ以外
+		ELSE
+;OriginalString : 「ほら、%CNAME(TARGET, (FLAG:주인님))%に擦られるより良いでしょう？」
+			PRINTFORMW 「이봐요,%CNAME(TARGET, (FLAG:주인님))%에 켜지는 것보다 좋을 것입니다？」
+;OriginalString : 「%CNAME(MASTER, (FLAG:주인님))%の主人が誰なのか、その体にしっかり刻み付けてあげるから…」
+			PRINTFORMW 「%CNAME(MASTER, (FLAG:주인님))%의 주인이 누구인가, 그 몸에 확실히 조각해 주기 때문에…」
+		ENDIF
+	;普通の조수
+	ELSE
+;OriginalString : 「これ、%CNAME((FLAG:주인님), ASSI)%にはいつもシてもらってるのかしら？」
+		PRINTFORMW 「이것,%CNAME((FLAG:주인님), ASSI)%에는 언제나 시라고 받고 있는 거나？」
+;OriginalString : 「ま、私の方を気に入られても困るんだけどね、ウフフ…」
+		PRINTFORMW 「뭐, 제 쪽을 마음에 들어도 곤란하지만, 우후후…」
+	ENDIF
+;貝あわせ
+ELSE
+	;엘리스が주인님
+	IF TALENT:ASSI:주인님
+		;상사상애
+		IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「ほら、ココでしょ？　フフッ…そうよね？　気持ち良いわよね？」
+			PRINTFORMW 「이봐요, 코코겠지？ 후훅…그래요？ 기분 좋아요？」
+;OriginalString : 「%CNAME(MASTER, (FLAG:주인님))%の感じるとこ、全部知ってるのは私だけなんから♪」
+			PRINTFORMW 「%CNAME(MASTER, (FLAG:주인님))%(이)가 느끼는 곳, 전부 알고 있는 것은 나만무슨들♪」
+		;それ以外
+		ELSE
+;OriginalString : 「ほら、%CNAME(TARGET, (FLAG:주인님))%に擦られるより良いでしょう？」
+			PRINTFORMW 「이봐요,%CNAME(TARGET, (FLAG:주인님))%에 켜지는 것보다 좋을 것입니다？」
+;OriginalString : 「%CNAME(MASTER, (FLAG:주인님))%の主人が誰なのか、その体にしっかり刻み付けてあげるから…」
+			PRINTFORMW 「%CNAME(MASTER, (FLAG:주인님))%의 주인이 누구인가, 그 몸에 확실히 조각해 주기 때문에…」
+		ENDIF
+	;普通の조수
+	ELSE
+;OriginalString : 「これ、%CNAME((FLAG:주인님), ASSI)%にはいつもシてもらってるのかしら？」
+		PRINTFORMW 「이것,%CNAME((FLAG:주인님), ASSI)%에는 언제나 시라고 받고 있는 거나？」
+;OriginalString : 「ま、私の方を気に入られても困るんだけどね、ウフフ…」
+		PRINTFORMW 「뭐, 제 쪽을 마음에 들어도 곤란하지만, 우후후…」
+	ENDIF
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_3,파이즈리
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_3
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_4,발コキ
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_4
+;-------------------------------------------------
+;엘리스が주인님(엘리스はデフォで각선미)
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+		;죠교자も각선미
+		IF TALENT:TARGET:각선미
+;OriginalString : 「ほら、やっぱり私の발の方が良いんでしょう？」
+			PRINTFORMW 「이봐요, 역시 나의 다리가 좋겠지요？」
+;OriginalString : 「反応がちょっと違うの、私が気付かないとでも、思ってたの？」
+			PRINTFORMW 「반응이 조금 다른 것, 내가 깨닫지 않으면에서도, 생각했어？」
+;OriginalString : 「さぁ、愉しませてあげる。私の발で無様に果てる様、%CNAME(TARGET, (FLAG:주인님))%に良く見せてあげなさい」
+			PRINTFORMW 「, 즐기게 해 준다. 나의 다리로 보기 흉하게 끝나는 모양,%CNAME(TARGET, (FLAG:주인님))%에 자주(잘) 보여 주세요」
+;OriginalString : 「ウフフ…」
+			PRINTFORMW 「우후후…」
+		;それ以外
+		ELSE
+;OriginalString : 「あらあら、嬉しそうな顔しちゃって。そんなに待ち遠しかったのかしら？」
+			PRINTFORMW 「대강, 기쁜 듯한 얼굴 해 버려서. 그렇게 몹시 기다려 졌던 것일까 해들？」
+;OriginalString : 
+			PRINTL
+;OriginalString : [0] 早く踏んで下さい！ もっと罵って下さい！ 엘리스様お願いします！
+			PRINTFORMDL [0] 빨리 밟아 주세요！ 좀 더 매도해 주세요！ 앨리스님 부탁합니다！
+;OriginalString : [1] べ、別に……
+			PRINTFORMDL [1] , 별로……
+			CALL INPUTINTD(0, 1)
+			SELECTCASE RESULT
+				CASE 0
+;OriginalString : 「良い心掛けね？　ま、そこまで言われちゃ、期待に応えない訳にいかないわね♪」
+					PRINTFORMW 「좋은 마음가짐이군요？ 뭐, 그렇게 까지 말해지면, 기대에 응하지 않는 것에 가지 않네요♪」
+;OriginalString : 「さぁ、もっと발を開いて…そう、もっと踏みやすいように。フフッ…」
+					PRINTFORMW 「, 좀 더 다리를 열어…그래, 좀 더 밟기 쉽게. 후훅…」
+;OriginalString : 「あら？ 踏む前から先がヌルヌルになってるみたい…まったく、呆れ果てた変態ね！」
+					PRINTFORMW 「어머나？ 밟는 전부터 앞이 누르눌이 되어있는 것 같다…완전히, 질려 버린 변태군요！」
+;OriginalString : 「ウフフ…」
+					PRINTFORMW 「우후후…」
+				CASE 1
+;OriginalString : 「……面白い冗談ね？」
+					PRINTFORMW 「……재미있는 농담이군요？」
+;OriginalString : 「というか、まさか%CNAME(TARGET, (FLAG:주인님))%に、何か吹き込まれたって訳じゃないでしょうね！」
+					PRINTFORMW 「이라고 하는지, 설마%CNAME(TARGET, (FLAG:주인님))%에, 무엇인가 송풍되었다고 (뜻)이유가 아니겠지요！」
+;OriginalString : 「ほら！　どうなの？　はっきり言わないと、このまま踏み潰すわよ？」
+					PRINTFORML 「이봐요！ 어떻게야？ 분명히 말하지 않으면 이대로 밟아 잡아요？」
+;OriginalString : 「ん？　何よ？　こんな事されてるのに、嬉しくて堪らないみたいだけど…」
+					PRINTFORMW 「응？ 뭐야？ 이런 일 되어 , 기뻐서 감등 없는 것 같지만…」
+;OriginalString : 「……私、乗せられたのかしら。　ま、これはこれで、楽しいからいいんだけど、ね」
+					PRINTFORML 「……나, 실을 수 있었는지 해들. 뭐, 이것은 이것대로, 즐겁기 때문에 좋지만, 이군요」
+;OriginalString : 「ほら、%CNAME(MASTER, (FLAG:주인님))%もそうなんでしょう？　まったく……ホント、どうしようもないわね♪」
+					PRINTFORMW 「이봐요,%CNAME(MASTER, (FLAG:주인님))%도 그런 것이겠죠？ 완전히……진짜, 어쩔 수 없네요♪」
+			ENDSELECT
+		ENDIF
+	;それ以外
+	ELSE
+		;죠교자も각선미
+		IF TALENT:TARGET:각선미
+;OriginalString : 「ほら、同じ각선미でも%CNAME(TARGET, (FLAG:주인님))%とは一味違うでしょう？」
+			PRINTFORMW 「이봐요, 같은 미각에서도%CNAME(TARGET, (FLAG:주인님))%(와)과는 한가닥 다르겠지요？」
+;OriginalString : 「で？　もっと踏まれたいんでしょう？　強目に踏んで欲しいんでしょう？」
+			PRINTFORMW 「으로？ 좀 더 밟히고 싶겠지요？ 강목에 밟았으면 좋겠지요？」
+;OriginalString : 「フフっ、いいわよ。주인님の발で、存分に楽しんで頂戴♪」
+			PRINTFORMW 「후후, 좋아요. 남편님의 다리로, 마음껏 즐겨 주세요♪」
+		;それ以外
+		ELSE
+;OriginalString : 「あらあら、안쓰러운顔しちゃって。やっぱり私の발が良いのかしらね？」
+			PRINTFORMW 「대강, 야무지지 못한 얼굴 해 버려서. 역시 나의 다리가 좋은 것일까？」
+;OriginalString : 「ほら、ココでしょう？　こうされるのが堪らないのよね？　フフッ…」
+			PRINTFORMW 「이봐요, 코코지요？ 이렇게 되는 것이 감등 없어？ 후훅…」
+;OriginalString : 「まったく、どうしようもない変態だけど……可愛いわね♪」
+			PRINTFORMW 「완전히, 어쩔 수 없는 변태이지만……사랑스럽네요♪」
+		ENDIF
+	ENDIF
+;普通の조수
+ELSE
+	;죠교자も각선미
+	IF TALENT:TARGET:각선미
+;OriginalString : 「%CNAME(TARGET, ASSI)%の발も綺麗だけれど、私も悪くないでしょう？」
+		PRINTFORML 「%CNAME(TARGET, ASSI)%의 다리도 깨끗하다 하지만, 나도 나쁘지 않을 것입니다？」
+;OriginalString : 「ま、一番違うのはココからなんだけど、ね♪」
+		PRINTFORMW 「뭐, 제일 다른 것은 코코로부터이지만, 이군요♪」
+;OriginalString : 「さぁ、この私が直々に踏んであげるんだから、思いっきり楽しんで頂戴」
+		PRINTFORML 「, 이 내가 직들에 밟아 주기 때문에, 마음껏 즐겨 주세요」
+;OriginalString : 「ウフフ…」
+		PRINTFORMW 「우후후…」
+	;それ以外
+	ELSE
+;OriginalString : 「さぁ、本物の脚線美をたっぷり堪能して頂戴」
+		PRINTFORMW 「, 진짜의 각선미를 충분히 만끽해 주세요」
+;OriginalString : 「あら、何？　もう私の발に興奮してるのかしら？」
+		PRINTFORML 「어머나, 무엇？ 이제 나의 다리에 흥분하고 있는 거나？」
+;OriginalString : 「まぁ、仕方無いかしらね。%CNAME(TARGET, ASSI)%とはちょっと違うもの」
+		PRINTFORMW 「아무튼, 방법 없을까.%CNAME(TARGET, ASSI)%(와)과는 조금 다른 것」
+;OriginalString : 「でも……中々虐めがいがありそうで、ちょっと楽しくなってきたわね♪ ウフフ…」
+		PRINTFORMW 「 그렇지만……꽤 학째가 겉껍데기 있을 것이어, 조금 즐거워져 온 원이군요♪ 우후후…」
+	ENDIF
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_5,로터, 오나홀
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_5
+;-------------------------------------------------
+[SKIPSTART]
+IF 구상記入チェック(0)
+	;오나홀
+	IF TCVAR:ASSI:조수ACT파생 == 1
+	;로터
+	ELSE
+	ENDIF
+	RETURN 1
+ENDIF
+[SKIPEND]
+
+;────────────────────────────────────
+;ASSI_6,역강간
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_6
+;-------------------------------------------------
+[SKIPSTART]
+IF 구상記入チェック(0)
+	;연속(一度삽입すると절정するかTARGETが介入しない限り연속で発生します)←現状조수は直ぐ外れる感じ
+	IF TFLAG:조수연속교합 == 1
+	;開始
+	ELSE
+	ENDIF
+	RETURN 1
+ENDIF
+[SKIPEND]
+
+;────────────────────────────────────
+;ASSI_7,애무→수음
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_7
+;-------------------------------------------------
+;수음
+IF TCVAR:ASSI:조수ACT파생 == 1
+	;엘리스が주인님
+	IF TALENT:ASSI:주인님
+		;죠교자も器用な指
+		IF TALENT:TARGET:손가락기술
+			;상사상애
+			IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「フフっ、気持ち良さそうね？」
+				PRINTFORMW 「후후, 기분 좋음 그렇구나？」
+;OriginalString : 「腰まで動かしちゃって、そんなにいいのかしら」
+				PRINTFORMW 「허리까지 움직여 버려서, 그렇게 좋은 것일까」
+;OriginalString : 「ほら、私に扱かれてだらしなくなってる顔、もっと良く%CNAME(TARGET, (FLAG:주인님))%に見せてあげなさい♪」
+				PRINTFORMW 「이봐요, 나에게 잡아당겨져 야무지지 못하게 되고 있는 얼굴, 좀 더 자주(잘)%CNAME(TARGET, (FLAG:주인님))%에 보여 주세요♪」
+			;それ以外
+			ELSE
+;OriginalString : 「%CNAME(TARGET, (FLAG:주인님))%も中々器用だけど、私と比べてどうなのかしら？」
+				PRINTFORMW 「%CNAME(TARGET, (FLAG:주인님))%도 꽤 손재주가 있지만, 나와 비교해 어떤가 해들？」
+;OriginalString : 「と言っても、%CNAME(MASTER, (FLAG:주인님))%の立場じゃ、下손な事は言えないわよねぇ？　ウフフ…」
+				PRINTFORMW 「이라고 말해도,%CNAME(MASTER, (FLAG:주인님))%의 입장은, 서투른 일은 말할 수 없어요？ 우후후…」
+			ENDIF
+		;それ以外
+		ELSE
+			;상사상애
+			IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「私の손で扱かれるのは、堪らないでしょう？」
+				PRINTFORMW 「 나의 손으로 잡아당겨지는 것은, 감등 없을 것입니다？」
+;OriginalString : 「%CNAME(TARGET, (FLAG:주인님))%じゃこんな指捌きは楽しめないでしょうから、仕方無いかしらね？」
+				PRINTFORMW 「%CNAME(TARGET, (FLAG:주인님))%잡어응인 손가락 다루기는 즐길 수  없을까요들 , 방법 없을까？」
+;OriginalString : 「ほら、イきたければ何時でもいいのよ…？」
+				PRINTFORMW 「이봐요, 이 오고 싶으면 언제라도 좋아…？」
+;OriginalString : 「私の손でどれだけ気持ち良くなっちゃうのか、%CNAME(TARGET, (FLAG:주인님))%によく見てもらいなさい♪」
+				PRINTFORMW 「 나의 손으로 얼마나 기분 좋아져버리는 의 것인지,%CNAME(TARGET, (FLAG:주인님))%에 자주(잘) 보이세요♪」
+			;それ以外
+			ELSE
+;OriginalString : 「%CNAME(TARGET, (FLAG:주인님))%も悪くないんでしょうけど、やっぱりちょっと違う感じかしらね？」
+				PRINTFORMW 「%CNAME(TARGET, (FLAG:주인님))%도 나쁘지 않겠지요하지만, 역시 조금 다른 느낌 우두머리군요？」
+;OriginalString : 「まぁこの反応見れば、一目瞭然だけど、ね♪」
+				PRINTFORMW 「아무튼 이 반응 보면, 일목 요연하지만, 이군요♪」
+			ENDIF
+		ENDIF
+	;普通の조수
+	ELSE
+		;죠교자も器用な指
+		IF TALENT:TARGET:손가락기술
+;OriginalString : 「%CNAME(TARGET, ASSI)%も器用だけど、私だって負けてないのよ？」
+			PRINTFORMW 「%CNAME(TARGET, ASSI)%도 손재주가 있지만, 나라도 지지 않아？」
+;OriginalString : 「ほら、どうなの？　気持ち良いんじゃないの？　ウフフ…体は正直みたいね」
+			PRINTFORMW 「이봐요, 어떻게야？ 기분 좋은거 아니야？ 우후후…몸은 정직같구나」
+		ELSE
+;OriginalString : 「ねぇ、私に扱かれるのは、%CNAME(MASTER, ASSI)%の주인님と比べてどうなのかしら？」
+			PRINTFORMW 「응, 나에게 잡아당겨지는 것은,%CNAME(MASTER, ASSI)%의 남편님과 비교해 어떤가 해들？」
+;OriginalString : 「あら？　%CNAME((FLAG:주인님), ASSI)%には聞かれたくないの？　中々正直なのね、ウフフ…」
+			PRINTFORMW 「어머나？ %CNAME((FLAG:주인님), ASSI)%에는 (듣)묻고 싶지 않은거야？ 꽤 정직한, 우후후…」
+		ENDIF
+	ENDIF
+;애무
+ELSE
+	;엘리스が주인님
+	IF TALENT:ASSI:주인님
+		;상사상애
+		IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「ほら、ココがいいんでしょう？　こっちも一緒に弄るのはどうかしら？」
+			PRINTFORMW 「이봐요, 코코가 좋겠지요？ 여기도 함께 만지작거리는 것은 어떻게든 해들？」
+;OriginalString : 「あらあら、そんなに感じたら%CNAME(TARGET, (FLAG:주인님))%が嫉妬しちゃうわよ？　うふっ…」
+			PRINTFORMW 「대강, 그렇게 느끼면(자)%CNAME(TARGET, (FLAG:주인님))%하지만 질투해버리는 원이야？ 우대신…」
+		;それ以外
+		ELSE
+;OriginalString : 「私に弄られるのが嬉しいみたいね？」
+			PRINTFORMW 「 나에게 만지작거려지는 것이 기쁜 것 같구나？」
+;OriginalString : 「ねぇ、気持ち良いのは分かるけど、そんなに甘えた声を出しては駄目よ？」
+			PRINTFORMW 「응, 기분 좋은 것은 알지만, 그렇게 응석부린 소리를 내 안되어요？」
+;OriginalString : 「今は%CNAME(TARGET, (FLAG:주인님))%も一緒にいるんだから。ウフフ…」
+			PRINTFORMW 「지금은%CNAME(TARGET, (FLAG:주인님))%도 함께 있기 때문에. 우후후…」
+		ENDIF
+	;普通の조수
+	ELSE
+;OriginalString : 「気持ち良いのは分かるけど、そんな甘えた声出されても困るわね」
+		PRINTFORMW 「기분 좋은 것은 알지만, 그렇게 응석부린 소리 나와도 곤란해요」
+;OriginalString : 「%CNAME(MASTER, ASSI)%の주인님は%CNAME((FLAG:주인님), ASSI)%なのよ？　ウフフ…」
+		PRINTFORMW 「%CNAME(MASTER, ASSI)%의 남편님은%CNAME((FLAG:주인님), ASSI)%(이)야？ 우후후…」
+	ENDIF
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_10,항문애무
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_10
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_11,항문펠라
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_11
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_12,항문로터
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_12
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_13,항문바이브
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_13
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_20,가슴애무
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_20
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_21,유두핥기
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_21
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_22,유두로터
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_22
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_30,손가락삽입
+;────────────────────────────────────
+;Ｖ責（처녀には行わない）
+;-------------------------------------------------
+@KOJO_ACT_ASSI_K14_30
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「フフっ、キュンキュン締め付けちゃて可愛らしいわね」
+		PRINTFORMW 「후후, 쿨쿨 단단히 조이면이라고 사랑스럽네요」
+;OriginalString : 「あら、なぁに？　もっとして欲しいの？」
+		PRINTFORMW 「어머나, 에？ 좀 더 해 주었으면 한거야？」
+;OriginalString : 「それなら続きは%CNAME(TARGET, (FLAG:주인님))%におねだりしてみたら？」
+		PRINTFORMW 「그렇다면 다음은%CNAME(TARGET, (FLAG:주인님))%졸라 보면(자)？」
+;OriginalString : 「それで만족出来るかどうかは知らないけど、ね♪」
+		PRINTFORMW 「그래서 만족 할 수 있을지 어떨지는 모르지만, 이군요♪」
+	;それ以外
+	ELSE
+;OriginalString : 「もう大分馴染んだ感じかしらね？」
+		PRINTFORMW 「벌써 상당히 친숙해 진 느낌 우두머리군요？」
+;OriginalString : 「ほら、私の指では했다なく喘ぐところ、%CNAME(TARGET, (FLAG:주인님))%に良く見せてあげなさい♪」
+		PRINTFORMW 「이봐요, 나의 손가락에서는 하고 싶은 구 허덕이는 곳(중),%CNAME(TARGET, (FLAG:주인님))%에 자주(잘) 보여 주세요♪」
+	ENDIF
+;普通の조수
+ELSE
+;OriginalString : 「ねぇ、%CNAME((FLAG:주인님), ASSI)%にはどこまで開発されてるのかしら？」
+	PRINTFORMW 「응,%CNAME((FLAG:주인님), ASSI)%에는 어디까지 개발되고 있는 거나？」
+;OriginalString : 「あら、恥ずかしくて言えないの？　フフっ、中々可愛らしいわね」
+	PRINTFORMW 「어머나, 부끄럽고 말할 수 없는거야？ 후후, 꽤 사랑스럽네요」
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_31,바이브
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_31
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_32,성교
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_32
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_40,키스
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_40
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「んっ、ちゅぅっ……ちゅく、んく……」
+		PRINTFORMW 「응,……구, 응구……」
+;OriginalString : 「ほら、もっとこう、舌を絡めて……そう、良い感じ」
+		PRINTFORMW 「이봐요, 좀 더 이렇게, 혀를 걸어……그래, 좋은 느낌」
+;OriginalString : 「%CNAME(TARGET, (FLAG:주인님))%にもっと見せ付けてやるのよ。ウフフっ…」
+		PRINTFORMW 「%CNAME(TARGET, (FLAG:주인님))%에 좀 더 과시해 주어. 우후후…」
+	;それ以外
+	ELSE
+;OriginalString : 「ほら、こっちを向きなさい」
+		PRINTFORMW 「이봐요, 여기를 향하세요」
+;OriginalString : 「ん、ちゅく……ちゅぅっ、フフ…愉しいわね」
+		PRINTFORMW 「응, 구……, 후후…즐겁네요」
+	ENDIF
+;普通の조수
+ELSE
+;OriginalString : 「さぁ、私と키스しましょう」
+	PRINTFORMW 「, 나와 키스 합시다」
+;OriginalString : 「%CNAME((FLAG:주인님), ASSI)%がどれだけ仕込んでいるのか、良く確かめてあげるから♪」
+	PRINTFORMW 「%CNAME((FLAG:주인님), ASSI)%하지만 얼마나 가르치고 있는지, 자주(잘) 확인해 주기 때문에♪」
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_41,안면승마
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_41
+;-------------------------------------------------
+[SKIPSTART]
+;기승위성교봉사중(TARGETと키스します)
+IF TEQUIP:성교봉사중 == 3
+;それ以外
+ELSE
+ENDIF
+RETURN 1
+[SKIPEND]
+RETURN 0
+
+;────────────────────────────────────
+;ASSI_42,발을핥게한다
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_42
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_50,자위를과시한다
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_50
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「ほら、どう？　私が一人でシてるとこ見るの、大好きでしょう？」
+		PRINTFORMW 「이봐요, 어때？ 내가 혼자서 시 비치는 곳 보는 것, 정말 좋아하겠지요？」
+;OriginalString : 「でも、あんまり見てると%CNAME(TARGET, (FLAG:주인님))%が嫉妬しちゃうから、程々にね♪」
+		PRINTFORMW 「 그렇지만, 너무 보고 있다고(면)%CNAME(TARGET, (FLAG:주인님))%하지만 질투해버리니까, 정도들에 말이야♪」
+	;それ以外
+	ELSE
+;OriginalString : 「ほら、%CNAME(TARGET, (FLAG:주인님))%にばっかり構ってないで、こっちを見なさい」
+		PRINTFORMW 「이봐요,%CNAME(TARGET, (FLAG:주인님))%에뿐 상관하지 말고, 여기를 보세요」
+;OriginalString : 「フフ…そうそう、もっと良く見て」
+		PRINTFORMW 「후후…그렇게 자주, 좀 더 자주(잘) 보며」
+;OriginalString : 「ねぇ、%CNAME(TARGET, (FLAG:주인님))%とじゃなくて、私とシてるような気分にならない？」
+		PRINTFORMW 「응,%CNAME(TARGET, (FLAG:주인님))%(와)과가 아니고, 나와 시 비치는 것 같은 기분이 되지 않는다？」
+;OriginalString : 「ウフフ…」
+		PRINTFORMW 「우후후…」
+	ENDIF
+;普通の조수
+ELSE
+;OriginalString : 「あら、見せ付けられるのが恥ずかしいの？　面白いわね」
+	PRINTFORMW 「어머나, 과시할 수 있는 것이 부끄러운거야？ 재미있네요」
+;OriginalString : 「恥ずかしいのは、むしろ私の方だと思うけど？　ウフフ…」
+	PRINTFORMW 「부끄러운 것은, 오히려 제 쪽이라고 생각하는데？ 우후후…」
+ENDIF
+SIF TEQUIP:눈가리개
+;OriginalString : 「…って、今の%CNAME(MASTER, ASSI)%に見える訳なかったわね」
+	PRINTFORMW 「…라고, 지금의%CNAME(MASTER, ASSI)%(으)로 보이는 것 없었어요」
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_51,매도
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_51
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「随分楽しそうね？　%CNAME(TARGET, (FLAG:주인님))%にシてもらうのがそんなに嬉しいのかしら？」
+		PRINTFORMW 「상당히 즐거운 듯 하구나？ %CNAME(TARGET, (FLAG:주인님))%에 시라고 받는 것이 그렇게 기쁜 것일까？」
+;OriginalString : 「まったく……本当は相손が誰でも良いんじゃないの？　この変態！」
+		PRINTFORMW 「완전히……사실은 상대가 누구라도 좋은거 아니야？ 이 변태！」
+;OriginalString : 「ていうか……いい加減、その辺にしとかないと怒るわよ？」
+		PRINTFORMW 「이라고 말할까……적당, 그쯤 해 두지 않는다고 화내요？」
+	;それ以外
+	ELSE
+;OriginalString : 「ほら、\@ !TEQUIP:눈가리개 ? 私が見てるからって、# \@遠慮しなくていいのよ？」
+		PRINTFORMW 「이봐요,\@ !TEQUIP:눈가리개 ? 내가 보고 있기 때문에 라고,# \@사양하지 않아 좋아？」
+;OriginalString : 「精々%CNAME(TARGET, (FLAG:주인님))%に可愛がってもらいなさい」
+		PRINTFORMW 「정령들%CNAME(TARGET, (FLAG:주인님))%에 귀여워해 주세요」
+;OriginalString : 「むしろ、\@ !TEQUIP:눈가리개 ? 私に見られて # \@興奮してるんじゃないの？　この変態！」
+		PRINTFORMW 「오히려,\@ !TEQUIP:눈가리개 ? 나에게 보여져 # \@흥분하고 있는  것이 아닌거야？ 이 변태！」
+	ENDIF
+;普通の조수
+ELSE
+;OriginalString : 「良く躾けられた感じで、%CNAME((FLAG:주인님), ASSI)%は大分ご執心みたいだけど…」
+	PRINTFORMW 「자주(잘) 예의범절을 가르칠 수 있었던 느낌으로,%CNAME((FLAG:주인님), ASSI)%(은)는 상당히 집착같지만…」
+;OriginalString : 「私に言わせると、ちょっとイマイチ、ね」
+	PRINTFORMW 「 나에게 말하게 하면(자), 조금 이마이치, 군요」
+;OriginalString : 「ちょっと言い過ぎかしら？　ウフフ…」
+	PRINTFORMW 「조금 과언 까？ 우후후…」
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_52,사진촬영
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_52
+;-------------------------------------------------
+;RETURN 0
+
+;────────────────────────────────────
+;ASSI_53,조교자와키스
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_53
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「んちゅっ、ちゅぅっ……ちゅく、んくっ……」
+		PRINTFORMW 「,……구, 응구……」
+;OriginalString : 「あら、どう했다の？　私が%CNAME(TARGET, (FLAG:주인님))%に取られたみたいで嫉妬してるのかしら？」
+		PRINTFORMW 「어머나, 왜？ 내가%CNAME(TARGET, (FLAG:주인님))%에 놓친 것 같아 질투하고 있는 거나？」
+;OriginalString : 「それとも、構って貰えなくて不満なの？　フフっ、可愛らしいわね♪」
+		PRINTFORMW 「그렇지 않으면, 상관해 받을 수 없어서 불만이야？ 후후, 사랑스럽네요♪」
+	;それ以外
+	ELSE
+;OriginalString : 「んっ、ちゅっ……ちゅく、んく……」
+		PRINTFORMW 「응,……구, 응구……」
+;OriginalString : 「ほら、%CNAME(TARGET, (FLAG:주인님))%。もっとイヤラシく舌を絡めて…」
+		PRINTFORMW 「이봐요,%CNAME(TARGET, (FLAG:주인님))%. 좀 더 이야라시구혀를 걸어…」
+;OriginalString : 「フフ…こんなの見せられて、すっかり興奮してるみたいね？」
+		PRINTFORMW 「후후…이런 건 보여져, 완전히 흥분하고 있는 것 같구나？」
+	ENDIF
+;普通の조수
+ELSE
+;OriginalString : 「んっ、ちゅっ……ちゅく、んく……」
+	PRINTFORMW 「응,……구, 응구……」
+;OriginalString : 「あら、주인님を取られてちょっと不満そうね？　ウフフ…」
+	PRINTFORMW 「어머나, 남편님을 놓쳐 조금 불만 그렇구나？ 우후후…」
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_54,치태를응시
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_54
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「あんあん鳴いてる%CNAME(TARGET, (FLAG:주인님))%も可愛いわね……でも…」
+		PRINTFORMW 「팥고물 팥고물 울고 있다%CNAME(TARGET, (FLAG:주인님))%도 사랑스럽네요……그렇지만…」
+;OriginalString : 「何か私がいる事忘れて、愉しんでない？」
+		PRINTFORMW 「무엇인가 내가 있는 일 잊어, 즐기지 않다？」
+;OriginalString : 「ほらっ、%CNAME(TARGET, (FLAG:주인님))%！　もうその辺にしときなさいよっ！」
+		PRINTFORMW 「이봐요,%CNAME(TARGET, (FLAG:주인님))%！ 이제 그쯤 해 두세요！」
+	;それ以外
+	ELSE
+;OriginalString : 「%CNAME(TARGET, (FLAG:주인님))%も愉しんでるみたいで何よりね」
+		PRINTFORMW 「%CNAME(TARGET, (FLAG:주인님))%도 즐기고 있는 것 같고 최상이구나」
+;OriginalString : 「でも見てると、何か가슴がざわざわするわね…これ……」
+		PRINTFORMW 「 그렇지만 보고 있으면, 무엇인가 가슴이 와글와글 해요…이것……」
+	ENDIF
+;普通の조수
+ELSE
+	SELECTCASE RAND:2
+		CASE 0
+;OriginalString : 「悪くない眺めだけど…」
+			PRINTFORMW 「나쁘지 않은 경치이지만…」
+;OriginalString : 「見てるだけってのも、あまり面白くないわね…」
+			PRINTFORMW 「보고 있을 뿐은의도, 그다지 재미있지 않네요…」
+		CASEELSE
+;OriginalString : 「もうすっかり%CNAME((FLAG:주인님), ASSI)%に飼いならされてるって感じね」
+			PRINTFORMW 「 이제 완전히%CNAME((FLAG:주인님), ASSI)%에 길러 말해지고 있다고 느낌이군요」
+;OriginalString : 「フフ…中々面白いわね、これ」
+			PRINTFORMW 「후후…꽤 재미있네요, 이것」
+	ENDSELECT
+ENDIF
+RETURN 1
+
+;────────────────────────────────────
+;ASSI_60,머리를짓밟다
+;────────────────────────────────────
+@KOJO_ACT_ASSI_K14_60
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「ほら、보기 흉한姿を%CNAME(TARGET, (FLAG:주인님))%によく見せてあげなさい」
+		PRINTFORMW 「이봐요, 보기 흉한 모습을%CNAME(TARGET, (FLAG:주인님))%에 잘 보여 주세요」
+;OriginalString : 「でもいいこと？ %CNAME(TARGET, (FLAG:주인님))%。ここまでしていいのは、私だけだからね？」
+		PRINTFORMW 「이라도 좋은 일？ %CNAME(TARGET, (FLAG:주인님))%. 여기까지 해도 좋은 것은, 나 뿐이니까？」
+	;それ以外
+	ELSE
+;OriginalString : 「ねぇ、見て%CNAME(TARGET, (FLAG:주인님))%。この変態はこんな事でも悦ぶのよ」
+		PRINTFORMW 「응, 봐%CNAME(TARGET, (FLAG:주인님))%. 이 변태는 이런 일에서도 기쁨의 것」
+;OriginalString : 「ウフフ…」
+		PRINTFORMW 「우후후…」
+	ENDIF
+;普通の조수
+ELSE
+;OriginalString : 「ウフフ…ちょっと屈辱的な感じかしらね？」
+	PRINTFORMW 「우후후…조금 굴욕적인 느낌 우두머리군요？」
+;OriginalString : 「でも、本当は結構愉しんでるんじゃないの？」
+	PRINTFORMW 「 그렇지만, 사실은 상당히 즐기고 있는  것이 아닌거야？」
+ENDIF
+RETURN 1
+
+;未だに未整理の箇所
+;========================================================================
+;조수이벤트구상
+;========================================================================
+;구상のRESULT値が1だとDRAWLINE、2だと一行改行、3だと両方します
+;-------------------------------------------------
+
+;────────────────────────────────────
+;AEV20 절정구상
+;────────────────────────────────────
+@KOJO_EVENT_ASSI_K14_20(ARG)
+;-------------------------------------------------
+;関連関数…
+;CARESS_SPOT(引数0)
+;引数0=キャラ등록번호。省略するとTARGET
+;戻り値:そのキャラがMASTERのどこ를 애무하기ているか
+;(0.してない/1.Ｃ/2.Ｖ/3.Ａ/4.Ｂ/5.입)
+;-------------------------------------------------
+RETURN 0
+
+[SKIPSTART]
+;사정시켰다
+IF CARESS_SPOT(ASSI) == 1 && NOWEX:MASTER:사정
+	SELECTCASE NOWASSIACTNAME(ASSI)
+		CASE "입으로 애무"
+		CASE "스마타"
+		CASE "파이즈리한다"
+		CASE "풋잡하기"
+		CASE "역강간"
+		CASE "손으로 애무"
+	ENDSELECT
+;조수として절정시켰다
+ELSE
+ENDIF
+RETURN 3
+[SKIPEND]
+
+;────────────────────────────────────
+;AEV102,조수任命구상
+;────────────────────────────────────
+;・조수として任命당했다ときに表示
+;・いかなる場合でも「구상主=ASSI」となって呼び出される
+;-------------------------------------------------
+@KOJO_EVENT_ASSI_K14_102(ARG)
+;-------------------------------------------------
+;엘리스が주인님
+IF TALENT:ASSI:주인님
+	;상사상애
+	IF FAVOR(3000, 3000, ASSI)
+;OriginalString : 「マンネリ解消には、こういうのもいいかしらね」
+		PRINTFORMW 「매너리즘 해소에는, 이런 것도 좋을까」
+;OriginalString : 「でもいいこと？ %CNAME(TARGET, (FLAG:주인님))%。あまり勝손な事をしては駄目だからね！」
+		PRINTFORMW 「이라도 좋은 일？ %CNAME(TARGET, (FLAG:주인님))%. 너무 제멋대로인 일을 해 안되니까！」
+	;それ以外
+	ELSE
+;OriginalString : 「偶にはこういうのもいいかしらね」
+		PRINTFORMW 「이따금은 이런 것도 좋을까」
+;OriginalString : 「ちょっと新鮮な感じがするし。でも…」
+		PRINTFORMW 「조금 신선한 느낌이 들고. 그렇지만…」
+;OriginalString : 「何かちょっと複雑ね……」
+		PRINTFORMW 「무엇인가 조금 복잡하구나……」
+	ENDIF
+;普通の조수
+ELSE
+;OriginalString : 「面倒だけど、そこまで頼まれちゃ仕方無いわね」
+	PRINTFORMW 「귀찮지만, 거기까지 부탁받으면 방법 없네요」
+;OriginalString : 「ま、私なりに愉しませてもらう事にするわ」
+	PRINTFORMW 「뭐, 나나름대로 즐기게 해 주는 일로 해요」
+ENDIF
+RETURN 3

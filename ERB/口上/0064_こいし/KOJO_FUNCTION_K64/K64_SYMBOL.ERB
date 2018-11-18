@@ -1,0 +1,68 @@
+﻿;-------------------------------------------------
+;関数名:K64_SYMBOL
+;概　要:特殊記号취득関数
+;引　数:ARGS:0…パターン名
+;戻り値:対応する記号のHTML文字列
+;備　考:式中関数
+;特殊な記号の修飾処理を行う関数
+;HTML_PRINTに定型パターンのHTML文字列を引き渡すのが목적
+;これにより、あたかも「Times New Romanの赤い塗りつぶしハート」みたいな単位で
+;文字列を受け渡し出来る…ような気分がする
+;HTML_PRINT向けカスタマイズして使うUNICODE関数的な雰囲気
+;文字参照の상태で渡すのと、ここでUNICODE関数呼ぶのとどっちがいいのかは知らないけど…まぁいいや
+;同じ記号が単純に연속するだけなら%K64_SYMBOL("BHeartW") * 5%のような記法でおｋ。かなり非効率で손抜き
+;間隔が開いて연속するような場面は、戻り値を一旦LOCALSなどに入れるのがいいかも
+;ランダムな記号を연속시킨다中で毎回変えたい場合はその都度呼ぶ필요がある…どうするかな
+;後でその辺で困ったら考えよう
+;この関数自体はパターンの覚え書きのような関数
+;ここに記載されているパターンが少ないと感じたら、それは私が구상作者として손を抜いているからｗ
+;구상が伴ってないと結局は目眩ましだよね。関数作ってないで구상書けってことです
+;-------------------------------------------------
+;使用例…
+;CALL HTMLPRINTW(@"「貴方も一緒にフュージョンしましょ%K64_SYMBOL("Radio")%」")
+;-------------------------------------------------
+@K64_SYMBOL(ARGS:0)
+#FUNCTIONS
+SELECTCASE ARGS:0
+	;テスト用の名残
+	;Verdanaフォントのピンクがかった明るい赤の中抜きハート。色とフォントはRev#ぽ標準？
+	;코이시ちゃんの心は空っぽなのです。満たしてあげてください(ただしザルです)
+	CASE "赤ハート"
+		RETURNF "<font face='Verdana' color='#C07070'>&#x2661;</font>"
+	
+	;純粋にGulimはこれら記号の出力が綺麗だった。他意も慈悲も無い
+	;やっぱりメイド・イン・ジャパンは違うわね。元々がナールなら、日本語に馴染むのも当然なのかな
+	;XP/Vista/7/8には標準で入っていると思われ。え、マック？ 私はモスのフィッシュバーガーが一番好きなのでマックは行かない
+	CASE "Skull"
+		RETURNF "<font face='Gulim' color='#FFFFFF'>&#x2620;</font>"
+	CASE "Radio"
+		RETURNF "<font face='Gulim' color='#FFFF00'>&#x2622;</font>"
+	CASE "Bio"
+		RETURNF "<font face='Gulim' color='#FF4000'>&#x2623;</font>"
+	;ランダムで返す箇所は호의とか判定してキッチリやってもいいんだけど…
+	;코이시ちゃんだし気分でいい気もする。…気分を判定すべき？
+	;最近、中抜きハートじゃ色が見づらい気もしてきた。でも最初のうちは空っぽでいたいジレンマ
+	CASE "HeartW"
+		RETURNF @"<font face='Gulim' color='#\@ RAND:2 ? FFCCFF # CCFFFF \@'>&#x2661;</font>"
+	CASE "RHeartW"
+		RETURNF "<font face='Gulim' color='#FFCCFF'>&#x2661;</font>"
+	CASE "BHeartW"
+		RETURNF "<font face='Gulim' color='#CCFFFF'>&#x2661;</font>"
+	CASE "HeartB"
+		RETURNF @"<font face='Gulim' color='#\@ RAND:2 ? FFCCFF # CCFFFF \@'>&#x2665;</font>"
+	CASE "RHeartB"
+		RETURNF "<font face='Gulim' color='#FFCCFF'>&#x2665;</font>"
+	CASE "BHeartB"
+		RETURNF "<font face='Gulim' color='#CCFFFF'>&#x2665;</font>"
+	CASE "Notes"
+		RETURNF @"<font face='Gulim'>%UNICODE(0x2669 + RAND:4)%</font>"
+	CASE "1/4N"
+		RETURNF "<font face='Gulim'>&#x2669;</font>"
+	CASE "1/8N"
+		RETURNF "<font face='Gulim'>&#x266A;</font>"
+	CASE "1/8BN"
+		RETURNF "<font face='Gulim'>&#x266B;</font>"
+	CASE "1/16BN"
+		RETURNF "<font face='Gulim'>&#x266C;</font>"
+ENDSELECT
+RETURNF ""

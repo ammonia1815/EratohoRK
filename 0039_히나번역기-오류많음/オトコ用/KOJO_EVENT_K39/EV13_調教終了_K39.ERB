@@ -1,0 +1,166 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+;	히나구상　죠교終了이벤트구상ファイル
+
+;	죠교終了구상をまとめたファイル
+
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+;##################
+;EV13, 죠교終了구상
+;##################
+[SKIPSTART]
+	・@EVENTCOMENDから呼び出される
+	・구상主が죠교終了する直前に表示
+	・ARG:1, ARG:2の場合は地の文表示後にPRINTLで空行。その後に구상を表示
+	・ARG:0の場合は固有の地の文なし。구상表示の前にPRINTLで空行が入る
+	・RESULT 0以上を返すと구상表示後にPRINTLで空行が入る
+
+	関連変数…
+		FLAG:일상제어    죠교終了時状況(1=통상/2=精力0/3=일회휴게/4=실신했다)
+[SKIPEND]
+
+@KOJO_MALE_EVENT_K39_13(ARG)  ;ARG=(0, 普通に終了、1, 죠교대상が疲れている、2, 죠교대상が실신했다)
+
+
+;ARG:1, ARG:2, 疲労・실신による죠교終了 FIRSTEVENT(0)～
+;######################################################
+[SKIPSTART]
+	・죠교대상소모도に応じて疲労/실신に分かれる
+	・呼び出しタイミングは地の文の表示→PRINTL→구상の表示
+	・EVENT201, 介抱(일상이벤트)の箇所を書く場合は、上손く連携できるようにすると良いでしょう
+[SKIPEND]
+
+;面倒なのでまとめてしまう
+IF GROUPMATCH(ARG, 1, 2)
+	{
+	PRINTFORMW 「 면없음 있고, 너무 하고\@ 
+	GET_KFLAG_K39("상사상애") 
+;OriginalString : ちゃったわね 
+	? 원이군요 
+;OriginalString : てしまいま했다ね \@…」
+	# 라고 섬지금했다저기 \@…」
+	}
+	RETURN 1
+ENDIF
+
+
+;ARG:0 普通に終了 FIRSTEVENT(10)～
+;#################################
+[SKIPSTART]
+	・통상の죠교終了時の구상
+	・地の文なし。PRINTLによる空行の後に구상表示
+	・枠毎に이벤트번호を振ってありますが、任意に設定する事は可能です
+[SKIPEND]
+
+;상사상애 // 호의3000以上・호감도3000以上
+;========================================
+IF TALENT:TARGET:주인님 && GET_KFLAG_K39("상사상애", (FLAG:주인님))
+	;初回
+	;====
+	IF FIRSTEVENT(10)
+		PRINTFORMW 「응, 부탁. 좀 더 함께 있어…」
+		PRINTFORMW 「아무것도 하지 않아 좋으니까……이대로 안고 있어…」
+		PRINTL
+		PRINTFORMDW 그 때, 나는 행복했다
+		PRINTFORMDW 신이다든가, 사람이다든가, 최조 아무래도 좋았다
+		PRINTFORMDW 다만, 한사람의 여자로서 이 행복을 씹어 잡아 아팠다――
+		PRINTL
+		CALL FADEIN(10, "그러나, 그것이 길게 계속되지 않는 것도,", "    마음의 어딘가에서 알고 있었다――")
+		WAIT
+		CALL TWAIT_3
+		RETURN 1
+	ENDIF
+
+	;대만족보너스
+	;==============
+	IF TFLAG:금회대만족
+		PRINTFORML 「%CNAME(MASTER, TARGET)%, 최고였어？ 우대신」
+		PRINTFORMW 「응, 좀 더 여기에 와…」
+		{
+		PRINTFORMD \@ 
+		!TIME 
+;OriginalString : 未だ日は高かったが、二人は幸せに包まれ 
+		? 아직도 날은 높았지만, 두 명은 행복하게 휩싸여라 
+;OriginalString : 夜の帳の中、二人は抱き合いながら \@、
+		# 밤의 장안, 두 명은 얼싸안으면서 \@,
+		}
+		PRINTFORMDW 깊은 잠에 떨어져 갔다……
+		RETURN 1
+	ENDIF
+
+	;その他
+	;======
+	PRINTFORML 「조금, 무엇 혼자서 잠로 해！？」
+	PRINTFORMW 「 이제 , 그렇지 않아서……」
+	{
+	CALL HTMLPRINTW(
+;OriginalString : 「うん、そう、ちゃんと腕廻して……\@ 
+	@"「응, 그렇게, 분명하게 완회 해……\@ 
+	RAND:2 
+;OriginalString : %HTML_HEART(, COLOR2_K39("PINK"))% 
+	? %HTML_HEART(, COLOR2_K39("PINK"))% 
+;OriginalString : %RAND_SPLIT("う/ふ")%ふっ \@」")
+	# %RAND_SPLIT("우/후")%ふっ \@」")
+	}
+	{
+	PRINTFORMDW 두 명은 안아 합\@ 
+	!TIME 
+;OriginalString : っ하며  # いながら \@、\@ 
+	? 읏하며  # 있으면서 \@,\@ 
+	!TIME 
+;OriginalString : 安らかな寝息をたてはじめた # 深い眠りに落ちていった \@……
+	? 편한 숨소리를 세우기 시작했다 # 깊은 잠에 떨어져 갔다 \@……
+	}
+	RETURN 1
+ENDIF
+
+;대만족보너스を得ている
+;========================
+IF TFLAG:금회대만족 && !AFFECTION("익애")    ;//익애以上まで進展していたら弾く
+	;初回
+	;====
+	IF FIRSTEVENT(20)
+		PRINTFORMW 「꽤 좋았어요」
+		PRINTFORMW 「앞으로도 이 느낌으로 액을 불은 삽시다」
+		RETURN 1
+	ENDIF
+	
+	;その他
+	;======
+	PRINTFORMW 「액불제도 우선 순조라고 했는데입니까」
+	CALL HTMLPRINTW(@"「다음번도 이 느낌으로 부탁드릴게요%HTML_PS_K39()%」")
+	RETURN 1
+ENDIF
+
+;익애 //호감도2000以上
+;=====================
+IF AFFECTION("익애")
+	PRINTFORMW 「우대신, 수고 하셨습니다」
+	CALL HTMLPRINTW(@"「다음도 즐겁게 해 주세요%HTML_PS_K39()%」")
+	PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 살그머니 입맞추고 하면(자), 방을 뒤로 했다…
+	RETURN 1
+ENDIF
+
+;공포 //호의200未満・트라우마Lv3以上
+;===================================
+IF 구상記入チェック(40) && AFFECTION("공포")   ;//40%で真
+	PRINTFORML 「완전히 무서워할 수 있어 버렸어요」
+	PRINTFORMW 「이런 일에 완만한 응이라고……」
+	RETURN 1
+ENDIF
+
+;반항 //호의0以下・반항각인Lv1以上
+;=================================
+IF 구상記入チェック(40) && AFFECTION("반항")   ;//40%で真
+	PRINTFORML 「생각한 것처럼은 가지 않아요」
+	PRINTFORMW 「 나, 무엇인가 잘못되어 있는 것일까요…」
+	RETURN 1
+ENDIF
+
+[SKIPSTART]
+;序盤 //条件なし ここまでの条件にヒットしなかった場合に表示
+;==========================================================
+IF 구상記入チェック(0)
+ENDIF
+[SKIPEND]

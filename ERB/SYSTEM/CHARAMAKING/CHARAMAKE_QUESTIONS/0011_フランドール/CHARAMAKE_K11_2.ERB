@@ -1,0 +1,95 @@
+﻿;플랑드르２＠ふらさな
+@CHARAMAKE_K11_2(ARG)
+;OriginalString : 「あ、起きた？　なかなか起きないから、もう　きゅっ　としちゃおうかと思っちゃった」
+PRINTFORMW 「아, 일어났다？　좀처럼 일어나지 않기 때문에, 이제 꽉 해 버리자라고 생각해 버렸다」
+;OriginalString : 
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+;OriginalString : 
+PRINTL 
+;OriginalString : 「驚かせちゃったかしら。別にとって食べたりなんかしないわ　私の質問に答えて欲しいだけ」
+PRINTFORML 「놀래켜 버렸다 까. 따로 취해 먹거나 무엇을 하지 않아요 나의 질문에 답했으면 좋은 것뿐」
+;OriginalString : 「私とお遊びをすると했다らどんな遊びがいいかしら？」
+PRINTFORMW 「 나와 놀이를 한다고 하면(자) 어떤 놀이가 좋을까？」
+;OriginalString : 
+PRINTL 
+;OriginalString : [0] 答えない
+PRINTFORMDL [0] 대답하지 않는다
+;OriginalString : [1] 鬼ごっこ
+PRINTFORMDL [1] 술래잡기
+;OriginalString : [2] かくれんぼ
+PRINTFORMDL [2] 숨박꼭질
+;OriginalString : [3] おままごと
+PRINTFORMDL [3] 소꿉놀이
+;OriginalString : [4] 弾幕ごっこ
+PRINTFORMDL [4] 탄막 짓거리
+;OriginalString : [5] お医者さんごっこ
+PRINTFORMDL [5] 의사 짓거리
+;OriginalString : [9] イケナイお遊び
+PRINTFORMDL [9] 이케나이놀이
+CALL INPUTINTD(0, 1, 2, 3, 4, 5, 9)
+SELECTCASE RESULT
+	CASE 0
+;OriginalString : 「どうして答えないの？　私とはお遊び했다くないのかしら？」
+		PRINTFORML 「어째서 대답하지 않는거야？　나와는 놀고 싶지 않은 것일까？」
+		;無回答の보정値は固定
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 1
+;OriginalString : 「定番ね。…吸血”鬼”が鬼ごっこというのもおかしな感じだわ」
+		PRINTFORML 「정평이군요.…흡혈”귀”하지만 술래잡기라고 하는 것도 이상한 느낌이예요」
+		CALLF CM_PROF("攻撃", 20)
+		CALLF CM_PROF("被虐", 20)
+		CALLF CM_PROF("衝動", 10)
+		CALLF CM_PROF("楽観", -10)
+	CASE 2
+;OriginalString : 「かくれんぼ？　私スペカで姿隠せるけど…　え、それはダメ？ 残念」
+		PRINTFORML 「숨박꼭질？　나스페카로 모습 숨길 수 있는데…　네, 그것은 안 됨？ 유감」
+		CALLF CM_PROF("攻撃", -10)
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("知性", 10)
+		CALLF CM_PROF("神経質", 20)
+	CASE 3
+;OriginalString : 「楽しそう。配役は…당신がパパで私がママ、사쿠야が…（中略）残ったペット役はお姉様ね！」
+		PRINTFORML 「즐거울 것 같다. 배역은…당신이 파파로 내가 마마, 소야가…（중략）남은 애완동물역은 누님(언니)군요！」
+		CALLF CM_PROF("攻撃", -20)
+		CALLF CM_PROF("호기심", 20)
+		CALLF CM_PROF("수치", -10)
+		CALLF CM_PROF("楽観",  20)
+		CALLF CM_PROF("潔癖", 10)
+		CALLF CM_PROF("モラル", 20)
+	CASE 4
+;OriginalString : 「へえ、당신弾幕ごっこに自信があるのね。　私得意なのよ？」
+		PRINTFORML 「에 네, 당신 탄막 짓거리에 자신이 있군요.　나 자신있어？」
+		CALLF CM_PROF("攻撃", 20)
+		CALLF CM_PROF("プライド", 10)
+		CALLF CM_PROF("楽観", -10)
+		CALLF CM_PROF("知性", 10)
+	CASE 5
+;OriginalString : 「えー？　당신変な事考えてない？」
+		PRINTFORML 「네―？　당신 이상한 일 생각하지 않았다？」
+		CALLF CM_PROF("被虐", 10)
+		CALLF CM_PROF("솔직さ", -10)
+		CALLF CM_PROF("プライド", -20)
+		CALLF CM_PROF("호기심", 30)
+		CALLF CM_PROF("수치", -10)
+		CALLF CM_PROF("知性", -10)
+		CALLF CM_PROF("倒錯", 20)
+		CALLF CM_PROF("Ｂ好き", 20)
+		CALLF CM_PROF("モラル", -20)
+	CASE 9
+;OriginalString : 「えっ？　…正直なのね。でもそういうの嫌いじゃないわ」
+		PRINTFORML 「어？　…정직한. 그렇지만 그러한 것 싫지 않아요」
+		CALLF CM_PROF("솔직さ", 30)
+		CALLF CM_PROF("プライド", 20)
+		CALLF CM_PROF("衝動",  30)
+		CALLF CM_PROF("수치", -20)
+		CALLF CM_PROF("モラル", -30)
+		CALLF CM_PROF("Ｃ好き", 30)
+		CALLF CM_PROF("Ｖ好き", 20)
+ENDSELECT
+;OriginalString : 「それじゃあね　幻想郷に来たら本当に遊びましょ」
+PRINTFORMW 「그러면 언니(누나) 환상시골에 오면(자) 정말로 놉시다」
+RETURN 1

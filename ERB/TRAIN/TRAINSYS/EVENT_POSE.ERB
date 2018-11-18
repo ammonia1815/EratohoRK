@@ -1,0 +1,472 @@
+﻿;────────────────────────────────────
+;애무、성교等の継続、解除、処理
+;────────────────────────────────────
+@SHOW_TOUCH
+FOR LOCAL, 1, CHARANUM
+	SIF LOCAL != TARGET
+		CONTINUE
+	SELECTCASE TEQUIP:LOCAL:접촉Ｐ
+		CASE 3
+;OriginalString : 수음する 
+			PRINT 자위 한다 
+		CASE 4
+;OriginalString : 펠라する 
+			PRINT 페라한다 
+		CASE 6
+;OriginalString : 역강간 
+			PRINT 역강간 
+		CASE 7
+;OriginalString : 逆항문 
+			PRINT 역어널 
+		CASE 8
+;OriginalString : 풋잡하기 
+			PRINT 다리 코키 한다 
+	ENDSELECT
+	SELECTCASE TEQUIP:LOCAL:접촉Ｃ
+		CASE 1
+;OriginalString : 스마타 
+			PRINT 가랑이 
+		CASE 3
+;OriginalString : クリ애무 
+			PRINT 구리 애무 
+		CASE 4
+;OriginalString : クンニ 
+			PRINT 쿤닐링구스 
+	ENDSELECT
+	SELECTCASE TEQUIP:LOCAL:접촉손가락
+		CASE 1
+;OriginalString : 수음 
+			PRINT 자위 
+		CASE 5
+;OriginalString : 가슴揉みあい 
+			PRINT 가슴 비비어 사랑 
+	ENDSELECT
+	SELECTCASE TEQUIP:LOCAL:접촉입
+		CASE 1
+;OriginalString : 펠라 
+			PRINT 페라 
+		CASE 2
+;OriginalString : クンニ시킨다 
+			PRINT 쿤닐링구스시킨다 
+		CASE 4
+;OriginalString : 키스 
+			PRINT 키스 
+		CASE 5
+;OriginalString : 乳首吸い 
+			PRINT 유두 들이마셔 
+		CASE 7
+;OriginalString : 항문봉사 
+			PRINT 어널 봉사 
+	ENDSELECT
+	SELECTCASE TEQUIP:LOCAL:접촉가슴
+		CASE 1
+;OriginalString : 파이즈리 
+			PRINT 파이즈리 
+		CASE 3
+;OriginalString : 가슴애무 
+			PRINT 가슴 애무 
+		CASE 4
+;OriginalString : 유두핥기 
+			PRINT 유두 빨고 
+	ENDSELECT
+	SELECTCASE TEQUIP:LOCAL:접촉질
+		CASE 1
+;OriginalString : 성교 
+			PRINT 성교 
+		CASE 3
+;OriginalString : 指入れ 
+			PRINT 손가락 넣고 
+	ENDSELECT
+	SELECTCASE TEQUIP:LOCAL:접촉Ａ
+		CASE 1
+;OriginalString : 항문섹스 
+			PRINT 어널 섹스 
+		CASE 3
+;OriginalString : 항문애무 
+			PRINT 어널 애무 
+		CASE 4
+;OriginalString : 항문펠라 
+			PRINT 어널 빨고 
+	ENDSELECT
+	SELECTCASE TEQUIP:LOCAL:접촉발
+		CASE 1
+;OriginalString : 발コキ 
+			PRINT 다리 코키 
+	ENDSELECT
+	PRINTFORML (%CALLNAME:LOCAL%)
+NEXT
+PRINTL 
+
+
+;------------------------------------------------------------------
+;접촉情報の취득、地の文表示
+;------------------------------------------------------------------
+@TOUCH_SUCCESSION
+VARSET LOCAL
+
+;성교상태保存
+LOCAL:0 = TEQUIP:성교중
+LOCAL:1 = TEQUIP:성교봉사중
+;Ｃ使用상태保存
+LOCAL:2 = TEQUIP:죠교대상Ｃ사용
+
+SELECTCASE TFLAG:ACT
+	;회화系現状維持
+	CASE 0 TO 4, 9	
+	;애무/수음する
+	CASE 10
+		;수음
+		IF TFLAG:ACT파생 == 1
+			CALL TOUCH_SET("指", "Ｐ")
+			;죠교대상삽입を解除
+			TEQUIP:성교봉사중 = 0
+		;애무
+		ELSEIF !TFLAG:ACT파생
+			CALL TOUCH_SET("指", "Ｃ")
+		ENDIF
+	;가슴애무/乳首吸い/乳の揉み合い
+	CASE 11
+		;乳首吸い
+		IF TFLAG:ACT파생 == 1
+			CALL TOUCH_SET("입", "Ｂ")
+		;乳の揉み合い
+		ELSEIF TFLAG:ACT파생 == 2
+			CALL TOUCH_SET("指", "Ｂ")
+			CALL TOUCH_SET("Ｂ", "指")
+		;その他
+		ELSE
+			CALL TOUCH_SET("指", "Ｂ")
+		ENDIF
+	;クンニ/펠라する
+	CASE 12
+		IF TFLAG:ACT파생
+			CALL TOUCH_SET("입", "Ｐ")
+		ELSE
+			CALL TOUCH_SET("입", "Ｃ")
+		ENDIF
+		;삽입解除
+		CALL SEX_SET()
+		;가슴
+		TEQUIP:접촉가슴 = TEQUIP:접촉가슴 == 4 ? 0  # TEQUIP:접촉가슴
+	;항문애무
+	CASE 13
+		CALL TOUCH_SET("指", "Ａ")
+	;항문펠라
+	CASE 14
+		CALL TOUCH_SET("입", "Ａ")
+		;삽입解除
+		CALL SEX_SET()
+	;키스
+	CASE 15
+		CALL TOUCH_SET("입", "입")
+	;貝あわせ/스마타する
+	CASE 16
+		IF TFLAG:ACT파생
+			CALL TOUCH_SET("Ｃ", "Ｐ")
+		ELSE
+			CALL TOUCH_SET("Ｃ", "Ｃ")
+		ENDIF
+		;삽입解除
+		CALL SEX_SET()
+	;파이즈리한다
+	CASE 17
+		CALL TOUCH_SET("Ｂ", "Ｐ")
+		;삽입解除
+		CALL SEX_SET()
+	;풋잡하기
+	CASE 18
+		CALL TOUCH_SET("발", "Ｐ")
+		;삽입解除
+		CALL SEX_SET()
+	;로터
+	CASE 20
+		IF PENIS(MASTER)
+			CALL TOUCH_SET("指", "Ｐ")
+		ELSE
+			CALL TOUCH_SET("指", "Ｃ")
+		ENDIF
+		;죠교대상삽입を解除
+		TEQUIP:성교봉사중 = 0
+	;성교系は排他設定になる
+	;정상위
+	CASE 30
+		CALL TOUCH_SET("Ｐ", "Ｖ", 1)
+	;후배위
+	CASE 31
+		CALL TOUCH_SET("Ｐ", "Ｖ", 1)
+	;기승위
+	CASE 32
+		CALL TOUCH_SET("Ｐ", "Ｖ", 1)
+	;대면좌위
+	CASE 33
+		CALL TOUCH_SET("Ｐ", "Ｖ", 1)
+	;배면좌위
+	CASE 34
+		CALL TOUCH_SET("Ｐ", "Ｖ", 1)
+	;항문
+	CASE 35
+		CALL TOUCH_SET("Ｐ", "Ａ", 1)
+	;역강간
+	CASE 103
+		CALL TOUCH_SET("Ｖ", "Ｐ", 1)
+	;수음/애무強制
+	CASE 50
+		;수음
+		IF TFLAG:ACT파생
+			CALL TOUCH_SET("Ｐ", "指")
+			;죠교자삽입を解除
+			TEQUIP:성교중 = 0
+		;애무
+		ELSE
+			CALL TOUCH_SET("Ｃ", "指")
+		ENDIF
+	;펠라チオ/クンニ強制
+	CASE 51
+		IF TFLAG:ACT파생
+			CALL TOUCH_SET("Ｐ", "입")
+		ELSE
+			CALL TOUCH_SET("Ｃ", "입")
+		ENDIF
+		;삽입解除
+		CALL SEX_SET()
+	;파이즈리
+	CASE 52
+		;손によるＣ애무を解除
+		CALL TOUCH_SET("Ｐ", "指", 2)
+		CALL TOUCH_SET("Ｐ", "Ｂ")
+		CALL TOUCH_SET("Ｐ", "입")
+		;삽입解除
+		CALL SEX_SET()
+	;스마타
+	CASE 53
+		;죠교대상の하반신접촉を解除
+		CALL TOUCH_SET("Ｃ", , 2)
+		CALL TOUCH_SET("Ｐ", , 2)
+		CALL TOUCH_SET("Ａ", , 2)
+		CALL TOUCH_SET("Ｖ", , 2)
+		CALL TOUCH_SET("Ｐ", "Ｃ")
+		;삽입解除
+		CALL SEX_SET()
+	;발コキ
+	CASE 54
+		CALL TOUCH_SET("Ｐ", "발", 1)
+		;삽입解除
+		CALL SEX_SET()
+	;발핥기강제
+	CASE 55
+		CALL TOUCH_SET("발", "입", 1)
+		;삽입解除
+		CALL SEX_SET()
+	;이라마치오
+	CASE 56
+		CALL TOUCH_SET("Ｐ", "입", 1)
+		;삽입解除
+		CALL SEX_SET()
+	;가슴애무강제
+	CASE 57
+		;죠교자の입접촉を解除
+		CALL TOUCH_SET(, "입", 2)
+		IF TFLAG:ACT파생
+			CALL TOUCH_SET("Ｂ", "입")
+		ELSE
+			CALL TOUCH_SET("Ｂ", "指")
+		ENDIF
+	;스펭킹
+	CASE 60
+		;죠교자の입접촉を解除
+		CALL TOUCH_SET(, "입", 2)
+	;정상위시킨다
+	CASE 95
+		CALL TOUCH_SET("Ｖ", "Ｐ", 1)
+	;후배위시킨다
+	CASE 96
+		CALL TOUCH_SET("Ｖ", "Ｐ", 1)
+	;대면좌위시킨다
+	CASE 97
+		CALL TOUCH_SET("Ｖ", "Ｐ", 1)
+	;배면좌위시킨다
+	CASE 98
+		CALL TOUCH_SET("Ｖ", "Ｐ", 1)
+	;항문섹스시킨다
+	CASE 99
+		CALL TOUCH_SET("Ａ", "Ｐ", 1)
+	CASEELSE
+		CALL TOUCH_SET(, , 1)
+ENDSELECT
+IF TEQUIP:안면승마
+	IF TALENT:남자
+		CALL TOUCH_SET("Ｐ", "입")
+	ELSE
+		CALL TOUCH_SET("Ｃ", "입")
+	ENDIF
+ELSEIF TEQUIP:안면승마항문
+	CALL TOUCH_SET("Ａ", "입")
+ENDIF
+
+;성교のセット
+CALL SEX_SET(TOSTR(TFLAG:ACT))
+
+IF TEQUIP:MASTER:접촉Ｃ == 3 || TEQUIP:MASTER:접촉Ｐ == 3
+	TEQUIP:죠교대상Ｃ사용 = 1
+ELSEIF TEQUIP:MASTER:접촉Ｃ == 4 || TEQUIP:MASTER:접촉Ｐ == 4
+	TEQUIP:죠교대상Ｃ사용 = 2
+ELSE
+	TEQUIP:죠교대상Ｃ사용 = 0
+ENDIF
+
+SIF !TEQUIP:성교중
+	TEQUIP:접촉Ｐ = 0
+IF !TEQUIP:성교봉사중
+	TEQUIP:접촉질 = 0
+	TEQUIP:접촉Ａ = 0
+ENDIF
+
+;성교상태が解除당했다場合、地の文表示
+IF LOCAL:1 > TEQUIP:성교봉사중 && !TEQUIP:성교봉사중
+	PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의\@ TEQUIP:페니스밴드 ? 張り型 # 페니스 \@(을)를 해방했다…
+	PRINTL 
+ELSEIF LOCAL:0 > TEQUIP:성교중 && !TEQUIP:성교중
+	PRINTFORMW %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%(으)로부터\@ TEQUIP:죠교자페니스밴드 ? 張り型 # 페니스 \@(을)를 뽑아 냈다…
+	PRINTL 
+ENDIF
+
+;Ｃ使用상태が解除당했다場合、地の文表示
+IF LOCAL:2 == 2 && !TEQUIP:죠교대상Ｃ사용
+	PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 고간으로부터 입을 떼어 놓아, 얼굴을 올렸다…
+	PRINTL 
+ELSEIF LOCAL:2 == 1 && !TEQUIP:죠교대상Ｃ사용
+	PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의\@ PENIS(MASTER) ? 페니스 # 클리토리스 \@(으)로부터 손을 떼어 놓았다…
+	PRINTL 
+ENDIF
+
+
+;-----------------------------------------------------------------------
+;MASTERとTARGETの접촉部位を設定する
+;-----------------------------------------------------------------------
+@TOUCH_SET(ARGS:0, ARGS:1, ARG)
+#DIM LCOUNT
+#DIM T접촉
+#DIM M접촉
+#DIM 占有限界
+#LOCALSIZE 1
+;ARGS:0 TARGETの접촉部位(1=페니스 2=클리토리스 3=指 4=입 5=가슴 6=膣 7=항문 8=발)
+;ARGS:1 MASTERの접촉部位(1=페니스 2=클리토리스 3=指 4=입 5=가슴 6=膣 7=항문 8=발)
+;ARG 1ならリセットして指定했다접촉を追加する。2なら指定했다접촉を解除する。このとき、ARGS:0・ARGS:1を省略했다らそれぞれすべてを解除する
+T접촉 = TOUCH_PART(ARGS:0)
+M접촉 = TOUCH_PART(ARGS:1)
+
+;ARGが1の場合、全접촉TEQUIPリセット
+IF ARG == 1
+	VARSET TEQUIP:MASTER:0, 0, 101, 109
+	VARSET TEQUIP:TARGET:0, 0, 101, 109
+ENDIF
+
+;ARGが2の場合、省略당했다TEQUIPのリセット
+;MASTERの特定の部位と접촉しているTARGETの접촉部位をリセット
+IF !T접촉 && M접촉 && ARG == 2
+	FOR LCOUNT, 1, 8
+		TEQUIP:(100 + LCOUNT) = TEQUIP:(100 + LCOUNT) == M접촉 ? 0 # TEQUIP:(100 + LCOUNT)
+	NEXT
+	TEQUIP:MASTER:(M접촉+100) = 0
+	RETURN 0
+;TARGETの特定の部位と접촉しているMASTERの접촉部位をリセット
+ELSEIF T접촉 && !M접촉 && ARG == 2
+	FOR LCOUNT, 1, 8
+		TEQUIP:MASTER:(100 + LCOUNT) = TEQUIP:MASTER:(100 + LCOUNT) == T접촉 ? 0 # TEQUIP:MASTER:(100 + LCOUNT)
+	NEXT
+	TEQUIP:(T접촉+100) = 0
+	RETURN 0
+ENDIF
+
+;발は呼ばれると취소する
+TEQUIP:접촉발 = 0
+
+;T접촉が不正なら処理中断
+SIF T접촉 < 1
+	RETURN 0
+
+;指(손)は二本あるので占有限界を2に
+IF M접촉 == 3
+	占有限界 = 2
+;その他の占有限界は1
+ELSE
+	占有限界 = 1
+ENDIF
+
+;全접촉TEQUIPに対して処理
+FOR LCOUNT, 1, 8
+	;발なら취소する
+	SIF TEQUIP:MASTER:(100 + LCOUNT) == 8
+		TEQUIP:MASTER:(100 + LCOUNT) = 0
+	;TARGETの指定部位が既に使用されていた場合
+	IF TEQUIP:MASTER:(100 + LCOUNT) == M접촉
+		;解除の場合
+		IF ARG == 2
+			TEQUIP:MASTER:(100 + LCOUNT) = 0
+		;セットの場合
+		ELSE
+			;占有限界を減算
+			占有限界 --
+			;新たに加わる指定を含め、限界未満なら접촉解除
+			SIF 占有限界 < 1
+				TEQUIP:MASTER:(100 + LCOUNT) = 0
+		ENDIF
+	ENDIF
+NEXT
+
+;解除の場合
+IF ARG == 2
+	TEQUIP:(T접촉+100) = TEQUIP:(T접촉+100) == M접촉 ? 0 # TEQUIP:(T접촉+100)
+;セットの場合
+ELSE
+	;新たに접촉손가락定を加える
+	TEQUIP:(T접촉+100) = M접촉
+	TEQUIP:MASTER:(M접촉+100) = T접촉
+ENDIF
+
+@TOUCH(ARG, ARG:1, ARG:2)
+;ARG MASTERの部位を占有中のTARGET:Xの部位(1=페니스 2=클리토리스 3=指 4=입 5=가슴 6=膣 7=항문)
+;ARG:1 MASTERの部位(1=페니스 2=클리토리스 3=指 4=입 5=가슴 6=膣 7=항문)
+;ARG:2 真なら전턴の履歴を見る
+;戻り値 MASTERの部位を占有中のTARGET:Xがいるならそのキャラ번호を返す
+;MASTER_POSE(4, 1, 1)なら전턴(第3引数)に誰かがMASTER의 페니스(第2引数)を입(第1引数)で占有していた場合、そのキャラ번호を返す
+#FUNCTION
+ARG:2 = ARG:2 ? 1 # 0
+FOR LOCAL, 1, CHARANUM
+	SIF TEQUIP:LOCAL:(100 + ARG + 10 * ARG:2) == ARG:1
+		RETURNF LOCAL
+NEXT
+
+
+;-------------------------------------------------
+;関数名:TOUCH_PART
+;概　要:접촉部位文字列→数値変換関数
+;引　数:ARGS:0…접촉部位を表す文字列(部位名か部位번호)
+;戻り値:접촉部位を表す数値
+;備　考:式中関数
+;-------------------------------------------------
+@TOUCH_PART(ARGS:0)
+#FUNCTION
+#LOCALSIZE 1
+SELECTCASE ARGS:0
+	CASE "Ｐ", "페니스"
+		LOCAL:0 = 1
+	CASE "Ｃ", "클리토리스"
+		LOCAL:0 = 2
+	CASE "指", "손"
+		LOCAL:0 = 3
+	CASE "입", "舌"
+		LOCAL:0 = 4
+	CASE "Ｂ", "가슴"
+		LOCAL:0 = 5
+	CASE "Ｖ", "膣"
+		LOCAL:0 = 6
+	CASE "Ａ", "항문"
+		LOCAL:0 = 7
+	CASE "발"
+		LOCAL:0 = 8
+	CASEELSE
+		LOCAL:0 = TOINT(ARGS:0)
+		LOCAL:0 = INRANGE(LOCAL:0, 1, 8) ? LOCAL:0 # 0
+ENDSELECT
+RETURNF LOCAL:0

@@ -1,0 +1,1408 @@
+﻿;==================================================
+;
+;		구상ランダム生成関数置き場
+;
+;==================================================
+
+;-------------------------------------------------
+;関数名:RANDTEXT_K39
+;概　要:ARGS:0～ARGS:7の内のどれかを等確率で返す。＿は何も出力しない
+;引　数:ARGS…出力する文字列
+;備　考:式中関数
+;-------------------------------------------------
+@RANDTEXT_K39(ARGS:0, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7)
+#FUNCTIONS
+LOCALS = %ARGS:0%
+FOR LOCAL, 1, 8
+	SIF RAND:(LOCAL + 1) == 0 && ARGS:LOCAL != ""
+		LOCALS = %ARGS:LOCAL%
+NEXT
+SIF LOCALS == "＿"
+	LOCALS = 
+RETURNF LOCALS
+
+;-------------------------------------------------
+;雑多な구상ランダム生成用関数（@KOJO_RAND用）
+;-------------------------------------------------
+@RAND_HEART_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39(HEARTB_K39(), HEART_K39())%
+RETURNF LOCALS
+
+@RAND_SYMBOL_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39(HEARTB_K39(), HEART_K39(), EIGHTHNOTE_K39(), W8NOTE_K39(), W16NOTE_K39())%
+RETURNF LOCALS
+
+@ELLIPSIS_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("…", "……", "＿")%
+RETURNF LOCALS
+
+@ELLIPSIS2_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("…", "……", "……、", "…、")%
+RETURNF LOCALS
+
+@WARD_A_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("あ", "ぁ", "は")%
+RETURNF LOCALS
+
+@WARD_B_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("く", "ぷ", "っ")%
+RETURNF LOCALS
+
+@WARD_C_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("ち", "ぢ", "じ")%
+RETURNF LOCALS
+
+@WARD_D_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("っ", "ッ", "＿")%
+RETURNF LOCALS
+
+@WARD_E_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("～", "～～", "、")%
+RETURNF LOCALS
+
+@WARD_F_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("る", "るる", "るるる")%
+RETURNF LOCALS
+
+@WARD_G_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("クチュ", "グチュ", "くちゅ", "ぐちゅ")%
+RETURNF LOCALS
+
+@WARD_H_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("っ", "＿")%
+RETURNF LOCALS
+
+@WARD_I_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("ぬちゅ", "ヌチュ", "くちゅ")%
+RETURNF LOCALS
+
+@WARD_J_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("ずにゅ", "ずりゅ", "むにゅ", "もにゅ", "むぎゅ")%
+RETURNF LOCALS
+
+@WARD_K_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("～", "～～")%
+RETURNF LOCALS
+
+@WARD_L_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("ッ", "＿")%
+RETURNF LOCALS
+
+@WARD_M_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("っ", "ぅ", "ぅっ")%
+RETURNF LOCALS
+
+@WARD_N_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("っ、", "っ！ ", "ッ、", "ッ！ ")%
+RETURNF LOCALS
+
+@WARD_O_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("っ", "っ！", "ッ", "ッ！")%
+RETURNF LOCALS
+
+@WARD_P_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("ん", "む", "ぅ")%
+RETURNF LOCALS
+
+@WARD_Q_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("……", "～～")%
+RETURNF LOCALS
+
+@WARD_R_K39
+#FUNCTIONS
+LOCALS = %RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%
+RETURNF LOCALS
+
+;-------------------------------------------------
+;関数名:KOJO_RAND_K39
+;概　要:구상をランダムで生成する
+;引　数:ARGS…行為の分類
+;引　数:ARG…1でTARGET　2でMASTERの상태변화
+;備　考:式中関数
+;基本的に@FADE、若しくは@PRINTCOLORで使用する事を想定。文字色指定はそちらに丸投げ
+;SQNクズノハ구상にインスパイアされて作った。作者のmaoの人には感謝を
+;-------------------------------------------------
+@KOJO_RAND_K39(ARGS, ARG)
+#FUNCTIONS
+LOCALS = 
+FOR LOCAL, 0, ARG
+	SIF LOCAL
+		LOCALS += ""
+IF ARG == 1 ;죠교자
+	SELECTCASE ARGS
+		CASE "키스", "乳首吸い"
+			;죠교자の상태변화派生
+			SELECTCASE GET_CONDITION(TARGET)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%ちゅぅ%RANDTEXT_K39("っ、", "っ！　")%%WARD_C_K39()%ゅっ%ELLIPSIS2_K39()%ぷは、%WARD_A_K39()%む
+						CASE 1
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ%ELLIPSIS2_K39()%%WARD_C_K39()%ぅゅっ…%RANDTEXT_K39("ちゅく", "ちゅぷ", "くちゅ")%、チュ
+						CASE 2
+							LOCALS = %LOCALS%%RANDTEXT_K39("ペロッ", "ぺろっ")%、ぴちゅ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぢゅく", "ちゅく", "ちゅぷ")%、ちゅぅっ
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ", "ちゅく")%、じゅる%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%ん、んく
+						CASE 4
+							LOCALS = %LOCALS%ちゅぅぅっ！ ぷは%RANDTEXT_K39("っ", "＿")%、ん%ELLIPSIS2_K39()%んく
+						CASE 5
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、%RANDTEXT_K39("クチュ", "くちゅ", "ちゅく")%…%WARD_C_K39()%ゅっ、ちゅぷ
+						CASE 6
+							LOCALS = %LOCALS%んくっ%ELLIPSIS2_K39()%ぁ…%WARD_A_K39()%むっ、んちゅぅ
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("ん", "＿")%ん%RANDTEXT_K39("っ", "ッ")%……ふ%ELLIPSIS2_K39()%%RANDTEXT_K39("はぁ", "ハァ")%、%WARD_A_K39()%むっ…んく
+						CASE 8
+							LOCALS = %LOCALS%%RANDTEXT_K39("ふ", "ん")%%ELLIPSIS2_K39()%%RANDTEXT_K39("チュッ", "ちゅっ")%、ちゅく…、%WARD_A_K39()%む
+						CASE 9
+							LOCALS = %LOCALS%%WARD_A_K39()%っ、はぁ%ELLIPSIS2_K39()%んく、ちゅぅ%RANDTEXT_K39("っ", "＿")%…ちゅく
+						CASE 10
+							LOCALS = %LOCALS%%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%ぁ、んん%RANDTEXT_K39("っ", "＿")%…んく
+						CASE 11
+							LOCALS = %LOCALS%ふっ、ん%RANDTEXT_K39("ん", "く")%っ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("く", "ぷ")%、ぴちゅ
+						CASE 12
+							LOCALS = %LOCALS%ん%ELLIPSIS2_K39()%ぁ…、%WARD_A_K39()%むっ、んん%RANDTEXT_K39("っ", "＿")%…んく
+						CASE 13
+							LOCALS = %LOCALS%ぷは%RANDTEXT_K39("っ", "＿")%、はぁ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、%WARD_C_K39()%ゅぅぅっ！ ん
+						CASE 14
+							LOCALS = %LOCALS%ふぁ…はぁ%ELLIPSIS2_K39()%んく、んちゅ%RANDTEXT_K39("ぅ", "っ", "＿")%
+						CASE 15
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ", "ちゅく", "ぢゅく")%、%WARD_C_K39()%ゅぷ…、%RANDTEXT_K39("チュッ", "ちゅっ", "ちゅ")%、ん、んくっ
+						CASE 16
+							LOCALS = %LOCALS%チュッ、ちゅ%RANDTEXT_K39("ぅっ", "っ", "ぅぅっ")%%ELLIPSIS2_K39()%ぁ、%WARD_A_K39()%むっ、んふ
+						CASE 17
+							LOCALS = %LOCALS%んぅっ、んく%RANDTEXT_K39("っ", "＿")%…%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "っ")%
+						CASE 18
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぴ", "く", "ん")%ちゅ、ちゅ%RANDTEXT_K39("く", "ぷ", "っ")%%ELLIPSIS2_K39()%ん、んちゅ%RANDTEXT_K39("ぅっ", "っ", "＿")%…んく、んく
+						CASE 19
+							LOCALS = %LOCALS%ふぅ、んっ…んく、%RANDTEXT_K39("んく", "＿")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぅっ、ちゅく
+						CASE 20
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん%ELLIPSIS2_K39()%んく、んちゅ…っ、ちゅく
+						CASE 21
+							LOCALS = %LOCALS%じゅっ、%WARD_C_K39()%ゅぅっ%ELLIPSIS2_K39()%%RANDTEXT_K39("ちゅく", "ちゅぷ")%…ぴちゅ
+						CASE 22
+							LOCALS = %LOCALS%クチュ、%RANDTEXT_K39("くちゅっ", "ちゅぷ", "ちゅく")%%ELLIPSIS2_K39()%ぁ…%WARD_A_K39()%むっ、んく
+						CASE 23
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅっ、", "ぅぅっっ！")% ぷは、%RANDTEXT_K39("はぁ", "ハァ")%……%WARD_A_K39()%むっ、んく
+						CASE 24
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("＿", "く", "ぷ", "っ")%、ちゅくっ…%RANDTEXT_K39("ペロ", "ぺろ")%%RANDTEXT_K39("ッ", "っ")%、ん%ELLIPSIS2_K39()%ちゅぅ
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%んぅっ、ん%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%んく
+						CASE 1
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、んっ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぷ", "く", "＿")%
+						CASE 2
+							LOCALS = %LOCALS%ちゅっ、んちゅ%ELLIPSIS2_K39()%ん%RANDTEXT_K39("ん", "く", "＿")%
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("ん", "く", "＿")%ちゅ、んふ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%
+						CASE 4
+							LOCALS = %LOCALS%ちゅぅっ、ん%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%んく
+						CASE 5
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅぅ", "ちゅく", "ちゅ")%っ…くちゅっ%ELLIPSIS2_K39()%ぢゅ
+						CASE 6
+							LOCALS = %LOCALS%ちゅ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ…んんっ
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅっ", "チュっ")%、%RANDTEXT_K39("ちゅう", "ちゅく", "ちゅる")%…っ…ん
+						CASE 8
+							LOCALS = %LOCALS%ちゅく、%RANDTEXT_K39("ちゅく", "ちゅぷ", "クチュ", "くちゅ")%…ちゅる
+						CASE 9
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ…ん%RANDTEXT_K39("、", "っ、", "ッ", "……", "……、")%ちゅっ、%RANDTEXT_K39("ちゅぷ", "ちゅく", "チュ")%
+						CASE 10
+							LOCALS = %LOCALS%%RANDTEXT_K39("あ", "ぁ")%むっ…%RANDTEXT_K39("ちゅ", "ちゅく", "ちゅぷ")%っ、チュッ
+						CASE 11
+							LOCALS = %LOCALS%%RANDTEXT_K39("は", "あ", "ぁ", "ん")%む%RANDTEXT_K39("っ、", "……、")%んふっ……ちゅ
+						CASE 12
+							LOCALS = %LOCALS%ちゅっ、っちゅ…%RANDTEXT_K39("くちゅ", "ちゅぷ", "ちゅぅ")%
+						CASE 13
+							LOCALS = %LOCALS%んふ、ちゅ%RANDTEXT_K39("っ、", "……", "……、")%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%
+						CASE 14
+							LOCALS = %LOCALS%%WARD_A_K39()%む%RANDTEXT_K39("っ", "＿")%…れろ%RANDTEXT_K39("っ", "＿")%……%RANDTEXT_K39("ん", "く", "＿")%ちゅ
+						CASE 15
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("っ、", "ぅっ、", "……")%ん%RANDTEXT_K39("っ、", "、")%んく
+						CASE 16
+							LOCALS = %LOCALS%ん……んく%ELLIPSIS2_K39()%%RANDTEXT_K39("チュ", "ちゅ", "ちゅく", "ちゅぷ")%
+						CASE 17
+							LOCALS = %LOCALS%ん%RANDTEXT_K39("ぅ", "っ", "ッ")%……ふ%RANDTEXT_K39("＿", "…", "……、")%んく
+						CASE 18
+							LOCALS = %LOCALS%%RANDTEXT_K39("チュッ", "チュ", "ちゅ", "ちゅっ")%、%RANDTEXT_K39("ちゅく", "ちゅる")%%ELLIPSIS2_K39()%ちゅぷ
+						CASE 19
+							LOCALS = %LOCALS%くちゅ、%RANDTEXT_K39("ちゅ", "ちゅく", "ちゅぷ", "チュ")%%ELLIPSIS2_K39()%ん%RANDTEXT_K39("、", "っ、", "ッ、")%んく
+						CASE 20
+							LOCALS = %LOCALS%っはぁ、%RANDTEXT_K39("ペロッ", "ぺろ", "ぺろっ")%%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("っ", "ぅっ", "ッ", "ぅぅ")%
+						CASE 21
+							LOCALS = %LOCALS%%RANDTEXT_K39("んっ", "ん", "んッ")%%RANDTEXT_K39("……", "…", "…っ、")%%RANDTEXT_K39("はっ、はぁ", "ハァ、ハァ")%……ちゅ%RANDTEXT_K39("ぅ", "うぅ", "ぅぅ")%
+						CASE 22
+							LOCALS = %LOCALS%んく、%RANDTEXT_K39("んっ…", "ん……")%%RANDTEXT_K39("チュッ、", "ちゅく", "ちゅぷ")%くちゅ
+						CASE 23
+							LOCALS = %LOCALS%ちゅく、%RANDTEXT_K39("ちゅぷ", "ちゅ", "くちゅ", "んっ")%%RANDTEXT_K39("…", "……", "っ、", "…っ、")%ちゅぅぅ
+						CASE 24
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、%RANDTEXT_K39("んく", "んちゅ", "ちゅ")%%RANDTEXT_K39("…", "……", "っ、", "…っ、")%んっ
+					ENDSELECT
+			ENDSELECT
+			IF AFFECTION("상사상애")
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿", RAND_SYMBOL_K39())%
+			ELSE
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("＿", "っ", EIGHTHNOTE_K39(), "っ♪")%
+			ENDIF
+		CASE "クンニ", "입으로 애무"
+			;죠교자の상태변화派生
+			SELECTCASE GET_CONDITION(TARGET)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅる%RANDTEXT_K39("っ", "＿")%、ちゅ%ELLIPSIS2_K39()%ぷは…ん、クチュ
+						CASE 1
+							LOCALS = %LOCALS%つぷ…ん%RANDTEXT_K39("ッ", "っ", "＿")%、ヌプッ、ヌプ%ELLIPSIS2_K39()%ぺろ
+						CASE 2
+							LOCALS = %LOCALS%チュプ、%WARD_C_K39()%ゅくっ%ELLIPSIS2_K39()%くちゅ、%WARD_C_K39()%ゅく
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅる%RANDTEXT_K39("る", "＿")%っ、ちゅ
+						CASE 4
+							LOCALS = %LOCALS%%WARD_A_K39()%む、%WARD_C_K39()%ゅくっ%ELLIPSIS2_K39()%ん、%RANDTEXT_K39("クチュッ", "くちゅっ")%、つぷ
+						CASE 5
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅっ、%WARD_C_K39()%ゅく……っはぁ、ぁ%ELLIPSIS2_K39()%%WARD_A_K39()%む
+						CASE 6
+							LOCALS = %LOCALS%ペロペロ…ッ、%WARD_C_K39()%ゅ%RANDTEXT_K39("っ", "＿")%、ちゅく%ELLIPSIS2_K39()%つぷ
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("じ", "ぢ")%ゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ、%RANDTEXT_K39("ち", "ぢ", "じ")%ゅくっ%ELLIPSIS2_K39()%んっ、クチュ
+						CASE 8
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅる%RANDTEXT_K39("る", "＿")%…%RANDTEXT_K39("ッ", "っ")%、ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ%ELLIPSIS2_K39()%ぷは、ぁ…%WARD_A_K39()%む
+						CASE 9
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅ%WARD_B_K39()%、%WARD_C_K39()%ゅぷ%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%くちゅっ、ちゅ
+						CASE 10
+							LOCALS = %LOCALS%ヌルッ、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%つぷ、ヌプ
+						CASE 11
+							LOCALS = %LOCALS%ぴち%RANDTEXT_K39("ゃ", "ゅ")%%ELLIPSIS2_K39()%%RANDTEXT_K39("ぺろっ", "ペロッ")%、くちゅ、クチュ
+						CASE 12
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろっ", "ペロッ")%、ん%ELLIPSIS2_K39()%ぢゅく……ちゅ%WARD_B_K39()%
+						CASE 13
+							LOCALS = %LOCALS%つぷ%RANDTEXT_K39("っ", "＿")%、ヌプ…っ、ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ%ELLIPSIS2_K39()%ぢゅく
+						CASE 14
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろっ", "ペロッ")%、ぴち%RANDTEXT_K39("ゃ", "ゅ")%%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ、くちゅ
+						CASE 15
+							LOCALS = %LOCALS%%RANDTEXT_K39("レロ", "れろ")%%RANDTEXT_K39("っ", "＿")%、ちゅ%RANDTEXT_K39("っ", "＿")%、つぷ%ELLIPSIS2_K39()%ん、ぢゅぅ
+						CASE 16
+							LOCALS = %LOCALS%%RANDTEXT_K39("ペロッ", "ぺろっ")%、くちゅ%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%ちゅ%WARD_B_K39()%、ちゅぅ
+						CASE 17
+							LOCALS = %LOCALS%じゅる%RANDTEXT_K39("る", "＿")%…ッ、%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%んむ、くちゅ
+						CASE 18
+							LOCALS = %LOCALS%くちゅ%RANDTEXT_K39("っ", "＿")%、つぅっ%ELLIPSIS2_K39()%ん、%WARD_C_K39()%ゅく…つぷ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_A_K39()%む、ちゅ%ELLIPSIS2_K39()%クチュ、%WARD_C_K39()%ゅる%RANDTEXT_K39("る", "＿")%
+						CASE 20
+							LOCALS = %LOCALS%ぷは…、ぁ%ELLIPSIS2_K39()%んむっ、%RANDTEXT_K39("ぢ", "じ")%ゅっ…くちゅ
+						CASE 21
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅぅ", "ぅ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%じゅる%RANDTEXT_K39("る", "＿")%…ッ、くちゅ、クチュ
+						CASE 22
+							LOCALS = %LOCALS%じゅ%RANDTEXT_K39("っ", "ぅっ", "＿")%、ぢぅゅっ%ELLIPSIS2_K39()%%RANDTEXT_K39("クチュッ", "くちゅっ")%、つぷ
+						CASE 23
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぢ", "じ")%ゅぷ%RANDTEXT_K39("、", "っ、", "……")%ちゅ%RANDTEXT_K39("っ", "ぅっ", "＿", "…")%、じゅるる
+						CASE 24
+							LOCALS = %LOCALS%つぷ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぢ", "じ")%ゅっ、ちゅ%WARD_B_K39()%…%RANDTEXT_K39("くちゅ", "グチュ")%
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%ぷは%ELLIPSIS2_K39()%%RANDTEXT_K39("クチュ", "くちゅ")%、ん%RANDTEXT_K39("っ", "ッ", "＿")%…%RANDTEXT_K39("じ", "ち", "ぢ")%ゅる
+						CASE 1
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ")%、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%ペロ
+						CASE 2
+							LOCALS = %LOCALS%んふ%ELLIPSIS2_K39()%ちゅ%WARD_B_K39()%、つぷ
+						CASE 3
+							LOCALS = %LOCALS%ちゅる、%ELLIPSIS2_K39()%ちゅく、ちゅ%WARD_B_K39()%
+						CASE 4
+							LOCALS = %LOCALS%%RANDTEXT_K39("ピチュ", "ぴちゅ")%、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%ん、ちゅ
+						CASE 5
+							LOCALS = %LOCALS%ん%ELLIPSIS2_K39()%ちゅく、ちゅ%WARD_B_K39()%
+						CASE 6
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("く", "ぷ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%ぷは、ぁ…つぷ
+						CASE 7
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%じゅる%RANDTEXT_K39("る", "＿")%
+						CASE 8
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろっ", "ペロッ")%…ふ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぷ", "く")%
+						CASE 9
+							LOCALS = %LOCALS%ん%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%ちゅく、ちゅぷ
+						CASE 10
+							LOCALS = %LOCALS%つぷ%ELLIPSIS2_K39()%ペロ、%RANDTEXT_K39("ペロッ", "ぺろっ")%
+						CASE 11
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "っ")%%ELLIPSIS2_K39()%れろ
+						CASE 12
+							LOCALS = %LOCALS%ぴちゃ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("く", "ぷ", "る")%
+						CASE 13
+							LOCALS = %LOCALS%%RANDTEXT_K39("じ", "ぢ")%ゅぷ%RANDTEXT_K39("ッ", "っ", "＿")%、ちゅる%ELLIPSIS2_K39()%ちゅく
+						CASE 14
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅく", "ちゅぷ")%%RANDTEXT_K39("っ", "＿")%、ぬるっ%ELLIPSIS2_K39()%ぢゅっ
+						CASE 15
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "っ", "＿")%、ぴちゃっ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぺろ", "ペロ")%
+						CASE 16
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("っ", "＿")%、つぷ%ELLIPSIS2_K39()%%RANDTEXT_K39("レロ", "れろ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%くちゅ
+						CASE 17
+							LOCALS = %LOCALS%%RANDTEXT_K39("ペロ", "ぺろ")%、ちゅっ%ELLIPSIS2_K39()%ちゅく
+						CASE 18
+							LOCALS = %LOCALS%ぴちゃ%ELLIPSIS2_K39()%%RANDTEXT_K39("ペロッ", "ぺろっ")%、%RANDTEXT_K39("くちゅ", "ちゅぷ")%
+						CASE 19
+							LOCALS = %LOCALS%%RANDTEXT_K39("つ", "ちゅ")%ぷ%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%%RANDTEXT_K39("ぢ", "じ")%ゅっ、ちゅく
+						CASE 20
+							LOCALS = %LOCALS%%RANDTEXT_K39("チュプ", "ちゅぷ")%%RANDTEXT_K39("、", "＿")%%ELLIPSIS2_K39()%くちゅっ、ちゅく
+						CASE 21
+							LOCALS = %LOCALS%%RANDTEXT_K39("くちゅっ", "クチュッ")%、ちゅ%RANDTEXT_K39("く", "ぷ", "っ")%%ELLIPSIS2_K39()%つぷ
+						CASE 22
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぢ", "じ")%ゅっ、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 23
+							LOCALS = %LOCALS%%RANDTEXT_K39("くちゅっ", "クチュッ", "つぷっ")%、ちゅく%ELLIPSIS2_K39()%ぴちゅ
+						CASE 24
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("く", "っ", "＿")%、ちゅ%RANDTEXT_K39("ぷ", "く")%っ%ELLIPSIS2_K39()%くちゅ
+					ENDSELECT
+			ENDSELECT
+			IF AFFECTION("상사상애")
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿", RAND_SYMBOL_K39())%
+			ELSE
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("＿", "っ", EIGHTHNOTE_K39(), "っ♪")%
+			ENDIF
+		CASE "펠라"
+			;죠교자の상태변화派生
+			SELECTCASE GET_CONDITION(TARGET)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%くぷ、%WARD_C_K39()%ゅぷ…っ、ん%WARD_D_K39()%、んっ、%WARD_C_K39()%ゅ%RANDTEXT_K39("ぅ", "ぅぅ")%っ
+						CASE 1
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぽ、%WARD_C_K39()%ゅぽっ%ELLIPSIS2_K39()%は、ぁ%ELLIPSIS2_K39()%んぐっ、ん
+						CASE 2
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅ%WARD_F_K39()%…ッ！ ぷは…ん゛%WARD_D_K39()%、くぷ
+						CASE 3
+							LOCALS = %LOCALS%かぷ%ELLIPSIS2_K39()%くぷっ、じゅぷ……ッ、ぁ、んん
+						CASE 4
+							LOCALS = %LOCALS%は～っ、ぁ…%WARD_C_K39()%ゅっ、%WARD_C_K39()%ゅ%WARD_F_K39()%っ%ELLIPSIS2_K39()%ちゅぷ
+						CASE 5
+							LOCALS = %LOCALS%んぐっ%ELLIPSIS2_K39()%はっ、はっ、%WARD_A_K39()%むっ！ ちゅ%RANDTEXT_K39("ぅ", "ぅぅ")%
+						CASE 6
+							LOCALS = %LOCALS%ぐぽっ、ぐぽっ%ELLIPSIS2_K39()%んむっ、%WARD_C_K39()%ゅ%WARD_F_K39()%
+						CASE 7
+							LOCALS = %LOCALS%ちゅぽ、ちゅぽっ%ELLIPSIS2_K39()%れろ～っ、んぐっ、んく
+						CASE 8
+							LOCALS = %LOCALS%ん%WARD_D_K39()%っ、ふ%ELLIPSIS2_K39()%ぁ…んむっ、%WARD_A_K39()%むっ…ちゅ～
+						CASE 9
+							LOCALS = %LOCALS%ぺろ%WARD_E_K39()%ちゅ～っ、はむ、%WARD_A_K39()%むっ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぷ
+						CASE 10
+							LOCALS = %LOCALS%ぐぷ、ぐぷっ%ELLIPSIS2_K39()%ちゅぷ、ちゅ～～っ！
+						CASE 11
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅ%WARD_F_K39()%っ、ん
+						CASE 12
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、ふッん…、ぷは%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、%WARD_C_K39()%ゅ%WARD_F_K39()%
+						CASE 13
+							LOCALS = %LOCALS%ん、んっ、%WARD_A_K39()%ん%ELLIPSIS2_K39()%ちゅぽっ、ぢゅッ
+						CASE 14
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅッ、%WARD_C_K39()%ゅぽっ%ELLIPSIS2_K39()%ぷは、ぁ…んく、んく
+						CASE 15
+							LOCALS = %LOCALS%チロチロ%ELLIPSIS2_K39()%ちゅっ、%WARD_C_K39()%ゅぷ…ぁ
+						CASE 16
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅ", "チュ")%、ちゅっ、%WARD_C_K39()%ゅぅぅ…っ！ っはぁ、%RANDTEXT_K39("はぁ", "ハァ")%
+						CASE 17
+							LOCALS = %LOCALS%は%WARD_E_K39()%っ、はっ、%WARD_A_K39()%むっ！ ん、じゅ%WARD_F_K39()%
+						CASE 18
+							LOCALS = %LOCALS%ぐぷ、ぐ%RANDTEXT_K39("ぽ", "ぷ", "ちゅ")%っ%ELLIPSIS2_K39()%ぁ、ん…んく、んぐぅっ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅる、%WARD_C_K39()%ゅ%WARD_F_K39()%
+						CASE 20
+							LOCALS = %LOCALS%ぷは%WARD_D_K39()%…ぁ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ふ、んんっ！ んく
+						CASE 21
+							LOCALS = %LOCALS%はっ、は%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅ%RANDTEXT_K39("＿", "る", "るる")%っ、ぢゅぷ、ん
+						CASE 22
+							LOCALS = %LOCALS%んぐ%WARD_D_K39()%っ、ん…ッ、っはぁ、%WARD_A_K39()%%ELLIPSIS2_K39()%ぐぽっ
+						CASE 23
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、んぐっ%ELLIPSIS2_K39()%ぢゅ%WARD_F_K39()%っ、ふ、んんっ
+						CASE 24
+							LOCALS = %LOCALS%ぐぽ、ぐぽっ%ELLIPSIS2_K39()%じゅ%WARD_F_K39()%
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%はぁ%WARD_E_K39()%はっ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ぴちゅ
+						CASE 1
+							LOCALS = %LOCALS%ぷは%WARD_D_K39()%%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、んんっ！ んく
+						CASE 2
+							LOCALS = %LOCALS%んふ、ん%ELLIPSIS2_K39()%ちゅる%WARD_D_K39()%、ちゅぷ
+						CASE 3
+							LOCALS = %LOCALS%ふ…ぁ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぺろ", "ペロ")%、ぺろっ……ん
+						CASE 4
+							LOCALS = %LOCALS%%WARD_A_K39()%…ん%WARD_D_K39()%、んくっ、ちゅぅ
+						CASE 5
+							LOCALS = %LOCALS%んぅっ、はっ%ELLIPSIS2_K39()%%WARD_A_K39()%む、ちゅる
+						CASE 6
+							LOCALS = %LOCALS%んむっ、%WARD_A_K39()%む%ELLIPSIS2_K39()%あ、んく
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%かぷ、かぷ
+						CASE 8
+							LOCALS = %LOCALS%ちゅ%WARD_D_K39()%%ELLIPSIS2_K39()%ちゅぅっ、ん、ぁ
+						CASE 9
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん…っ、ちゅ%WARD_B_K39()%
+						CASE 10
+							LOCALS = %LOCALS%ちゅ%WARD_B_K39()%っ、ちゅぽ…%WARD_D_K39()%、ふぅん、ん
+						CASE 11
+							LOCALS = %LOCALS%%RANDTEXT_K39("っ", "＿")%はぁ%ELLIPSIS2_K39()%%WARD_A_K39()%む、ぬちゅ%ELLIPSIS2_K39()%ん
+						CASE 12
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぬちゅっ", "ヌチュッ")%、ちゅる%ELLIPSIS2_K39()%ちゅ%WARD_B_K39()%、ちゅ%WARD_B_K39()%
+						CASE 13
+							LOCALS = %LOCALS%%RANDTEXT_K39("くちゅ", "クチュ")%、ちゅるっ%ELLIPSIS2_K39()%ふ、%WARD_A_K39()%むっ、んく
+						CASE 14
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、んぐっ%ELLIPSIS2_K39()%じゅぅっ、ちゅぷ
+						CASE 15
+							LOCALS = %LOCALS%ちゅ%WARD_B_K39()%、ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "～")%っ%ELLIPSIS2_K39()%ん、んく
+						CASE 16
+							LOCALS = %LOCALS%は…ぁ、んん%WARD_D_K39()%%ELLIPSIS2_K39()%んく、んく
+						CASE 17
+							LOCALS = %LOCALS%れろ%WARD_E_K39()%ん%WARD_D_K39()%、んっ%ELLIPSIS2_K39()%かぷっ、ちゅぅ
+						CASE 18
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、んく%ELLIPSIS2_K39()%ぴちゅ%WARD_D_K39()%、ちゅ%WARD_B_K39()%
+						CASE 19
+							LOCALS = %LOCALS%はっ、はっ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ちゅぷ
+						CASE 20
+							LOCALS = %LOCALS%むぎゅ%WARD_D_K39()%%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ん%ELLIPSIS2_K39()%ぺろ
+						CASE 21
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、ぅん%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ちゅぱ
+						CASE 22
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん%WARD_D_K39()%%ELLIPSIS2_K39()%は%WARD_D_K39()%、んく
+						CASE 23
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん%ELLIPSIS2_K39()%んく%WARD_D_K39()%、ちゅっぷ
+						CASE 24
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろ", "ペロ")%、ぴちゃ%RANDTEXT_K39("っ", "＿")%……ん%WARD_D_K39()%、んく
+					ENDSELECT
+			ENDSELECT
+			IF AFFECTION("상사상애")
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿", RAND_SYMBOL_K39())%
+			ELSE
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("＿", "っ", EIGHTHNOTE_K39(), "っ♪")%
+			ENDIF
+		CASE "애무", "자위"
+			;죠교자상태변화派生
+			SELECTCASE GET_CONDITION(TARGET)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_D_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく
+						CASE 1
+							LOCALS = %LOCALS%%RANDTEXT_K39("クニュ", "グニュ")%、%WARD_C_K39()%ゅく%WARD_H_K39()%%ELLIPSIS2_K39()%ぢゅぷ、ぬちゅ
+						CASE 2
+							LOCALS = %LOCALS%%WARD_I_K39()%、%WARD_G_K39()%…%WARD_H_K39()%、つぷ%ELLIPSIS2_K39()%ちゅく
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("スリスリ", "すりすり")%…っ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_G_K39()%
+						CASE 4
+							LOCALS = %LOCALS%%WARD_G_K39()%…っ、にゅる、%WARD_C_K39()%ゅく%ELLIPSIS2_K39()%ちゅく
+						CASE 5
+							LOCALS = %LOCALS%ふにふにっ%ELLIPSIS2_K39()%%WARD_I_K39()%、ちゅく
+						CASE 6
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_G_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ピチュ…つぷぷ
+						CASE 7
+							LOCALS = %LOCALS%つぷ、つぷぷ%ELLIPSIS2_K39()%%WARD_G_K39()%、ぐちゅ
+						CASE 8
+							LOCALS = %LOCALS%プチュ、%WARD_G_K39()%%ELLIPSIS2_K39()%つぷ、つぷ
+						CASE 9
+							LOCALS = %LOCALS%ニュプ、%WARD_I_K39()%……ッ、ｸﾘｸﾘ
+						CASE 10
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、ちゅぷ%ELLIPSIS2_K39()%%WARD_G_K39()%、にちゅ
+						CASE 11
+							LOCALS = %LOCALS%%WARD_I_K39()%、%WARD_G_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 12
+							LOCALS = %LOCALS%%WARD_G_K39()%%WARD_G_K39()%……ッ、ぷちゅ
+						CASE 13
+							LOCALS = %LOCALS%ぷちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく、ちゅく
+						CASE 14
+							LOCALS = %LOCALS%%WARD_I_K39()%…っ、ｸﾘｸﾘ%ELLIPSIS2_K39()%%RANDTEXT_K39("ちゅく", "チュク")%、%WARD_C_K39()%ゅく
+						CASE 15
+							LOCALS = %LOCALS%プチュ、%RANDTEXT_K39("ヌチュ", "クチュ")%……ッ、プチュプチュッ
+						CASE 16
+							LOCALS = %LOCALS%くりゅ%WARD_H_K39()%%ELLIPSIS2_K39()%くにくに、%WARD_C_K39()%ゅくっ、つぷぷ
+						CASE 17
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、%RANDTEXT_K39("グ", "ク")%チュッ%ELLIPSIS2_K39()%つぷ、ぬちゅ
+						CASE 18
+							LOCALS = %LOCALS%ぬちゃ、%WARD_I_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ぴちゅっ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、%WARD_C_K39()%ゅく…っ、%WARD_G_K39()%
+						CASE 20
+							LOCALS = %LOCALS%にちゅ%WARD_H_K39()%、%RANDTEXT_K39("ぷ", "く")%ちゅ…%WARD_H_K39()%、ちゅく
+						CASE 21
+							LOCALS = %LOCALS%%WARD_G_K39()%%WARD_H_K39()%、%RANDTEXT_K39("ヌチュ", "ぬちゅ")%%ELLIPSIS2_K39()%ぷちゅ
+						CASE 22
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、ちゅぷ%WARD_H_K39()%%ELLIPSIS2_K39()%ちゅく
+						CASE 23
+							LOCALS = %LOCALS%ぐにぐに%WARD_H_K39()%…、%WARD_G_K39()%、ぐちゅ%ELLIPSIS2_K39()%ちゅぷ
+						CASE 24
+							LOCALS = %LOCALS%ｸﾘｸﾘ…%WARD_G_K39()%、%WARD_C_K39()%ゅく%ELLIPSIS2_K39()%ぢゅく
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_G_K39()%、くちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%ぐちゅ
+						CASE 1
+							LOCALS = %LOCALS%クニュ、ちゅく%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぷ
+						CASE 2
+							LOCALS = %LOCALS%ぬちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%%RANDTEXT_K39("クチュ", "くちゅ")%…%WARD_H_K39()%、つぷ
+						CASE 3
+							LOCALS = %LOCALS%スリスリ…%WARD_H_K39()%%ELLIPSIS2_K39()%ちゅぷ
+						CASE 4
+							LOCALS = %LOCALS%くちゅ…%WARD_H_K39()%、にゅる%ELLIPSIS2_K39()%ちゅく
+						CASE 5
+							LOCALS = %LOCALS%ふにっ、ぬちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%ちゅく
+						CASE 6
+							LOCALS = %LOCALS%くちゅ%WARD_H_K39()%、%WARD_G_K39()%%ELLIPSIS2_K39()%ピチュ
+						CASE 7
+							LOCALS = %LOCALS%つぷ%WARD_H_K39()%、つぷぷ%WARD_H_K39()%%ELLIPSIS2_K39()%クチュ
+						CASE 8
+							LOCALS = %LOCALS%プチュ、%WARD_G_K39()%%ELLIPSIS2_K39()%つぷぷ
+						CASE 9
+							LOCALS = %LOCALS%ニュプ%ELLIPSIS2_K39()%ヌチュ
+						CASE 10
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ")%%ELLIPSIS2_K39()%にちゅ
+						CASE 11
+							LOCALS = %LOCALS%ヌチュ、%WARD_G_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 12
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_G_K39()%%ELLIPSIS2_K39()%%WARD_H_K39()%、ぷちゅ
+						CASE 13
+							LOCALS = %LOCALS%ぷちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく、ちゅく
+						CASE 14
+							LOCALS = %LOCALS%%WARD_I_K39()%…%WARD_H_K39()%、ｸﾘｸﾘ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく
+						CASE 15
+							LOCALS = %LOCALS%プチュ%ELLIPSIS2_K39()%ヌチュ
+						CASE 16
+							LOCALS = %LOCALS%くりゅ%ELLIPSIS2_K39()%%RANDTEXT_K39("くにくに", "くにゅ")%%RANDTEXT_K39("っ", "＿")%、%WARD_C_K39()%ゅく
+						CASE 17
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、%WARD_I_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 18
+							LOCALS = %LOCALS%ぬちゃ、%WARD_I_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ぴちゅ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、ちゅく%WARD_H_K39()%…%WARD_H_K39()%、%WARD_G_K39()%
+						CASE 20
+							LOCALS = %LOCALS%にちゅ%WARD_H_K39()%、ぷちゅ…%WARD_H_K39()%、%WARD_C_K39()%ゅく
+						CASE 21
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_I_K39()%%ELLIPSIS2_K39()%ぷちゅ
+						CASE 22
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく
+						CASE 23
+							LOCALS = %LOCALS%くちゅ%WARD_H_K39()%、%WARD_G_K39()%%ELLIPSIS2_K39()%ちゅぷ
+						CASE 24
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_C_K39()%ゅ%WARD_B_K39()%%ELLIPSIS2_K39()%ちゅく
+					ENDSELECT
+			ENDSELECT
+			LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿")%
+		CASE "파이즈리"
+			;죠교자상태변화派生
+			SELECTCASE GET_CONDITION(TARGET)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%ぎゅむっ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにむに
+						CASE 1
+							LOCALS = %LOCALS%ぬちゅ%ELLIPSIS2_K39()%ずにゅ、ずりゅ…っ、むにゅ
+						CASE 2
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずっ、ずずっ、ずちゅ
+						CASE 3
+							LOCALS = %LOCALS%にゅ%RANDTEXT_K39("ぷ", "ちゅ")%っ%ELLIPSIS2_K39()%ずちゅ、ずりゅっ、ぐにゅ
+						CASE 4
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%、むにゅ…っ、ずりゅ、ぬちゅ
+						CASE 5
+							LOCALS = %LOCALS%ギュゥゥ%WARD_K_K39()%ッ、むにゅ%RANDTEXT_K39("ぅ", "＿")%っ…ぐにゅぐにゅ
+						CASE 6
+							LOCALS = %LOCALS%ヌチュ%WARD_L_K39()%%ELLIPSIS2_K39()%ずちゅっ、ギュッ、むにゅぅぅ～っ
+						CASE 7
+							LOCALS = %LOCALS%にゅ%RANDTEXT_K39("ぷ", "ちゅ")%っ、ずりゅっ%ELLIPSIS2_K39()%ぬちゅ…むにゅ
+						CASE 8
+							LOCALS = %LOCALS%ぐにゅ、む%RANDTEXT_K39("にゅ", "に")%っ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ギュゥゥ
+						CASE 9
+							LOCALS = %LOCALS%ギュム%WARD_L_K39()%%ELLIPSIS2_K39()%むにむに、ずりゅ…っ、ずず
+						CASE 10
+							LOCALS = %LOCALS%ぬちゅぬちゅっ%RANDTEXT_K39("！ ", "、")%にゅぷ%ELLIPSIS2_K39()%むにゅ
+						CASE 11
+							LOCALS = %LOCALS%むにゅむにゅ%ELLIPSIS2_K39()%ずりゅ、ずちゅっ…ちゅ
+						CASE 12
+							LOCALS = %LOCALS%ぐにゅ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅっ、ぬちゅ
+						CASE 13
+							LOCALS = %LOCALS%もにゅ%ELLIPSIS2_K39()%むにむに…っ、ずっ、ずりゅ
+						CASE 14
+							LOCALS = %LOCALS%むにっ%ELLIPSIS2_K39()%%WARD_J_K39()%%WARD_H_K39()%、むにゅっ、ぬちゅ
+						CASE 15
+							LOCALS = %LOCALS%むにゅ、ずにゅ%RANDTEXT_K39("ぅ", "＿")%っ%ELLIPSIS2_K39()%にゅちゅ
+						CASE 16
+							LOCALS = %LOCALS%ずりゅっ、%WARD_C_K39()%ゅる%ELLIPSIS2_K39()%ちゅっ、ちゅく
+						CASE 17
+							LOCALS = %LOCALS%むにゅ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずちゅっ、ずりゅりゅ
+						CASE 18
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%%WARD_J_K39()%%WARD_H_K39()%…にゅぷ
+						CASE 19
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%ギュッ、ギュゥゥ
+						CASE 20
+							LOCALS = %LOCALS%ずにゅ、にゅ%RANDTEXT_K39("ぷ", "ちゅ")%…っ、ぐにゅっ、むにむに
+						CASE 21
+							LOCALS = %LOCALS%ずちゅ%ELLIPSIS2_K39()%ぬちゅ、ず%RANDTEXT_K39("り", "に")%ゅっ、ギュム
+						CASE 22
+							LOCALS = %LOCALS%にゅちゅっ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずちゅ、ずちゅちゅ
+						CASE 23
+							LOCALS = %LOCALS%ギュゥゥ%WARD_K_K39()%ッ！ ずりゅっ、ずりゅ
+						CASE 24
+							LOCALS = %LOCALS%ずにゅっ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにっ、むにゅっ
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにむに
+						CASE 1
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずりゅ…っ、むにゅ
+						CASE 2
+							LOCALS = %LOCALS%ずっ、ずっ%ELLIPSIS2_K39()%ずちゅ
+						CASE 3
+							LOCALS = %LOCALS%にゅぷっ%ELLIPSIS2_K39()%ずちゅ、ずりゅ
+						CASE 4
+							LOCALS = %LOCALS%むぎゅ%ELLIPSIS2_K39()%むにゅ…っ、ずりゅ
+						CASE 5
+							LOCALS = %LOCALS%ギュゥゥ%WARD_K_K39()%ッ、むにゅ
+						CASE 6
+							LOCALS = %LOCALS%ヌチュ%WARD_L_K39()%、ずりゅ%ELLIPSIS2_K39()%むにゅぅぅ～
+						CASE 7
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%、ぬちゅ%ELLIPSIS2_K39()%むに
+						CASE 8
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%、ずりゅ%ELLIPSIS2_K39()%ギュゥゥ
+						CASE 9
+							LOCALS = %LOCALS%ギュム%ELLIPSIS2_K39()%むにむに、ずりゅ
+						CASE 10
+							LOCALS = %LOCALS%ぬ%RANDTEXT_K39("ちゅ", "ぷ")%、にゅ%RANDTEXT_K39("ぷ", "ちゅ")%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅ
+						CASE 11
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずりゅ、ずちゅ
+						CASE 12
+							LOCALS = %LOCALS%ぐにゅ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅ
+						CASE 13
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにむに
+						CASE 14
+							LOCALS = %LOCALS%むにっ%ELLIPSIS2_K39()%むにゅ、むにゅ
+						CASE 15
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずにゅっ
+						CASE 16
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ぢゅる…ちゅ
+						CASE 17
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅ…っ、ずちゅ
+						CASE 18
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%むぎゅ
+						CASE 19
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%ギュ
+						CASE 20
+							LOCALS = %LOCALS%ずにゅ%ELLIPSIS2_K39()%にゅぷ
+						CASE 21
+							LOCALS = %LOCALS%ずっ、ずちゅ%ELLIPSIS2_K39()%ずりゅ
+						CASE 22
+							LOCALS = %LOCALS%ずちゅ%ELLIPSIS2_K39()%ずちゅちゅ
+						CASE 23
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずりゅ
+						CASE 24
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずにゅ
+					ENDSELECT
+			ENDSELECT
+			LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("ッ", "っ！", "っ", "！", "＿")%
+		CASEELSE
+			CALLF PRINT_ERRORMESSAGE(@"@KOJO_RAND_K39に無効な定義が渡されま했다")
+	ENDSELECT
+ELSEIF ARG == 2 ;죠교대상
+	SELECTCASE ARGS
+		CASE "키스", "乳首吸い"
+			;죠교대상상태변화派生
+			SELECTCASE GET_CONDITION(MASTER)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%ちゅぅ%RANDTEXT_K39("っ、", "っ！　")%%WARD_C_K39()%ゅっ%ELLIPSIS2_K39()%ぷは、%WARD_A_K39()%む
+						CASE 1
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ%ELLIPSIS2_K39()%%WARD_C_K39()%ぅゅっ…%RANDTEXT_K39("ちゅく", "ちゅぷ", "くちゅ")%、チュ
+						CASE 2
+							LOCALS = %LOCALS%%RANDTEXT_K39("ペロッ", "ぺろっ")%、ぴちゅ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぢゅく", "ちゅく", "ちゅぷ")%、ちゅぅっ
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ", "ちゅく")%、じゅる%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%ん、んく
+						CASE 4
+							LOCALS = %LOCALS%ちゅぅぅっ！ ぷは%RANDTEXT_K39("っ", "＿")%、ん%ELLIPSIS2_K39()%んく
+						CASE 5
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、%RANDTEXT_K39("クチュ", "くちゅ", "ちゅく")%…%WARD_C_K39()%ゅっ、ちゅぷ
+						CASE 6
+							LOCALS = %LOCALS%んくっ%ELLIPSIS2_K39()%ぁ…%WARD_A_K39()%むっ、んちゅぅ
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("ん", "＿")%ん%RANDTEXT_K39("っ", "ッ")%……ふ%ELLIPSIS2_K39()%%RANDTEXT_K39("はぁ", "ハァ")%、%WARD_A_K39()%むっ…んく
+						CASE 8
+							LOCALS = %LOCALS%%RANDTEXT_K39("ふ", "ん")%%ELLIPSIS2_K39()%%RANDTEXT_K39("チュッ", "ちゅっ")%、ちゅく…、%WARD_A_K39()%む
+						CASE 9
+							LOCALS = %LOCALS%%WARD_A_K39()%っ、はぁ%ELLIPSIS2_K39()%んく、ちゅぅ%RANDTEXT_K39("っ", "＿")%…ちゅく
+						CASE 10
+							LOCALS = %LOCALS%%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%ぁ、んん%RANDTEXT_K39("っ", "＿")%…んく
+						CASE 11
+							LOCALS = %LOCALS%ふっ、ん%RANDTEXT_K39("ん", "く")%っ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("く", "ぷ")%、ぴちゅ
+						CASE 12
+							LOCALS = %LOCALS%ん%ELLIPSIS2_K39()%ぁ…、%WARD_A_K39()%むっ、んん%RANDTEXT_K39("っ", "＿")%…んく
+						CASE 13
+							LOCALS = %LOCALS%ぷは%RANDTEXT_K39("っ", "＿")%、はぁ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、%WARD_C_K39()%ゅぅぅっ！ ん
+						CASE 14
+							LOCALS = %LOCALS%ふぁ…はぁ%ELLIPSIS2_K39()%んく、んちゅ%RANDTEXT_K39("ぅ", "っ", "＿")%
+						CASE 15
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ", "ちゅく", "ぢゅく")%、%WARD_C_K39()%ゅぷ…、%RANDTEXT_K39("チュッ", "ちゅっ", "ちゅ")%、ん、んくっ
+						CASE 16
+							LOCALS = %LOCALS%チュッ、ちゅ%RANDTEXT_K39("ぅっ", "っ", "ぅぅっ")%%ELLIPSIS2_K39()%ぁ、%WARD_A_K39()%むっ、んふ
+						CASE 17
+							LOCALS = %LOCALS%んぅっ、んく%RANDTEXT_K39("っ", "＿")%…%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "っ")%
+						CASE 18
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぴ", "く", "ん")%ちゅ、ちゅ%RANDTEXT_K39("く", "ぷ", "っ")%%ELLIPSIS2_K39()%ん、んちゅ%RANDTEXT_K39("ぅっ", "っ", "＿")%…んく、んく
+						CASE 19
+							LOCALS = %LOCALS%ふぅ、んっ…んく、%RANDTEXT_K39("んく", "＿")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぅっ、ちゅく
+						CASE 20
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん%ELLIPSIS2_K39()%んく、んちゅ…っ、ちゅく
+						CASE 21
+							LOCALS = %LOCALS%じゅっ、%WARD_C_K39()%ゅぅっ%ELLIPSIS2_K39()%%RANDTEXT_K39("ちゅく", "ちゅぷ")%…ぴちゅ
+						CASE 22
+							LOCALS = %LOCALS%クチュ、%RANDTEXT_K39("くちゅっ", "ちゅぷ", "ちゅく")%%ELLIPSIS2_K39()%ぁ…%WARD_A_K39()%むっ、んく
+						CASE 23
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅっ、", "ぅぅっっ！")% ぷは、%RANDTEXT_K39("はぁ", "ハァ")%……%WARD_A_K39()%むっ、んく
+						CASE 24
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("＿", "く", "ぷ", "っ")%、ちゅくっ…%RANDTEXT_K39("ペロ", "ぺろ")%%RANDTEXT_K39("ッ", "っ")%、ん%ELLIPSIS2_K39()%ちゅぅ
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%んぅっ、ん%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%んく
+						CASE 1
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、んっ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぷ", "く", "＿")%
+						CASE 2
+							LOCALS = %LOCALS%ちゅっ、んちゅ%ELLIPSIS2_K39()%ん%RANDTEXT_K39("ん", "く", "＿")%
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("ん", "く", "＿")%ちゅ、んふ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%
+						CASE 4
+							LOCALS = %LOCALS%ちゅぅっ、ん%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%んく
+						CASE 5
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅぅ", "ちゅく", "ちゅ")%っ…くちゅっ%ELLIPSIS2_K39()%ぢゅ
+						CASE 6
+							LOCALS = %LOCALS%ちゅ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ…んんっ
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅっ", "チュっ")%、%RANDTEXT_K39("ちゅう", "ちゅく", "ちゅる")%…っ…ん
+						CASE 8
+							LOCALS = %LOCALS%ちゅく、%RANDTEXT_K39("ちゅく", "ちゅぷ", "クチュ", "くちゅ")%…ちゅる
+						CASE 9
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ…ん%RANDTEXT_K39("、", "っ、", "ッ", "……", "……、")%ちゅっ、%RANDTEXT_K39("ちゅぷ", "ちゅく", "チュ")%
+						CASE 10
+							LOCALS = %LOCALS%%RANDTEXT_K39("あ", "ぁ")%むっ…%RANDTEXT_K39("ちゅ", "ちゅく", "ちゅぷ")%っ、チュッ
+						CASE 11
+							LOCALS = %LOCALS%%RANDTEXT_K39("は", "あ", "ぁ", "ん")%む%RANDTEXT_K39("っ、", "……、")%んふっ……ちゅ
+						CASE 12
+							LOCALS = %LOCALS%ちゅっ、っちゅ…%RANDTEXT_K39("くちゅ", "ちゅぷ", "ちゅぅ")%
+						CASE 13
+							LOCALS = %LOCALS%んふ、ちゅ%RANDTEXT_K39("っ、", "……", "……、")%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%
+						CASE 14
+							LOCALS = %LOCALS%%WARD_A_K39()%む%RANDTEXT_K39("っ", "＿")%…れろ%RANDTEXT_K39("っ", "＿")%……%RANDTEXT_K39("ん", "く", "＿")%ちゅ
+						CASE 15
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("っ、", "ぅっ、", "……")%ん%RANDTEXT_K39("っ、", "、")%んく
+						CASE 16
+							LOCALS = %LOCALS%ん……んく%ELLIPSIS2_K39()%%RANDTEXT_K39("チュ", "ちゅ", "ちゅく", "ちゅぷ")%
+						CASE 17
+							LOCALS = %LOCALS%ん%RANDTEXT_K39("ぅ", "っ", "ッ")%……ふ%RANDTEXT_K39("＿", "…", "……、")%んく
+						CASE 18
+							LOCALS = %LOCALS%%RANDTEXT_K39("チュッ", "チュ", "ちゅ", "ちゅっ")%、%RANDTEXT_K39("ちゅく", "ちゅる")%%ELLIPSIS2_K39()%ちゅぷ
+						CASE 19
+							LOCALS = %LOCALS%くちゅ、%RANDTEXT_K39("ちゅ", "ちゅく", "ちゅぷ", "チュ")%%ELLIPSIS2_K39()%ん%RANDTEXT_K39("、", "っ、", "ッ、")%んく
+						CASE 20
+							LOCALS = %LOCALS%っはぁ、%RANDTEXT_K39("ペロッ", "ぺろ", "ぺろっ")%%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("っ", "ぅっ", "ッ", "ぅぅ")%
+						CASE 21
+							LOCALS = %LOCALS%%RANDTEXT_K39("んっ", "ん", "んッ")%%RANDTEXT_K39("……", "…", "…っ、")%%RANDTEXT_K39("はっ、はぁ", "ハァ、ハァ")%……ちゅ%RANDTEXT_K39("ぅ", "うぅ", "ぅぅ")%
+						CASE 22
+							LOCALS = %LOCALS%んく、%RANDTEXT_K39("んっ…", "ん……")%%RANDTEXT_K39("チュッ、", "ちゅく", "ちゅぷ")%くちゅ
+						CASE 23
+							LOCALS = %LOCALS%ちゅく、%RANDTEXT_K39("ちゅぷ", "ちゅ", "くちゅ", "んっ")%%RANDTEXT_K39("…", "……", "っ、", "…っ、")%ちゅぅぅ
+						CASE 24
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、%RANDTEXT_K39("んく", "んちゅ", "ちゅ")%%RANDTEXT_K39("…", "……", "っ、", "…っ、")%んっ
+					ENDSELECT
+			ENDSELECT
+			IF AFFECTION("상사상애")
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿", RAND_SYMBOL_K39())%
+			ELSE
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("＿", "っ")%
+			ENDIF
+		CASE "クンニ", "입으로 애무"
+			;죠교대상상태변화派生
+			SELECTCASE GET_CONDITION(MASTER)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅる%RANDTEXT_K39("っ", "＿")%、ちゅ%ELLIPSIS2_K39()%ぷは…ん、クチュ
+						CASE 1
+							LOCALS = %LOCALS%つぷ…ん%RANDTEXT_K39("ッ", "っ", "＿")%、ヌプッ、ヌプ%ELLIPSIS2_K39()%ぺろ
+						CASE 2
+							LOCALS = %LOCALS%チュプ、%WARD_C_K39()%ゅくっ%ELLIPSIS2_K39()%くちゅ、%WARD_C_K39()%ゅく
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅる%RANDTEXT_K39("る", "＿")%っ、ちゅ
+						CASE 4
+							LOCALS = %LOCALS%%WARD_A_K39()%む、%WARD_C_K39()%ゅくっ%ELLIPSIS2_K39()%ん、%RANDTEXT_K39("クチュッ", "くちゅっ")%、つぷ
+						CASE 5
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅっ、%WARD_C_K39()%ゅく……っはぁ、ぁ%ELLIPSIS2_K39()%%WARD_A_K39()%む
+						CASE 6
+							LOCALS = %LOCALS%ペロペロ…ッ、%WARD_C_K39()%ゅ%RANDTEXT_K39("っ", "＿")%、ちゅく%ELLIPSIS2_K39()%つぷ
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("じ", "ぢ")%ゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ、%RANDTEXT_K39("ち", "ぢ", "じ")%ゅくっ%ELLIPSIS2_K39()%んっ、クチュ
+						CASE 8
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅる%RANDTEXT_K39("る", "＿")%…%RANDTEXT_K39("ッ", "っ")%、ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ%ELLIPSIS2_K39()%ぷは、ぁ…%WARD_A_K39()%む
+						CASE 9
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅ%WARD_B_K39()%、%WARD_C_K39()%ゅぷ%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%くちゅっ、ちゅ
+						CASE 10
+							LOCALS = %LOCALS%ヌルッ、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%つぷ、ヌプ
+						CASE 11
+							LOCALS = %LOCALS%ぴち%RANDTEXT_K39("ゃ", "ゅ")%%ELLIPSIS2_K39()%%RANDTEXT_K39("ぺろっ", "ペロッ")%、くちゅ、クチュ
+						CASE 12
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろっ", "ペロッ")%、ん%ELLIPSIS2_K39()%ぢゅく……ちゅ%WARD_B_K39()%
+						CASE 13
+							LOCALS = %LOCALS%つぷ%RANDTEXT_K39("っ", "＿")%、ヌプ…っ、ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ%ELLIPSIS2_K39()%ぢゅく
+						CASE 14
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろっ", "ペロッ")%、ぴち%RANDTEXT_K39("ゃ", "ゅ")%%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "＿")%っ、くちゅ
+						CASE 15
+							LOCALS = %LOCALS%%RANDTEXT_K39("レロ", "れろ")%%RANDTEXT_K39("っ", "＿")%、ちゅ%RANDTEXT_K39("っ", "＿")%、つぷ%ELLIPSIS2_K39()%ん、ぢゅぅ
+						CASE 16
+							LOCALS = %LOCALS%%RANDTEXT_K39("ペロッ", "ぺろっ")%、くちゅ%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%ちゅ%WARD_B_K39()%、ちゅぅ
+						CASE 17
+							LOCALS = %LOCALS%じゅる%RANDTEXT_K39("る", "＿")%…ッ、%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%んむ、くちゅ
+						CASE 18
+							LOCALS = %LOCALS%くちゅ%RANDTEXT_K39("っ", "＿")%、つぅっ%ELLIPSIS2_K39()%ん、%WARD_C_K39()%ゅく…つぷ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_A_K39()%む、ちゅ%ELLIPSIS2_K39()%クチュ、%WARD_C_K39()%ゅる%RANDTEXT_K39("る", "＿")%
+						CASE 20
+							LOCALS = %LOCALS%ぷは…、ぁ%ELLIPSIS2_K39()%んむっ、%RANDTEXT_K39("ぢ", "じ")%ゅっ…くちゅ
+						CASE 21
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅぅ", "ぅ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%じゅる%RANDTEXT_K39("る", "＿")%…ッ、くちゅ、クチュ
+						CASE 22
+							LOCALS = %LOCALS%じゅ%RANDTEXT_K39("っ", "ぅっ", "＿")%、ぢぅゅっ%ELLIPSIS2_K39()%%RANDTEXT_K39("クチュッ", "くちゅっ")%、つぷ
+						CASE 23
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぢ", "じ")%ゅぷ%RANDTEXT_K39("、", "っ、", "……")%ちゅ%RANDTEXT_K39("っ", "ぅっ", "＿", "…")%、じゅるる
+						CASE 24
+							LOCALS = %LOCALS%つぷ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぢ", "じ")%ゅっ、ちゅ%WARD_B_K39()%…%RANDTEXT_K39("くちゅ", "グチュ")%
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%ぷは%ELLIPSIS2_K39()%%RANDTEXT_K39("クチュ", "くちゅ")%、ん%RANDTEXT_K39("っ", "ッ", "＿")%…%RANDTEXT_K39("じ", "ち", "ぢ")%ゅる
+						CASE 1
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ")%、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%ペロ
+						CASE 2
+							LOCALS = %LOCALS%んふ%ELLIPSIS2_K39()%ちゅ%WARD_B_K39()%、つぷ
+						CASE 3
+							LOCALS = %LOCALS%ちゅる、%ELLIPSIS2_K39()%ちゅく、ちゅ%WARD_B_K39()%
+						CASE 4
+							LOCALS = %LOCALS%%RANDTEXT_K39("ピチュ", "ぴちゅ")%、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%ん、ちゅ
+						CASE 5
+							LOCALS = %LOCALS%ん%ELLIPSIS2_K39()%ちゅく、ちゅ%WARD_B_K39()%
+						CASE 6
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("く", "ぷ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%ぷは、ぁ…つぷ
+						CASE 7
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%じゅる%RANDTEXT_K39("る", "＿")%
+						CASE 8
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろっ", "ペロッ")%…ふ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("ぷ", "く")%
+						CASE 9
+							LOCALS = %LOCALS%ん%RANDTEXT_K39("っ", "ッ", "＿")%%ELLIPSIS2_K39()%ちゅく、ちゅぷ
+						CASE 10
+							LOCALS = %LOCALS%つぷ%ELLIPSIS2_K39()%ペロ、%RANDTEXT_K39("ペロッ", "ぺろっ")%
+						CASE 11
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "っ")%%ELLIPSIS2_K39()%れろ
+						CASE 12
+							LOCALS = %LOCALS%ぴちゃ%ELLIPSIS2_K39()%ちゅ%RANDTEXT_K39("く", "ぷ", "る")%
+						CASE 13
+							LOCALS = %LOCALS%%RANDTEXT_K39("じ", "ぢ")%ゅぷ%RANDTEXT_K39("ッ", "っ", "＿")%、ちゅる%ELLIPSIS2_K39()%ちゅく
+						CASE 14
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅく", "ちゅぷ")%%RANDTEXT_K39("っ", "＿")%、ぬるっ%ELLIPSIS2_K39()%ぢゅっ
+						CASE 15
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "っ", "＿")%、ぴちゃっ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぺろ", "ペロ")%
+						CASE 16
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("っ", "＿")%、つぷ%ELLIPSIS2_K39()%%RANDTEXT_K39("レロ", "れろ")%%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%くちゅ
+						CASE 17
+							LOCALS = %LOCALS%%RANDTEXT_K39("ペロ", "ぺろ")%、ちゅっ%ELLIPSIS2_K39()%ちゅく
+						CASE 18
+							LOCALS = %LOCALS%ぴちゃ%ELLIPSIS2_K39()%%RANDTEXT_K39("ペロッ", "ぺろっ")%、%RANDTEXT_K39("くちゅ", "ちゅぷ")%
+						CASE 19
+							LOCALS = %LOCALS%%RANDTEXT_K39("つ", "ちゅ")%ぷ%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%%RANDTEXT_K39("ぢ", "じ")%ゅっ、ちゅく
+						CASE 20
+							LOCALS = %LOCALS%%RANDTEXT_K39("チュプ", "ちゅぷ")%%RANDTEXT_K39("、", "＿")%%ELLIPSIS2_K39()%くちゅっ、ちゅく
+						CASE 21
+							LOCALS = %LOCALS%%RANDTEXT_K39("くちゅっ", "クチュッ")%、ちゅ%RANDTEXT_K39("く", "ぷ", "っ")%%ELLIPSIS2_K39()%つぷ
+						CASE 22
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぢ", "じ")%ゅっ、ちゅ%WARD_B_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 23
+							LOCALS = %LOCALS%%RANDTEXT_K39("くちゅっ", "クチュッ", "つぷっ")%、ちゅく%ELLIPSIS2_K39()%ぴちゅ
+						CASE 24
+							LOCALS = %LOCALS%ちゅ%RANDTEXT_K39("く", "っ", "＿")%、ちゅ%RANDTEXT_K39("ぷ", "く")%っ%ELLIPSIS2_K39()%くちゅ
+					ENDSELECT
+			ENDSELECT
+			IF AFFECTION("상사상애")
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿", RAND_SYMBOL_K39())%
+			ELSE
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("＿", "っ")%
+			ENDIF
+		CASE "펠라"
+			;죠교대상상태변화派生
+			SELECTCASE GET_CONDITION(MASTER)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%くぷ、%WARD_C_K39()%ゅぷ…っ、ん%WARD_D_K39()%、んっ、%WARD_C_K39()%ゅ%RANDTEXT_K39("ぅ", "ぅぅ")%っ
+						CASE 1
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぽ、%WARD_C_K39()%ゅぽっ%ELLIPSIS2_K39()%は、ぁ%ELLIPSIS2_K39()%んぐっ、ん
+						CASE 2
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅ%WARD_F_K39()%…ッ！ ぷは…ん゛%WARD_D_K39()%、くぷ
+						CASE 3
+							LOCALS = %LOCALS%かぷ%ELLIPSIS2_K39()%くぷっ、じゅぷ……ッ、ぁ、んん
+						CASE 4
+							LOCALS = %LOCALS%は～っ、ぁ…%WARD_C_K39()%ゅっ、%WARD_C_K39()%ゅ%WARD_F_K39()%っ%ELLIPSIS2_K39()%ちゅぷ
+						CASE 5
+							LOCALS = %LOCALS%んぐっ%ELLIPSIS2_K39()%はっ、はっ、%WARD_A_K39()%むっ！ ちゅ%RANDTEXT_K39("ぅ", "ぅぅ")%
+						CASE 6
+							LOCALS = %LOCALS%ぐぽっ、ぐぽっ%ELLIPSIS2_K39()%んむっ、%WARD_C_K39()%ゅ%WARD_F_K39()%
+						CASE 7
+							LOCALS = %LOCALS%ちゅぽ、ちゅぽっ%ELLIPSIS2_K39()%れろ～っ、んぐっ、んく
+						CASE 8
+							LOCALS = %LOCALS%ん%WARD_D_K39()%っ、ふ%ELLIPSIS2_K39()%ぁ…んむっ、%WARD_A_K39()%むっ…ちゅ～
+						CASE 9
+							LOCALS = %LOCALS%ぺろ%WARD_E_K39()%ちゅ～っ、はむ、%WARD_A_K39()%むっ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぷ
+						CASE 10
+							LOCALS = %LOCALS%ぐぷ、ぐぷっ%ELLIPSIS2_K39()%ちゅぷ、ちゅ～～っ！
+						CASE 11
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅ%WARD_F_K39()%っ、ん
+						CASE 12
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、ふッん…、ぷは%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、%WARD_C_K39()%ゅ%WARD_F_K39()%
+						CASE 13
+							LOCALS = %LOCALS%ん、んっ、%WARD_A_K39()%ん%ELLIPSIS2_K39()%ちゅぽっ、ぢゅッ
+						CASE 14
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅッ、%WARD_C_K39()%ゅぽっ%ELLIPSIS2_K39()%ぷは、ぁ…んく、んく
+						CASE 15
+							LOCALS = %LOCALS%チロチロ%ELLIPSIS2_K39()%ちゅっ、%WARD_C_K39()%ゅぷ…ぁ
+						CASE 16
+							LOCALS = %LOCALS%%RANDTEXT_K39("ちゅ", "チュ")%、ちゅっ、%WARD_C_K39()%ゅぅぅ…っ！ っはぁ、%RANDTEXT_K39("はぁ", "ハァ")%
+						CASE 17
+							LOCALS = %LOCALS%は%WARD_E_K39()%っ、はっ、%WARD_A_K39()%むっ！ ん、じゅ%WARD_F_K39()%
+						CASE 18
+							LOCALS = %LOCALS%ぐぷ、ぐ%RANDTEXT_K39("ぽ", "ぷ", "ちゅ")%っ%ELLIPSIS2_K39()%ぁ、ん…んく、んぐぅっ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅる、%WARD_C_K39()%ゅ%WARD_F_K39()%
+						CASE 20
+							LOCALS = %LOCALS%ぷは%WARD_D_K39()%…ぁ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ふ、んんっ！ んく
+						CASE 21
+							LOCALS = %LOCALS%はっ、は%RANDTEXT_K39("っ", "＿")%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅ%RANDTEXT_K39("＿", "る", "るる")%っ、ぢゅぷ、ん
+						CASE 22
+							LOCALS = %LOCALS%んぐ%WARD_D_K39()%っ、ん…ッ、っはぁ、%WARD_A_K39()%%ELLIPSIS2_K39()%ぐぽっ
+						CASE 23
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、んぐっ%ELLIPSIS2_K39()%ぢゅ%WARD_F_K39()%っ、ふ、んんっ
+						CASE 24
+							LOCALS = %LOCALS%ぐぽ、ぐぽっ%ELLIPSIS2_K39()%じゅ%WARD_F_K39()%
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%はぁ%WARD_E_K39()%はっ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ぴちゅ
+						CASE 1
+							LOCALS = %LOCALS%ぷは%WARD_D_K39()%%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、んんっ！ んく
+						CASE 2
+							LOCALS = %LOCALS%んふ、ん%ELLIPSIS2_K39()%ちゅる%WARD_D_K39()%、ちゅぷ
+						CASE 3
+							LOCALS = %LOCALS%ふ…ぁ%ELLIPSIS2_K39()%%RANDTEXT_K39("ぺろ", "ペロ")%、ぺろっ……ん
+						CASE 4
+							LOCALS = %LOCALS%%WARD_A_K39()%…ん%WARD_D_K39()%、んくっ、ちゅぅ
+						CASE 5
+							LOCALS = %LOCALS%んぅっ、はっ%ELLIPSIS2_K39()%%WARD_A_K39()%む、ちゅる
+						CASE 6
+							LOCALS = %LOCALS%んむっ、%WARD_A_K39()%む%ELLIPSIS2_K39()%あ、んく
+						CASE 7
+							LOCALS = %LOCALS%%RANDTEXT_K39("はぁ、はぁ", "ハァ、ハァ")%%ELLIPSIS2_K39()%かぷ、かぷ
+						CASE 8
+							LOCALS = %LOCALS%ちゅ%WARD_D_K39()%%ELLIPSIS2_K39()%ちゅぅっ、ん、ぁ
+						CASE 9
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん…っ、ちゅ%WARD_B_K39()%
+						CASE 10
+							LOCALS = %LOCALS%ちゅ%WARD_B_K39()%っ、ちゅぽ…%WARD_D_K39()%、ふぅん、ん
+						CASE 11
+							LOCALS = %LOCALS%%RANDTEXT_K39("っ", "＿")%はぁ%ELLIPSIS2_K39()%%WARD_A_K39()%む、ぬちゅ%ELLIPSIS2_K39()%ん
+						CASE 12
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぬちゅっ", "ヌチュッ")%、ちゅる%ELLIPSIS2_K39()%ちゅ%WARD_B_K39()%、ちゅ%WARD_B_K39()%
+						CASE 13
+							LOCALS = %LOCALS%%RANDTEXT_K39("くちゅ", "クチュ")%、ちゅるっ%ELLIPSIS2_K39()%ふ、%WARD_A_K39()%むっ、んく
+						CASE 14
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、んぐっ%ELLIPSIS2_K39()%じゅぅっ、ちゅぷ
+						CASE 15
+							LOCALS = %LOCALS%ちゅ%WARD_B_K39()%、ちゅ%RANDTEXT_K39("ぅ", "ぅぅ", "～")%っ%ELLIPSIS2_K39()%ん、んく
+						CASE 16
+							LOCALS = %LOCALS%は…ぁ、んん%WARD_D_K39()%%ELLIPSIS2_K39()%んく、んく
+						CASE 17
+							LOCALS = %LOCALS%れろ%WARD_E_K39()%ん%WARD_D_K39()%、んっ%ELLIPSIS2_K39()%かぷっ、ちゅぅ
+						CASE 18
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、んく%ELLIPSIS2_K39()%ぴちゅ%WARD_D_K39()%、ちゅ%WARD_B_K39()%
+						CASE 19
+							LOCALS = %LOCALS%はっ、はっ%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ちゅぷ
+						CASE 20
+							LOCALS = %LOCALS%むぎゅ%WARD_D_K39()%%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ん%ELLIPSIS2_K39()%ぺろ
+						CASE 21
+							LOCALS = %LOCALS%ん%WARD_D_K39()%、ぅん%ELLIPSIS2_K39()%%WARD_A_K39()%むっ、ちゅぱ
+						CASE 22
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん%WARD_D_K39()%%ELLIPSIS2_K39()%は%WARD_D_K39()%、んく
+						CASE 23
+							LOCALS = %LOCALS%%WARD_A_K39()%むっ、ん%ELLIPSIS2_K39()%んく%WARD_D_K39()%、ちゅっぷ
+						CASE 24
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぺろ", "ペロ")%、ぴちゃ%RANDTEXT_K39("っ", "＿")%……ん%WARD_D_K39()%、んく
+					ENDSELECT
+			ENDSELECT
+			IF AFFECTION("상사상애")
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿", RAND_SYMBOL_K39())%
+			ELSE
+				LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("＿", "っ")%
+			ENDIF
+		CASE "이라마치오"
+			;죠교대상상태변화派生
+			SELECTCASE GET_CONDITION(MASTER)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%ぷは%WARD_N_K39()%%RANDTEXT_K39("はぁ", "ハァ")%%ELLIPSIS2_K39()%%WARD_P_K39()%ぐっ！？ んんん～～ッ！
+						CASE 1
+							LOCALS = %LOCALS%じゅぷぷっ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%RANDTEXT_K39("は", "＿")%ぁ……%WARD_P_K39()%ぐっ、ぐぅ…%WARD_O_K39()%
+						CASE 2
+							LOCALS = %LOCALS%じゅるっ、%WARD_C_K39()%ゅぷっ%ELLIPSIS2_K39()%ちゅく、%WARD_P_K39()%ぐ！ んん%WARD_K_K39()%ッ
+						CASE 3
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぽ、じゅるる…%WARD_N_K39()%%RANDTEXT_K39("んぁ", "ぁう")%、んぐっ……
+						CASE 4
+							LOCALS = %LOCALS%んっ、%WARD_P_K39()%ぐ…っ！ ぷは…んむっ！ んん%WARD_Q_K39()%ッ！
+						CASE 5
+							LOCALS = %LOCALS%…%WARD_P_K39()%ぐっ！？ ふ、んんん%WARD_K_K39()%ッ！ はぁ、はぁ……
+						CASE 6
+							LOCALS = %LOCALS%じゅ%WARD_F_K39()%～っ、ぷは%ELLIPSIS2_K39()%んむっ！ んぐ…%WARD_O_K39()%
+						CASE 7
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷっ、%WARD_C_K39()%ゅく%ELLIPSIS2_K39()%ん、%WARD_P_K39()%ぐ、んん%WARD_K_K39()%ッ！
+						CASE 8
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐっ！ んんん%WARD_K_K39()%ッ！ ぷは……%WARD_P_K39()%ぐっ、んん
+						CASE 9
+							LOCALS = %LOCALS%じゅぷ、じゅぷっ%ELLIPSIS2_K39()%ぁ、んむっ、んく…っ
+						CASE 10
+							LOCALS = %LOCALS%ぷは…%RANDTEXT_K39("ハァ、ハァ", "はぁ、はぁ")%%ELLIPSIS2_K39()%むぐっ！？ んぐ、んんっ
+						CASE 11
+							LOCALS = %LOCALS%%RANDTEXT_K39("ぐ", "ん")%ぷっ、ぢゅぷ%ELLIPSIS2_K39()%んく、%WARD_P_K39()%ぐ……%WARD_O_K39()%
+						CASE 12
+							LOCALS = %LOCALS%%RANDTEXT_K39("ハァ、ハァ", "はぁ、はぁ")%%ELLIPSIS2_K39()%んぐっ！ んむぅ…%WARD_O_K39()%
+						CASE 13
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、ぐちゅっ…っ、ぷは%WARD_H_K39()%%ELLIPSIS2_K39()%んむぅっ！
+						CASE 14
+							LOCALS = %LOCALS%んん%WARD_M_K39()%！？ げほっ%ELLIPSIS2_K39()%ぁふ、ぅぅ…%WARD_P_K39()%ぐっ！
+						CASE 15
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、じゅぷじゅぷっ、%WARD_G_K39()%…%WARD_O_K39()%
+						CASE 16
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐっ、んぶっ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぼ、%WARD_C_K39()%ゅぶ…%WARD_O_K39()%
+						CASE 17
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐっ、んっ%WARD_K_K39()%～っ！ ぷは%WARD_H_K39()%、んむ%WARD_M_K39()%…！
+						CASE 18
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐぅっ！　ん%WARD_D_K39()%、ん%RANDTEXT_K39("ん", "んん")%っぅ%WARD_K_K39()%%WARD_O_K39()%
+						CASE 19
+							LOCALS = %LOCALS%じゅぷじゅぷっ%ELLIPSIS2_K39()%じゅ%WARD_F_K39()%%WARD_O_K39()%
+						CASE 20
+							LOCALS = %LOCALS%%RANDTEXT_K39("れろ", "レロ")%%ELLIPSIS2_K39()%ぁぶ%WARD_H_K39()%、んぶ…%WARD_P_K39()%ぐぅっ！
+						CASE 21
+							LOCALS = %LOCALS%んんっ！ %WARD_P_K39()%ぐっ！ ん、%WARD_P_K39()%ぐ%ELLIPSIS2_K39()%むぅ、ん…%WARD_O_K39()%
+						CASE 22
+							LOCALS = %LOCALS%ん%WARD_B_K39()%、%WARD_P_K39()%ぐ%ELLIPSIS2_K39()%げほっ、んっ、んぐ%WARD_M_K39()%…！
+						CASE 23
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅるっ%ELLIPSIS2_K39()%んん%WARD_M_K39()%、じゅ%WARD_F_K39()%……%WARD_O_K39()%
+						CASE 24
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐっ、んふ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぼっ…んぅ、じゅる…
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%んむ、んん%WARD_Q_K39()%ッ！ は、%WARD_P_K39()%ぐっ…
+						CASE 1
+							LOCALS = %LOCALS%ぷは%WARD_H_K39()%、はぁ%ELLIPSIS2_K39()%んぐっ！ んんっ……
+						CASE 2
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ%WARD_H_K39()%、ぐぷ%ELLIPSIS2_K39()%ぁ、んむ…%WARD_O_K39()%
+						CASE 3
+							LOCALS = %LOCALS%…%WARD_P_K39()%ぐっ！ んむっ、%RANDTEXT_K39("んん", "んんん")%…%WARD_O_K39()%
+						CASE 4
+							LOCALS = %LOCALS%んむっ、ん%WARD_M_K39()%%WARD_Q_K39()%ッ！ は、%WARD_P_K39()%ぐっ
+						CASE 5
+							LOCALS = %LOCALS%…っ！？ んぐ%WARD_H_K39()%、んんん%WARD_Q_K39()%ッ！
+						CASE 6
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、%WARD_G_K39()%…%WARD_N_K39()%んむぅっ！
+						CASE 7
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐっ！？ んむっ%ELLIPSIS2_K39()%んんん…%WARD_O_K39()%
+						CASE 8
+							LOCALS = %LOCALS%ん%RANDTEXT_K39("く", "ぷ")%っ%ELLIPSIS2_K39()%んっ…%WARD_O_K39()%
+						CASE 9
+							LOCALS = %LOCALS%%ELLIPSIS_K39()%ぷぁ……%WARD_C_K39()%ゅる%ELLIPSIS2_K39()%れろ…
+						CASE 10
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅる、%WARD_C_K39()%ゅぶ%ELLIPSIS2_K39()%じゅぶぶ…%WARD_O_K39()%
+						CASE 11
+							LOCALS = %LOCALS%んんっ%ELLIPSIS2_K39()%じゅぶ…%WARD_O_K39()%
+						CASE 12
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐっ！？ げほっ%ELLIPSIS2_K39()%んん……%WARD_O_K39()%
+						CASE 13
+							LOCALS = %LOCALS%ちゅ%ELLIPSIS2_K39()%%RANDTEXT_K39("じゅぽ", "じゅぷ")%、じゅ%WARD_F_K39()%…
+						CASE 14
+							LOCALS = %LOCALS%んんっ%ELLIPSIS2_K39()%%WARD_P_K39()%ぐ、んんっ…
+						CASE 15
+							LOCALS = %LOCALS%…んん%WARD_N_K39()%%RANDTEXT_K39("ん", "む", "＿")%ぐっ、ん、ぅぐ…
+						CASE 16
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐっ、んむ%WARD_M_K39()%！
+						CASE 17
+							LOCALS = %LOCALS%%WARD_P_K39()%ぐ%WARD_M_K39()%……ッ、%RANDTEXT_K39("ん", "む", "＿")%ぐ……%WARD_O_K39()%
+						CASE 18
+							LOCALS = %LOCALS%…%WARD_C_K39()%ゅぶっ%ELLIPSIS2_K39()%%RANDTEXT_K39("れろ、れろ", "レロ、レロ")%……
+						CASE 19
+							LOCALS = %LOCALS%ん%ELLIPSIS2_K39()%%WARD_C_K39()%ゅ%WARD_F_K39()%っ、んぐ%WARD_M_K39()%……！
+						CASE 20
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぶ、%WARD_C_K39()%ゅ%WARD_F_K39()%っ……
+						CASE 21
+							LOCALS = %LOCALS%…んん%WARD_N_K39()%%WARD_P_K39()%ぐっ%ELLIPSIS2_K39()%んっ
+						CASE 22
+							LOCALS = %LOCALS%んん%WARD_K_K39()%！ げほっ、ごほごほっ…
+						CASE 23
+							LOCALS = %LOCALS%んぐ%WARD_M_K39()%%ELLIPSIS2_K39()%こほっ、こほっ…
+						CASE 24
+							LOCALS = %LOCALS%ん%RANDTEXT_K39("ぅっ", "っ", "ッ")%%ELLIPSIS2_K39()%げほっ、%WARD_A_K39()%…むぐっ
+					ENDSELECT
+			ENDSELECT
+		CASE "애무", "자위"
+			;죠교대상상태변화派生
+			SELECTCASE GET_CONDITION(MASTER)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_D_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく
+						CASE 1
+							LOCALS = %LOCALS%%RANDTEXT_K39("クニュ", "グニュ")%、%WARD_C_K39()%ゅく%WARD_H_K39()%%ELLIPSIS2_K39()%ぢゅぷ、ぬちゅ
+						CASE 2
+							LOCALS = %LOCALS%%WARD_I_K39()%、%WARD_G_K39()%…%WARD_H_K39()%、つぷ%ELLIPSIS2_K39()%ちゅく
+						CASE 3
+							LOCALS = %LOCALS%%RANDTEXT_K39("スリスリ", "すりすり")%…っ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_G_K39()%
+						CASE 4
+							LOCALS = %LOCALS%%WARD_G_K39()%…っ、にゅる、%WARD_C_K39()%ゅく%ELLIPSIS2_K39()%ちゅく
+						CASE 5
+							LOCALS = %LOCALS%ふにふにっ%ELLIPSIS2_K39()%%WARD_I_K39()%、ちゅく
+						CASE 6
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_G_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ピチュ…つぷぷ
+						CASE 7
+							LOCALS = %LOCALS%つぷ、つぷぷ%ELLIPSIS2_K39()%%WARD_G_K39()%、ぐちゅ
+						CASE 8
+							LOCALS = %LOCALS%プチュ、%WARD_G_K39()%%ELLIPSIS2_K39()%つぷ、つぷ
+						CASE 9
+							LOCALS = %LOCALS%ニュプ、%WARD_I_K39()%……ッ、ｸﾘｸﾘ
+						CASE 10
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、ちゅぷ%ELLIPSIS2_K39()%%WARD_G_K39()%、にちゅ
+						CASE 11
+							LOCALS = %LOCALS%%WARD_I_K39()%、%WARD_G_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 12
+							LOCALS = %LOCALS%%WARD_G_K39()%%WARD_G_K39()%……ッ、ぷちゅ
+						CASE 13
+							LOCALS = %LOCALS%ぷちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく、ちゅく
+						CASE 14
+							LOCALS = %LOCALS%%WARD_I_K39()%…っ、ｸﾘｸﾘ%ELLIPSIS2_K39()%%RANDTEXT_K39("ちゅく", "チュク")%、%WARD_C_K39()%ゅく
+						CASE 15
+							LOCALS = %LOCALS%プチュ、%RANDTEXT_K39("ヌチュ", "クチュ")%……ッ、プチュプチュッ
+						CASE 16
+							LOCALS = %LOCALS%くりゅ%WARD_H_K39()%%ELLIPSIS2_K39()%くにくに、%WARD_C_K39()%ゅくっ、つぷぷ
+						CASE 17
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、%RANDTEXT_K39("グ", "ク")%チュッ%ELLIPSIS2_K39()%つぷ、ぬちゅ
+						CASE 18
+							LOCALS = %LOCALS%ぬちゃ、%WARD_I_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ぴちゅっ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、%WARD_C_K39()%ゅく…っ、%WARD_G_K39()%
+						CASE 20
+							LOCALS = %LOCALS%にちゅ%WARD_H_K39()%、%RANDTEXT_K39("ぷ", "く")%ちゅ…%WARD_H_K39()%、ちゅく
+						CASE 21
+							LOCALS = %LOCALS%%WARD_G_K39()%%WARD_H_K39()%、%RANDTEXT_K39("ヌチュ", "ぬちゅ")%%ELLIPSIS2_K39()%ぷちゅ
+						CASE 22
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、ちゅぷ%WARD_H_K39()%%ELLIPSIS2_K39()%ちゅく
+						CASE 23
+							LOCALS = %LOCALS%ぐにぐに%WARD_H_K39()%…、%WARD_G_K39()%、ぐちゅ%ELLIPSIS2_K39()%ちゅぷ
+						CASE 24
+							LOCALS = %LOCALS%ｸﾘｸﾘ…%WARD_G_K39()%、%WARD_C_K39()%ゅく%ELLIPSIS2_K39()%ぢゅく
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_G_K39()%、くちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%ぐちゅ
+						CASE 1
+							LOCALS = %LOCALS%クニュ、ちゅく%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅぷ
+						CASE 2
+							LOCALS = %LOCALS%ぬちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%%RANDTEXT_K39("クチュ", "くちゅ")%…%WARD_H_K39()%、つぷ
+						CASE 3
+							LOCALS = %LOCALS%スリスリ…%WARD_H_K39()%%ELLIPSIS2_K39()%ちゅぷ
+						CASE 4
+							LOCALS = %LOCALS%くちゅ…%WARD_H_K39()%、にゅる%ELLIPSIS2_K39()%ちゅく
+						CASE 5
+							LOCALS = %LOCALS%ふにっ、ぬちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%ちゅく
+						CASE 6
+							LOCALS = %LOCALS%くちゅ%WARD_H_K39()%、%WARD_G_K39()%%ELLIPSIS2_K39()%ピチュ
+						CASE 7
+							LOCALS = %LOCALS%つぷ%WARD_H_K39()%、つぷぷ%WARD_H_K39()%%ELLIPSIS2_K39()%クチュ
+						CASE 8
+							LOCALS = %LOCALS%プチュ、%WARD_G_K39()%%ELLIPSIS2_K39()%つぷぷ
+						CASE 9
+							LOCALS = %LOCALS%ニュプ%ELLIPSIS2_K39()%ヌチュ
+						CASE 10
+							LOCALS = %LOCALS%%RANDTEXT_K39("クチュ", "くちゅ")%%ELLIPSIS2_K39()%にちゅ
+						CASE 11
+							LOCALS = %LOCALS%ヌチュ、%WARD_G_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 12
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_G_K39()%%ELLIPSIS2_K39()%%WARD_H_K39()%、ぷちゅ
+						CASE 13
+							LOCALS = %LOCALS%ぷちゅ%WARD_H_K39()%%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく、ちゅく
+						CASE 14
+							LOCALS = %LOCALS%%WARD_I_K39()%…%WARD_H_K39()%、ｸﾘｸﾘ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく
+						CASE 15
+							LOCALS = %LOCALS%プチュ%ELLIPSIS2_K39()%ヌチュ
+						CASE 16
+							LOCALS = %LOCALS%くりゅ%ELLIPSIS2_K39()%%RANDTEXT_K39("くにくに", "くにゅ")%%RANDTEXT_K39("っ", "＿")%、%WARD_C_K39()%ゅく
+						CASE 17
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、%WARD_I_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%つぷ
+						CASE 18
+							LOCALS = %LOCALS%ぬちゃ、%WARD_I_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ぴちゅ
+						CASE 19
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅく、ちゅく%WARD_H_K39()%…%WARD_H_K39()%、%WARD_G_K39()%
+						CASE 20
+							LOCALS = %LOCALS%にちゅ%WARD_H_K39()%、ぷちゅ…%WARD_H_K39()%、%WARD_C_K39()%ゅく
+						CASE 21
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_I_K39()%%ELLIPSIS2_K39()%ぷちゅ
+						CASE 22
+							LOCALS = %LOCALS%%WARD_C_K39()%ゅぷ、%WARD_C_K39()%ゅぷ%ELLIPSIS2_K39()%%WARD_C_K39()%ゅく
+						CASE 23
+							LOCALS = %LOCALS%くちゅ%WARD_H_K39()%、%WARD_G_K39()%%ELLIPSIS2_K39()%ちゅぷ
+						CASE 24
+							LOCALS = %LOCALS%%WARD_G_K39()%、%WARD_C_K39()%ゅ%WARD_B_K39()%%ELLIPSIS2_K39()%ちゅく
+					ENDSELECT
+			ENDSELECT
+			LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("っ！", "っ", "＿")%
+		CASE "파이즈리"
+			;죠교대상상태변화派生
+			SELECTCASE GET_CONDITION(MASTER)
+				CASE "정욕", "울굴"
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%ぎゅむっ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにむに
+						CASE 1
+							LOCALS = %LOCALS%ぬちゅ%ELLIPSIS2_K39()%ずにゅ、ずりゅ…っ、むにゅ
+						CASE 2
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずっ、ずずっ、ずちゅ
+						CASE 3
+							LOCALS = %LOCALS%にゅ%RANDTEXT_K39("ぷ", "ちゅ")%っ%ELLIPSIS2_K39()%ずちゅ、ずりゅっ、ぐにゅ
+						CASE 4
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%、むにゅ…っ、ずりゅ、ぬちゅ
+						CASE 5
+							LOCALS = %LOCALS%ギュゥゥ%WARD_K_K39()%ッ、むにゅ%RANDTEXT_K39("ぅ", "＿")%っ…ぐにゅぐにゅ
+						CASE 6
+							LOCALS = %LOCALS%ヌチュ%WARD_L_K39()%%ELLIPSIS2_K39()%ずちゅっ、ギュッ、むにゅぅぅ～っ
+						CASE 7
+							LOCALS = %LOCALS%にゅ%RANDTEXT_K39("ぷ", "ちゅ")%っ、ずりゅっ%ELLIPSIS2_K39()%ぬちゅ…むにゅ
+						CASE 8
+							LOCALS = %LOCALS%ぐにゅ、む%RANDTEXT_K39("にゅ", "に")%っ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ギュゥゥ
+						CASE 9
+							LOCALS = %LOCALS%ギュム%WARD_L_K39()%%ELLIPSIS2_K39()%むにむに、ずりゅ…っ、ずず
+						CASE 10
+							LOCALS = %LOCALS%ぬちゅぬちゅっ%RANDTEXT_K39("！ ", "、")%にゅぷ%ELLIPSIS2_K39()%むにゅ
+						CASE 11
+							LOCALS = %LOCALS%むにゅむにゅ%ELLIPSIS2_K39()%ずりゅ、ずちゅっ…ちゅ
+						CASE 12
+							LOCALS = %LOCALS%ぐにゅ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅっ、ぬちゅ
+						CASE 13
+							LOCALS = %LOCALS%もにゅ%ELLIPSIS2_K39()%むにむに…っ、ずっ、ずりゅ
+						CASE 14
+							LOCALS = %LOCALS%むにっ%ELLIPSIS2_K39()%%WARD_J_K39()%%WARD_H_K39()%、むにゅっ、ぬちゅ
+						CASE 15
+							LOCALS = %LOCALS%むにゅ、ずにゅ%RANDTEXT_K39("ぅ", "＿")%っ%ELLIPSIS2_K39()%にゅちゅ
+						CASE 16
+							LOCALS = %LOCALS%ずりゅっ、%WARD_C_K39()%ゅる%ELLIPSIS2_K39()%ちゅっ、ちゅく
+						CASE 17
+							LOCALS = %LOCALS%むにゅ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずちゅっ、ずりゅりゅ
+						CASE 18
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%%WARD_J_K39()%%WARD_H_K39()%…にゅぷ
+						CASE 19
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%ギュッ、ギュゥゥ
+						CASE 20
+							LOCALS = %LOCALS%ずにゅ、にゅ%RANDTEXT_K39("ぷ", "ちゅ")%…っ、ぐにゅっ、むにむに
+						CASE 21
+							LOCALS = %LOCALS%ずちゅ%ELLIPSIS2_K39()%ぬちゅ、ず%RANDTEXT_K39("り", "に")%ゅっ、ギュム
+						CASE 22
+							LOCALS = %LOCALS%にゅちゅっ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずちゅ、ずちゅちゅ
+						CASE 23
+							LOCALS = %LOCALS%ギュゥゥ%WARD_K_K39()%ッ！ ずりゅっ、ずりゅ
+						CASE 24
+							LOCALS = %LOCALS%ずにゅっ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにっ、むにゅっ
+					ENDSELECT
+				CASEELSE ;その他
+					SELECTCASE RAND:25
+						CASE 0
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにむに
+						CASE 1
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずりゅ…っ、むにゅ
+						CASE 2
+							LOCALS = %LOCALS%ずっ、ずっ%ELLIPSIS2_K39()%ずちゅ
+						CASE 3
+							LOCALS = %LOCALS%にゅぷっ%ELLIPSIS2_K39()%ずちゅ、ずりゅ
+						CASE 4
+							LOCALS = %LOCALS%むぎゅ%ELLIPSIS2_K39()%むにゅ…っ、ずりゅ
+						CASE 5
+							LOCALS = %LOCALS%ギュゥゥ%WARD_K_K39()%ッ、むにゅ
+						CASE 6
+							LOCALS = %LOCALS%ヌチュ%WARD_L_K39()%、ずりゅ%ELLIPSIS2_K39()%むにゅぅぅ～
+						CASE 7
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%、ぬちゅ%ELLIPSIS2_K39()%むに
+						CASE 8
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%、ずりゅ%ELLIPSIS2_K39()%ギュゥゥ
+						CASE 9
+							LOCALS = %LOCALS%ギュム%ELLIPSIS2_K39()%むにむに、ずりゅ
+						CASE 10
+							LOCALS = %LOCALS%ぬ%RANDTEXT_K39("ちゅ", "ぷ")%、にゅ%RANDTEXT_K39("ぷ", "ちゅ")%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅ
+						CASE 11
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずりゅ、ずちゅ
+						CASE 12
+							LOCALS = %LOCALS%ぐにゅ、%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅ
+						CASE 13
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにむに
+						CASE 14
+							LOCALS = %LOCALS%むにっ%ELLIPSIS2_K39()%むにゅ、むにゅ
+						CASE 15
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずにゅっ
+						CASE 16
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ぢゅる…ちゅ
+						CASE 17
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%むにゅ…っ、ずちゅ
+						CASE 18
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%むぎゅ
+						CASE 19
+							LOCALS = %LOCALS%ズリュ%WARD_L_K39()%、ズチュ%WARD_L_K39()%%ELLIPSIS2_K39()%ギュ
+						CASE 20
+							LOCALS = %LOCALS%ずにゅ%ELLIPSIS2_K39()%にゅぷ
+						CASE 21
+							LOCALS = %LOCALS%ずっ、ずちゅ%ELLIPSIS2_K39()%ずりゅ
+						CASE 22
+							LOCALS = %LOCALS%ずちゅ%ELLIPSIS2_K39()%ずちゅちゅ
+						CASE 23
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずりゅ
+						CASE 24
+							LOCALS = %LOCALS%%WARD_J_K39()%%WARD_H_K39()%%ELLIPSIS2_K39()%ずにゅ
+					ENDSELECT
+			ENDSELECT
+			LOCALS = %LOCALS%%ELLIPSIS_K39()%%RANDTEXT_K39("ッ", "っ！", "っ", "！", "＿")%
+		CASEELSE
+			CALLF PRINT_ERRORMESSAGE(@"@KOJO_RAND_K39に無効な定義が渡されま했다")
+	ENDSELECT
+ENDIF
+NEXT
+RETURNF LOCALS

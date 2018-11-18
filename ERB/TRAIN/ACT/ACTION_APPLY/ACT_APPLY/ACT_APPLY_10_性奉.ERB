@@ -1,0 +1,726 @@
+﻿;────────────────────────────────────
+;095,정상위시킨다
+;────────────────────────────────────
+;リアクション前（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ）
+@ACTION_APPLY_95
+;애무보정値に応じて쾌ＣSOURCE増加
+SOURCE:MASTER:쾌Ｃ = 100 + ACT_FROM(TARGET, 7) * (TALENT:허리기술*2 + 3) / 2
+;애무보정値に応じて쾌ＶSOURCE増加
+SOURCE:쾌Ｖ = 300 + ACT_TO(TARGET, 7) * (TALENT:MASTER:허리기술*2 + 3) / 2
+;쾌ＶSOURCEに応じて달성SOURCE増加
+SOURCE:MASTER:달성 = SOURCE:쾌Ｖ / 2
+;쾌ＣSOURCEに応じて열락SOURCE増加
+SOURCE:MASTER:열락 = SOURCE:MASTER:쾌Ｃ / 2
+;성교경험/죠교레벨不발時、쾌Ｃ、쾌ＶSOURCEに減少보정、고통、이탈、트라우마SOURCE増加
+IF EXP:MASTER:성교경험 < 1 && CFLAG:MASTER:죠교레벨 < 3
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.80
+	TIMES SOURCE:쾌Ｖ , 0.70
+	SOURCE:MASTER:고통 += 150
+	SOURCE:MASTER:이탈 += 200
+	SOURCE:MASTER:트라우마 += 200
+ELSEIF EXP:MASTER:성교경험 < 6 && CFLAG:MASTER:죠교레벨 < 5
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.90
+	TIMES SOURCE:쾌Ｖ , 0.80
+	SOURCE:MASTER:이탈 += 180
+	SOURCE:MASTER:트라우마 += 100
+ELSEIF EXP:MASTER:성교경험 < 13 && CFLAG:MASTER:죠교레벨 < 8
+	SOURCE:MASTER:이탈 += 100
+	SOURCE:MASTER:트라우마 += 40
+ELSEIF EXP:MASTER:성교경험 < 26 && CFLAG:MASTER:죠교레벨 < 11
+	SOURCE:MASTER:이탈 += 150
+	SOURCE:MASTER:트라우마 += 50
+ENDIF
+;죠교자죠교레벨に応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 200 + GET_TRAINLV(TARGET) * 10
+;접촉SOURCEに応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 = SOURCE:MASTER:접촉 / 5
+;죠교자が처녀で、죠교대상죠교레벨が不발しており호의が발りない場合、
+;이탈SOURCE増加(죠교대상호의で軽減)
+SIF TALENT:처녀 && CFLAG:MASTER:죠교레벨 < 5 && CFLAG:M호의 < 1000
+	SOURCE:MASTER:이탈 += 3000 - CFLAG:M호의 * 2
+;쾌ＣSOURCEに応じて애정SOURCE増加、이탈、트라우마SOURCEによって減少
+SOURCE:MASTER:애정 = SOURCE:MASTER:쾌Ｃ / 5 - SOURCE:MASTER:이탈 / 5 - SOURCE:MASTER:트라우마 / 5
+;애정SOURCEが正なら애무보정値、애정SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:애정 > 0 ? (ACT_FROM(TARGET, 7) - 200) * SOURCE:MASTER:애정 / 100 # 0
+;중독충족SOURCEが正なら쾌ＣSOURCEに応じて加算
+SOURCE:MASTER:중독충족 += SOURCE:MASTER:중독충족 > 0 ? SOURCE:MASTER:쾌Ｃ / 5 # 0
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;중독충족SOURCEに応じて애정SOURCE増加(フィードバック)
+SOURCE:MASTER:애정 += SOURCE:MASTER:중독충족 / 5
+;汚れが相互に移る
+STAIN:MASTER:페니스 |= STAIN:바기나
+STAIN:바기나 |= STAIN:MASTER:페니스
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;밀어넘어지는중断
+TEQUIP:밀어넘어지는중 = 0
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+TFLAG:경과시간 += 4
+TFLAG:안빼고 = PREV_A_SEX(MASTER) ? 0 # TFLAG:안빼고	;플래그を折る処理を追加@revkoishi(14/06/07)
+
+[SKIPSTART]
+REACT분류：날뛴다の場合は汎用の拒絶処理に落ちるので個別のAPPLY2までは落ちてこないはず？
+とりあえず動作的には問題ないけどACT系を整理する際には見なお했다方がよさそう@/L
+[SKIPEND]
+
+;リアクション後
+@ACTION_APPLY2_95
+;REACT분류が날뛴다/要求に応じないの場合(拒絶)
+IF IS_COMGRONAME("날뛴다/거부")
+	;쾌Ｃ、쾌Ｖ、접촉、애정、성행위、고통、이탈、트라우마SOURCE減少
+	;중독충족SOURCE消失
+	SOURCE:MASTER:쾌Ｃ /= 3
+	SOURCE:쾌Ｖ /= 5
+	SOURCE:MASTER:접촉 /= 3
+	SOURCE:MASTER:애정 -= 500
+	SOURCE:MASTER:성행위 /= 3
+	SOURCE:MASTER:고통 /= 3
+	SOURCE:MASTER:이탈 /= 3
+	SOURCE:MASTER:중독충족 = 0
+	SOURCE:MASTER:트라우마 /= 3
+	TFLAG:안빼고 = 0
+	;REACT분류が날뛴다の場合
+	IF IS_COMGRONAME("날뛴다")
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	;REACT분류が要求に応じないの場合
+	ELSE
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	ENDIF
+;その他の場合(受容)
+ELSE
+	;애무보정、죠교대상순종、淫茎素質に応じて보정値上昇
+	LOCAL = 100 + ACT_TO(TARGET, 5) * GET_ABL(MASTER, "순종") * (2 + TALENT:MASTER:음핵／음경) / 600
+	;쾌ＶSOURCE増加
+	TIMES SOURCE:쾌Ｖ, 1.25
+	;죠교대상죠교레벨に応じて접촉SOURCE増加
+	SOURCE:MASTER:접촉 += CFLAG:MASTER:죠교레벨 * 10
+	;보정値に応じて애정、쾌ＶSOURCE増加
+	SOURCE:MASTER:애정 += LOCAL / 5
+	SOURCE:쾌Ｖ += LOCAL * 2
+	;불결SOURCE増加
+	TIMES SOURCE:MASTER:불결 , 1.20
+	;MASTERが동정なら、동정상실が起こる
+	TCVAR:MASTER:동정상실 = TALENT:MASTER:동정
+	;TARGETが처녀なら、처녀상실が起こる
+	TCVAR:처녀상실 = TALENT:처녀
+ENDIF
+
+;────────────────────────────────────
+;096,후배위시킨다
+;────────────────────────────────────
+;リアクション前（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ）
+@ACTION_APPLY_96
+;애무보정値に応じて쾌ＣSOURCE増加
+SOURCE:MASTER:쾌Ｃ = 300 + ACT_FROM(TARGET, 7) * (TALENT:허리기술*2 + 1)
+;애무보정値に応じて쾌ＶSOURCE増加
+SOURCE:쾌Ｖ = 300 + ACT_TO(TARGET, 7) * (TALENT:MASTER:허리기술*2 + 3) / 2
+;쾌ＶSOURCEに応じて달성SOURCE増加
+SOURCE:MASTER:달성 = SOURCE:쾌Ｖ / 2
+;쾌ＣSOURCEに応じて열락SOURCE増加
+SOURCE:MASTER:열락 = SOURCE:MASTER:쾌Ｃ / 2
+;성교경험/죠교레벨不발時、쾌Ｃ、쾌ＶSOURCEに減少보정、고통、이탈、트라우마SOURCE増加
+IF EXP:MASTER:성교경험 < 1 && CFLAG:MASTER:죠교레벨 < 3
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.80
+	TIMES SOURCE:쾌Ｖ , 0.70
+	SOURCE:MASTER:고통 += 150
+	SOURCE:MASTER:이탈 += 500
+	SOURCE:MASTER:트라우마 += 200
+ELSEIF EXP:MASTER:성교경험 < 6 && CFLAG:MASTER:죠교레벨 < 5
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.90
+	TIMES SOURCE:쾌Ｖ , 0.80
+	SOURCE:MASTER:이탈 += 180
+	SOURCE:MASTER:트라우마 += 100
+ELSEIF EXP:MASTER:성교경험 < 13 && CFLAG:MASTER:죠교레벨 < 8
+	SOURCE:MASTER:이탈 += 100
+	SOURCE:MASTER:트라우마 += 40
+ELSEIF EXP:MASTER:성교경험 < 26 && CFLAG:MASTER:죠교레벨 < 11
+	SOURCE:MASTER:이탈 += 15
+	SOURCE:MASTER:트라우마 += 5
+ENDIF
+;죠교자죠교레벨に応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 200 + GET_TRAINLV(TARGET) * 10
+;접촉SOURCEに応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 = SOURCE:MASTER:접촉 / 5
+;죠교자が처녀で、죠교대상죠교레벨が不발しており호의が발りない場合、
+;이탈SOURCE増加(죠교대상호의で軽減)
+SIF TALENT:처녀 && CFLAG:MASTER:죠교레벨 < 5 && CFLAG:M호의 < 1000
+	SOURCE:MASTER:이탈 += 3000 - CFLAG:M호의 * 2
+;쾌ＣSOURCEに応じて애정SOURCE増加、이탈、트라우마SOURCEによって減少
+SOURCE:MASTER:애정 = SOURCE:MASTER:쾌Ｃ / 5 - SOURCE:MASTER:이탈 / 5 - SOURCE:MASTER:트라우마 / 5
+;애정SOURCEが正なら애무보정値、애정SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:애정 > 0 ? (ACT_FROM(TARGET, 7) - 200) * SOURCE:MASTER:애정 / 100 # 0
+;중독충족SOURCEが正なら쾌ＣSOURCEに応じて加算
+SOURCE:MASTER:중독충족 += SOURCE:MASTER:중독충족 > 0 ? SOURCE:MASTER:쾌Ｃ / 5 # 0
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;중독충족SOURCEに応じて애정SOURCE増加(フィードバック)
+SOURCE:MASTER:애정 += SOURCE:MASTER:중독충족 / 5
+;汚れが相互に移る
+STAIN:MASTER:페니스 |= STAIN:바기나
+STAIN:바기나 |= STAIN:MASTER:페니스
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;밀어넘어지는중断
+TEQUIP:밀어넘어지는중 = 0
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+TFLAG:경과시간 += 4
+TFLAG:안빼고 = PREV_A_SEX(MASTER) ? 0 # TFLAG:안빼고	;플래그を折る処理を追加@revkoishi(14/06/07)
+
+;リアクション後
+@ACTION_APPLY2_96
+;REACT분류が날뛴다/要求に応じないの場合(拒絶)
+IF IS_COMGRONAME("날뛴다/거부")
+	;쾌Ｃ、쾌Ｖ、접촉、애정、성행위、고통、이탈、트라우마SOURCE減少
+	;중독충족SOURCE消失
+	SOURCE:MASTER:쾌Ｃ /= 3
+	SOURCE:쾌Ｖ /= 5
+	SOURCE:MASTER:접촉 /= 3
+	SOURCE:MASTER:애정 -= 500
+	SOURCE:MASTER:성행위 /= 3
+	SOURCE:MASTER:고통 /= 3
+	SOURCE:MASTER:이탈 /= 3
+	SOURCE:MASTER:중독충족 = 0
+	SOURCE:MASTER:트라우마 /= 3
+	TFLAG:안빼고 = 0
+	;REACT분류が날뛴다の場合
+	IF IS_COMGRONAME("날뛴다")
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	;REACT분류が要求に応じないの場合
+	ELSE
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	ENDIF
+;その他の場合(受容)
+ELSE
+	;애무보정、죠교대상순종、淫茎素質に応じて보정値上昇
+	LOCAL = 100 + ACT_TO(TARGET, 5) * GET_ABL(MASTER, "순종") * (2 + TALENT:MASTER:음핵／음경) / 600
+	;쾌ＶSOURCE増加
+	TIMES SOURCE:쾌Ｖ, 1.25
+	;죠교대상죠교레벨に応じて접촉SOURCE増加
+	SOURCE:MASTER:접촉 += CFLAG:MASTER:죠교레벨 * 10
+	;보정値に応じて애정、쾌ＶSOURCE増加
+	SOURCE:MASTER:애정 += LOCAL / 5
+	SOURCE:쾌Ｖ += LOCAL * 2
+	;불결SOURCE増加
+	TIMES SOURCE:MASTER:불결 , 1.20
+	;MASTERが동정なら、동정상실が起こる
+	TCVAR:MASTER:동정상실 = TALENT:MASTER:동정
+	;TARGETが처녀なら、처녀상실が起こる
+	TCVAR:처녀상실 = TALENT:처녀
+ENDIF
+
+;────────────────────────────────────
+;097,대면좌위시킨다
+;────────────────────────────────────
+;リアクション前（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ、쾌Ｃ）
+@ACTION_APPLY_97
+;애무보정値に応じて쾌ＣSOURCE増加
+SOURCE:MASTER:쾌Ｃ = 300 + ACT_FROM(TARGET, 7) * (TALENT:허리기술*2 + 1)
+;애무보정値に応じて쾌Ｃ、쾌ＶSOURCE増加
+SOURCE:쾌Ｃ = 50 + ACT_TO(TARGET, 4) * (TALENT:MASTER:허리기술*2 + 1) / 2
+SOURCE:쾌Ｖ = 300 + ACT_TO(TARGET, 7) * (TALENT:MASTER:허리기술*2 + 1)
+;쾌ＶSOURCEに応じて달성SOURCE増加
+SOURCE:MASTER:달성 = SOURCE:쾌Ｖ / 2
+;쾌ＣSOURCEに応じて열락SOURCE増加
+SOURCE:MASTER:열락 = SOURCE:MASTER:쾌Ｃ / 2
+;성교경험/죠교레벨不발時、쾌Ｃ、쾌ＶSOURCEに減少보정、고통、이탈、트라우마SOURCE増加
+IF EXP:MASTER:성교경험 < 1 && CFLAG:MASTER:죠교레벨 < 3
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.80
+	TIMES SOURCE:쾌Ｖ , 0.70
+	SOURCE:MASTER:고통 += 150
+	SOURCE:MASTER:이탈 += 500
+	SOURCE:MASTER:트라우마 += 200
+ELSEIF EXP:MASTER:성교경험 < 6 && CFLAG:MASTER:죠교레벨 < 5
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.90
+	TIMES SOURCE:쾌Ｖ , 0.80
+	SOURCE:MASTER:이탈 += 180
+	SOURCE:MASTER:트라우마 += 100
+ELSEIF EXP:MASTER:성교경험 < 13 && CFLAG:MASTER:죠교레벨 < 8
+	SOURCE:MASTER:이탈 += 100
+	SOURCE:MASTER:트라우마 += 40
+ELSEIF EXP:MASTER:성교경험 < 26 && CFLAG:MASTER:죠교레벨 < 11
+	SOURCE:MASTER:이탈 += 15
+	SOURCE:MASTER:트라우마 += 5
+ENDIF
+;죠교자죠교레벨に応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 200 + GET_TRAINLV(TARGET) * 10
+;접촉SOURCEに応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 = SOURCE:MASTER:접촉 / 5
+;죠교자が처녀で、죠교대상죠교레벨が不발しており호의が발りない場合、
+;이탈SOURCE増加(죠교대상호의で軽減)
+SIF TALENT:처녀 && CFLAG:MASTER:죠교레벨 < 5 && CFLAG:M호의 < 1000
+	SOURCE:MASTER:이탈 += 3000 - CFLAG:M호의 * 2
+;쾌ＣSOURCEに応じて애정SOURCE増加、이탈、트라우마SOURCEによって減少
+SOURCE:MASTER:애정 = SOURCE:MASTER:쾌Ｃ / 5 - SOURCE:MASTER:이탈 / 5 - SOURCE:MASTER:트라우마 / 5
+;애정SOURCEが正なら애무보정値、애정SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:애정 > 0 ? (ACT_FROM(TARGET, 7) - 200) * SOURCE:MASTER:애정 / 100 # 0
+;중독충족SOURCEが正なら쾌ＣSOURCEに応じて加算
+SOURCE:MASTER:중독충족 += SOURCE:MASTER:중독충족 > 0 ? SOURCE:MASTER:쾌Ｃ / 5 # 0
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;중독충족SOURCEに応じて애정SOURCE増加(フィードバック)
+SOURCE:MASTER:애정 += SOURCE:MASTER:중독충족 / 5
+;汚れが相互に移る
+STAIN:MASTER:페니스 |= STAIN:바기나
+STAIN:바기나 |= STAIN:MASTER:페니스
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;밀어넘어지는중断
+TEQUIP:밀어넘어지는중 = 0
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+TFLAG:경과시간 += 4
+TFLAG:안빼고 = PREV_A_SEX(MASTER) ? 0 # TFLAG:안빼고	;플래그を折る処理を追加@revkoishi(14/06/07)
+
+;リアクション後
+@ACTION_APPLY2_97
+;REACT분류が날뛴다/要求に応じないの場合(拒絶)
+IF IS_COMGRONAME("날뛴다/거부")
+	;쾌Ｃ、쾌Ｖ、접촉、애정、성행위、고통、이탈、트라우마SOURCE減少
+	;중독충족SOURCE消失
+	SOURCE:MASTER:쾌Ｃ /= 3
+	SOURCE:쾌Ｖ /= 5
+	SOURCE:MASTER:접촉 /= 3
+	SOURCE:MASTER:애정 -= 500
+	SOURCE:MASTER:성행위 /= 3
+	SOURCE:MASTER:고통 /= 3
+	SOURCE:MASTER:이탈 /= 3
+	SOURCE:MASTER:중독충족 = 0
+	SOURCE:MASTER:트라우마 /= 3
+	TFLAG:안빼고 = 0
+	;REACT분류が날뛴다の場合
+	IF IS_COMGRONAME("날뛴다")
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	;REACT분류が要求に応じないの場合
+	ELSE
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	ENDIF
+;その他の場合(受容)
+ELSE
+	;애무보정、죠교대상순종、淫茎素質に応じて보정値上昇
+	LOCAL = 100 + ACT_TO(TARGET, 5) * GET_ABL(MASTER, "순종") * (2 + TALENT:MASTER:음핵／음경) / 600
+	;쾌ＶSOURCE増加
+	TIMES SOURCE:쾌Ｖ, 1.25
+	;죠교대상죠교레벨に応じて접촉SOURCE増加
+	SOURCE:MASTER:접촉 += CFLAG:MASTER:죠교레벨 * 10
+	;보정値に応じて애정、쾌ＶSOURCE増加
+	SOURCE:MASTER:애정 += LOCAL / 5
+	SOURCE:쾌Ｖ += LOCAL * 2
+	;불결SOURCE増加
+	TIMES SOURCE:MASTER:불결 , 1.20
+	;MASTERが동정なら、동정상실が起こる
+	TCVAR:MASTER:동정상실 = TALENT:MASTER:동정
+	;TARGETが처녀なら、처녀상실が起こる
+	TCVAR:처녀상실 = TALENT:처녀
+ENDIF
+
+;────────────────────────────────────
+;098,배면좌위시킨다
+;────────────────────────────────────
+;リアクション前（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ、쾌Ｃ、쾌Ｂ）
+@ACTION_APPLY_98
+;애무보정値に応じて쾌ＣSOURCE増加
+SOURCE:MASTER:쾌Ｃ = 100 + ACT_FROM(TARGET, 7) * (TALENT:허리기술*2 + 1)
+;애무보정値に応じて쾌Ｃ、쾌Ｖ、쾌ＢSOURCE増加
+SOURCE:쾌Ｃ = 50 + ACT_TO(TARGET, 1) * (TALENT:MASTER:손가락기술 + 1)
+SOURCE:쾌Ｖ = 300 + ACT_TO(TARGET, 7) * (TALENT:MASTER:허리기술*2 + 1)
+SOURCE:쾌Ｂ = 50 + ACT_TO(TARGET, 4) * (TALENT:MASTER:손가락기술 + 1)
+;쾌ＶSOURCEに応じて달성SOURCE増加
+SOURCE:MASTER:달성 = SOURCE:쾌Ｖ / 2
+;쾌ＣSOURCEに応じて열락SOURCE増加
+SOURCE:MASTER:열락 = SOURCE:MASTER:쾌Ｃ / 2
+;성교경험/죠교레벨不발時、쾌Ｃ、쾌ＶSOURCEに減少보정、고통、이탈、트라우마SOURCE増加
+IF EXP:MASTER:성교경험 < 1 && CFLAG:MASTER:죠교레벨 < 3
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.80
+	TIMES SOURCE:쾌Ｖ , 0.70
+	SOURCE:MASTER:고통 += 150
+	SOURCE:MASTER:이탈 += 500
+	SOURCE:MASTER:트라우마 += 200
+ELSEIF EXP:MASTER:성교경험 < 6 && CFLAG:MASTER:죠교레벨 < 5
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.90
+	TIMES SOURCE:쾌Ｖ , 0.80
+	SOURCE:MASTER:이탈 += 180
+	SOURCE:MASTER:트라우마 += 100
+ELSEIF EXP:MASTER:성교경험 < 13 && CFLAG:MASTER:죠교레벨 < 8
+	SOURCE:MASTER:이탈 += 100
+	SOURCE:MASTER:트라우마 += 40
+ELSEIF EXP:MASTER:성교경험 < 26 && CFLAG:MASTER:죠교레벨 < 11
+	SOURCE:MASTER:이탈 += 15
+	SOURCE:MASTER:트라우마 += 5
+ENDIF
+;죠교자죠교레벨に応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 200 + GET_TRAINLV(TARGET) * 10
+;접촉SOURCEに応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 = SOURCE:MASTER:접촉 / 5
+;죠교자が처녀で、죠교대상죠교레벨が不발しており호의が발りない場合、
+;이탈SOURCE増加(죠교대상호의で軽減)
+SIF TALENT:처녀 && CFLAG:MASTER:죠교레벨 < 5 && CFLAG:M호의 < 1000
+	SOURCE:MASTER:이탈 += 3000 - CFLAG:M호의 * 2
+;쾌ＣSOURCEに応じて애정SOURCE増加、이탈、트라우마SOURCEによって減少
+SOURCE:MASTER:애정 = SOURCE:MASTER:쾌Ｃ / 5 - SOURCE:MASTER:이탈 / 5 - SOURCE:MASTER:트라우마 / 5
+;애정SOURCEが正なら애무보정値、애정SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:애정 > 0 ? (ACT_FROM(TARGET, 7) - 200) * SOURCE:MASTER:애정 / 100 # 0
+;중독충족SOURCEが正なら쾌ＣSOURCEに応じて加算
+SOURCE:MASTER:중독충족 += SOURCE:MASTER:중독충족 > 0 ? SOURCE:MASTER:쾌Ｃ / 5 # 0
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;중독충족SOURCEに応じて애정SOURCE増加(フィードバック)
+SOURCE:MASTER:애정 += SOURCE:MASTER:중독충족 / 5
+;汚れが相互に移る
+STAIN:MASTER:페니스 |= STAIN:바기나
+STAIN:바기나 |= STAIN:MASTER:페니스
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;밀어넘어지는중断
+TEQUIP:밀어넘어지는중 = 0
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+TFLAG:경과시간 += 4
+TFLAG:안빼고 = PREV_A_SEX(MASTER) ? 0 # TFLAG:안빼고	;플래그を折る処理を追加@revkoishi(14/06/07)
+
+;リアクション後
+@ACTION_APPLY2_98
+;REACT분류が날뛴다/要求に応じないの場合(拒絶)
+IF IS_COMGRONAME("날뛴다/거부")
+	;쾌Ｃ、쾌Ｖ、접촉、애정、성행위、고통、이탈、트라우마SOURCE減少
+	;중독충족SOURCE消失
+	SOURCE:MASTER:쾌Ｃ /= 3
+	SOURCE:쾌Ｖ /= 5
+	SOURCE:MASTER:접촉 /= 3
+	SOURCE:MASTER:애정 -= 500
+	SOURCE:MASTER:성행위 /= 3
+	SOURCE:MASTER:고통 /= 3
+	SOURCE:MASTER:이탈 /= 3
+	SOURCE:MASTER:중독충족 = 0
+	SOURCE:MASTER:트라우마 /= 3
+	TFLAG:안빼고 = 0
+	;REACT분류が날뛴다の場合
+	IF IS_COMGRONAME("날뛴다")
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	;REACT분류が要求に応じないの場合
+	ELSE
+		;항문섹스以外の성교봉사중
+		IF V_SEX(MASTER)
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＶSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ｖ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	ENDIF
+;その他の場合(受容)
+ELSE
+	;애무보정、죠교대상순종、淫茎素質に応じて보정値上昇
+	LOCAL = 100 + ACT_TO(TARGET, 5) * GET_ABL(MASTER, "순종") * (2 + TALENT:MASTER:음핵／음경) / 600
+	;쾌ＶSOURCE増加
+	TIMES SOURCE:쾌Ｖ, 1.25
+	;죠교대상죠교레벨に応じて접촉SOURCE増加
+	SOURCE:MASTER:접촉 += CFLAG:MASTER:죠교레벨 * 10
+	;보정値に応じて애정、쾌ＶSOURCE増加
+	SOURCE:MASTER:애정 += LOCAL / 5
+	SOURCE:쾌Ｖ += LOCAL * 2
+	;불결SOURCE増加
+	TIMES SOURCE:MASTER:불결 , 1.20
+	;MASTERが동정なら、동정상실が起こる
+	TCVAR:MASTER:동정상실 = TALENT:MASTER:동정
+	;TARGETが처녀なら、처녀상실が起こる
+	TCVAR:처녀상실 = TALENT:처녀
+ENDIF
+
+
+;────────────────────────────────────
+;099,항문섹스시킨다
+;────────────────────────────────────
+;リアクション前（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ、쾌Ｃ、쾌Ｂ）
+@ACTION_APPLY_99
+;애무보정値に応じて쾌ＣSOURCE増加
+SOURCE:MASTER:쾌Ｃ = 500 + ACT_FROM(TARGET, 8) * (TALENT:허리기술*2 + 2)
+;애무보정値に応じて쾌ＡSOURCE増加
+SOURCE:쾌Ａ = 300 + ACT_TO(TARGET, 8) * (TALENT:MASTER:허리기술*2 + 2)
+;쾌ＡSOURCEに応じて달성SOURCE増加
+SOURCE:MASTER:달성 = SOURCE:쾌Ａ / 2
+;쾌ＣSOURCEに応じて열락SOURCE増加
+SOURCE:MASTER:열락 = SOURCE:MASTER:쾌Ｃ / 2
+;乱数(0-499)に応じて이탈SOURCE増加
+SOURCE:MASTER:이탈 = RAND:500
+;성교경험/죠교레벨不발時、쾌Ｃ、쾌ＡSOURCEに減少보정、고통、이탈、트라우마SOURCE増加
+IF EXP:MASTER:성교경험 < 1 && CFLAG:MASTER:죠교레벨 < 3
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.80
+	TIMES SOURCE:쾌Ａ , 0.70
+	SOURCE:MASTER:고통 += 150
+	SOURCE:MASTER:이탈 += 500
+	SOURCE:MASTER:트라우마 += 200
+ELSEIF EXP:MASTER:성교경험 < 6 && CFLAG:MASTER:죠교레벨 < 5
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.90
+	TIMES SOURCE:쾌Ａ , 0.80
+	SOURCE:MASTER:이탈 += 180
+	SOURCE:MASTER:트라우마 += 100
+ELSEIF EXP:MASTER:성교경험 < 13 && CFLAG:MASTER:죠교레벨 < 8
+	SOURCE:MASTER:이탈 += 100
+	SOURCE:MASTER:트라우마 += 40
+ELSEIF EXP:MASTER:성교경험 < 26 && CFLAG:MASTER:죠교레벨 < 11
+	SOURCE:MASTER:이탈 += 15
+	SOURCE:MASTER:트라우마 += 5
+ENDIF
+;죠교자죠교레벨に応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 200 + GET_TRAINLV(TARGET) * 10
+;접촉SOURCEに応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 = SOURCE:MASTER:접촉 / 5
+;쾌ＣSOURCEに応じて애정SOURCE増加、이탈、트라우마SOURCEによって減少
+SOURCE:MASTER:애정 = SOURCE:MASTER:쾌Ｃ / 5 - SOURCE:MASTER:이탈 / 5 - SOURCE:MASTER:트라우마 / 5
+;애정SOURCEが正なら애무보정値、애정SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:애정 > 0 ? (ACT_FROM(TARGET, 7) - 200) * SOURCE:MASTER:애정 / 100 # 0
+;중독충족SOURCEが正なら쾌ＣSOURCEに応じて加算
+SOURCE:MASTER:중독충족 += SOURCE:MASTER:중독충족 > 0 ? SOURCE:MASTER:쾌Ｃ / 5 # 0
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;중독충족SOURCEに応じて애정SOURCE増加(フィードバック)
+SOURCE:MASTER:애정 += SOURCE:MASTER:중독충족 / 5
+;汚れが相互に移る
+STAIN:MASTER:페니스 |= STAIN:항문
+STAIN:항문 |= STAIN:MASTER:페니스
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;밀어넘어지는중断
+TEQUIP:밀어넘어지는중 = 0
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+
+;意味不明
+;	;죠교자발기도上昇
+;	TCVAR:MASTER:발기도 += 1500
+
+
+TFLAG:경과시간 += 4
+TFLAG:안빼고 = PREV_V_SEX(MASTER) ? 0 # TFLAG:안빼고	;플래그を折る処理を追加@revkoishi(14/06/07)
+
+;リアクション後（Ｓ/Ｎ）（쾌Ｖ、접촉、애정、성행위、고통、중독충족、트라우마、쾌Ｃ）
+@ACTION_APPLY2_99
+;REACT분류が날뛴다/要求に応じないの場合(拒絶)
+IF IS_COMGRONAME("날뛴다/거부")
+	;쾌Ｃ、쾌Ａ、접촉、애정、성행위、고통、이탈、트라우마SOURCE減少
+	;중독충족SOURCE消失
+	SOURCE:MASTER:쾌Ｃ /= 3
+	SOURCE:쾌Ａ /= 5
+	SOURCE:MASTER:접촉 /= 3
+	SOURCE:MASTER:애정 -= 500
+	SOURCE:MASTER:성행위 /= 3
+	SOURCE:MASTER:고통 /= 3
+	SOURCE:MASTER:이탈 /= 3
+	SOURCE:MASTER:중독충족 = 0
+	SOURCE:MASTER:트라우마 /= 3
+	TFLAG:안빼고 = 0
+	;REACT분류が날뛴다の場合
+	IF IS_COMGRONAME("날뛴다")
+		;항문섹스봉사中
+		IF TEQUIP:성교봉사중 == 6
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＡSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ａ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	;REACT분류が要求に応じないの場合
+	ELSE
+		;항문섹스봉사中
+		IF TEQUIP:성교봉사중 == 6
+			;消失処理回避
+		;その他
+		ELSE
+			;쾌Ｃ、쾌ＡSOURCE消失
+			SOURCE:MASTER:쾌Ｃ = 0
+			SOURCE:쾌Ａ = 0
+		ENDIF
+		;성교봉사중解除
+		TEQUIP:성교봉사중 = 0
+	ENDIF
+;その他の場合(受容)
+ELSE
+	;애무보정、죠교대상순종、淫茎素質に応じて보정値上昇
+	LOCAL = 100 + ACT_TO(TARGET, 5) * GET_ABL(MASTER, "순종") * (2 + TALENT:MASTER:음핵／음경) / 600
+	;쾌ＡSOURCE増加
+	TIMES SOURCE:쾌Ａ, 1.25
+	;죠교대상죠교레벨に応じて접촉SOURCE増加
+	SOURCE:MASTER:접촉 += CFLAG:MASTER:죠교레벨 * 10
+	;보정値に応じて애정、쾌ＣSOURCE増加
+	SOURCE:MASTER:애정 += LOCAL / 5
+	SOURCE:쾌Ａ += LOCAL * 2
+	;불결SOURCE増加
+	TIMES SOURCE:MASTER:불결 , 1.20
+ENDIF
+
+;────────────────────────────────────
+;103,역강간
+;────────────────────────────────────
+;リアクション前（Ｎ/Ｈ/Ａ）[罰]（쾌Ｃ、접촉、애정、성행위、고통、이탈、중독충족、트라우마、쾌Ｖ）
+@ACTION_APPLY_103
+;착의플레이선호素質かつ죠교대상하반신겉옷が스커트でない場合
+IF TALENT:착의플레이선호 && TEQUIP:MASTER:하반신겉옷 < 1
+	;속옷だけ強制、자주탈의
+	TFLAG:강제탈의 = 9
+	TFLAG:자주탈의 = 9
+;해방素質、または確率(죠교자죠교레벨、욕망、죠교대상매혹で増大、억압、수줍음素質で減少)で
+ELSEIF TALENT:해방 || (GET_TRAINLV(TARGET) + GET_ABL(TARGET, "욕망") / 10 + TALENT:MASTER:매혹 * 3 > TALENT:억압 * 5 + TALENT:수줍음 * 3 + RAND:3)
+	;半々の確率で악세서리－まで、전라まで強制、자주탈의(別個に判定)
+	TFLAG:강제탈의 = 7 + RAND:2
+	TFLAG:자주탈의 = 7 + RAND:2
+ELSE
+	;最低でも하반신全部強制、자주탈의
+	TFLAG:강제탈의 = 5
+	TFLAG:자주탈의 = 5
+ENDIF
+;벽통과がある場合3/4で강제탈의を취소する
+SIF TALENT:벽통과 && RAND:4
+	TFLAG:강제탈의 = 0
+;애무보정値に応じて쾌Ｃ、쾌ＶSOURCE増加
+SOURCE:MASTER:쾌Ｃ = 300 + 2 * ACT_FROM(TARGET, 7) * (TALENT:허리기술*3 + 1)
+SOURCE:쾌Ｖ = 100 + ACT_TO(TARGET, 7) * (TALENT:MASTER:허리기술*2 + 1)
+;윤활不발時、쾌Ｃ、쾌ＶSOURCEに減少보정
+CALL SHORTAGE_LUBRICATION("500/M쾌Ｃ,T,80/T쾌Ｖ,T,70")
+;성교경험不발時、쾌Ｃ、쾌ＶSOURCEに減少보정、고통、이탈、트라우마SOURCE増加
+IF EXP:MASTER:성교경험 < 1 && CFLAG:MASTER:죠교레벨 < 3
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.80
+	TIMES SOURCE:쾌Ｖ , 0.70
+	SOURCE:MASTER:고통 += 150
+	SOURCE:MASTER:이탈 += 2500
+	SOURCE:MASTER:트라우마 += 2000
+ELSEIF EXP:MASTER:성교경험 < 6 && CFLAG:MASTER:죠교레벨 < 5
+	TIMES SOURCE:MASTER:쾌Ｃ , 0.90
+	TIMES SOURCE:쾌Ｖ , 0.80
+	SOURCE:MASTER:이탈 += 1800
+	SOURCE:MASTER:트라우마 += 1000
+ELSEIF EXP:MASTER:성교경험 < 13 && CFLAG:MASTER:죠교레벨 < 8
+	SOURCE:MASTER:이탈 += 1000
+	SOURCE:MASTER:트라우마 += 400
+ELSEIF EXP:MASTER:성교경험 < 26 && CFLAG:MASTER:죠교레벨 < 11
+	SOURCE:MASTER:이탈 += 150
+	SOURCE:MASTER:트라우마 += 50
+ENDIF
+;죠교레벨に応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 200 + GET_TRAINLV(TARGET) * 10
+;접촉SOURCEに応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 = SOURCE:MASTER:접촉 / 5
+;합의なし、かつ죠교대상に十分な성지식がある상태で
+;동정を奪おうとすると트라우마SOURCE増加
+SIF !CFLAG:합의 && EXP:MASTER:성지식 > 4 && TALENT:MASTER:동정
+	SOURCE:MASTER:트라우마 += 3500
+;죠교자처녀素質が存在し、죠교대상죠교레벨が未熟であると이탈SOURCE増加
+;죠교대상호의で軽減可能
+SIF TALENT:처녀 && CFLAG:MASTER:죠교레벨 < 5 && CFLAG:M호의 < 1000
+	SOURCE:MASTER:이탈 += 3000 - CFLAG:M호의 * 2
+;트라우마(각인)の元がこの죠교だった場合
+IF CFLAG:MASTER:트라우마 == 103
+	;접촉、이탈SOURCEを트라우마SOURCEに加算し、1.5倍にする
+	SOURCE:MASTER:트라우마 += SOURCE:MASTER:접촉 + SOURCE:MASTER:이탈
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+ENDIF
+;쾌ＣSOURCEに応じて애정SOURCE増加、이탈、트라우마SOURCEに応じて減少
+SOURCE:MASTER:애정 = SOURCE:MASTER:쾌Ｃ / 5 - SOURCE:MASTER:이탈 / 5 - SOURCE:MASTER:트라우마 / 5
+;애정SOURCEが正なら죠교대상Ｃ감각、애정SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:애정 > 0 ? GET_ABL(MASTER, "Ｃ감각") * (GET_ABL(MASTER, "Ｃ감각") - 10) * SOURCE:MASTER:애정 / 100 # SOURCE:MASTER:중독충족
+;중독충족SOURCEが正の値なら쾌ＣSOURCEに応じて増加
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 > 0 ? SOURCE:MASTER:중독충족 + SOURCE:MASTER:쾌Ｃ / 5 # 0
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;중독충족SOURCEに応じて애정SOURCE加算(フィードバック)
+SOURCE:MASTER:애정 += SOURCE:MASTER:중독충족 / 5
+;汚れが相互に移る
+STAIN:MASTER:페니스 |= STAIN:바기나
+STAIN:바기나 |= STAIN:MASTER:페니스
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;밀어넘어지는중断
+TEQUIP:밀어넘어지는중 = 0
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+TFLAG:경과시간 += 4
+;오나홀解除
+TEQUIP:오나홀 = 0
+TFLAG:안빼고 = PREV_A_SEX(MASTER) ? 0 # TFLAG:안빼고	;플래그を折る処理を追加@revkoishi(14/06/07)
+
+;リアクション後（Ｎ/Ｈ/Ａ）[罰]（쾌Ｃ、접촉、애정、성행위、고통、이탈、중독충족、트라우마、쾌Ｖ）
+@ACTION_APPLY2_103
+;これは抵抗できなくてよい。
+
+;MASTERが동정なら、동정상실が起こる
+TCVAR:MASTER:동정상실 = TALENT:MASTER:동정
+;TARGETが처녀なら、처녀상실が起こる
+TCVAR:처녀상실 = TALENT:처녀

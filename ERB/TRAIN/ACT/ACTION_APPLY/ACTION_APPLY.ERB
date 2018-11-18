@@ -1,0 +1,135 @@
+﻿
+;────────────────────────────────────
+;죠교자행동基本処理(リアクション前)
+;
+;죠교자행동に応じてパラメータを変動시킨다
+;ここで設定당했다値を基にさらに보정が行われる点に注意
+;────────────────────────────────────
+@ACTION_APPLY
+
+;죠교項目毎の基本処理を呼び出し
+TRYCALLFORM ACTION_APPLY_{TFLAG:ACT}
+
+;────────────────────────────────────
+;죠교자행동基本処理(リアクション後)
+;
+;遅延당했다죠교자행동の実行。죠교대상の반항や願いで취소される행동もここで処理
+;ここで設定당했다値を基にさらに보정が行われる点に注意
+;ここの処理で地の文が発生しなかったら0を返す（後に汎用地の文が呼び出される）
+;────────────────────────────────────
+@ACTION_APPLY2
+
+[SKIPSTART]
+;リアクションが이루는대로であれば処理中断
+SIF IS_NOWCOMNAME("이루는대로")
+	RETURN 0
+[SKIPEND]
+
+;LOCALS初期化
+VARSET LOCALS
+
+;拒絶処理呼び出し
+
+;ACT분류が성교系か성교중に、REACT분류が날뛴다系だった場合
+IF (TFLAG:ACT분류 == 3 || TEQUIP:성교중) && IS_COMGRONAME("날뛴다")
+	;성교の취소処理を呼び出し
+	LOCALS = CANCEL_INSERT_TO_M
+;ACT분류が성교봉사系か성교봉사중に、REACT분류が날뛴다系だった場合		逆レの場合は抵抗できないように@/L
+ELSEIF (TFLAG:ACT분류 == 10 || TEQUIP:성교봉사중) && IS_COMGRONAME("날뛴다") && !IS_NOWACTNAME("역강간")
+	;성교봉사の취소処理を呼び出し
+	LOCALS = CANCEL_INSERT_TO_T
+;밧줄/눈가리개/볼개그장착中に、REACT분류が용서를 빌다系だった場合
+ELSEIF (TEQUIP:밧줄 || TEQUIP:눈가리개 || TEQUIP:볼개그) && IS_COMGRONAME("용서를 빌다")
+	;구속취소処理を呼び出し
+	LOCALS = CANCEL_TEQUIP_RESTRAINT
+;삼각목마사용중に、REACT분류が용서를 빌다系だった場合
+ELSEIF TEQUIP:삼각목마 && IS_COMGRONAME("용서를 빌다")
+	;삼각목마취소処理を呼び出し
+	LOCALS = CANCEL_TEQUIP_W_HORSE
+;--------------------------------------------------------------
+;不自然な動作をするため、취소処理を一部抹消
+;そのうちCOM「帰りたい」を作ろうかと思います。作ったら공중변소も含めていいですね
+
+[SKIPSTART]
+
+;야외플레이中に、REACT분류が용서를 빌다系だった場合
+ELSEIF TEQUIP:야외플레이 && IS_COMGRONAME("용서를 빌다")
+	;야외플레이취소処理を呼び出し
+	LOCALS = CANCEL_TEQUIP_OUTDOOR
+;거울사용중に、REACT분류が용서를 빌다系だった場合
+ELSEIF TEQUIP:거울 && IS_COMGRONAME("용서를 빌다")
+	;거울취소処理を呼び出し
+	LOCALS = CANCEL_TEQUIP_MIRROR
+;코스프레中に、REACT분류が용서를 빌다系だった場合
+ELSEIF TEQUIP:MASTER:코스프레 && IS_COMGRONAME("용서를 빌다")
+	;코스프레취소処理を呼び出し
+	LOCALS = CANCEL_TEQUIP_COSPLAY
+
+[SKIPEND]
+
+;抹消ここまで
+;--------------------------------------------------------------
+;特殊ACT処理呼び出し
+;(特殊상태변화処理を行わない)
+
+;ACTが공중육변기플레이の場合
+ELSEIF IS_NOWACTNAME("공중육변기플레이")
+;ACTが服を脱いで/服を着ての場合
+ELSEIF IS_NOWACTNAME("의상 변경을 요구한다")
+;ACTが휴식시킨다の場合
+ELSEIF IS_NOWACTNAME("휴식시킨다")
+;ACTが영양제를 먹인다の場合
+ELSEIF IS_NOWACTNAME("영양제를 먹인다")
+;ACTが치료한다の場合
+ELSEIF IS_NOWACTNAME("치료한다")
+
+;特殊상태변화処理の呼び出し
+
+;죠교대상자위중、가버려상태で애태움終了/無し
+ELSEIF GETBIT(TEQUIP:자위중, 0) && TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 < 2
+	;자위절정処理を呼び出し
+	LOCALS = ONANIE_EX
+ENDIF
+
+;特殊処理が存在すれば
+IF LOCALS != ""
+	;特殊処理の呼び出し処理
+	CALLFORM %LOCALS%
+	;特殊処理の地の文呼び出し
+	CALLFORM %LOCALS%_MESSAGE
+ENDIF
+
+;特殊処理が拒絶処理で無ければ
+IF !STRCOUNT(LOCALS, "CANCEL")
+	;拒絶処理보정値減衰
+	CALLF CANCEL_TEQUIP_COUNT()
+	;죠교項目個別処理の呼び出し処理
+	TRYCALLFORM ACTION_APPLY2_{TFLAG:ACT}
+	;죠교項目毎の地の文を呼び出し
+	CALL TRAIN_MESSAGE2
+ENDIF
+
+;リアクションが날뛴다系だった場合、자세を기립、位置をリセット
+IF IS_COMGRONAME("날뛴다")
+	TCVAR:MASTER:REACT자세변화 = 1
+	TCVAR:MASTER:전회의자세 = TCVAR:MASTER:자세
+	TCVAR:MASTER:전회의위치전후 = TCVAR:MASTER:위치전후
+	TCVAR:MASTER:전회의위치상하 = TCVAR:MASTER:위치상하
+	TCVAR:MASTER:자세 = 4
+	TCVAR:MASTER:위치전후 = 0
+	TCVAR:MASTER:위치상하 = 0
+ENDIF
+RETURN RESULT
+
+;────────────────────────────────────
+;죠교자행동基本処理(행동毎)
+;
+;リアクション前、リアクション後の보정を一箇所にまとめた
+;
+;メモ
+;	강제탈의：죠교자が죠교대상を脱がす　자주탈의：죠교자が自分の衣服を脱ぐ
+;	요강제발기：죠교대상の精根が尽き果てた상태。
+;	　　　　　　금회발기플래그を無視する（통상の条件では발기しない）
+;	　　　　　　강제발기効果がある場合、발기도に直接加算する
+;────────────────────────────────────
+;ACT분류毎にファイルを切り分け。個別のファイルはACT_APPLYフォルダへ移設@/L

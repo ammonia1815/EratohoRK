@@ -1,0 +1,1170 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	엘리스구상(대상限定) オープニング、エンディング구상ファイル
+;
+;		オープニング, エンディング이벤트구상のファイル
+;
+;		EXTRA모드でN09사쿠야をMASTERに선택했다場合のみ表示
+;
+;Version		Reason
+;1.74			細かな修正
+;1.70			@구상記入チェック仕様に。その他細かな修正
+;1.61			ENDINGを関数化。EVENT2の枠を開放及びED後の続行が可能なように
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;-------------------------------------------------
+;KOJO_EVENTの間に대상のナンバーを挟むとMASTERが条件に当てはまる場合にのみ、その구상が呼び出される
+;キャラ指定以外にもMALE, TWIN, PENIS, FEMALE等の性別、페니스の有無の指定も可能
+;呼び出しの우선度は("N0KX1(指定キャラ) > MALE(おとこ) > TWIN(후타나리) > PENIS(おとこ、후타나리のいずれか) > FEMALE(その他)")となる
+;ただ、"MALEYOU", "TWINYOU", "PENISYOU", "FEMALEYOU", 等の"YOU"付きは指定キャラ限定("NOKX1")より上位の우선度が与えられている
+;条件無し구상との共存も可能なので、条件無しの구상を作ったあとに、필요に応じて대상限定구상を追加する事が可能
+;色々やりたいなら、別ファイルで呼び出し関数を変えてやる方が、単一のファイルでやるよりスマートだと思う
+;-------------------------------------------------
+;@구상記入チェックについて…
+;
+;구상記入チェック(0)で表示なし(元のLOCAL = 0)
+;구상記入チェック()で表示(元のLOCAL = 1)
+;구상記入チェック(50)なら50%の確率で表示(元のLOCAL = PERCENT(50))
+;
+;LOCALを開放出来て、代入が不要になるので記述も従来のものより簡潔にできる
+;()でONになるのが判りにくい気もするので、
+;구상記入チェック(100)とかしてしまった方が表示のON/OFFのつまらないミスは減らせる気はする
+;記入漏れなのか否かの書き손の意図も明確になり、より直感的に判別し易いと個人的には考える
+;
+;RESULT値は決めうちする필요がある事に注意
+;-------------------------------------------------
+
+;────────────────────────────────────
+;NO9_EV1, オープニング구상
+;────────────────────────────────────
+;・대상限定OP
+;-------------------------------------------------
+@KOJO_NO9_MS_EVENT_K14_1(ARG)
+;------------------------------------------------
+;FLAG:모드:9が구상表示の条件なので、本来であれば条件決めうちする필요はない
+;ただ、決めうちしておけば保険にはなるという思想
+;
+;とか書いた時点と違い、現在の仕様だとFLAG:모드 == 1（샌드박스）で引っかかるという
+;-------------------------------------------------
+
+;모드1と9共通部分
+
+;---------------------------------------------
+;バリアント判定処理
+;---------------------------------------------
+CALL CHK_GAMEBASE_K14
+
+;---------------------------------------------
+;各種봉인処理
+;---------------------------------------------
+;整合性の観点から대상限定구상では조수を봉인する。他のキャラと合致しない文字列を入れれば完全봉인が可能
+CSTR:소환가능조수 = 봉인/
+;노예목걸이취득を봉인
+CFLAG:노예목걸이봉인 = 1
+;대만족보너스の밖에서해を봉인
+CFLAG:밖에서해봉인 = 1
+;구상の整合性を損なうコマンドを봉인
+;야외플레이を봉인
+CFLAG:1044 = 100
+;볼개그を봉인
+CFLAG:1065 = 100
+;現状対応できないんで손가락삽입한다を봉인
+CFLAG:1019 = 100
+;항문섹스시킨다を봉인(상사상애時に처녀でなければ해방)
+CFLAG:1099 = 100
+
+;以下봉인せずともまず出ないはずだけど、この구상にそぐわないので万が一の為に봉인！
+;피스트퍽を봉인
+CFLAG:1070 = 100
+;애널피스트を봉인
+CFLAG:1071 = 100
+;양쪽피스트を봉인
+CFLAG:1072 = 100
+;공중육변기플레이を봉인
+CFLAG:1074 = 100
+
+;사쿠야視点で語られるOP
+;------------------------------------------------------------------------------------------------------
+;汎用性を考慮する필요がないので、呼び出し関数で대상指定している部分は直接記述
+;それでも他のファイルで条件無しの部分もあるので開幕で呼び名を代入する
+;この処理によって%CNAME(XX)%を使用している場所で定義했다呼び名を表示시킨다事が出来る
+;사쿠야の場合、呼び名を代入しないと特定の面子以外は"さん"付けで呼ぶように本体側のCSVで定義されている
+;CSTR:(XX)の中身を替える事によって色々と応用が利く MASTER TARGET (FLAG:2)あたりは使う機会が多いと思われる
+;あまり何度も代入を繰り返すと重くなる？らしい。OPや조수召喚時、いずれかのFIRSTTIMEの場所に限定するのが望ましいのかな
+;正直、途中で플레이ヤーが名前を変更するような事は考えたくないし、して欲しくない。変える側の自己責任でもあるけれど
+;本体のコンフィグ [3] 名前の変更は粛清して欲しいな！
+;------------------------------------------------------------------------------------------------------
+
+;---------------------------------------------
+;開幕で呼び名を代入
+;---------------------------------------------
+;TARGET(この場合は엘리스)が대상の名前を呼ぶ場合
+CSTR:(TARGET):호칭목록 = 사쿠야_사쿠야/%CSTR:(TARGET):호칭목록%
+;MASTER(この場合は사쿠야)が대상の名前を呼ぶ場合
+CSTR:(MASTER):호칭목록 = 엘리스_엘리스/%CSTR:(MASTER):호칭목록%
+
+NO_09_두명 = \@ RAND:2 ? 紅い悪魔のメイド # 電光石火のメイド \@
+NO_14_두명 = \@ RAND:2 ? 七色の人形遣い # 雹の人形遣い \@
+
+;以下、모드で分ける
+
+;EXTRA모드
+IF FLAG:모드 == 9
+	SETBGCOLOR 0, 0, 20 ;背景色を夜用に
+	[SKIPSTART]
+	;---------------------------------------------
+	;OPスキップ処理
+	;---------------------------------------------
+	PRINTFORMDW  오프닝을 스킵 합니까？
+	PRINTL
+	PRINTFORMDL [0] 네
+	PRINTFORMDL [1] 아니오
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		CASE 0
+			GOTO SKIP
+		CASE 1
+			PRINTL
+	ENDSELECT
+	[SKIPEND]
+	
+	;---------------------------------------------
+	;全画面カットイン用の一連の処理
+	;---------------------------------------------
+	RESETCOLOR ;文字色リセット
+	CALL SETFONT_K14 ;フォントをセット
+	;REDRAW 0でカットイン中の描画を抑制
+	REDRAW 0
+	;強制表示x1
+	CALLF ANIME_CONFIG("TIMES", 1)
+	;全画面カットイン
+	CALL FULLCUTIN(33, 17, "달을 올려볼 때에 생각해 낸다", " ", " ", "      모든 시작이 된 그 날의 일을")
+	;強制表示x1
+	CALLF ANIME_CONFIG("TIMES", 1)
+	;全画面カットイン
+	CALL FULLCUTIN(33, 17, "마음에 깊게 새겨졌다", " ", " ", "     생애망, 나의, 중요한 추억……")
+	;REDRAWを戻す
+	REDRAW 1
+	
+	;---------------------------------------------
+	;OP開始
+	;---------------------------------------------
+	CALL TWAIT3_K14
+	CALL RESETFONT_K14 ;フォントをリセット
+	CALL KOJO_COLOR(TARGET) ;구상指定文字色を呼ぶ
+	CALL PRINTCOLORL(COLOR_K14("엘리스"), "「ごめんなさい、起こしてしまったかしら？」")
+;OriginalString : (COLOR2_K14("ALICE"), "「よく眠ってるから、そっとしておいたんだけど…」")
+	CALL PRINTCOLORW(COLOR2_K14("ALICE"), "「잘 자고 있기 때문에, 살그머니 해 둔 것이지만…」")
+	PRINTL
+	;キャラカットイン(엘리스)
+	;CALL CHARA_CUTIN(CSTR:두명, CSTR:등장명, CSTR:로마자)
+	CALL CHARA_CUTIN(NO_14_두명, CSTR:등장명, CSTR:로마자)
+	PRINTL
+	;------------------------------------------------------------------------------------------------------
+	;@PRINTCOLORWはRGBCOLORで指定했다色で文字列を表示、改行待ちをする
+	;@PRINTCOLORや@PRINTCOLORL等のバリエーションもある
+	;RGBCOLORは色指定が面倒なのと관리上の理由で@COLOR_K14を作った。色を変えたくなった時は関数側を変更するだけなので便利。
+	;台詞関係はCALL KOJO_COLORでやる손もあるけど、書いた後、一目でどちらの台詞か判別するのが難しくなる為、@PRINTCOLORに했다
+	;個人的にはこの方が後から見て分かりやすい。대상指定구상故、MASTERもTARGETも完全固定なのでこれで十分と考える
+	;コンビネーション구상等で台詞の書き分けするなら@PRINT_KOJO_COLORが良いかな
+	;------------------------------------------------------------------------------------------------------
+	CALL PRINTCOLORL(COLOR2_K14("SAKUYA"), "私を呼ぶ声が聞こえる……")
+;OriginalString : (COLOR_K14("사쿠야"), "この声は엘리스、そう엘리스の声だ")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "이 소리는엘리스, 그렇게엘리스의 소리다")
+	PRINTL
+	
+	;キャラカットイン(사쿠야) CSTR:(MASTER)でもいいんだけど、ゲーム上定義されないキャラを呼ぶ処理もあるのでCSVCSTRで統一
+	;CALL CHARA_CUTIN(CSVCSTR(9, 10, 0), CSVCSTR(9, 11, 0), CSVCSTR(9, 12, 0))
+	CALL CHARA_CUTIN(NO_09_두명, CSVCSTR(9, 11, 0), CSVCSTR(9, 12, 0))
+	PRINTL
+	PRINTFORMDL 자고 일어나기의 탓인지두가 멍하니 한다
+	PRINTFORMDW 그러나 몇시의 사이에 자 버렸을 것이다
+	PRINTFORMDW 앨리스의 집을 방문해 함께 차를 마셔, 그리고……
+	PRINTL
+	PRINTFORMDL 기억은 거기서 중단되고 있었다. 아무래도 그 이상의 일을 생각이 미칠 수 없다
+	PRINTFORMDW 최근 피로가 모여 있던 것은 확실하다. 그렇다 치더라도, 차를 마시면서 자 버리다니…
+	PRINTL
+	PRINTFORML 「어머나, 왜？ 어려운 얼굴 해 버려서」
+	PRINTFORMW 「 그렇지만 그 얼굴, 꽤 사랑스러워요♪」
+	PRINTL
+	PRINTFORMDL 앨리스는 웃는 얼굴로 나를 응시하고 있다
+	PRINTFORMDW 나의 정말 좋아하는 웃는 얼굴, 마음이 치유되는 웃는 얼굴…
+	PRINTL
+	PRINTFORMDW 그래, 나는 앨리스에 대해서 단순한 친구 이상의 감정을 안고 있다――
+	PRINTL
+	PRINTFORMDW 그것이 언제부터였는가, 스스로도 자주(잘) 모른다. 그러나…
+	PRINTFORMDL 정신이 들면, 나의 마음은 그녀에게 빼앗겨 버리고 있었다
+	PRINTFORMDW 하지만 동성끼리, 그러한 기분을 전해지는 것도 없고, 현상에 만족해 왔다
+	PRINTL
+	PRINTFORMDW 그것으로 좋다고 생각하고 있었다. 다만, 이렇게 해 모두 보내, 모두 이야기를 주고 받아, 같은 때를 공유할 수가 있으면, 그 만큼으로 나는…
+	PRINTL
+	PRINTFORMDW 기분을 전해도 앨리스를 괴로워하게 할 뿐(만큼)이다. 그런 일은 나의 본의는 아니다
+	PRINTFORMDW 그녀에게는 언제나 웃는 얼굴로 있었으면 좋았다. 그리고 조금 위태로운 곳이 있는 이 사람을, 지켜봐 아팠다
+	PRINTFORMDW 마치 인형과 같이 단정한 용모에 어울리지 않고, 가끔 호전적이어, 가끔 덜렁이인 그녀의 옆에 주거지 싶었다…
+	PRINTL
+	PRINTFORMDW 문득 깨달으면(자), 앨리스는 걱정일 것 같은 얼굴로 이쪽을 들여다 봐 감색으로 있다
+	PRINTL
+	PRINTFORMW 「소야, 아직 자 부족하지 않아？」
+	PRINTFORMW 「상당히 지치고 있는 것 같았고…응, 언제나 돌아가는 시간까지는 아직 사이가 있고, 어차피라면…」
+	PRINTL
+	;------------------------------------------------------------------------------------------------------
+	;MASTERが喋る구상には嫌悪感をもっているけど、特定のキャラだと全然嫌じゃない不思議。むしろ적극적으로喋らせたい
+	;台詞を色分けするので「」『』の使い分けは不要と判断。「」は誰々、『』は誰々の台詞です！とか今更過ぎる
+	;------------------------------------------------------------------------------------------------------
+;OriginalString : (COLOR_K14("사쿠야"), "「いや、もう大丈夫。엘리스にこれ以上迷惑掛ける訳にもいかないし、それに…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아니, 이제 괜찮아.엘리스에 더 이상 폐 걸 수도 없고, 거기에…」")
+	PRINTL
+	PRINTFORMDL 그 순간, 앨리스의 손가락에 입술을 찰 수 있었다
+	PRINTFORMDW 부드러운 좋은 향기, 내의 좋아하는 향기가 난다…
+	PRINTFORMDW 올려보면(자) 앨리스는 못된 장난 같은 웃는 얼굴을 띄워, 이쪽을 보고 있다
+	PRINTL
+	;貴方表記でもいいんだけど条件無し구상でTALENT:MASTER:122を貴方と呼んでいるのであえて変えた
+	;대상となるキャラが固定なのでCNAMEは使う필요ないかな、という感じ
+	PRINTFORML 「안되어요？ 무리합니다. 거기에…」
+	PRINTFORMW 「귀부인을 돌려보내기에는  가지 않은거야. 미안한데」
+	PRINTL
+	PRINTFORMDW 지금, 앨리스는 뭐라고 말했다？ 말의 의미가 자주(잘) 삼킬 수 없다…
+	PRINTL
+	PRINTFORMW 「후후, 사랑스러운, 사랑스러운 소야. 아직 깨닫지 않는 것일까？」
+	
+	;------------------------------------------------------------------------------------------------------
+	;ＢＧＭカットインは直接文字を打ち込む事によって任意の文字列を表示시킨다事も可能
+	;引数によって♪またはＢＧＭと表示を切り替える事も可能。表示させず文字列のみの表示もまた可能
+	;------------------------------------------------------------------------------------------------------
+	;ＢＧＭカットイン(プラスチックマインド)
+	CALL BGM_CUTIN(CSTR:곡２, 1)
+	
+	PRINTFORMW 「지금의 귀부인은 나의 마력의 실로 구속되어…」
+	PRINTFORMDW 아직도 상황을 삼킬 수 없는 나는, 마치 백치와 같이 망연한 채 그대로였다
+	PRINTL
+	PRINTFORMW 「아, 그렇게 자주. 저항해도 쓸데없으니까？」
+	PRINTFORMW 「이 실은요, 귀부인의 능력을 봉해 구속해, 그 행동을 억제해」
+	PRINTL
+	PRINTFORMW 「유석에 인형과 같이 자재로 조종할 수 있는 것이 아니지만, 지금의 나에게는 이것으로 충분히」
+	PRINTFORMW 「그리고, 이것을 해제할 수 있는 것은 방법자인 나만…」
+	PRINTL
+	PRINTFORMW 「이 힘을 손에 넣는데는 고생했어요？ 거기에…」
+	PRINTFORMW 「방법식 자체도 완전하게는 멀어요. 아무래도 시간의 경과와 함께, 나에게도 반동을 감싸고 싶다 것이군요」
+	PRINTL
+	PRINTFORMDW 그렇게 말한 앨리스의 손가락끝으로부터는, 피가 배어 나오고 하고 있었다
+	PRINTFORMDW 그녀는 마치 인사와 같이 말하고 있지만, 그것은 보기에도 통들 까는, 피가 멈추는 모습도 없었다…
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「엘리스、一体どうしてこんな事を！」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엘리스, 도대체 어째서 이런 일을！」")
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ、お願い。こんな事やめてよ！ それに、その指の손当てもしないと！」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기, 부탁. 이런 일 그만두어요！ 게다가, 그 손가락의손맞히고도 하지 않으면！」")
+	PRINTL
+	PRINTFORMDW 순간, 앨리스의 눈동자의 색이 바뀐 것 같은 생각이 들었다
+	PRINTFORMDW 그것은 지금까지 내가 본 일도 없는, 어떤 종류의 광기와 강한 의지가 하나가 된 것이었다
+	PRINTFORMDW 그 모양은 확실히 죽음의 소녀, 그녀의 한 때의 2개(살)명을 생각나게 했다……
+	PRINTL
+	PRINTFORMW 「응, 소야. 귀부인이 안 돼？」
+	PRINTFORMW 「내가 이것(정도)만큼 사랑해 , 언제까지나 애매한 귀부인이 안 돼…」
+	PRINTL
+	PRINTFORMDW 그래, 사실을 말한다든가 연줄 앨리스에게 은근히 마음을 전해들은 일이 몇번인가 있었다
+	PRINTFORMDW 그러나, 나는 그리고 도망쳐 버리고 있었다. 웃어 속여, 들리지 않는 체를 해 왔다…
+	PRINTL
+	PRINTL
+	
+	;---------------------------------------------
+	;フェードイン用処理
+	;---------------------------------------------
+	;フェードインをＭＳ 明朝＆太字斜体に
+	CALL SETFONT_K14
+	;フェードイン
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "――무서웠다")
+	;TWAITで間をとりつつ自動的に進める
+	TWAIT 800, 0
+	PRINTL
+	;フェードイン
+	CALL FADE(25, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "   지금까지의 관계가 망가져 버리는 것이 무서웠다…")
+	TWAIT 1000, 0
+	PRINTL
+	;フェードイン
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "      ――무서워하고 있었다")
+	TWAIT 800, 0
+	PRINTL
+	;フェードイン
+	CALL FADE(25, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "         한 번 받아들여 버리면, 자신에게 브레이크가 걸리지 않게 될 것 같은 것을 무서워하고 있었다")
+	TWAIT 1000, 0
+
+	;---------------------------------------------
+	;全画面カットイン用の一連の処理
+	;---------------------------------------------
+	;フルカットインは文字色指定できないので사쿠야の文字色でSETCOLOR
+	SETCOLOR 172, 175, 210
+	;描画を抑制
+	REDRAW 0
+	CALLF ANIME_CONFIG("TIMES", 1) ;強制表示x1
+	CALL FULLCUTIN2(50, 17, "그렇지만……") ;全画面カットイン2(フェードイン・アウトが従来より早い)
+	;REDRAWを戻す
+	REDRAW 1
+	;文字色を戻す
+	CALL KOJO_COLOR(TARGET)
+	TWAIT 1000, 0
+	PRINTL
+	PRINTL
+
+	;---------------------------------------------
+	;フェードイン終了後にフォントを戻す
+	;---------------------------------------------
+	;フェードイン
+	CALL FADE(25, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "            결국,엘리스의 모두를 받아 들이는 자신이 없었던 것이다……")
+	;フォントを戻す
+	CALL RESETFONT_K14
+	TWAIT 1500, 0
+
+	PRINTL
+	PRINTL
+	PRINTFORMDW 이능의 힘을 가지는 몸과는 운네, 나는 결국 인간. 종족, 마법사인 앨리스와는 너무 다르고
+	PRINTFORMDW 얼마나 모두 행복한 시간을 보냈다고 해도, 언제의 날이나 이별이 오는 일은 피할 수 없다
+	PRINTFORMDW 앨리스를 자신에게 묶어 붙인 끝에, 최후에는 그녀를 방치로 하지 않으면 안 된다
+	PRINTFORMDW 나는 그런 일에는 견딜 수  없다. 슬픔에 저무는 그녀를 한사람 남겨 죽는 일 등……
+	PRINTL
+	PRINTFORMDW 그런 결말을 피할 수 없는 이상, 붙지 않고 떨어지지 않고의, 현재의 온화한 관계로 좋다고 생각하고 있었다. 그렇지만…
+	PRINTFORMDW 그것이 반대로 앨리스를 상처 입혀 추적해 버려 아픈 응이라고……
+	PRINTL
+	PRINTFORMDW 후회해도 후회하지 못한다――
+	PRINTFORMDW 나는 소중한 사람을 스스로의 도달하지 않음  고로 괴로운, 손상시켜 버렸다
+	PRINTL
+	PRINTFORMDW 그것도 마음인 만큼 멈추지 않고, 그 몸까지……
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ엘리스、お願い。もう本当に止めて！」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기엘리스, 부탁. 이제(벌써) 정말로 멈추어！」")
+;OriginalString : (COLOR_K14("사쿠야"), "「そんな事しなくても私はどこにも行かない。ずっと貴女と一緒にいるから！」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일 하지 않아도 나는 어디에도 가지 않는다. 쭉 당신과 함께 있기 때문에！」")
+	PRINTL
+	PRINTFORMW 「안되어요, 이제 와서 그런 일 말해도. 나는 속지 않아요……」
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「なっ！ 騙すだなんて、どうしてそんな…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「낫！ 속이는이라니, 어째서 그런…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「それに私の事なんてどうだっていいの！　だけどそのままでは貴女が！」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「거기에 나의 일은 어떻든지 좋은거야！ 그렇지만 그대로는 당신이！」")
+	PRINTL
+	PRINTFORMDL 내가 그렇게 말한 순간, 앨리스는 희미한 미소를 띄웠다
+	PRINTFORMDW 하지만 그 미소는, 내의 좋아하는 그러면 없고, 얼음과 같이 각박한 미소였다…
+	PRINTL
+	PRINTFORMW 「이런 상황에 몰려 나를 신경써 주군요, 소야……」
+	PRINTFORMW 「귀부인은 언제나 그렇구나？ 사람의 걱정만 해. 그 버릇, 사물의 본질을 이해하고 있지 않다…」
+	PRINTFORMW 「그렇게, 귀부인은 알지 않다！ 전혀 알지 않다！！」
+	PRINTL
+	PRINTFORMW 「최초부터 전부 각오 위야. 다테나 유별나 하고 있는 (뜻)이유가 아닌거야」
+	PRINTFORMW 「마법사는 귀부인이 생각하고 있는 이상으로 튼튼해. 방법의 반동이 있기 때문은, 곧바로 죽는 일은 없어요」
+	PRINTFORMW 「쓸데없게 긴 수명이 사람보통이 될 뿐(만큼)의 이야기야？ 뭐, 경우에 따라서는 사람보통이라고 해도, 단명인 사람보통은 일이 될지 모르는데」
+	PRINTL
+	PRINTFORMDL 시야가 스며들어 앨리스의 모습이 희미해진다
+	PRINTFORMDW 나는 눈물을 흘리고 있었다. 마음은 감정의 소용돌이에 삼켜져 최조 거기에 항일은 할 수 없었다…
+	PRINTL
+	PRINTFORMDW 슬펐다. 지금까지의 기분 좋고, 온화한 관계가 망가져 버린 일이 슬펐다. 그렇지만…
+	PRINTFORMDW 그 이상으로 기뻤다. 앨리스에게 여기까지 생각해지고 있다니 상상도 하고 있지 않았다
+	PRINTFORMDW 다만, 그것은 바란 형태는 아니었지만……
+	PRINTL
+	PRINTFORMDW 생각하면 이것은 매우 그녀들 강요하고 고도 말할 수 있었다
+	PRINTFORMDW 고민은 없다는 등 공언하고 있는 버릇에, 그 열매 매우 섬세해 손상되기 쉽고, 그 마음에는 어떤 종류의 어둠을 안고 있다
+	PRINTFORMDW 사람을 의지하는 일을 알지 못하고, 뭐든지 스스로 해결하려고 해, 가끔  폭주해 버린다…
+	PRINTL
+	PRINTFORMDW 나는 앨리스의 그런 부분을 좋아했다. 감등 없게 사랑 아까웠다…
+	PRINTFORMDW 언젠가 그 마음중을, 모두 숨기지 않고 보였으면 좋겠다고 생각하고 있었다
+	PRINTFORMDW 고상하고, 정밀하고 섬세한 유리 세공과 같은 그 마음에 접하고 싶다고 생각하고 있었다
+	PRINTL
+	PRINTFORMDW 하지만, 그런 그녀의 마음이 지금, 망가지고 있다…
+	PRINTFORMDW 어떻게든 하지 않으면, 모두가 손을 쓸 수 없게  되기 전에！
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ엘리스、落ち着いて良く聞いて頂戴」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기엘리스, 침착해 자주(잘) (들)물어 줘」")
+;OriginalString : (COLOR_K14("사쿠야"), "「私も貴女の事好きよ。ずっと、ずっと前から…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나도 당신의 일을 좋아해요. 쭉, 훨씬 전부터…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「だから、だからっ！　貴女のそんな姿は見たくないのよ！ こんな事しなくたって私は！」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러니까, 그러니까！ 당신의 그런 모습은 보고 싶지 않은거야！ 이런 일 하지 않아도 나는！」")
+	PRINTL
+	PRINTFORMW 「어머나, 그랬어. 고마워요 소야. 매우 기뻐요」
+	PRINTFORMW 「비록 임시 방편의 거짓말이라고 해도, 군요…」
+	PRINTFORMDW 그렇게 말해 발하는 앨리스의 말에 감정은 가득차지 않았었다…
+	PRINTL
+	PRINTFORMW 「이미 늦어, 이제 와서 뒤늦음이야. 미안한데…」
+	CALL BGM_CUTIN("the Grimoire of Alice", 1)
+	PRINTFORMW 「귀부인은 나의 인형이 되어 주어요. 그리고, 머지않아 영원히 썩는 일이 없는 존재로 해 준다」
+	
+	PRINTFORM 「 아직 연구가 완성하고 있지 않기 때문에, 좀 더 기다려 주는 일이 되겠지요하지만,…
+	;@PRINT_HEARTCBW_K14 指定色でHEARTを表示했다後指定色で『」』を表示し入力待ちする
+	CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+	
+	PRINTL
+	PRINTFORMDW 앨리스는 미소지으면서 그렇게 말했다. 무언가에 홀린 것 같은 그 모습을, 나는 차마 볼 수 없었다…
+	PRINTL
+	PRINTFORMW 「오늘 밤은 이미 늦어요. 귀부인도 지치고 같고, 천천히 쉬어 주세요」
+	PRINTFORMW 「그렇게 자주, 홍마관의 일이라면 걱정하지 않아 괜찮아요. 분명하게 손뼉은 쳐 있기 때문에」
+	PRINTL
+	PRINTFORMDW 앨리스는 그렇게 말하면(자) 나에게 다가가, 뺨에 가볍게 입맞춤을 했다
+	
+	PRINTFORM 「그러면, 아침이 되면 만납시다. 나의 사랑스러운 메이드 길이응…
+	CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+	
+	PRINTL
+	PRINTFORMDW 방금전의 입맞춤에 무엇인가가 가르쳐 있었는지, 또는 어떠한 마술인가
+	PRINTFORMDW 나는 강한 수마가 불러 의식을 유지할 수가 없었다……
+	;$SKIP
+	;OP경과判定
+	KFLAG:(FLAG:주인님):51 = 1
+	CALL TWAIT3_K14
+	;RESULT値2でタイトルロゴは表示させない
+	RETURN 2
+;샌드박스の場合
+ELSE
+	;汎用OPに丸投げする		NO:MASTER == 9（사쿠야）の場合は모드に関わらずこちらが呼び出される
+	RETURN 0
+ENDIF
+
+;────────────────────────────────────
+;NO9_EV2, エンディング이벤트구상
+;────────────────────────────────────
+;・50日경과KFLAG:(FLAG:주인님):0またはKFLAG:(FLAG:주인님):1への代入が条件(KFLAG:(FLAG:주인님):2と3にすべきかも)
+;-------------------------------------------------
+
+;*************************************************
+;エンディング
+;*************************************************
+;상사상애이벤트時の선택肢によりルートＡとＢに分岐
+;とりあえず暫定的。最終的にはもう少し손を加えるかも知れない
+;TRUE ENDは全て完成했다のちに最後に実装する予定
+;-------------------------------------------------
+;v1.61で試しにEV2及びED後の플레이続行を해방してみる
+;今後EVENT2の枠をこのまま使うか別枠と併用するか現状だとなんとも言えないんでとりあえずEDを関数化
+;現時点では別枠の処理は要らないと思われるんでコメントアウト
+;-------------------------------------------------
+@KOJO_NO9_EVENT_K14_2(ARG)
+;-------------------------------------------------
+;DAYではなく、特定の이벤트からKFLAGインクリメントして設定했다方がよさげ
+;いずれまとめて손入れする時に考える
+;基本的にこの二人、進展が超遅いので色々と難しい。挙動的には割りと好みではあるんだけどw
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;EXTRAエンディング
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF FLAG:모드 == 9 && (DAY >= 50 && (KFLAG:(FLAG:주인님):8 == 1 || KFLAG:(FLAG:주인님):9 == 1) && KFLAG:(FLAG:주인님):51 == 1 && FLAG:오토모드표시설정 == 0 &&  FIRSTEVENT(0))
+	CALL ENDING_NO9_K14
+	RETURN 1
+ENDIF
+
+;ここはコメントアウト
+;=================================================
+;@KOJO_NO9_MS_EVENT_K14_11_ENDING
+;=================================================
+;IF FLAG:모드 == 9 && (DAY >= 48 && (KFLAG:(FLAG:주인님):8 == 1 || KFLAG:(FLAG:주인님):9 == 1) && KFLAG:(FLAG:주인님):51 == 1 && FIRSTTIME(0))
+;	CALL ENDING_NO9_K14
+;	RETURN 1
+;ENDIF
+
+;-------------------------------------------------
+;エンディング関数
+;-------------------------------------------------
+@ENDING_NO9_K14
+#LOCALSIZE 1
+[SKIPSTART]
+TRUE ENDを最終的にどのような形にするか悩ましい
+主に如何に呼び出すかという意味において
+TEST版のED仕様ならRETURN 0とFIRSTTIME、若しくはAUTOORDERで階層化させてEV 2の枠内でTRUE ENDING呼び出すのもありかなという気もしている
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;未完＆まだ実装する気ないんでコメントアウト
+;エンディングルートＡ(TRUE END)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF KFLAG:(FLAG:주인님):0 == 1 && KFLAG:(FLAG:주인님):10 == 1
+	CALL TWAIT3_K14
+	;TRUE END
+	;来るって言ったのに遅いわね云々
+	PRINTFORMW
+	;사쿠야登場
+	PRINTFORMW
+	;いつものやりとり
+	PRINTFORMW
+	;思い出話
+	PRINTFORMW
+	;月を見上げながら
+	PRINTFORMW
+	;明かされる過去。（仄めかす程度か？）二人の本当の最初の出会い
+	
+	;フラッシュバック
+	
+	どうして泣いているの？
+	どうして血だらけなの？
+	どうしてひとりぼっちなの？
+	そっか、じゃぁ私と一緒だね云々。貴女、お名前は？
+	―判らない。私には名前がないの
+	そうなんだ？ 私は엘리스よ、よろしくね
+	;そして人形を손渡そうとする
+	これ、貴女にあげる。この子もまだ名前がないの。貴女と一緒だね云々…
+	―貰っていいの？
+	うん、その代わりに…（もじもじ하면서）私と友達になってくれる？
+	―ごめんなさい。それはできないの、だって…私はもうここには居られないから
+	どうして？
+	―私は逃げなきゃならないの
+	誰から逃げるの？
+	―よく判らない…でも、私は逃げなきゃいけないの。だって、人をいっぱい殺했다から…
+	どうして殺했다の？
+	―私を襲ってくる、悪い奴だから
+	じゃ仕方ないね（あくまで無邪気に）
+	―ねぇ、貴女もここにいては危ないわ。そうだ！ 私と一緒にいかない？
+	ごめんなさい、それはできないの。
+	―そう、残念。じゃ、私はそろそろ行くわ
+	ねぇ、もしまた会う事があったら…その時こそ友達になってくれる？
+	―うん、喜んで
+	（幼い二人、笑顔で손を取り合い約束を交わす）
+	
+	;フラッシュバックおわり
+	
+	PRINTFORMW
+	;そして幕引き
+	PRINTFORMW
+	;SCROLLTEXTでエンディングタイトル
+	RESETCOLOR
+	FONTSTYLE 1
+	CUSTOMDRAWLINE -=
+	CALL SCROLLTEXT("　　　　　　　【Ending No.0005】ここにタイトル", 2, 6, 117, 0, 1)
+	CALL RESETFONT_K14
+	PRINTL
+	PRINTL
+	;ED경과判定
+	;KFLAG:(FLAG:주인님):4 = 1
+	;ゲームオーバー(선택肢x3)
+	CALL GAME_OVER_K14
+	RETURN 1
+ENDIF
+[SKIPEND]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;선택肢で分岐。最終的には共通ルートにまとめる
+;エンディングルートＡ(GOOD END)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF KFLAG:(FLAG:주인님):0 == 1
+	;背景色を夜用に
+	SETBGCOLOR 0, 0, 20
+	PRINTFORMDW 어느 밤의 일, 홍마관을 방문할 약속을 한 앨리스는, 그 준비에 쫓기고 있었다…
+	PRINTFORML 「그런데, 준비도 할 수 있던 일이고 슬슬 갈까요」
+	PRINTFORMW 「짐을 부탁이군요, 샹하이」
+;OriginalString : (COLOR_K14("上海"), "「＼ｼｬﾝﾊｰｲ／」")
+	CALL PRINTCOLORW(COLOR_K14("샹하이"), "「＼ｼｬﾝﾊｰｲ／」")
+	PRINTFORMW 「……어떻게 봐도 자아가 태어나고 있는 원이군요, 이 아이」
+;OriginalString : (COLOR_K14("上海"), "「？」")
+	CALL PRINTCOLORW(COLOR_K14("샹하이"), "「？」")
+	PRINTFORMW 「사람의 형태를 한 것에는 영혼이 머무는, 은 누구의 말이었는지 해들…」
+	PRINTFORMW 「아무튼 좋아요. 삽시다」
+	CALL TWAIT3_K14
+	;엘리스、紅魔舘を訪れるも多忙な사쿠야。엘리스は待つ間に…
+	PRINTFORMW 「오늘 밤은, 소야」
+;OriginalString : (COLOR_K14("사쿠야"), "「いらっしゃい、엘리스。で、来てもらったとこ悪いんだけど…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어서오세요,엘리스그래서, 와 받았다 곳 나쁘지만…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「ちょっと今손が離せないのよ。部屋で待っててもらえる？」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「조금 지금손하지만 떼어 놓을 수 없는거야. 방에서 기다리고 있어 받을 수 있다？」")
+	PRINTFORMW 「방법 없네요. 뭐, 어차피라면 조금 그 밖에 모이고 나서 가기 때문에」
+;OriginalString : (COLOR_K14("사쿠야"), "「わかった。じゃ、部屋で会いましょう」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「알았다. 그러면, 방에서 만납시다」")
+	PRINTL
+	CALL HTMLPRINTDL(@"%HTMLBUTTON("[0] 紅魔舘の庭を散策", "0", "레밀리아と대면")%")
+	CALL HTMLPRINTDL(@"%HTMLBUTTON("[1] 大図書館へ", "1", "파츄리と대면")%")
+	;PRINTFORMDL [0] 紅魔舘の庭を散策
+	;PRINTFORMDL [1] 大図書館へ
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		;紅魔舘の庭にて
+		CASE 0
+			;레밀리아登場、こんな夜更けに云々
+			PRINTFORMW 「자주(잘) 손질이 두루 미쳐. 게다가, 바람이 매우 기분이 좋다…」
+			PRINTFORMDW 그 때, 앨리스의 배후에 무엇인가가 내려섰다…
+			PRINTL
+;OriginalString : (COLOR_K14("レミィ"), "「こんな夜更けに一人で出歩いてるのは感心しないわね」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「이런 깊은 밤에 혼자서 돌아 다니고 있는 것은 감탄하지 않네요」")
+			;キャラカットイン(레밀리아)
+			CALL CHARA_CUTIN(CSVCSTR(10, 10, 0), CSVCSTR(10, 11, 0), CSVCSTR(10, 12, 0))
+			PRINTL
+;OriginalString : (COLOR_K14("レミィ"), "「吸血鬼にでも襲われたらどうするつもりなのかしら？」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「흡혈귀에게라도 습격당하면 어떻게 할 생각일까？」")
+			PRINTL
+			;面倒くさいのと会ったわ、と엘리스
+			PRINTFORML （귀찮은과 만난 원이군요……）
+			PRINTFORMW 「좋아해 마법사를 덮친다고도 생각되지 않지만요」
+;OriginalString : (COLOR_K14("レミィ"), "「…よく判ってる。魔法使いの血なんて頼まれても願い下げ」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「…잘 알고 있다. 마법사의 피 같은거 부탁받아도 사절」")
+			;회화を交わす二人
+			PRINTFORMW 「…그리고？ 태들 나타난 이상에는, 이야기가 있었지 않다？」
+;OriginalString : (COLOR_K14("レミィ"), "「私との話に시간は掛けたくない、か。まぁいいわ。そういうの嫌いじゃないし」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「나와의 이야기에시간는 걸고 싶지 않은, 인가. 뭐 좋아요. 그러한 것 싫지 않고」")
+			PRINTFORMW 「…………」
+			;사쿠야について云々
+;OriginalString : (COLOR_K14("レミィ"), "「単刀直入に言うわ。うちの犬についての話よ」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「단도직입에 말해요. 우리 개에 대한 이야기야」")
+			
+			;ＢＧＭカットイン(亡き王女の為のセプテット)
+			CALL BGM_CUTIN(CSVCSTR(10, 13, 0), 1)
+			
+			PRINTFORMW 「！？ 깨닫았었던 것……」
+;OriginalString : (COLOR_K14("レミィ"), "「見損なってもらっては困るわねぇ」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「잘못 봐 받아서는 곤란해요」")
+;OriginalString : (COLOR_K14("レミィ"), "「こう見えても長い時を生きてきてるのよ？ 見ていれば簡単に判る事よ」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「이렇게 보여도 길 때를 살아 오고 있는거야？ 보고 있으면 간단하게 아는 일이야」")
+			PRINTFORMW 「그랬어……그래서？ 결국무엇을 말하고 싶은 것？」
+;OriginalString : (COLOR_K14("レミィ"), "「せっかちねぇ。まぁいいわ…あいつ、イヤ、사쿠야は…」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「성급하구나. 뭐 좋아요…저녀석, 아니,사쿠야하…」")
+;OriginalString : (COLOR_K14("レミィ"), "「お前と居る時とても穏やかな顔をしてるのよ。私には見せた事もないような穏やかな顔を、ね」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「너와 있을 때 매우 온화한 얼굴을 하고 있는거야. 나에게는 보인 일도 없는 것 같은 온화한 얼굴을 말야」")
+;OriginalString : (COLOR_K14("レミィ"), "「悪魔の狗が、ただの小딸みたいな純真な笑顔を見せるの」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「악마의 구가, 단순한 소딸같은 순진한 웃는 얼굴을 보여」")
+;OriginalString : (COLOR_K14("レミィ"), "「私じゃあいつにそんな顔させてやれないし、させてやるつもりも無いわ」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「나자 언제에 그런 얼굴 시켜 줄 수 없고, 시켜 줄 생각도 없어요」")
+;OriginalString : (COLOR_K14("レミィ"), "「だからお前には感謝してる。そして…できれば、ずっとあいつの傍に居てやって欲しい」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「그러니까 너에게는 감사하고 있다. 그리고…할 수 있으면, 쭉 저녀석의 옆에 있어 주었으면 좋겠다」")
+			PRINTFORMW 「레미리아…」
+			PRINTL
+			PRINTFORMDW 레미리아는 웃는 얼굴로 말했다…
+;OriginalString : (COLOR_K14("レミィ"), "「何だかんだ言って私はあいつが可愛くて仕方無いのよ。生きてる限り扱き使ってやるけどね」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「이러니 저러니 말하고 나는 저녀석이 사랑스러워서 방법 없는거야. 살아있는 한정해 혹사해 주지만 말야」")
+			PRINTFORMW 「…귀신이군요」
+;OriginalString : (COLOR_K14("レミィ"), "「そんなに褒めるな。照れるだろう」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「그렇게 칭찬하지마. 수줍을 것이다」")
+			PRINTFORMW 「…아니, 너흡혈귀지요. 그렇지만…고마워요, 레미리아」
+			PRINTFORMW 「다만, 나는 그렇게 상냥하지 않아요？」
+;OriginalString : (COLOR_K14("レミィ"), "「そこまで干渉する気はこちらには無いわ。ただ…」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「거기까지 간섭할 생각은 이쪽에는 없어요. 다만…」")
+;OriginalString : (COLOR_K14("レミィ"), "「사쿠야にはそのくらいで丁度いいと思うけど」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「사쿠야에는 그 정도로 꼭 좋다고 생각하지만」")
+			PRINTFORMW 「…동감」
+			;フェードアウト
+			CALL FADE(20, COLOR_K14("레미"), COLOR_K14("black"), "「후훗」")
+			SIF ANIME_CONFIG("FADE")
+				CLEARLINE 1
+			;フェードアウト
+			CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), "「킥킥」")
+			SIF ANIME_CONFIG("FADE")
+				CLEARLINE 1
+			PRINTL
+			PRINTFORMDW 레미리아는 앨리스의 뺨에 살그머니 입맞춤하면서 말했다…
+;OriginalString : (COLOR_K14("レミィ"), "「사쿠야のこと、よろしくね」")
+			CALL PRINTCOLORW(COLOR_K14("레미"), "「사쿠야, 잘 부탁해」")
+			PRINTFORMW 「예, 알았어요……」
+			CALL TWAIT1_K14
+			;共通ルートに돌아가기
+			;KFLAGに代入
+			KFLAG:(FLAG:주인님):7 = 1
+		;大図書館にて
+		CASE 1
+			;파츄리登場、よくきたわね云々
+;OriginalString : (COLOR_K14("パチェ"), "「……鼠が入り込んできたわね」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「……쥐가 비집고 들어가 왔군요」")
+			;キャラカットイン(파츄리)
+			CALL CHARA_CUTIN(CSVCSTR(8, 10, 0), CSVCSTR(8, 11, 0), CSVCSTR(8, 12, 0))
+			PRINTL
+			PRINTFORMW 「책의 깔개에도 안되어, 건강하고 최상이구나」
+;OriginalString : (COLOR_K14("パチェ"), "「ふふ、言うわね。まぁそれは兎も角…よく来たわね。今、席を用意시킨다わ」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「후후, 말해요. 아무튼 그것은 차치하고…자주(잘) 왔군요. 지금, 자리를 준비시킨다와」")
+			PRINTFORMW 「응, 고마워요」
+			CALL TWAIT1_K14
+			;二人で魔法談義に花を咲かせる
+;OriginalString : (COLOR_K14("パチェ"), "「…それは中々面白い考えね。でも簡単にはいかないとは思う」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「…그것은 꽤 재미있는 생각이군요. 그렇지만 간단하지는 않다고는 생각한다」")
+			
+			;ＢＧＭカットイン(ヴワル魔法図書館)
+			CALL BGM_CUTIN(CSVCSTR(8, 14, 0), 1)
+			
+			PRINTFORMW 「어느 정도 걸리는 것일까？」
+;OriginalString : (COLOR_K14("パチェ"), "「…そうね。普通にいって50年ってところね」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「…그렇구나. 보통으로 말해50해라는 곳」")
+			PRINTFORMW 「어, 그렇게？」
+;OriginalString : (COLOR_K14("パチェ"), "「一般的な場合、って前置きするべきだったわね。貴女の場合なら、そうねぇ…」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「일반적인 경우, 는 서론 해야 했네요. 당신의 경우라면, 그렇구나…」")
+;OriginalString : (COLOR_K14("パチェ"), "「20年ってところではないかしら？」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「20해라는 곳은 아닐까？」")
+			PRINTFORMW 「어쨌든, 편한 도정은 없을 것 같구나…」
+			;年長者の説教
+			CALL PRINTCOLORL(COLOR_K14("パチェ"), "「当然よ。魔術を修めるには長い시간がかかるし、それに近道はないの」")
+;OriginalString : (COLOR_K14("パチェ"), "「よく覚えておきなさい。未熟な魔法使いよ」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「잘 기억해 두세요. 미숙한 마법사야」")
+			PRINTFORMW 「…변함 없이 매우 엄하네요」
+;OriginalString : (COLOR_K14("パチェ"), "「私は年長の魔法使いとして当然の事を言ったまでよ」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「나는 연장의 마법사로서 당연한일을 말했을 뿐」")
+;OriginalString : (COLOR_K14("パチェ"), "「まぁそれはいいとして、そろそろお茶にしましょうか」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「아무튼 그것은 좋다고 해, 슬슬 차로 할까요」")
+			
+			PRINTFORM 「찬성…
+			CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+			
+;OriginalString : (COLOR_K14("パチェ"), "「……現金ね」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「……현금이군요」")
+;OriginalString : (COLOR_K14("パチェ"), "「でも、そういった心持ちは魔法使いに필요な資質であるのも確かね。ふふっ」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「그렇지만, 그렇게 말한 기분은 마법사에게필요자질인 것도 확실하구나. 후훗」")
+			PRINTFORMDW 두 명은 잠깐의 사이 마술 설법에 꽃을 피워 즐거운 한 때를 보냈다…
+			CALL TWAIT1_K14
+			;有意義な시간だったわ、と엘리스図書館から去ろうとする
+			PRINTFORMW 「그런데, 이제 짬 할까. 가치가 있는 시간이었던 원, 고마워요」
+;OriginalString : (COLOR_K14("パチェ"), "「私も愉しかったわ。貴女は生徒としては教え甲斐があるし、それなりに見所もある」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「나도 즐거웠어요. 당신은 학생으로서는 가르치는 보람이 있고, 그 나름대로 볼만한 곳도 있다」")
+			PRINTFORMW 「…그 나름대로, 인가. 정진해요, 선·배」
+;OriginalString : (COLOR_K14("パチェ"), "「ま、頑張る事ね？ こう見えても貴女には期待してるのだから」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「뭐, 노력하는 일이군요？ 이렇게 보여도 당신에게는 기대하고 있으니까」")
+			PRINTFORMW 「네네, 알았어요」
+			PRINTFORMDW 앨리스는 그렇게 말해 자리에서 일어나려고 했다…
+			PRINTL
+			;ちょっとまちなさいと引き止める파츄리
+;OriginalString : (COLOR_K14("パチェ"), "「ちょっと待ちなさい。엘리스」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「조금 기다리세요.엘리스」")
+			PRINTFORMW 「뭐？」
+			PRINTFORMDW 파츄리는 진지한 표정으로 말하기 시작했다…
+			PRINTL
+;OriginalString : (COLOR_K14("パチェ"), "「この世界に私達の同胞はもう残り少ないの。だから…」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「이 세계에 우리들의 동포는 이제(벌써) 얼마 남지 않은거야. 그러니까…」")
+;OriginalString : (COLOR_K14("パチェ"), "「あまり無茶な事はおやめなさい」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「너무 엉뚱한 일은 그만두세요」")
+			PRINTFORMW 「…깨닫았었던 것」
+;OriginalString : (COLOR_K14("パチェ"), "「何があったかまでは判らない。でも…普通ではない、異様な마력の残滓は感じ取れる」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「무엇이 있었는지까지는 알지 않는다. 그렇지만…보통은 아닌, 이상한마력의 잔재는 감지할 수 있다」")
+			PRINTFORMW 「흔적은 지운 생각이었는데…」
+			PRINTL
+;OriginalString : (COLOR_K14("パチェ"), "「ふふ、私を見くびらない事ね？ それに…」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「후후, 나를 업신여기지 않는 것이군요？ 거기에…」")
+;OriginalString : (COLOR_K14("パチェ"), "「私達は悠久の時を生きる魔法使い。まだまだ시간は沢山あるわ」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「우리들은 유구때를 사는 마법사. 아직도시간는 많이 있어요」")
+;OriginalString : (COLOR_K14("パチェ"), "「共通の価値観を持ち、共通の話が出来る相손を失うのは私も嫌なのよ」")
+			CALL PRINTCOLORW(COLOR_K14("파체"), "「공통의 가치관을 가져, 공통의 이야기를 할 수 있는 상손를 잃는 것은 나도 싫어」")
+			PRINTFORMW 「…알았다. 잘 기억해 두어요」
+			CALL TWAIT1_K14
+			;共通ルートに돌아가기
+			;KFLAGに代入
+			KFLAG:(FLAG:주인님):7 = 2
+	ENDSELECT
+	;사쿠야の私室。ごめんなさい、遅くなったわと사쿠야登場
+;OriginalString : (COLOR_K14("사쿠야"), "「ごめんなさい、すっかり遅くなっちゃって」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「미안해요, 완전히 늦어져 버려」")
+	PRINTFORMW 「괜찮아요. 여기도 그 나름대로 가치가 있게 보내고 있었기 때문에」
+;OriginalString : (COLOR_K14("사쿠야"), "「それは何より…でも、ちょっと気になるわね？」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그것은 무엇보다…그렇지만, 조금 신경이 쓰여요？」")
+	PRINTFORMW 「(듣)묻고 싶은거야？ 아무튼 좋아요, 소야에도 이야기해 두어야 한다고 생각하고」
+	;楽しげに회화
+;OriginalString : (COLOR_K14("사쿠야"), "「何の話？」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무슨이야기？」")
+	PRINTFORMDW 앨리스는 말하기 시작했다…
+	PRINTL
+	;派生を処理
+	SELECTCASE KFLAG:(FLAG:주인님):7
+		;레밀리아に会った場合
+		CASE 1
+			PRINTFORMW 「레미리아에 말이야, 그…만났어요」
+;OriginalString : (COLOR_K14("사쿠야"), "「お嬢様に？ で、何を話했다のよ」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아가씨에게？ 그래서, 무엇을 이야기했다의」")
+			PRINTFORMDW 앨리스는 일의 일절을 소야에 알아듣게 가르쳤다…
+			PRINTL
+			PRINTFORMW 「레미리아에 말해졌어요. 소야를 아무쪼록, 은」
+;OriginalString : (COLOR_K14("사쿠야"), "「えっ、それって…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엣, 그 거…」")
+			PRINTFORMW 「아무튼”그러한 일”(이)가 아니다？ 우선 솔직하게 기뻐하고 있는이 아닐까」
+;OriginalString : (COLOR_K14("사쿠야"), "「そう、そうよね。でも、とっくにばれていたのね…」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그래, 그래요. 그렇지만, 벌써 발각되고 있었군요…」")
+			PRINTFORML 「소야가 알기 너무 쉽기 때문이겠지？」
+			PRINTFORMW 「…완전히. 나도 처음은 무슨 말을 해질까하고 생각해 서둘렀어요」
+			PRINTFORMW 「 그렇지만, 무엇인가 응이다 말해 소 밤에는 사랑받아. 따로 부러워하는 것이 아니지만, 그러한 것도 개미일까라고 생각했어요」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうね、私もお嬢様を愛してるわ。ただしこの場合は、主人としてね」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇구나, 나도 아가씨를 사랑하고 있어요. 다만 이 경우는, 주인으로서」")
+			PRINTFORMW 「응, 알고 있다」
+		;파츄리に会った場合
+		CASE 2
+			PRINTFORMW 「도서관에서, 그…파츄리에 설교되었어요」
+;OriginalString : (COLOR_K14("사쿠야"), "「ちょっと面白そうね？ 詳しく聞かせてよ」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「조금 재미있을 것 같구나？ 자세하게 들려주어요」")
+			PRINTFORMDW 앨리스는 일의 나름을 소야에 알아듣게 가르쳤다…
+			PRINTL
+			PRINTFORMW 「그녀는 애매하게 했지만, 아마 무엇이 있었는지 알고 있는 느낌이었다」
+;OriginalString : (COLOR_K14("사쿠야"), "「魔法使い同士の회화って回りくどいわねぇ」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「마법사끼리의회화라고 장황하네요」")
+;OriginalString : (COLOR_K14("사쿠야"), "「でも、あの方なりに貴女の事心配してるのは良く判るわ」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇지만, 그 (분)편나름대로 당신의 일걱정하고 있는 것은 자주(잘) 알아요」")
+			PRINTFORMW 「응, 그렇구나…여러가지 있었지만, 파츄리에는 감사하고 있다. 동포로서 마법사의 선배로서」
+;OriginalString : (COLOR_K14("사쿠야"), "「ええ、知ってる」")
+			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「에에, 알고 있다」")
+	ENDSELECT
+	PRINTL
+	;バルコニーに出てお茶
+;OriginalString : (COLOR_K14("사쿠야"), "「話も一段落って事でバルコニーでお茶にしましょうか。紅茶でいいわよね？」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이야기도 일단락이라는 일로 발코니로 차로 할까요. 홍차로 좋네요？」")
+	PRINTFORMW 「응 소야. 모처럼이니까…」
+;OriginalString : (COLOR_K14("사쿠야"), "「ブランデーを少々ね？」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「브랜디를 조금이군요？」")
+	PRINTFORMW 「후후, 유석 메이드장. 잘 알아」
+;OriginalString : (COLOR_K14("사쿠야"), "「当然よ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당연해요」")
+	PRINTL
+	;二人、月を見上げながら
+	PRINTFORMW 「응, 좋은 향기. 아르 그레이일까」
+;OriginalString : (COLOR_K14("사쿠야"), "「流石、よく判ってるわね」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「과연, 잘 알고 있어요」")
+	PRINTFORMW 「…당연」
+;OriginalString : (COLOR_K14("사쿠야"), "「でも紅茶だけだと、なんか物발りないわね」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇지만 홍차만이라고, 뭔가 물건발리나 있고 원이군요」")
+	PRINTFORMW 「후후, 그런 일도 있을까하고 생각해 실은 준비해 와. 이봐요」
+	PRINTFORMDW 앨리스는 그렇게 말하면(자) 어딘가에서나 브랜디 케이크를 꺼냈다
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「…やれやれ。準備がよろしい事で」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…아휴. 준비가 좋은 일로」")
+	PRINTFORMW 「아무튼이군요？ 게다가, 그, 라고 할까…오늘은 조금 특별한 날이 될 생각이 들었어」
+	CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「紅茶とケーキで二人だけのささやかなパーティってとこね。悪くないわ")
+	CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"))
+	PRINTFORMW 「그렇구나, 정말로…그런데」
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「…これは美味しいわね。紅茶の茶葉も混ぜてる？」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…이것은 맛있네요. 홍차의 찻잎도 혼합하고 있다？」")
+	PRINTFORMW 「아르 그레이를. 상당히 날 소유도 하고, 이번다목에 만들어 와 줄까？」
+;OriginalString : (COLOR_K14("사쿠야"), "「それより作りかたを教えて欲しいわね」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그것보다 만들기 분을 가르쳐 주셨으면 하네요」")
+	PRINTFORMW 「그것은 좋은데……소야로 할 수 있는 것일까？」
+;OriginalString : (COLOR_K14("사쿠야"), "「言ってくれるわね？ 確かにお菓애만들기は엘리스の方がちょっとだけ上손いけど」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「말해 주어요？ 확실히 과애만들기하엘리스(분)편이 조금 위손생포하고」")
+	PRINTFORMW 「조금이라는 것은 없다고 생각하는데？」
+;OriginalString : (COLOR_K14("사쿠야"), "「いいえ、ちょっとだけ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아니오, 조금」")
+	PRINTFORMW 「…고집이 있구나. 뭐, 피차일반이지만」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうね、それは認めるわ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇구나, 그것은 인정해요」")
+	
+	;フェードアウト
+	CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), "「킥킥」")
+	SIF ANIME_CONFIG("FADE")
+		CLEARLINE 1
+	;フェードアウト
+	CALL FADE(20, COLOR2_K14("SAKUYA"), COLOR_K14("black"), "「후후후」")
+	SIF ANIME_CONFIG("FADE")
+		CLEARLINE 1
+
+	CALL TWAIT1_K14
+	;そして幕引き
+	PRINTFORMW 「달이 깨끗하구나」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうね…そういえばあの日もこんな月の綺麗な夜だった」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇구나…그렇게 말하면 그 날도 이런 달의 예쁜 밤이었다」")
+	PRINTFORMW 「그 날？」
+;OriginalString : (COLOR_K14("사쿠야"), "「そう、あの日。貴女が現状を変えようと一歩踏み出했다日」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그래, 그 날. 당신이 현상을 바꾸려고 한 걸음 재매입출했다날」")
+	PRINTFORMW 「그렇게 말하면 그렇구나…, 그런 생각이 든다」
+;OriginalString : (COLOR_K14("사쿠야"), "「私はね？ 感謝してるのよ。엘리스が행동を起こさなかったら何も変わらなかった」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나는 말야？ 감사하고 있는거야.엘리스하지만행동를 일으키지 않았으면 아무것도 변함없었다」")
+	PRINTFORMDW 앨리스는 묵 해 말하지 않고, 가만히 소야를 응시하고 있다…
+	;何となくキャラカットイン風のアレンジ用のカットインを作りたくなるな！
+	;---------------------------------------------
+	;タイトル:Plan Doll
+	;原曲:人形裁判～人の形弄びし少女
+	;サークル:FELT
+	;ヴォーカル:마이花
+	;アルバム:Fairy Queen
+	;---------------------------------------------
+	CALL BGM_CUTIN("Plan doll", 1)
+	
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「そのままだったら、きっと今でもそのままの関係だったと思うわ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그대로라면, 반드시 지금도 그대로의 관계였다고 생각해요」")
+	PRINTFORMW 「응…」
+;OriginalString : (COLOR_K14("사쿠야"), "「そして多分…ずっとそのままだった気がする」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그리고 아마…쭉 그대로였던 생각이 든다」")
+;OriginalString : (COLOR_K14("사쿠야"), "「大切な시간を無駄にして、私はきっとそのまま…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「중요한시간를 쓸데없게 해, 나는 반드시 그대로…」")
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「貴女言ったわよね？ 今を大切に했다いと思えるよう되었다って」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당신 말했네요？ 지금을 소중히했다실 생각되는 듯되었다라고」")
+	PRINTFORMW 「그렇구나……나는 앞만 봐 발밑이 보이지 않았다」
+;OriginalString : (COLOR_K14("사쿠야"), "「私は逆に先の事を見ようって思うよう되었다わ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나는 반대로 앞의 일을 보려고 생각하는 듯되었다와」")
+	PRINTFORMW 「그래？」
+;OriginalString : (COLOR_K14("사쿠야"), "「ええ。でも、今が大事じゃないって訳じゃない」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「에에. 그렇지만, 지금이 큰 일이 아니다는 것이 아니다」")
+;OriginalString : (COLOR_K14("사쿠야"), "「むしろ先の事の為にも、今をもっと大事にしようってところね」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「오히려 앞의 일을 위해서(때문에)도, 지금을 좀 더 소중히 하자는 곳」")
+	PRINTFORMW 「…동감. 그렇지만 오늘의 소야는 조금 이상해요」
+;OriginalString : (COLOR_K14("사쿠야"), "「そんな事言ってると밀어 넘어트린다わよ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 일 말하고 있으면밀어 넘어트린다원이야」")
+	PRINTFORMW 「할 수 있는 것이라면 해 보세요…라고, , , 소야！？」
+	PRINTFORMDW 소야는 돌연 앨리스를 밀어 넘어뜨렸다. 그 눈동자는 다홍색구 물들어, 그것을 되돌아보는 앨리스의 눈동자도 또, 금빛에 물들고 있다…
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「ふふ、これでいいかしら？」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「후후, 이것으로 좋을까？」")
+	PRINTFORMW 「그만두어이런 곳에서…게다가, 달이 보고 있어요」
+;OriginalString : (COLOR_K14("사쿠야"), "「違うわ、見せてるのよ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「달라요, 보이고 있는거야」")
+	PRINTFORMW 「…완전히. 그렇지만, 가끔  이런 것도 나쁘지 않네요…」
+	PRINTFORMDW 앨리스는 소야를 끌어 들이고 강하게 꼭 껴안았다…
+	CALL TWAIT3_K14
+	;フェードインをＭＳ 明朝かつ太字斜体に
+	CALL SETFONT_K14
+	;中央で表示
+	ALIGNMENT CENTER
+	;以下、フェードイン TARGET以外の台詞を入れる場合@FADEINだと使い勝손が悪いので@FADEで統一
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "아, 아파요,엘리스…")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("ALICE"), "시끄러워요. 이 정도참다해…바보사쿠야……")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "달이…예쁘구나……")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("ALICE"), "그 몸의 자세로 보일 리가 없다고 생각하지만？")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "잘 보이고 있어요. 당신의 눈동자에 비치는 달이 말야……")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("ALICE"), "…냄새나는 대사. 그렇지만, 그렇구나……나쁘지 않다. 지금은, 그렇게 생각할 수 있어요")
+	TWAIT 3000, 0
+	CALL TWAIT3_ZWEI_K14
+	CALL FADE(20, COLOR_K14("black"), COLOR_K14("white"), "～Fin")
+	;フォントを戻す
+	CALL RESETFONT_K14
+	;左寄せに戻す
+	ALIGNMENT LEFT
+	PRINTL
+	TWAIT 500, 0
+	PRINTL
+	
+	;SCROLLTEXTでエンディングタイトル
+	RESETCOLOR
+	;太字にする
+	FONTSTYLE 1
+	CUSTOMDRAWLINE -=
+	CALL SCROLLTEXT("　　　　　　　【Ending No.0006】", 2, 6, 117, 0, 1)
+	;フォントを戻す
+	CALL RESETFONT_K14
+	
+	;ED경과判定
+	;KFLAG:(FLAG:주인님):5 = 1
+	PRINTL
+	PRINTL
+	;ゲームオーバー(선택肢x3)
+	CALL GAME_OVER_K14
+;ルートＢは分岐なし。血を吐きそうになりながら書いた
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;エンディングルートＢ(BAD END)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+ELSEIF KFLAG:(FLAG:주인님):1 == 1
+	SETBGCOLOR 0, 0, 20 ;背景色を夜用に
+	;まぁほとんど意味ないね、これ。何らかの形で冬を表現するエフェクトを捏造すべきな感
+	FLAG:계절 = 3 ;계절を冬に
+	PRINTFORMDW 가득 차고 충분한 행복한 날들…그러나, 그것은 길게 계속되지 않았다
+	CALL TWAIT1_K14
+	PRINTFORMDW 세월이 흐른 있는 겨울의 일, 소야는 병에 와 다투고 있었다
+	PRINTFORMDW 그 원인은 누구에게도 알지 않고, 의사나 주술사, 마술사들이 포기하는 가운데, 소야는 날마다 쇠약해 갔다…
+	CALL TWAIT3_K14
+	;病に伏せる사쿠야
+	PRINTFORMDW 그 방에 있는 것은 둘이서였다
+	PRINTFORMDW 침대에 가로놓이는 소야, 옆에 잠시 멈춰서는 앨리스
+	PRINTFORMDW 창가에는 눈이 내려 쌓여, 근처는 고요하게 싸이고 있다…
+	PRINTL
+	PRINTFORMW 「이렇게 해 둘이서가 되는 것은, 상당히 오래간만이군요」
+	PRINTFORMDW 앨리스는 웃는 얼굴로 말을 걸었다. 그러나 그 표정으로부터는 초췌해 버린 모습이 엿봐지고
+	PRINTFORMDW 소야는 자신이 병에 와 다툰 상황에도 불구하고, 그런 앨리스의 몸을 염려하는 것이었다…
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「そうね、みんな気を使ってくれたみたい」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇구나, 모두 신경을 써 준 것 같다」")
+;OriginalString : (COLOR_K14("사쿠야"), "「私は……もう長くない。だから、みんな…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나는……이제 길지 않다. 그러니까, 모두…」")
+	PRINTFORMW 「바보！ 무슨 말해！！ 그런 것 전혀 소야인것 같지 않아요！」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうね、らしくないわね……でも、私には判るの」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇구나, 답지 않네요……그렇지만, 나에게는 알아」")
+	PRINTFORMDW 앨리스는 소야의 손을 잡고 그리고 말했다…
+	PRINTL
+	PRINTFORMW 「알지 않는다！ 나에게는 알지 않아요, 그런 것！」
+	PRINTFORMW 「 어째서？ 어째서？ 어째서 소야가 이런 눈에 맞지 않으면 안 돼！」
+	PRINTFORMDW 앨리스의 감정은 앙상, 말은 열을 띠어 그 눈에는 눈물이 떠올라 있었다…
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「落ち着いて、엘리스。これは全部私の自業自得なの。だから…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「침착해,엘리스이것은 전부 나의 자업자득이야. 그러니까…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「貴女が気に病む事なんてないのよ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당신이 걱정하는 일 같은거 없는거야」")
+	PRINTFORMW 「원, (뜻)이유가 알지 않는 것 말하지 말아. 뭐야…자업자득은……」
+	PRINTFORMW 「거기에, 귀부인의 일걱정하는 것은 당연하지 않다！」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうだったわね…最期の最期まで、気が利かなくてごめんなさい」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그랬네요…최후의 최후까지, 생각이 잘 미치지 않아서 미안해요」")
+	PRINTFORMW 「이니까, 사과해……」
+	PRINTFORMDW 소야는 앨리스를 달래는것 같이 살그머니 손을 잡아 돌려주면(자), 가슴 팍으로부터 무엇인가를 꺼냈다
+	PRINTL
+	;明かされる真実
+;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ覚えてる？ この指輪…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기 기억하고 있다？ 이 반지…」")
+	PRINTFORMW 「, 그 거……소야가 부수어 버려도…」
+;OriginalString : (COLOR_K14("사쿠야"), "「ごめんなさい、ずっと嘘ついてたわ。でも…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「미안해요, 쭉 거짓말 하고 있었어요. 그렇지만…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「私はこれを持っていたかったの」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나는 이것을 가지고 있고 싶었어」")
+	PRINTFORMW 「어째서, 그런 것……어떤 영향이 있을까 알지 않는다고 말했잖아！」
+	PRINTFORMDW 소 밤에는 말하기 시작했다…
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「でもこの指輪は私達を結び付けてくれたわ。そして、あの時の貴女は命を掛けていた」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇지만 이 반지는 우리들을 연결시켜 주었어요. 그리고, 그 때의 당신은 생명을 걸고 있었다」")
+	PRINTFORMW 「, 무엇 말하기 시작해」
+;OriginalString : (COLOR_K14("사쿠야"), "「엘리스が一歩を踏み出してくれたから私達は一つになれた」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엘리스하지만 한 걸음을 내디뎌 주었기 때문에 우리들은 1살이 될 수 있었다」")
+;OriginalString : (COLOR_K14("사쿠야"), "「自分の身を犠牲に하면서、貴女が踏み出してくれたから…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「자신의 몸을 희생에하면서, 당신이 내디뎌 주었기 때문에…」")
+	PRINTFORMW 「그런 것 소야가 신경쓰는 일은…」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうじゃないのよ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇지 않아」")
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「これはずっと目の前の事から逃げ続けた自分への戒め、私なりのけじめなのよ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이것은 쭉 눈앞의 일로부터 계속 도망친 자신에게로의 경고해, 나나름의 구별이야」")
+;OriginalString : (COLOR_K14("사쿠야"), "「それに、これを身につけてると貴女と一つになれるような気がして、ね」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「게다가, 이것을 몸에 익히고 있으면 당신과 하나가 될 수 있는 것 같은 생각이 들, 어」")
+	PRINTFORMW 「이다, 그러니까는！ 이런 일이 되면 의미가 없지 않다！」
+	PRINTFORMW 「그런 것, 빨리 버리면 좋았던 것！」
+	PRINTL
+;OriginalString : (COLOR_K14("사쿠야"), "「それはできなかったのよ。貴女の血が染み付いたこの指輪を棄てるなんて事は…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그것은 할 수 없었던거야. 당신의 피가 배어든 이 반지를 버리다는 일은…」")
+;OriginalString : (COLOR_K14("사쿠야"), "「場合によっては貴女はあのとき死んでた」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「경우에 따라서는 당신은 그 때 죽어 있었다」")
+;OriginalString : (COLOR_K14("사쿠야"), "「その貴女の、엘리스の覚悟に応える為にも、私はこれを持っていたかったの」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그 당신의,엘리스의 각오에 응하기 위해서(때문에)도, 나는 이것을 가지고 있고 싶었어」")
+;OriginalString : (COLOR_K14("사쿠야"), "「自分がどうなろうとも、ね」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「자신이 어떻게 될려고도」")
+	PRINTL
+	PRINTFORMW 「진짜 바보……소야는 큰 바보야！」
+;OriginalString : (COLOR_K14("사쿠야"), "「そうかも、しれないわね…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그럴지도, 모르네요…」")
+	PRINTL
+	;別れ
+;OriginalString : (COLOR_K14("사쿠야"), "「ごめんなさい、엘리스。でも貴女に会えて良かった…私、幸せだったわ」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「미안해요,엘리스그렇지만 당신을 만날 수 있어 좋았다…나, 행복했어요」")
+	PRINTFORMW 「혐！ 싫어요 그런 것！ 벌써 끝나 같은 일, 말하지 말아…」
+;OriginalString : (COLOR_K14("사쿠야"), "「そう、ね……それに、またいつか会える。そんな気がするわ…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇, 구나……게다가, 또 언젠가 만날 수 있다. 그런 생각이 들어요…」")
+	PRINTFORMDW 소야는 앨리스의 뺨에 손을 대어 손가락끝으로 살그머니 눈물을 닦았다…
+;OriginalString : (COLOR_K14("사쿠야"), "「だから、もう泣かないで……貴女には、やっぱり笑顔が似合うと思うから」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러니까, 이제 울지 마……당신에게는, 역시 웃는 얼굴이 어울린다고 생각하기 때문에」")
+	PRINTL
+	PRINTFORMDW 앨리스는 소야의 손을 잡아, 눈물을 흘리면서도 힘껏의 웃는 얼굴을 보였다
+;OriginalString : (COLOR_K14("사쿠야"), "「うん…やっぱり、その方がいいわね。最期に貴女の笑顔が見られてよかった…」")
+	CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「응…역시, 그 쪽이 좋네요. 최후에 당신의 웃는 얼굴을 볼 수 있어서 좋았다…」")
+	CALL FADEIN(20, "「찢는, 야…？」")
+	PRINTFORMDW 눈시울을 닫으면서 소야가 말을 뽑는다
+	;フェードイン
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "「저기엘리스…봄되었다하, 함께……」")
+	TWAIT 500, 0
+	PRINTL
+	PRINTFORMDW 가득 차고 충분한 웃는 얼굴을 남긴 채로…그것이 소야의 최후의 말이 되었다…
+	CALL TWAIT3_K14
+	;葬儀
+	;他の人物を描写すると収拾つかなくなるので切り捨てる。本筋に関係もないしね
+	PRINTFORMDW 장의는 호수가 보이는 작은 언덕 위에서 엄숙하게 거행해졌다
+	PRINTFORMDW 내려 쌓이는 눈가운데 말을 발표하는 사람도 없고, 다만 조용하게 때는 지나 갔다…
+	PRINTL
+	PRINTFORMDW 장의의 참석자가 한사람, 또 한사람으로 떠나 가 마지막에는 상복에 몸을 싼 인형 부려, 앨리스만이 남겨졌다
+	PRINTFORMDW 그 손에는 소야가 애용하고 있던 헤드 드레스와 일찌기 자신이 만들어 내, 소야를 죽어 쫓아 버리는 원이나 된 반지가 잡아지고 있다
+	PRINTFORMDW 그 눈동자는 눈물을 흘리는 일도 없고, 다만 조용하게 소야의 영면하는 일이 된 장소를 응시하고 있었다…
+	PRINTL
+	PRINTL
+	;フェードインをＭＳ 明朝に(他に何か適切なフォントがないかな？)
+	CALL SETFONT_K14
+	;中央で表示(아라이멘도で行末コメント使うとエラーを吐く)
+	ALIGNMENT CENTER
+	;-------------------------------------------------------
+	;FADE毎にクリアラインさせない方がいいような気もする…
+	;そしてフェードインでもいいような気もするし悩ましいな！
+	;-------------------------------------------------------
+	;//ユニコード化により플랑ス語も普通に出力可能に。アキュートアクセント付きでも保存、出力に問題なし！
+	;フェードアウト5連
+	CALL FADE(30, COLOR2_K14("ALICE"), COLOR_K14("black"), "Par chance nos vies nocturnes")
+	;CLEARLINE 1
+	TWAIT 2500, 0
+	CALL FADE(30, COLOR2_K14("ALICE"), COLOR_K14("black"), "Comme des pétales s'échappent aux vents de Neptune")
+	;CLEARLINE 1
+	TWAIT 2500, 0
+	CALL FADE(35, COLOR2_K14("ALICE"), COLOR_K14("black"), "Marionnettes guidées en cachette Jusqu'à ma cage")
+	;CLEARLINE 1
+	TWAIT 2500, 0
+	CALL FADE(30, COLOR2_K14("ALICE"), COLOR_K14("black"), "Je ne vous ai pas aimés juste--SAKUYA")
+	TWAIT 2500, 0
+	;CLEARLINE 1
+	CALL FADE(35, COLOR2_K14("ALICE"), COLOR_K14("black"), "je vous aimais")
+	;CLEARLINE 1
+	TWAIT 1000, 0
+	;最後にまとめて行削除する
+	CLEARLINE 5
+	PRINTL
+	;フォントを戻す
+	CALL RESETFONT_K14
+	;左寄せに戻す
+	ALIGNMENT LEFT
+	;再会、人形遣いの真の姿、そして幕引きへ
+	PRINTFORMDW 앨리스는 쇠약하고 있었다…
+	PRINTFORMDW 그것이 소야를 잃은 일에 의한 정신적인 것인가, 스스로 낳은 꺼림칙한 반지의 영향인가, 그녀 자신에게도 알지 않았다
+	PRINTFORMDW 이마에는 땀이 스며들어 시야가 희미해진다. 앨리스는 푹무릎을 다해 그 자리에 웅크리고 앉을 것 같게 되었다
+	PRINTFORMDW 라고 그 때……그녀의 신체를 싸는 무엇인가의 감촉…
+	PRINTFORMDW 그것은 쉽고, 따뜻하고, 즐겁고, 그리운, 그녀가 요구해 마지않는 감촉이었다……
+	;---------------------------------------------
+	;タイトル:La Fleur En Cage
+	;原曲:不思議の国の엘리스
+	;サークル:Crest
+	;ヴォーカル:Lyn-A
+	;アルバム:螺旋衒操 ～Dolls of Independence～
+	;---------------------------------------------
+	CALL BGM_CUTIN("La fleur en Cage", 1)
+	
+	CALL FADEIN(20, "「찢는, 야……」")
+	PRINTL
+	PRINTFORMDW 되돌아 보면(자) 거기에는 소야의 모습이 있었다. 적어도 앨리스에게는 그렇게 보였다
+	PRINTFORMDW 그 모습은 희미해, 맹로, 혹시 그녀 밖에 안보이는 것으로 있을 지도 몰랐다…
+	PRINTFORMW 「와 주었군요, 소야」
+	PRINTL
+	PRINTFORMDW 앨리스를 응시하는 소야의 모습은 미소를 가득 채우면서도, 그 표정은 어딘가 슬픈 듯 했다
+	PRINTFORMDW 소야가 무릎을 붙은 앨리스에게 손을 뻗친다. 앨리스는 웃는 얼굴로 그 손을 잡으려고 일어서 걸쳤다
+	PRINTFORMDW 그녀 본래의 아름답고, 생기로 가득 찬, 일점의 흐림도 없는 웃는 얼굴로――
+	PRINTL
+	PRINTFORMDW 그러나……내민 앨리스의 손은 이미 사람이 그러면 없고, 인형 그 자체가 되어 있었다…
+	PRINTFORMDW 앨리스는 그 영혼이 존재의 깊은 속으로부터, 한 때의 그녀 자신인 것, 인형인 그 신체로부터 갈라 놓아지고
+	PRINTFORMDW 생명이 희미해져 있고 구의 것을 느끼면서, 이렇게 해 죽는 것이 쭉 옛부터 자신의 운명이다와 깨달았다…
+	PRINTFORMDW 그러나, 그렇게 해서 죽어 가면서도, 그녀는 행복했다
+	PRINTFORMDW 자신의 영혼이 둘도 없는 상대와 용해되어, 영원히 연결된 일을 알았기 때문에서 만났다
+	PRINTL
+	CALL FADEIN(20, "「사쿠야, 이것으로 우리들은 영원히 하나예요」")
+	TWAIT 500, 0
+	PRINTFORMDW 칠색의 인형 부려, 앨리스는 일성 외쳐, 이윽고 그 신체는 쓰러져 빈껍질의 인형화해 축가로놓였다
+	PRINTFORMDW 아직도 내리고 그치는 일을 알지 않는, 눈 내릴 듯한 하늘의 아래에서……
+	PRINTL
+	PRINTFORMDW 눈은 계속 내렸다. 두 명을 조상하는것 같이. 두 명을 축복하는것 같이
+	PRINTFORMDW 그것은 언제까지나, 언제까지나, 계속 내렸다……
+	CALL TWAIT3_K14
+	;FULLCUTINでもいいような気もするけど、どうするか
+	;フェードインをＭＳ 明朝に
+	CALL SETFONT_K14
+	;中央で表示
+	ALIGNMENT CENTER
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "저기 기억하고 있다？ 우리들이 만났던 것도 이런 눈이 내리는 날이었다라는 일")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("ALICE"), "잊을 이유 없어요. 나의, 중요한 추억인걸……")
+	TWAIT 2500, 0
+	PRINTL
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("SAKUYA"), "봐엘리스！ 달이 매우 예쁘다")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("ALICE"), "바보같구나. 달 같은거 보이는 것…")
+	TWAIT 3000, 0
+	PRINTL
+	CALL FADE(20, COLOR_K14("black"), COLOR2_K14("ALICE"), "그렇구나……나에게도 보인다. 그런, 생각이 들어요……")
+	TWAIT 3000, 0
+	CALL TWAIT3_ZWEI_K14
+	CALL FADE(20, COLOR_K14("black"), COLOR_K14("white"), "～Fin")
+	;フォントを戻す
+	CALL RESETFONT_K14
+	;左寄せに戻す
+	ALIGNMENT LEFT
+	PRINTL
+	TWAIT 500, 0
+	PRINTL
+	;デフォ色にする
+	RESETCOLOR
+	;太字にする
+	FONTSTYLE 1
+	;SCROLLTEXTの上段にCUSTOMDRAWLINEしてラインの中で애니메ーション시킨다
+	CUSTOMDRAWLINE -=
+	;SCROLLTEXTでエンディングタイトル
+	CALL SCROLLTEXT("　　　　　　　【Ending No.0007】", 2, 6, 117, 0, 1)
+	;フォントを戻す
+	CALL RESETFONT_K14
+	PRINTL
+	TWAIT 500, 0
+	PRINTL
+	;ゲームオーバー2で終了시킨다
+	CALL GAME_OVER2_K14
+ENDIF

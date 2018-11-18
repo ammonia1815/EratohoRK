@@ -1,0 +1,498 @@
+﻿;==================================================
+;
+;	汎用関数置き場＠参照編
+;		参照に用い、特定の数値や名称などを返すもの
+;		あるいは、状況に応じた接頭語などを返すもの
+;
+;		구상向けのものもあったりなかったり。
+;
+;==================================================
+
+;==================================================
+;
+;	TEQUIP・ITEM関連の参照
+;
+;==================================================
+
+;-------------------------------------------------
+;関数名:EQUIP_CARESS
+;概　要:지속애무装備品취득関数
+;引　数:ARGS…애무種別を入れると一致をみる。/区切りで複数指定可能。省略するか空文字列だとTEQUIPによる애무を全て表示。
+;			　클리캡・오나홀等지속애무をもたらさないので含まない。
+;       ARG…대상のキャラ（省略すると죠교대상。現在죠교대상のみサポート）
+;戻り値:一致を見る場合、一致しなければ空文字列。一致했다か省略했다場合、애무に関わるTEQUIPすべてを/区切りで並べたもの
+;備　考:式中関数
+;-------------------------------------------------
+@EQUIP_CARESS(ARGS, ARG = -2)
+#FUNCTIONS
+#LOCALSSIZE 1
+ARG = ARG != -2 ? ARG # MASTER
+VARSET LOCALS
+SIF TEQUIP:바이브
+	LOCALS += "바이브/"
+SIF TEQUIP:항문바이브
+	LOCALS += "항문바이브/"
+SIF TEQUIP:항문비즈
+	LOCALS += "항문비즈/"
+SIF TEQUIP:관장그릇＋플러그
+	LOCALS += "관장그릇＋플러그/"
+SIF TEQUIP:유두캡
+	LOCALS += "유두캡/"
+SIF TEQUIP:삼각목마
+	LOCALS += "삼각목마/"
+SIF GETBIT(TEQUIP:자위중, 0)
+	LOCALS += "자위중/"
+IF TEQUIP:죠교자페니스밴드
+	SIF RANGE(TEQUIP:성교중, 1, 5) && TEQUIP:성교중 != 3
+		LOCALS += "ペニバンＶ성교중/"
+	SIF TEQUIP:성교중 == 3
+		LOCALS += "ペニバン기승위中/"
+	SIF TEQUIP:성교중 == 6
+		LOCALS += "ペニバンＡ성교중/"
+ELSE
+	SIF RANGE(TEQUIP:성교중, 1, 5) && TEQUIP:성교중 != 3
+		LOCALS += "Ｖ성교중/"
+	SIF TEQUIP:성교중 == 3
+		LOCALS += "기승위中/"
+	SIF TEQUIP:성교중 == 6
+		LOCALS += "Ａ성교중/"
+ENDIF
+IF TEQUIP:페니스밴드
+	SIF RANGE(TEQUIP:성교봉사중, 1, 5) && TEQUIP:성교봉사중 != 3
+		LOCALS += "ペニバンＶ성교봉사중/"
+	SIF TEQUIP:성교봉사중 == 3
+		LOCALS += "ペニバン역강간中/"
+	SIF TEQUIP:성교봉사중 == 6
+		LOCALS += "ペニバンＡ성교봉사중/"
+ELSE
+	SIF RANGE(TEQUIP:성교봉사중, 1, 5) && TEQUIP:성교봉사중 != 3
+		LOCALS += "Ｖ성교봉사중/"
+	SIF TEQUIP:성교봉사중 == 3
+		LOCALS += "역강간中/"
+	SIF TEQUIP:성교봉사중 == 6
+		LOCALS += "Ａ성교봉사중/"
+ENDIF
+IF PENIS(MASTER)
+	SIF TEQUIP:죠교대상Ｃ사용 == 1
+		LOCALS += "수음中/"
+	SIF TEQUIP:죠교대상Ｃ사용 == 2
+		LOCALS += "펠라中/"
+ELSE
+	SIF TEQUIP:죠교대상Ｃ사용 == 1
+		LOCALS += "애무中/"
+	SIF TEQUIP:죠교대상Ｃ사용 == 2
+		LOCALS += "クンニ中/"
+ENDIF
+
+SIF LOCALS == ""
+	RETURNF ""
+
+LOCALS = SUBSTRINGU(LOCALS, 0, STRLENSU(LOCALS)-1)
+RETURNF \@ ARGS == "" || STRFIND(@"/%LOCALS%/", @"/%ARGS%/") == -1 ? LOCALS # \@
+
+
+;-------------------------------------------------
+;関数名:EFFECT
+;概　要:薬剤などの効果を表す関数
+;引　数:ARG:0…薬剤の効果量(TEQUIP)
+;       ARG:1…0なら弱中強、1なら少中多を返す
+;戻り値:効果の大きさを表す文字
+;       10以上は強、5以上は中、5未満は弱
+;備　考:式中関数
+;-------------------------------------------------
+@EFFECT(ARG:0, ARG:1)
+#FUNCTIONS
+SELECTCASE ARG:0
+	CASE IS > 9
+		RETURNF @"\@ ARG:1 ? 多 # 強 \@"
+	CASE IS > 4
+		RETURNF "中"
+	CASEELSE
+		RETURNF @"\@ ARG:1 ? 少 # 弱 \@"
+ENDSELECT
+
+
+;-------------------------------------------------
+;関数名:GETINSERT
+;概　要:성교상태を表す関数
+;引　数:なし
+;戻り値:성교중=1、성교봉사중=2、조수성교중=3、조수성교봉사중=4
+;備　考:式中関数
+;-------------------------------------------------
+@GETINSERT(ARG:0, ARG:1)
+#FUNCTION
+SIF TEQUIP:성교중
+	RETURNF 1
+SIF TEQUIP:성교봉사중
+	RETURNF 2
+SIF TEQUIP:조수성교중
+	RETURNF 3
+SIF TEQUIP:조수성교봉사중
+	RETURNF 4
+RETURNF 0
+
+;-------------------------------------------------
+;関数名:EQUIPACTION_DESCRIPTION
+;概　要:TEQUIP関係の죠교자の행동描写
+;引　数:なし
+;戻り値:TEQUIPの상태を表す文字列
+;備　考:式中関数
+;使用例:%EQUIPACTION_DESCRIPTION()%
+;-------------------------------------------------
+@EQUIPACTION_DESCRIPTION
+#FUNCTIONS
+IF TEQUIP:안면승마 || TEQUIP:안면승마항문
+	RETURNF @"%CALLNAME:MASTER%의 顔の上に跨りながら"
+ELSEIF TEQUIP:자위중
+	SELECTCASE TEQUIP:자위중
+		CASE 1
+			RETURNF @"%CALLNAME:MASTER%가 자위하는 모습을 감상하면서"
+		CASE 2
+			RETURNF @"%CALLNAME:MASTER%에게 자위(을)를 과시하면서"
+		CASE 3
+			RETURNF @"%CALLNAME:MASTER%가 자위하는 모습을 감상하면서"
+	ENDSELECT
+ELSEIF TEQUIP:성교중
+	RETURNF @"腰を振って%CALLNAME:MASTER%を突き上げながら"
+ELSEIF TEQUIP:성교봉사중
+	IF TEQUIP:페니스밴드
+		RETURNF @"玩具의 페니스를 \@ TEQUIP:성교봉사중 == 6 ? 항문 # 질내 \@で味わいながら"
+	ELSEIF TEQUIP:성교봉사중 == 6
+		RETURNF @"항문に삽입시켰다페니스를締め付けながら"
+	ELSE
+		RETURNF @"질내의 페니스를 貪りながら"
+	ENDIF
+ENDIF
+
+
+;-------------------------------------------------
+;関数名:ITEM_TYPE
+;概　要:죠교도구分類関数
+;引　数:ARG…ITEM번호
+;戻り値:도구分類번호
+;       (0.非表示/1.性具/2.責め具/3.その他)
+;備　考:式中関数
+;죠교도구分類テーブル。죠교도구の分類번호を返す。
+;죠교도구整頓表示に用いる
+;
+;名前が若干DITEMTYPEとややこしいかもしれない
+;R#仕様に変更@revkoishi(14/05/19)
+;-------------------------------------------------
+@ITEM_TYPE(ARG)
+#FUNCTION
+SELECTCASE ARG
+	;0.非表示
+	CASE 9, IS >= 50
+		RETURNF 0
+	;1.性具
+	CASE 0 TO 3, 11 TO 14
+		RETURNF 1
+	;2.責め具
+	CASE 20 TO 22, 30 TO 33, 40, 42
+		RETURNF 2
+ENDSELECT
+;3.その他(現在未使用)
+RETURNF 3
+
+
+;-------------------------------------------------
+;関数名:ITEM_TYPENAME
+;概　要:죠교도구分類名취득関数
+;引　数:ARG…죠교도구分類번호
+;戻り値:죠교도구分類を表す文字列
+;       (0.非表示/1.性具/2.責め具/3.その他)
+;備　考:式中関数
+;죠교도구の分類名を返す。죠교도구整頓表示に用いる
+;
+;R#仕様に変更@revkoishi(14/05/19)
+;-------------------------------------------------
+@ITEM_TYPENAME(ARG:0)
+#FUNCTIONS
+#LOCALSSIZE 10
+SIF !STRLENS(LOCALS:0)
+	SPLIT "非表示/性具/責め具/その他", "/", LOCALS:0, LOCAL:0
+RETURNF LOCALS:(ARG:0)
+
+
+;-------------------------------------------------
+;関数名:GET_ITEMNAME
+;概　要:죠교도구名취득関数
+;引　数:ARG:0…ITEM번호
+;戻り値:죠교도구名
+;備　考:式中関数
+;죠교도구の名前を返す。カスタマイズ後の名前の処理などを行う
+;
+;新規作成@revkoishi(14/05/22)
+;-------------------------------------------------
+@GET_ITEMNAME(ARG:0)
+#FUNCTIONS
+SELECTCASE ARG:0
+	CASE 1, 11 TO 14	;바이브/항문바이브/클리캡/유두캡/오나홀
+		RETURNF \@ ITEM:커스텀도구 ? 特注 # \@ + ITEMNAME:(ARG:0)
+ENDSELECT
+RETURNF ITEMNAME:(ARG:0)
+
+
+;==================================================
+;
+;	방침・상태변화関連の参照
+;
+;==================================================
+
+;-------------------------------------------------
+;関数名:CONDITION
+;概　要:상태値から文字列を취득する関数
+;引　数:ARG…상태플래그(TCVAR:상태변화)
+;戻り値:상태を表す文字列
+;備　考:式中関数
+;-------------------------------------------------
+@CONDITION(ARG)
+#FUNCTIONS
+#LOCALSSIZE 10
+SIF !STRLENS(LOCALS)
+	SPLIT "통상/피폐/쇠약/무기력/몽롱/정욕/분노/싫증/울굴", "/", LOCALS, LOCAL
+RETURNF LOCALS:ARG
+
+;-------------------------------------------------
+;関数名:IS_CONDITION
+;概　要:ARGがARGSの상태なら真を返す
+;引　数:ARG…キャラ등록번호。省略するとTARGET
+;戻り値:その상태なら1、違えば0
+;備　考:式中関数
+;-------------------------------------------------
+@IS_CONDITION(ARG = -2, ARGS)
+#FUNCTION
+ARG = ARG != -2 ? ARG # TARGET
+RETURNF ARGS == CONDITION(TCVAR:ARG:상태변화)
+
+;-------------------------------------------------
+;関数名:GET_CONDITION
+;概　要:ARGの상태변화名を취득
+;引　数:ARG…キャラ등록번호。省略するとTARGET
+;戻り値:상태を表す文字列
+;備　考:式中関数
+;-------------------------------------------------
+@GET_CONDITION(ARG = -2)
+#FUNCTIONS
+ARG = ARG != -2 ? ARG # TARGET
+RETURNF CONDITION(TCVAR:ARG:상태변화)
+
+;-------------------------------------------------
+;関数名:T_COND
+;概　要:TARGETが指定했다상태なら真を返す
+;引　数:ARGS…상태名
+;戻り値:その상태なら1、違えば0
+;備　考:式中関数
+;-------------------------------------------------
+@T_COND(ARGS)
+#FUNCTION
+RETURNF ARGS == CONDITION(TCVAR:상태변화)
+
+;-------------------------------------------------
+;関数名:M_COND
+;概　要:MASTERが指定했다상태なら真を返す
+;引　数:ARGS…상태名
+;戻り値:その상태なら1、違えば0
+;備　考:式中関数
+;-------------------------------------------------
+@M_COND(ARGS)
+#FUNCTION
+RETURNF ARGS == CONDITION(TCVAR:MASTER:상태변화)
+
+;-------------------------------------------------
+;関数名:POLICY
+;概　要:죠교방침を逆引きする関数
+;引　数:ARGS…どの방침か（TODAY/금일、NOW/今、LAST/前）
+;		ARG …ARGSに금일의방침・今回の방침を入れた場合数値からとれる
+;戻り値:방침名
+;備　考:式中関数
+;-------------------------------------------------
+@POLICY(ARGS, ARG)
+#FUNCTIONS
+#LOCALSSIZE 20
+;前半６つは短期방침、後半は「금일의방침」
+SPLIT "통상/휴식/소프트/노멀/하드/이상/통상/항문/징계・/하드/イチャイチャ/이상/야외/애만들기/휴식/抱いて/ご봉사/귀여워해", "/", LOCALS, LOCAL
+IF ARGS == "금일의방침"
+	RETURNF LOCALS:(ARG+6)
+ELSEIF ARGS == "今回の방침"
+	RETURNF LOCALS:ARG
+ENDIF
+SELECTCASE ARGS
+	CASE "금일", "TODAY"
+		RETURNF LOCALS:(TFLAG:금일의방침+6)
+	CASE "今", "NOW"
+		RETURNF LOCALS:(TFLAG:턴방침)
+	CASE "前", "LAST"
+		RETURNF LOCALS:(TFLAG:전턴방침)
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE(@"@POLICY に無効な방침指定(%ARGS%)が渡されま했다")
+		;種別無指定を返す
+		RETURNF "種別無指定"
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:IS_POLICY
+;概　要:죠교방침名称と合致すれば真を返す
+;引　数:ARGS:0…どの방침か（TODAY/금일、NOW/今、LAST/前）
+;		ARGS:1…방침名称(/区切りで複数代入が可能です)
+;戻り値:真偽値(1/0)
+;備　考:式中関数
+;-------------------------------------------------
+@IS_POLICY(ARGS:0, ARGS:1)
+#FUNCTION
+#LOCALSSIZE 10
+#DIMS LTEMPS
+LTEMPS = %POLICY(ARGS)%
+SPLIT ARGS:1, "/", LOCALS, LOCAL
+IF LTEMPS == "種別無指定"
+	CALLF PRINT_ERRORMESSAGE(@"@IS_POLICY に無効な방침指定(%ARGS%)が渡されま했다")
+ELSEIF FINDELEMENT(LOCALS, LTEMPS, 0, LOCAL, 1) != -1
+	RETURNF 1
+ENDIF
+RETURNF 0
+
+;-------------------------------------------------
+;関数名:SATIS_BONUS
+;概　要:금일만족보너스から文字列を취득する関数
+;引　数:ARG…플래그(TCVAR:금일만족보너스)
+;戻り値:만족보너스を表す文字列
+;備　考:式中関数
+;-------------------------------------------------
+@SATIS_BONUS(ARG)
+#FUNCTIONS
+#LOCALSSIZE 20
+SIF !STRLENS(LOCALS)
+	SPLIT "통상/항문/징계・/하드/イチャイチャ/이상/야외/애만들기/휴식/抱いて/ご봉사/귀여워해", "/", LOCALS, LOCAL
+RETURNF LOCALS:ARG
+
+;-------------------------------------------------
+;関数名:IS_SATIS_BONUS
+;概　要:ARGSの만족보너스なら真を返す
+;引　数:ARGS…만족보너스名
+;戻り値:その상태なら1、違えば0
+;備　考:式中関数
+;-------------------------------------------------
+@IS_SATIS_BONUS(ARGS)
+#FUNCTION
+RETURNF ARGS == SATIS_BONUS(TCVAR:금일만족보너스)
+
+;-------------------------------------------------
+;関数名:GET_SATIS_BONUS
+;概　要:금일만족보너스名を취득
+;引　数:なし
+;戻り値:만족보너스を表す文字列
+;備　考:式中関数
+;-------------------------------------------------
+@GET_SATIS_BONUS
+#FUNCTIONS
+RETURNF SATIS_BONUS(TCVAR:금일만족보너스)
+
+;-------------------------------------------------
+;関数名:TENSION
+;概　要:BASE値を大雑把に表す関数
+;引　数:ARG:0…キャラ등록번호
+;       ARG:1…BASE번호
+;戻り値:BASE値を大雑把に表す文字列
+;       50%以上は高い、25%以上は一般、25%未満は低い
+;備　考:式中関数
+;죠교자の이성や만족などを文字で表現する場合に使用
+;-------------------------------------------------
+@TENSION(ARG:0, ARG:1)
+#FUNCTIONS
+#LOCALSIZE 1
+LOCAL = MAX(BASE:(ARG:0):(ARG:1), 0)
+SIF LOCAL < MAXBASE:(ARG:0):(ARG:1) / 4
+	RETURNF "低い"
+RETURNF @"\@ LOCAL < MAXBASE:(ARG:0):(ARG:1) / 2 ? 一般 # 高い \@"
+
+;-------------------------------------------------
+;関数名:COM_RANK
+;概　要:REACT부하から文字列を취득する関数
+;引　数:ARG…(TFLAG:REACT부하)
+;戻り値:REACT부하を表す文字列
+;-------------------------------------------------
+@COM_RANK(ARG)
+#FUNCTIONS
+#LOCALSSIZE 10
+SIF !STRLENS(LOCALS)
+	SPLIT "自然な행동/無理のない행동/無理を했다행동", "/", LOCALS, LOCAL
+RETURNF LOCALS:ARG
+
+;-------------------------------------------------
+;関数名:GET_COM_RANK
+;概　要:REACT부하名称と合致すれば真を返す
+;引　数:なし
+;戻り値:REACT부하を表す文字列
+;備　考:式中関数
+;-------------------------------------------------
+@GET_COM_RANK()
+#FUNCTIONS
+RETURNF COM_RANK(TFLAG:REACT부하)
+
+
+;==================================================
+;
+;	システムデータ関連の参照
+;
+;==================================================
+
+;-------------------------------------------------
+;記入チェック関数
+;	引数0：表示確率。省略すると100％。テンプレでは最初から0が入っている
+;-------------------------------------------------
+@구상記入チェック(ARG = 100)
+#FUNCTION
+RETURNF PERCENT(ARG) ? ARG # 0
+
+;-------------------------------------------------
+;関数名:CAPACITY
+;概　要:いるキャラの数を返す
+;引　数:なし
+;戻り値:いるキャラの数(MASTERを含む)
+;備　考:式中関数
+;現状、일시퇴피中が無いので、CHARANUMと何も変わらない
+;-------------------------------------------------
+@CAPACITY
+#FUNCTION
+RETURNF CMATCH(CFLAG:92, 0)
+
+;-------------------------------------------------
+;関数名:GET_DAY
+;概　要:曜日を表す文字列を취득する関数
+;引　数:なし
+;戻り値:曜日を表す文字列(日/月/火/水/木/金/土)
+;備　考:式中関数
+;-------------------------------------------------
+@GET_DAY
+#FUNCTIONS
+#LOCALSSIZE 10
+SIF !STRLENS(LOCALS)
+	SPLIT "日/月/火/水/木/金/土", "/", LOCALS, LOCAL
+RETURNF LOCALS:(DAY % 7)
+
+;-------------------------------------------------
+;関数名:GET_SEASON
+;概　要:계절を表す文字列を취득する関数
+;引　数:なし
+;戻り値:계절を表す文字列(春/夏/秋/冬)
+;備　考:式中関数
+;-------------------------------------------------
+@GET_SEASON
+#FUNCTIONS
+SWAP LOCAL:1, RESULT
+SIF !STRLENS(LOCALS)
+	SPLIT "春/夏/秋/冬", "/", LOCALS, LOCAL
+RETURNF LOCALS:(FLAG:계절)
+
+;-------------------------------------------------
+;関数名:GET_TIME
+;概　要:시간を表す文字列を취득する関数
+;引　数:なし
+;戻り値:시간を表す文字列(昼/夜)
+;備　考:式中関数
+;-------------------------------------------------
+@GET_TIME
+#FUNCTIONS
+RETURNF @"\@ TIME ? 夜 # 昼 \@"
+
+

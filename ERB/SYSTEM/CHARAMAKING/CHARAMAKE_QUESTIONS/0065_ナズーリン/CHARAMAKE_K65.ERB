@@ -1,0 +1,67 @@
+﻿;ナズーリン＠CPMの人
+@CHARAMAKE_K65(ARG)
+;OriginalString : 「悪いがちょっと起きて貰おう。質問の시간だ」
+PRINTFORMW 「나쁘지만 조금 일어나 받자. 질문의 시간이다」
+;OriginalString : 
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+;OriginalString : 
+PRINTL 
+;OriginalString : 「一緒に商売している相손に騙されて大損扱いたとしよう」
+PRINTFORML 「함께 장사하고 있는 상대에게 속아 대손해 취급로 하자」
+;OriginalString : 「さて、悪いのは誰かな？」
+PRINTFORMW 「그런데, 나쁜 것은 누군가인？」
+;OriginalString : 
+PRINTL 
+;OriginalString : [0] 答えない
+PRINTFORMDL [0] 대답하지 않는다
+;OriginalString : [1] 騙당했다自分が悪い
+PRINTFORMDL [1] 속은 자신이 나쁘다
+;OriginalString : [2] 騙했다相손が悪い
+PRINTFORMDL [2] 속인 상대가 나쁘다
+;OriginalString : [3] どちらが悪いとも言えない
+PRINTFORMDL [3] 어느 쪽이 나쁘다고 말할 수 없다
+;OriginalString : [4] 守ってくれないお上が悪い
+PRINTFORMDL [4] 지켜 주지 않는  상이 나쁘다
+CALL INPUTINTD(0, 1, 2, 3, 4)
+SELECTCASE RESULT
+	CASE 0
+;OriginalString : 「黙りかい？　まあ、いいさ」
+		PRINTFORML 「묵리카 있고？　뭐, 좋아」
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 1
+;OriginalString : 「ふむ。殊勝な心掛けだな」
+		PRINTFORML 「. 기특한 마음가짐이다」
+		CALLF CM_PROF("知性",     10)
+		CALLF CM_PROF("被虐",     20)
+		CALLF CM_PROF("モラル",   20)
+		CALLF CM_PROF("衝動",     -10)
+	CASE 2
+;OriginalString : 「尤もな答えだが、自分の身は自分で守るものだ。覚えておくと良い」
+		PRINTFORML 「우도대답이지만, 자신의 몸은 스스로 지키는 것이다. 기억해 두면 좋다」
+		CALLF CM_PROF("솔직さ",   20)
+		CALLF CM_PROF("衝動",     10)
+		CALLF CM_PROF("楽観",     20)
+		CALLF CM_PROF("攻撃",     20)
+	CASE 3
+;OriginalString : 「ぼかして曖昧なままにしておくのは、あまりいい자세とは言えないな」
+		PRINTFORML 「애매하게 해 애매한 그대로로 해 두는 것은, 너무 좋은 자세라고는 할 수 없는데」
+		CALLF CM_PROF("神経質",   20)
+		CALLF CM_PROF("楽観",     -10)
+		CALLF CM_PROF("수치",     10)
+		CALLF CM_PROF("潔癖",     10)
+	CASE 4
+;OriginalString : 「君は支配されることを望むのだね」
+		PRINTFORML 「너는 지배되는 것을 바란다」
+		CALLF CM_PROF("수치",     -20)
+		CALLF CM_PROF("楽観",     20)
+		CALLF CM_PROF("知性",     -20)
+		CALLF CM_PROF("攻撃",     10)
+		CALLF CM_PROF("衝動",     10)
+ENDSELECT
+;OriginalString : 「これで質問の시간は終わり。おやすみだ」
+PRINTFORMW 「이것으로 질문의 시간은 끝나. 휴업(휴가)다」
+RETURN 1

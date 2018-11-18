@@ -1,0 +1,254 @@
+﻿
+;────────────────────────────────────
+;関数初期化
+;────────────────────────────────────
+@ACT_M_INIT(ARG)
+#DIM LCOUNT
+;変数を初期化
+CALL SET_CRI_VAR
+FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
+	LOCAL = ACTM_NUM(ARG, LCOUNT)
+	CALL SET_CRI_VAR, GET_ACTNAME(LOCAL), 1
+	CALL SET_CRI_VAR, GET_ACTABBNAME(LOCAL), 1, 1
+NEXT
+
+;────────────────────────────────────
+;보정値計算
+;────────────────────────────────────
+;보정値加算に関しては系列内でも共有の物を加算했다りしなかったりがあるので
+;共通処理にはしない。その気になれば出来るだろって？
+;面倒なんだよ。言わせんな恥ずかしい@これみ
+@ACT_ACTM_CORRECTION(ARG)
+#DIM LCOUNT
+;보정値を判定値に加算する
+FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
+	LOCAL = ACTM_NUM(ARG, LCOUNT)
+	CALL ACT_M_RES_FETCH(LOCAL)
+	CALL ADD_CRI_VAR(GET_ACTNAME(LOCAL), RESULT)
+NEXT
+
+;────────────────────────────────────
+;구상ACT분류보정값加算
+;────────────────────────────────────
+@ACT_MENU_KOJO_CORRECTION_T
+#DIM LCOUNT
+;보정値を判定値に加算する
+FOR LCOUNT, 0, STRCOUNT(MENULIST(), "/")
+	CALL ADD_CRI_VAR(MENU(LCOUNT), 0, GET_KOJO_MENU_CORRECTION(MENU(LCOUNT), TARGET))
+NEXT
+;────────────────────────────────────
+;구상보정値취득
+;_コマンド번호/보정値_
+;ARGS		メニュー名・あるいはメニュー번호
+;ARG		대상のキャラクター
+;────────────────────────────────────
+@GET_KOJO_MENU_CORRECTION(ARGS, ARG = -1)
+#FUNCTION
+#DIM LCOUNT
+#LOCALSSIZE 200
+SIF ARG == -1
+	ARG = TARGET
+SIF ISNUMERIC(ARGS)
+	ARGS = %MENU(TOINT(ARGS))%
+IF STRFIND(CSTR:ARG:구상ACT분류보정값, "_" + ARGS + "/") >= 0
+	SPLIT CSTR:ARG:구상ACT분류보정값, "_", LOCALS
+	RETURNF TOINT(AUTO_SPLIT(LOCALS:FINDELEMENT(LOCALS, ARGS + "/",  , , 0), "/", 1))
+ENDIF
+RETURNF 0
+
+
+;────────────────────────────────────
+;구상보정値消去関数
+;ARG	대상のキャラ　省略했다場合はTARGETになります
+;────────────────────────────────────
+@CLEAR_KOJO_MENU_CORRECTION, ARGS, ARG = -1
+SIF ARG == -1
+	ARG = TARGET
+CSTR:ARG:구상ACT분류보정값 = 
+
+;────────────────────────────────────
+;구상보정値設定
+;_コマンド번호/보정値_
+;ARGS		メニュー名・あるいはメニュー번호
+;ARG		보정値の数値
+;ARG:1		대상のキャラクター
+;────────────────────────────────────
+@SET_KOJO_MENU_CORRECTION(ARGS, ARG, ARG:1 = -1)
+CALLF SETF_KOJO_MENU_CORRECTION, ARGS, ARG, ARG:1
+
+;────────────────────────────────────
+;구상보정値設定
+;_コマンド번호/보정値_
+;디버그ウィンドウでつかうための式中版
+;────────────────────────────────────
+@SETF_KOJO_MENU_CORRECTION(ARGS, ARG, ARG:1 = -1)
+#FUNCTION
+#DIM LCOUNT
+#DIMS LARGS
+#LOCALSSIZE 200
+SIF ARG:1 == -1
+	ARG:1 = TARGET
+IF ISNUMERIC(ARGS)
+	LARGS = %MENU(TOINT(ARGS))%
+ELSE
+	LARGS = %ARGS%
+ENDIF
+SIF LARGS == "" || MENUNUM(LARGS) == -1
+	THROW 구상ACT분류보정값設定において「%ARGS%」はコマンドの指定として不適切です
+IF STRFIND(CSTR:(ARG:1):구상ACT분류보정값, "_" + LARGS + "/") >= 0
+	SPLIT CSTR:(ARG:1):구상ACT분류보정값, "_", LOCALS
+	CSTR:(ARG:1):구상ACT분류보정값 = %REPLACE(CSTR:(ARG:1):구상ACT보정값, "_" + LOCALS:FINDELEMENT(LOCALS, LARGS + "/",  , , 0), "_" + LARGS + "/" + TOSTR(ARG) + "_")%
+ELSE
+	SIF CSTR:(ARG:1):구상ACT분류보정값 == ""
+		CSTR:(ARG:1):구상ACT분류보정값 += "_"
+	CSTR:(ARG:1):구상ACT분류보정값 += LARGS + "/" + TOSTR(ARG) + "_"
+ENDIF
+
+;────────────────────────────────────
+;구상보정値加算
+;メニュー問わずとメニュー限定はそのまま발してるので注意
+;────────────────────────────────────
+@ACT_ACTM_KOJO_CORRECTION_T(ARG)
+#DIM LCOUNT
+;보정値を判定値に加算する
+FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
+	LOCAL = ACTM_NUM(ARG, LCOUNT)
+	CALL ADD_CRI_VAR(GET_ACTNAME(LOCAL), 0, GET_KOJO_CORRECTION(GET_ACTNAME(ACTM_NUM(ARG, LCOUNT)), , TARGET))
+	CALL ADD_CRI_VAR(GET_ACTNAME(LOCAL), 0, GET_KOJO_CORRECTION(GET_ACTNAME(ACTM_NUM(ARG, LCOUNT)), MENU(ARG), TARGET))
+NEXT
+
+;────────────────────────────────────
+;구상보정値취득
+;_コマンド번호/보정値_
+;ARGS		コマンド名・あるいはコマンド번호
+;ARGS:1		メニュー名・あるいはメニュー번호　省略했다場合はメニュー問わずになる
+;ARG		대상のキャラクター
+;────────────────────────────────────
+@GET_KOJO_CORRECTION(ARGS, ARGS:1, ARG = -1)
+#FUNCTION
+#DIM LCOUNT
+#LOCALSSIZE 200
+SIF ARG == -1
+	ARG = TARGET
+SIF ISNUMERIC(ARGS)
+	ARGS = %GET_ACTNAME(TOINT(ARGS))%
+SIF ISNUMERIC(ARGS:1)
+	ARGS:1 = %MENU(TOINT(ARGS:1))%
+SIF ARGS:1 != ""
+	ARGS += "<" + ARGS:1
+IF STRFIND(CSTR:ARG:구상ACT보정값, "_" + ARGS + "/") >= 0
+	SPLIT CSTR:ARG:구상ACT보정값, "_", LOCALS
+	RETURNF TOINT(AUTO_SPLIT(LOCALS:FINDELEMENT(LOCALS, ARGS + "/",  , , 0), "/", 1))
+ENDIF
+RETURNF 0
+
+
+;────────────────────────────────────
+;구상보정値設定
+;_コマンド번호/보정値_
+;ARGS		コマンド名・あるいはコマンド번호
+;ARGS:1		メニュー名・あるいはメニュー번호　省略했다場合はメニュー問わずになる
+;ARG		보정値の数値
+;ARG:1		대상のキャラクター
+;────────────────────────────────────
+@SET_KOJO_CORRECTION(ARGS, ARGS:1, ARG, ARG:1 = -1)
+CALLF SETF_KOJO_CORRECTION, ARGS, ARGS:1, ARG, ARG:1
+
+;────────────────────────────────────
+;구상보정値設定
+;_コマンド번호/보정値_
+;디버그ウィンドウでつかうための式中版
+;────────────────────────────────────
+@SETF_KOJO_CORRECTION(ARGS, ARGS:1, ARG, ARG:1 = -1)
+#FUNCTION
+#DIM LCOUNT
+#DIMS LARGS, 2
+#LOCALSSIZE 200
+SIF ARG:1 == -1
+	ARG:1 = TARGET
+IF ISNUMERIC(ARGS)
+	LARGS = %GET_ACTNAME(TOINT(ARGS))%
+ELSE
+	LARGS = %ARGS%
+ENDIF
+SIF LARGS == "" || GET_ACTNUM(LARGS) == -1
+	THROW 구상ACT보정값設定において「%ARGS%」はコマンドの指定として不適切です
+IF ISNUMERIC(ARGS:1)
+	LARGS:1 = %MENU(TOINT(ARGS:1))%
+ELSE
+	LARGS:1 = %ARGS:1%
+ENDIF
+SIF MENUNUM(LARGS:1) == -1
+	THROW 구상ACT보정값設定において「%ARGS:1%」はメニューの指定として不適切です
+SIF ARGS:1 != ""
+	LARGS += "<" + LARGS:1
+IF STRFIND(CSTR:(ARG:1):구상ACT보정값, "_" + LARGS + "/") >= 0
+	SPLIT CSTR:(ARG:1):구상ACT보정값, "_", LOCALS
+	CSTR:(ARG:1):구상ACT보정값 = %REPLACE(CSTR:(ARG:1):구상ACT보정값, "_" + LOCALS:FINDELEMENT(LOCALS, LARGS + "/",  , , 0), "_" + LARGS + "/" + TOSTR(ARG) + "_")%
+ELSE
+	SIF CSTR:(ARG:1):구상ACT보정값 == ""
+		CSTR:(ARG:1):구상ACT보정값 += "_"
+	CSTR:(ARG:1):구상ACT보정값 += LARGS + "/" + TOSTR(ARG) + "_"
+ENDIF
+
+
+;────────────────────────────────────
+;구상보정値消去関数
+;ARGS	メニュー名を入れるとそのMENUのものをすべて消します。省略했다場合は全て消えます
+;ARG	대상のキャラ　省略했다場合はTARGETになります
+;────────────────────────────────────
+@CLEAR_KOJO_CORRECTION, ARGS, ARG = -1
+#DIMS LARGS
+#DIMS LTEMPS
+SIF ARG == -1
+	ARG = TARGET
+IF ARGS == ""
+	CSTR:ARG:구상ACT보정값 = 
+ELSE
+	IF ISNUMERIC(ARGS)
+		LARGS = %MENU(TOINT(ARGS))%
+	ELSE
+		LARGS = %ARGS%
+	ENDIF
+	SIF MENUNUM(LARGS) == -1
+		THROW 구상ACT보정값設定において「%ARGS%」はメニューの指定として不適切です
+		LARGS = <%LARGS%
+	LTEMPS = 
+	SPLIT CSTR:ARG:구상ACT보정값, "_", LOCALS
+	FOR LOCAL, 0, RESULT
+		IF !STRCOUNT(LOCALS:LOCAL, LARGS)
+			SIF LTEMPS != ""
+				LTEMPS += "_"
+			LTEMPS += LOCALS:LOCAL
+		ENDIF
+	NEXT
+	CSTR:ARG:구상ACT보정값 = %LTEMPS%
+ENDIF
+
+;────────────────────────────────────
+;実行不可能の判定
+;────────────────────────────────────
+@ACT_ACTM_ABLE(ARG)
+#DIM LCOUNT
+;不可能判定
+FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
+	LOCAL = ACTM_NUM(ARG, LCOUNT)
+	CALLFORM ACT_ABLE{LOCAL}
+	SIF !RESULT
+		CALL DIM_CRI_VAR(GET_ACTNAME(LOCAL), -999)
+NEXT
+
+;────────────────────────────────────
+;系列一括実行判定
+;────────────────────────────────────
+@ACTM_ABLE(ARG)
+#DIM LCOUNT
+FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
+	LOCAL = ACTM_NUM(ARG, LCOUNT)
+	CALLFORM ACT_ABLE{LOCAL}
+	SIF RESULT
+		RETURN 1
+NEXT
+RETURN 0
+
+

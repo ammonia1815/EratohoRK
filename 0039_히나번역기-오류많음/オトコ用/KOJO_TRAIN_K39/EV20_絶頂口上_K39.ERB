@@ -1,0 +1,3368 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;		히나구상　죠교이벤트구상ファイル
+;
+;	절정など、조교중に発生する이벤트をまとめたファイル
+;
+;Version		Reason
+;1.11			@구상記入チェック仕様に。EV20とその他をファイル分け
+;1.07			全体的に見直し。一部条件の書き直し等
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;EV20, 절정구상
+;========================================================================
+;・죠교자か죠교대상が절정に達するときに表示
+;・各절정は個別の呼び出しを持たずに、全て派生で処理される
+;-------------------------------------------------
+;ファイル名がTRAINとなっているが、分類上はあくまでも이벤트구상である事に注意
+;故に使うべき初回判定関数はFIRSTEVENTになる
+;FIRSTEVENTなら呼び出し毎に번호が관리されるのでFIRSTTIMEに比べると관리はかなり楽になるはず
+;-------------------------------------------------
+;=================================================
+;関連変数…
+;TFLAG:전회질싸
+;	1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)
+;	5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정)
+;TFLAG:REACT분류
+;	0=なし/1=소극적으로 한다/2=적극적으로 한다/3=용서를 빌다/4=날뛴다
+;	5=要求に応じない,거부/6=逃げる,もがく
+;NOWEX:사정
+;	1=드라이사정/2=사정/3=대량사정/4=사정(조루)/5=전립선사정
+;TEQUIP:자위중
+;	(bit0=죠교대상/bit1=죠교자)
+;
+;//キャラ参照に関わるTFLAG類は可能な限り多次元配列であるTCVARに移していきたいとう意向
+;//"TFLAG:HOGE"等で数値で参照するキャラ分けるより"TCVAR:MASTER:HOGE"等の方がより判りやすく、間違いも減らせる
+;//関数化するのも容易になり、リセットも実装する側の任意の箇所で行える
+;//まぁ後方互換をいきなり切ることはないので、その点は安心してほしい
+;
+;TCVAR:분유
+;	(1=空분유/2=분유/3=大量분유)
+;TCVAR:사정
+;	(1=드라이사정/2=사정/3=대량사정/4=사정(조루)/5=전립선사정)
+;TCVAR:시오후키
+;	(1=시오후키/2=大量시오후키)
+;TCVAR:드라이사정
+;	(1=통상の드라이사정/2=전립선자극による드라이사정)
+;=================================================
+;関数類…
+;
+;MASTER_EX
+;引　数:ARG:0…애무者→1.죠교대상自身/2.죠교자/4.조수１/8.조수２/16.조수３
+;                      /64.도구/128.便所利用者　省略すると애무者を問わない
+;              ビット和での指定が可能
+;       ARG:1…(省略可)절정の種別→1.Ｃ절정/2.Ｖ절정/3.Ａ절정/4.Ｂ절정
+;                                  /11.분유/12.사정/13.방뇨
+;ARG:0 (bit0 = 죠교대상自身/bit1 = 죠교자/bit2 = 조수１/bit3 = 조수２/bit4 = 조수３/bit6 = 도구/bit7 = 便所利用者)
+;-------------------------------------------------
+;TARGET_EX
+;引　数:ARG:0…애무者→1.죠교대상/2.죠교자自身/4.조수１/8.조수２/16.조수３
+;              ビット和での指定が可能。省略すると애무者を問わない
+;       ARG:1…(省略可)절정の種別→1.Ｃ절정/2.Ｖ절정/3.Ａ절정/4.Ｂ절정
+;                                  /11.분유/12.사정
+;ARG:0 (bit0 = 죠교대상/bit1 = 죠교자自身/bit2 = 조수１/bit3 = 조수２/bit4 = 조수３)
+;-------------------------------------------------
+;初回判定関数等…
+;FIRSTEVENT
+;	初回EVENT判定関数　TFLAG:이벤트번호（TFLAG:10）を自動で参照し、
+;	現在発生しているEVENTごとに번호が独立して保存される
+;ONCEEVENT
+;	조교중初回EVENT判定関数　죠교毎にリセットされる
+;	他の仕様はFIRSTEVENTと同様
+;RANDEVENT
+;	RAND処理で이벤트種類ごとの번호を返すが、全種見るまで同じ数字は返さない
+;	全て表示했다際に初期化される
+;-------------------------------------------------
+;コマンド参照関数等…
+;IS_NOWACTNAME
+;	現在のACT名称と合致すれば真を返す
+;IS_PREVACTNAME
+;	전회의ACT名称と合致すれば真を返す
+;IS_COMGRONAME
+;	現在のREACT분류名称と合致すれば真を返す
+;IS_NOWCOMNAME
+;	現在のCOM名称と合致すれば真を返す
+;GET_ACTNAME
+;	ACT번호からACT名称を취득する
+;GET_NORMALACTNUM
+;	コンビネーション、ＳＰアクション번호から派生전ACT번호を취득する
+;-------------------------------------------------
+;절정系参照関数等…
+;GET_SHOOTING/SHOOTING
+;	TCVAR:사정に対応。文字列で사정種を参照
+;GET_SPLAYING_MILK/SPLAYING_MILK
+;	TCVAR:분유に対応。文字列で분유種を参照
+;GET_SQUIRTING/SQUIRTING
+;	TCVAR:시오후키に対応。文字列で시오후키種を参照
+;GET_DRY_CUM/DRY_CUM
+;	TCVAR:드라이사정に対応。文字列で드라이사정種を参照
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_20(ARG)
+;-------------------------------------------------
+;절정関係は個別の呼び出しを持たず、全てEVENT20内の派生として処理される
+;故に分岐の우선順位を間違うと死に구상を生み出す事になる
+;各NOWEX毎に最低限何かを設けないと違和感が生じやすくなる
+;突き詰めていくと分岐の可能性は無限に近い為、ある程度取捨선택する필요がある
+;(ASSI:1)や(ASSI:2)の조수関係、TARGETが主人であるか否か、절정시켰다のが誰か、とかキリがない
+;ACT, REACTの様にシステム的に汎用処理が用意されている訳ではないので、
+;場合によっては自作関数で汎用処理を設けてしまった方が楽かも知れない
+;個人的にはRev구상に於いて最も難易度が高く、最も손間が掛かる箇所と考えている
+;既存の구상は相応と손間と시간をかけているので、いきない真似しようとせずに
+;少しずつ書き발す、というくらいの気持ちでやるのがオススメ
+;-------------------------------------------------
+#LOCALSIZE 10
+#LOCALSSIZE 10
+VARSET LOCAL
+VARSET LOCALS
+RESULT = 0
+
+;────────────────────────────────────
+;질내사정(죠교대상→죠교자)
+;────────────────────────────────────
+;・Ｖ성교봉사系で질내사정する場合に表示
+;・TFLAG:안빼고は抜かない判定ごとに+1される
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 4)
+	LOCALS:0 '= RAND_SPLIT("질내/中/ナカ/なか")
+	LOCALS:1 '= RAND_SPLIT("사정/出/だ")
+	LOCALS:2 '= RAND_SPLIT("ん/あ/ふぁ/あぁ") + "っ"
+	;=================================================
+	;안빼고に続行（中出し後、성교봉사系ACTに続く場合）
+	;=================================================
+	IF TFLAG:안빼고
+		;-------------------------------------------------
+		;동시절정(죠교자が同時にＶ절정)
+		;-------------------------------------------------
+		IF TCVAR:TARGET:Ｖ절정 && TCVAR:MASTER:사정
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;애태움中に절정
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF TCVAR:MASTER:애태움도 > 1
+				SELECTCASE COMGRONAME(TFLAG:REACT분류)
+					;소극적으로 한다
+					CASE "소극적으로 한다"
+						PRINTFORMW （(이)나다……초조하게 해에도 치워 구 되어 버려서……）
+					;적극적으로 한다
+					CASE "적극적으로 한다"
+						PRINTFORMW 「이나, 안돼！ 초조하게 해…그렇게 되면(자), 내가！」
+					;その他
+					CASEELSE
+						PRINTFORMW （(이)나다…초조하게 해 이, 이인가 되어버린다……）
+				ENDSELECT
+				;汎用절정구상を呼ぶ
+				CALL TV_EX_K39
+				;TWAITで間を取る
+				TWAIT 500, 0
+				;地の文を呼ぶ
+				CALL EX_SITUATION_K39
+				RETURN 1
+			ENDIF
+			
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;동시절정：드라이사정
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF SHOOTING(MASTER, "드라이사정")
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 0)
+						CASE 0
+							PRINTFORM 「아！ %RAND_SPLIT("아/하")%아%RAND_SPLIT("ぁっ/")%
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  이%RAND_SPLIT("라고 끝낸다/쿠/쿠")%……이！」
+							;사정エフェクトを呼ぶ
+							CALL SHOOT_VARIATION_K39
+							;사정エフェクトと절정エフェクトに間が欲しいのでTWAIT
+							TWAIT 500, 0
+							PRINTFORMW 「%RAND_SPLIT("읏하/우/후")%！？ ,%LOCALS:0%그리고 벌벌 해……아！！」
+						CASE 1
+							PRINTFORM 「%RAND_SPLIT("아/우/후")%아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  아히！ 와버리는 , 무엇인가 와버리는！」
+							CALL SHOOT_VARIATION_K39
+							TWAIT 500, 0
+							PRINTFORMW 「히！？ %RAND_SPLIT("안됏/야")%, 안돼！ 이, 구……！」
+					ENDSELECT
+				;その他
+				ELSE
+					;RANDEVENT(1)
+					SELECTCASE RANDEVENT(2, 1)
+						CASE 0
+							PRINTFORM 「아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  아……내！ %LOCALS:0%에%LOCALS:1%해 주세요！」
+							CALL SHOOT_VARIATION_K39
+							TWAIT 500, 0
+							PRINTFORMW 「아！？ 나오지 않았는데……이！ 이있습니다……！」
+						CASE 1
+							PRINTFORM 「아
+							CALL PRINT_SYMBOL2_K39
+							PRINTFORMW  응구……이 오는 , 이 오는……！」
+							CALL SHOOT_VARIATION_K39
+							TWAIT 500, 0
+							PRINTFORMW 「응！？ , 안으로, 벌벌 해……이, 구……！」
+					ENDSELECT
+				ENDIF
+				;終端でまとめてQUAKE
+				CALL QUAKE(4)
+				;TWAITで間を取る
+				TWAIT 500, 0
+				;地の文を呼ぶ
+				CALL EX_SITUATION_K39
+				RETURN 1
+			ENDIF
+			
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;동시절정：드라이사정以外の場合
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF GROUPMATCH(GET_SHOOTING(MASTER), "사정", "대량사정", "조루", "전립선사정") > 0
+				;질내사정と同時にＶ절정구상関数(失笑)
+				CALL TV_EX2_K39
+				;TWAITで間をとる
+				TWAIT 500, 0
+				;地の文を呼ぶ
+				CALL EX_SITUATION_K39
+				RETURN 1
+			ENDIF
+		ENDIF
+		
+		;以下、안빼고＆사정의みの場合
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 2)
+					CASE 0
+						PRINTFORM 「아, 아
+						CALL PRINT_SYMBOL2_K39
+						PRINTFORMW  ,%LOCALS:0%그리고……벌벌 하고 있는데……」
+					CASE 1
+						PRINTFORMW 「응, 응, 이제 나오지 않는거야？ 어쩐지 어딘지 부족하다……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 3)
+					CASE 0
+						PRINTFORM 「아, 아
+						CALL PRINT_SYMBOL2_K39
+						PRINTFORMW  ,%LOCALS:0%그리고……벌벌 하고 있는데……」
+					CASE 1
+						PRINTFORMW 「우대신, 유석에 이제 한계같네요？」 
+						PRINTFORM 「조금 어딘지 부족한 느끼기도 합니다만…
+						CALL PRINT_SYMBOL_K39
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				;RANDEVENT(4)
+				SELECTCASE RANDEVENT(2, 4)
+					CASE 0
+						PRINTFORM 「！？ 나오고 있는 , 가득 나오고 있는……
+						CALL PRINT_SYMBOL2_K39
+						PRINTFORMW 「히,\@ TENSION(TARGET, 8) == "비싸다" ? 히나 # 나 \@……신인데……마마가 되어 버려……！！」
+					CASE 1
+						PRINTFORM 「아！？ (이)나 , 안 됨
+						CALL AUTOHEARTCB_K39
+						PRINTFORMW  그렇게 따르면(자)……흘러넘쳐버리는！」
+						PRINTFORMW 「응, 안돼……나와버린다！ \@ TENSION(TARGET, 8) == "비싸다" ? 보지 # 안 \@(으)로부터, 액이 나와버린다\@ TENSION(TARGET, 8) == "비싸다" ? 여어 # \@……！」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 5)
+					CASE 0
+						PRINTFORMW 「는！？ 나오고 있는, ,%LOCALS:0%에 이렇게 따라져……！」 
+						PRINTFORMW 「아！ (이)다, 안돼……액이, 흘러넘쳐 버립니다……」
+					CASE 1
+						PRINTFORMW 「아！ , 굉장하다……아직 사정이 멈추지 않네요……」 
+						PRINTFORMW 「이렇게 쏟아……이 액신을 잉다툴 생각입니까？」   
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				;RANDEVENT(6)
+				SELECTCASE RANDEVENT(2, 6)
+					CASE 0
+						PRINTFORMW 「아！ ,%LOCALS:0%그리고 뷰크뷰크는……」
+						PRINTFORMW 「그렇게 기분 좋았어…？」
+					CASE 1
+						PRINTFORMW 「아, 나다, 나다……빠른 야 」
+						PRINTFORMW 「이래서야, 어쩐지 어딘지 부족해……」
+				ENDSELECT
+			;その他
+			ELSE
+				;RANDEVENT(7)
+				SELECTCASE RANDEVENT(2, 7)
+					CASE 0
+						PRINTFORMW 「아！ 나오고 있다,%LOCALS:0%에 나오고 있다……」
+						PRINTFORMW 「그렇게 류의 것입니까？ 언제나 내로 뽑고 있는은 두인데. 우대신……」
+					CASE 1
+						PRINTFORMW 「……이제 이는 끝냈습니다」
+						PRINTFORM 「 나는 아직 만족하지 않았습니다？ %CNAME(MASTER, TARGET)%에는, 좀 더 노력해 줍니다
+						CALL PRINT_SYMBOL_K39
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他の사정(사정=2, A責사정=5)
+		;-------------------------------------------------
+		IF GROUPMATCH(GET_SHOOTING(MASTER), "사정", "전립선사정")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINTFORML 「있고 , 좋아……내,%LOCALS:0%에 내！」
+				CALL FLASH(1)
+				;정액중독LV分岐
+				SELECTCASE ABL:TARGET:정액중독
+					;정액중독LV6以上
+					CASE IS >= 6
+						PRINTFORMW 「아！ 좋아！ %LOCALS:0%에 나오는 것이 감등 없는 것！」
+						PRINTFORMW 「%TNAME_K39()%(은)는,%TNAME_K39()%하！ 정액 정말 좋아하는, 안된 신인 것……！」
+					;정액중독LV3以上
+					CASE IS >= 3
+						PRINTFORMW 「아！ 나오고 있는,%LOCALS:0%에 나오는 것 너무 좋아……」
+					;정액중독LV3未満
+					CASEELSE
+						PRINTFORMW 「아！ 나오고 있는 , 배안, 따뜻하다……」
+				ENDSELECT
+			;その他
+			ELSE
+				PRINTFORML 「있고 , 좋아요……내, 나의%LOCALS:0%에%LOCALS:1%해 주세요！」
+				CALL FLASH(1)
+				;정액중독LV分岐
+				SELECTCASE ABL:TARGET:정액중독
+					;정액중독LV3以上
+					CASE IS >= 3
+						PRINTFORMW 「아！ 나오고 있는,%LOCALS:0%에%LOCALS:1%되는 것, 버릇이 되어 버립니다……」
+					;정액중독LV3未満
+					CASEELSE
+						PRINTFORMW 「아！ 나오고 있는 , 나의%LOCALS:0%에……액이 가득……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;안빼고以外を処理
+	;=================================================
+	;죠교자が同時にＶ절정
+	;=================================================
+	IF TCVAR:TARGET:Ｖ절정 && TCVAR:MASTER:사정 ;&& !TFLAG:안빼고
+		;-------------------------------------------------
+		;애태움中に
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 > 1
+			SELECTCASE COMGRONAME(TFLAG:REACT분류)
+				CASE "소극적으로 한다", "용서를 빌다"
+					PRINTFORMW （(이)나다……초조하게 해에도 치워 구 되어 버려서……）
+				;적극적으로 한다
+				CASE "적극적으로 한다", "태연하게 한다"
+					PRINTFORMW 「이나, 안돼！ 초조하게 해…그렇게 되면(자), 내가！」
+				;その他
+				CASEELSE
+					PRINTFORMW （(이)나다…초조하게 해 이, 이인가 되어버린다……）
+			ENDSELECT
+			CALL TV_EX_K39
+			;TWAITで間を取る
+			TWAIT 500, 0
+			;地の文を呼ぶ
+			CALL EX_SITUATION_K39
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;2/3の確率で表示
+			IF RAND:3
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					;Lで改行しエフェクト呼んで間を取る
+					SELECTCASE RANDEVENT(2, 8)
+						CASE 0
+							PRINTFORM 「아 아！ 아, 아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  이런 건 , 이런 건！」
+						CASE 1
+							PRINTFORM 「히
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  이제 , 이제……이！ 이야！！」
+					ENDSELECT
+					;사정エフェクト
+					CALL SHOOT_VARIATION_K39
+					;間を取る
+					TWAIT 500, 0
+					SELECTCASE RANDEVENT(2, 9)
+						CASE 0
+							PRINTFORMW 「는！？ ,%LOCALS:0%그리고 벌벌 시키면 안 됨……！！」
+						CASE 1
+							PRINTFORMW 「히！？ 다멕, 안돼！ 분명하게%LOCALS:1%해 주지 않으면……안돼……！」
+					ENDSELECT
+				;それ以外
+				ELSE
+					;RANDEVENT(10)
+					SELECTCASE RANDEVENT(2, 10)
+						CASE 0
+							PRINTFORM 「아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  아……내！ %LOCALS:0%에%LOCALS:1%해 주세요！ 」
+						CASE 1
+							PRINTFORM 「아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  응구……이 오는 , 이 오는……！」
+					ENDSELECT
+					CALL SHOOT_VARIATION_K39
+					TWAIT 500, 0
+					;RANDEVENT(11)
+					SELECTCASE RANDEVENT(2, 11)
+						CASE 0
+							PRINTFORMW 「아！？ 나오지 않았는데……이！ 이있습니다……！」
+						CASE 1
+							PRINTFORMW 「응！？ ,%LOCALS:0%그리고, 벌벌 해……이구……！」
+					ENDSELECT
+				ENDIF
+				;TV_EX2_K39のQUAKEと被るのでここでQUAKE
+				CALL QUAKE(4)
+			;1/3の確率で汎用절정구상
+			ELSE
+				;汎用절정구상(QUAKEは関数内にあるのでここでは呼ばない)
+				CALL TV_EX2_K39
+			ENDIF
+			;TWAITで間を取る
+			TWAIT 500, 0
+			;地の文を呼ぶ
+			CALL EX_SITUATION_K39
+			RETURN 1
+		ENDIF
+		
+		;なんとなく汎用化しようと思ったけど中止に
+		;代わりに確率で汎用処理を呼ぶ
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			;2/3の確率で表示
+			IF RAND:3
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 12)
+						CASE 0
+							PRINTFORM 「아
+							CALL AUTOHEARTCB_K39
+							PRINTFORM  아……안 됨, 안 됨
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  , 안쪽, 찌르면 안돼！！」
+						CASE 1
+							PRINTFORM 「이나 키라고
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  이나 키라고！！ 좀 더 범해！ 자궁안까지 범해……！」
+					ENDSELECT
+					CALL SHOOT_VARIATION_K39
+					TWAIT 500, 0
+					SELECTCASE RANDEVENT(2, 13)
+						CASE 0
+							PRINTFORMW 「！？ , 그런……안쪽에서 나오면(자), 이！ 이……！！ 」
+						CASE 1
+							PRINTFORMW 「！？ , 안쪽에서, 드퓨드퓨는……아″, 이, 구！」
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 14)
+						CASE 0
+							PRINTFORM 「있고 , 좋아요……내
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  나의%LOCALS:0%에,%LOCALS:1%해 주세요……」
+						CASE 1
+							PRINTFORM 「아, 후~……아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  이나 키라고 , 이나 키라고 주세요！」
+					ENDSELECT
+					CALL SHOOT_VARIATION_K39
+					TWAIT 500, 0
+					SELECTCASE RANDEVENT(2, 15)
+						CASE 0
+							PRINTFORMW 「아！？ 개, 이렇게 나와……나도 , 있고 , 이 오는……！」
+						CASE 1
+							PRINTFORMW 「！？ 해, 자궁에 뷰크뷰크 맞아……이구, 이 먹는……！！」
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+			;1/3の確率で汎用절정구상を呼ぶ
+			ELSE
+				CALL TV_EX2_K39
+			ENDIF
+			;TWAITで間を取る
+			TWAIT 500, 0
+			;地の文を呼ぶ
+			CALL EX_SITUATION_K39
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他の사정(2=사정, 4=조루, 5=전립선사정)
+		;-------------------------------------------------
+		IF GROUPMATCH(GET_SHOOTING(MASTER), "사정", "조루", "전립선사정")
+			;2/3の確率で表示
+			IF RAND:3
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 16)
+						CASE 0
+							PRINTFORM 「있고 , 좋아……내
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  안에%LOCALS:1%해！」
+						CASE 1
+							PRINTFORM 「이나！ 안 됨, 안 됨
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  와버리는！ %LOCALS:0%그리고%LOCALS:1%되면(자), 와버린다！」
+					ENDSELECT
+					CALL SHOOT_VARIATION_K39
+					TWAIT 500, 0
+					SELECTCASE RANDEVENT(2, 17)
+						CASE 0
+							PRINTFORM 「아！？ 아……이,%LOCALS:0%에 나와
+							CALL AUTOHEARTCB_K39
+							PRINTFORMW  이……！」
+						CASE 1
+							PRINTFORM 「아！？ 도, 도
+							CALL AUTOHEARTCB_K39
+							PRINTFORMW  이, 구……！」
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 18)
+						CASE 0
+							PRINTFORM 「아%RAND_SPLIT("아아/앙")%
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  응응……이 오는 , 이있습니다……！」
+						CASE 1
+							PRINTFORM 「이나！ 아%RAND_SPLIT("아")%
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  안돼……이제 , 이제 나……！」
+					ENDSELECT
+					CALL SHOOT_VARIATION_K39
+					TWAIT 500, 0
+					SELECTCASE RANDEVENT(2, 19)
+						CASE 0
+							PRINTFORM 「는！？ %LOCALS:0%에……,%LOCALS:1%되어
+							CALL AUTOHEARTCB_K39
+							PRINTFORMW  이구！」
+						CASE 1
+							PRINTFORM 「아！？ %LOCALS:0%에…, 뜨거운 것이！ 
+							CALL AUTOHEARTCB_K39
+							PRINTFORMW  후~응…！！」
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+			;1/3の確率で表示
+			ELSE
+				CALL TV_EX2_K39
+			ENDIF
+			;間を取る
+			TWAIT 500, 0
+			;地の文を呼ぶ
+			CALL EX_SITUATION_K39
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;//안빼고なし。죠교자のＶ절정なし
+	;=================================================
+	;애태움から
+	;=================================================
+	IF TCVAR:MASTER:애태움도 && TCVAR:MASTER:사정 ;&& ALLSAMES(0, TFLAG:안빼고, TCVAR:TARGET:Ｖ절정)
+		;//ALLSAMESは全て0なら真に、という意図。ALLTRUEとかALLFALSEとかの方が直感的に扱えるし、使う人に優しい気がする
+		;-------------------------------------------------
+		;애태움中に
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 > 1
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINTFORMW 「아, 나오고 있다……%LOCALS:0%에 나오고 있다……」
+				PRINTFORMW 「%RAND_SPLIT("우훗, 그렇게 기분 좋았다？/아직 가게 할 생각은 없었던 것이지만. 어쩔 수 없네요…")%」
+			;それ以外
+			ELSE
+				PRINTFORMW 「아,%LOCALS:0%에 나와……」
+				PRINTFORMW 「%RAND_SPLIT("후후,참다할 수 없었던 것 같네요♪/가게해줘줄 생각은 없었던 것이지만. 어쩔 수 없네요…")%」
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;トドメ（드라이사정）
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 == 1 && SHOOTING(MASTER, "드라이사정")
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 20)
+					CASE 0
+						PRINTFORMW 「응！？ 벌벌 하고 있지만, 나오지 않는 것 같구나……」
+					CASE 1
+						PRINTFORMW 「응！？ 이비치는 것 같지만, 이제 나오지 않구나…」
+				ENDSELECT
+			;それ以外
+			ELSE
+				SELECTCASE RANDEVENT(2, 21)
+					CASE 0
+						PRINTFORMW 「아！？ 벌벌 하고 있지만, 이제 나오지 않는 것 같네요……」
+					CASE 1
+						PRINTFORMW 「응！？ 이비치는 것 같지만, 나오지 않아요……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;これはINRANGEでもいいけど、ついGROUPMATCH＝サン使っちゃう。中身全部見えてる方が安心する
+		;-------------------------------------------------
+		;トドメ（사정）
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 == 1 && GROUPMATCH(GET_SHOOTING(MASTER), "사정", "대량사정", "조루", "전립선사정")
+			CALL SHOOT_VARIATION_K39
+			SELECTCASE RANDEVENT(2, 22)
+				CASE 0
+					PRINTFORMW 「아！？ 안으로,%LOCALS:0%그리고 뷰크뷰크는……」
+				CASE 1
+					PRINTFORM 「응！？ 뜨겁다
+					CALL AUTOHEARTCB_K39
+					PRINTFORMW  배안%RAND_SPLIT("타 버린닷！/, 탈 것 같다……")%」
+			ENDSELECT
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;//안빼고なし。죠교자のＶ절정なし。애태움なし
+	;=================================================
+	;その他사정（드라이사정）
+	;=================================================
+	IF SHOOTING(MASTER, "드라이사정") ;&& ALLSAMES(0, TFLAG:안빼고, TCVAR:TARGET:Ｖ절정, TCVAR:MASTER:애태움도)
+		LOCALS:2 '= RAND_SPLIT("ん/あ/ふぁ/あぁ") + "っ"
+		CALL SHOOT_VARIATION_K39
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(2, 24)
+				CASE 0
+					PRINTFORM 「아,%LOCALS:2%
+					CALL AUTOHEARTCB_K39
+					PRINTFORMW  ,%LOCALS:0%그리고……벌벌 하고 있는데……」
+				CASE 1
+					PRINTFORM 「%LOCALS:2%
+					CALL AUTOHEARTCB_K39
+					PRINTFORMW  응, 이제 나오지 않는거야？ \@ ABL:정액중독 > 4 ? 이래서야 물건발없지만 # 어쩔 수 없네요 \@……」
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(2, 25)
+				CASE 0
+					PRINTFORMW 「\@ TENSION(TARGET, 8) == "비싸다" ? 우훗 # 후후 \@, 유석에 이제 한계같네요？」
+				CASE 1
+					PRINTFORM 「%LOCALS:2%
+					CALL AUTOHEARTCB_K39
+					PRINTFORMW  이제, 나오지 않습니까？ \@ ABL:정액중독 > 4 ? 조금 물건발리나 있고군요 # 어쩔 수 없네요 \@……」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他사정（대량사정）
+	;=================================================
+	IF SHOOTING(MASTER, "대량사정")
+		CALL SHOOT_VARIATION_K39
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(2, 26)
+				CASE 0
+					PRINTFORMW 「！？ 나오고 있는 , 가득 나오고 있는……！」
+				CASE 1
+					PRINTFORMW 「아！？ (이)나 , 안 됨！ 그렇게 따르면(자)……흘러넘쳐버리는！」
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 27)
+				CASE 0
+					PRINTFORMW 「%TNAME_K39()%……신인데……마마가 되어 버려……！！」
+				CASE 1
+					PRINTFORMW 「응, 안돼……나와버린다！ \@ IS_CONDITION(TARGET, "정욕") ? 보지 # 나카 \@(으)로부터, 액이 나와버린다……！」
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(2, 28)
+				CASE 0
+					PRINTFORMW 「는！？ 나오고 있는, ,%LOCALS:0%에 이렇게 따라져……！」
+				CASE 1
+					PRINTFORMW 「아！ , 굉장하다……아직 사정이 멈추지 않네요……」 
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 29)
+				CASE 0
+					PRINTFORMW 「아！ (이)다, 안돼……액이, 흘러넘쳐 버립니다……」
+				CASE 1
+					PRINTFORMW 「이렇게 쏟아……이 액신을 잉다툴 생각입니까？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他사정（조루）
+	;=================================================
+	IF SHOOTING(MASTER, "조루")
+		CALL SHOOT_VARIATION_K39
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(2, 30)
+				CASE 0
+					PRINTFORMW 「아！ ,%LOCALS:0%그리고 뷰크뷰크는……」
+				CASE 1
+					PRINTFORMW 「아, 나다, 나다……빠른 야 」
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 31)
+				CASE 0
+					PRINTFORMW 「그렇게 기분 좋았어…？」
+				CASE 1
+					PRINTFORMW 「이래서야 어딘지 부족해……」
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(2, 32)
+				CASE 0
+					PRINTFORMW 「아！ 나오고 있다,%LOCALS:0%에 나오고 있다……」
+				CASE 1
+					PRINTFORMW 「……이제 이는 끝냈습니다」
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 33)
+				CASE 0
+					PRINTFORMW 「그렇게 모여 있었습니까？ 라고, 그런 (뜻)이유 없겠지요. 후후……」
+				CASE 1
+					PRINTFORMW 「 나는 아직 만족하지 않았습니다？ %CNAME(MASTER, TARGET)%에는, 은 좀 더 노력해 줍니다♪」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他사정（Ａ責사정）
+	;=================================================
+	IF SHOOTING(MASTER, "전립선사정")
+		PRINTFORM 「%RAND_SPLIT("응/응응/앗/아웃")%！ 네,
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 에…？ 엉덩이가 기분 좋아서%LOCALS:1%해 버렸다 (뜻)이유？」
+			PRINTFORMW 「……완전히. 그렇지만 어쩔 수 없네요. 남자는, 그렇게 되고 있는 것 같기 때문에. 키득…」
+		ELSE
+			PRINTFORMW 응입니다…？ 엉덩이가 기분 좋아서%LOCALS:1%해 버렸습니다인가？」
+			PRINTFORMW 「……완전히. 그렇지만 어쩔 수 없네요. 남자는, 그렇게 되고 있는 것 같기 때문에. 후후…」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;=================================================
+	;その他사정(2=사정)
+	;=================================================
+	IF SHOOTING(MASTER, "사정")
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORML 「있고 , 좋아……내,%LOCALS:0%에 내！」
+			CALL SHOOT_VARIATION_K39
+			;정액중독LV分岐
+			SELECTCASE ABL:TARGET:정액중독
+				;정액중독LV6以上
+				CASE IS > 6
+					PRINTFORMW 「아！ 좋아！ %LOCALS:0%에 나오는 것이 감등 없는 것！」
+					PRINTFORMW 「%TNAME_K39()%하！ 정액 정말 좋아하는, 안된 신인 것……！」
+				;정액중독LV3以上
+				CASE IS > 3
+					PRINTFORMW 「아！ 나오고 있는 , 안에 나오는 것 너무 좋아……」
+				;정액중독LV3未満
+				CASEELSE
+					PRINTFORMW 「아！ 나오고 있는 , 배안, 따뜻하다……」
+			ENDSELECT
+		;상사상애以外
+		ELSE
+			PRINTFORML 「있고 , 좋아요……내, 나의%LOCALS:0%에%LOCALS:1%해 주세요！」
+			CALL SHOOT_VARIATION_K39
+			;정액중독LV分岐
+			SELECTCASE ABL:TARGET:정액중독
+				;정액중독LV3以上
+				CASE IS > 3
+					PRINTFORMW 「아！ 나오고 있는 , 안에 나오는 것, 버릇이 되어 버립니다……」
+				;정액중독LV3未満
+				CASEELSE
+					PRINTFORMW 「아！ 나오고 있는 , 나중에……액이 가득……」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;항문内사정(MASTER→TARGET) RANDEVENT(34) ～
+;────────────────────────────────────
+;・Ａ성교봉사系で장내사정する場合に表示
+;・TFLAG:안빼고は抜かない判定ごとに+1される
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 6, 8)
+	LOCALS:0 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEART(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:1 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEARTB(, COLOR2_K39("PINK")) # "！" 
+	;LOCALS:2 = \@ TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEART(, COLOR2_K39("PINK"))% # ！？ \@
+	LOCALS:3 '= RAND:2 ? LOCALS:0 # LOCALS:1
+	LOCALS:4 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? LOCALS:3 # "！？" 
+	LOCALS:5 '= TENSION(TARGET, 8) == "高い" ? "……" + HTML_HEARTB(, COLOR2_K39("PINK")) # "" 
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF TFLAG:안빼고
+		;-------------------------------------------------
+		;동시절정(죠교자が同時にＡ절정)
+		;-------------------------------------------------
+		IF TCVAR:TARGET:Ａ절정 && TCVAR:MASTER:사정
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;애태움中に
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF TCVAR:MASTER:애태움도 > 1
+				SELECTCASE COMGRONAME(TFLAG:REACT분류)
+					;소극적으로 한다
+					CASE "소극적으로 한다", "용서를 빌다"
+						PRINTFORMW （(이)나다……초조하게 해에도 치워 구 되어 버려서……）
+					;적극적으로 한다
+					CASE "적극적으로 한다", "태연하게 한다"
+						PRINTFORMW 「이나, 안돼！ 초조하게 해…그렇게 되면(자), 내가！」
+					;その他
+					CASEELSE
+						PRINTFORMW （(이)나다…초조하게 해 이, 이인가 되어버린다……）
+				ENDSELECT
+				CALL TA_EX_K39
+				;TWAITで間を取る
+				TWAIT 500, 0
+				;地の文を呼ぶ
+				CALL EX_SITUATION_K39
+				RETURN 1
+			ENDIF
+			
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;동시절정：드라이사정
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF SHOOTING(MASTER, "드라이사정")
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 34)
+						CASE 0
+							PRINTFORM 「아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  아！ 이……이！」
+							CALL SHOOT_VARIATION_K39
+							TWAIT 500, 0
+							PRINTFORMW 「는！？ , 안으로 벌벌 해……！！」
+						CASE 1
+							PRINTFORM 「아
+							CALL AUTOHEARTCB_K39
+							PRINTFORML  아히！ 와버리는 , 무엇인가 와버리는！ 」
+							CALL SHOOT_VARIATION_K39
+							TWAIT 500, 0
+							PRINTFORMW 「히！？ 다멕, 안돼！ 이, 구……！」
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 35)
+						CASE 0
+							PRINTFORM 「아！ 아……내
+							CALL AUTOHEARTCB_K39
+					 		PRINTFORML  안에 사정해 주세요！ 」
+							CALL SHOOT_VARIATION_K39
+							TWAIT 500, 0
+							PRINTFORMW 「아！？ 나오지 않았는데……이！ 이있습니다……！」
+						CASE 1
+							PRINTFORML 「아%RAND_SPLIT("아아/응")%！ %RAND_SPLIT("んっ/くぅっ")%……이 오는 , 이 오는……！」
+							CALL SHOOT_VARIATION_K39
+							TWAIT 500, 0
+							;可読性が悪すぎるのでHTML_AUTOHEARTとか作る필요がありそう
+							{
+							CALL HTMLPRINTW(@"「%RAND_SPLIT("응아/아아")%っ\@ RAND:2 
+;OriginalString : %HTML_HEART(, COLOR2_K39("PINK"))% # ！？ \@　な、中で、ビクビクしてぇっ……イくぅぅっ…ッ…！」")
+								? %HTML_HEART(, COLOR2_K39("PINK"))% # ！？ \@ 아, 안으로, 움찔움찔 해엣……간다앗……！」")
+							}
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+				TWAIT 500, 0
+				;地の文を呼ぶ
+				CALL EX_SITUATION_K39
+				RETURN 1
+			ENDIF
+			
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;동시절정：その他사정(2=사정/3=대량사정/4=사정(조루)/5=전립선사정)
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF GROUPMATCH(GET_SHOOTING(MASTER), "사정", "대량사정", "조루", "전립선사정") > 0
+				;汎用処理
+				CALL TA_EX2_K39
+				TWAIT 500, 0
+				;地の文を呼ぶ
+				CALL EX_SITUATION_K39
+				RETURN 1
+			ENDIF
+		ENDIF
+		
+		;//안빼고＆죠교대상사정。죠교자のＡ절정なし
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정") ;&& !TCVAR:TARGET:Ａ절정
+			;LOCALS:0 = \@ TENSION(TARGET, 8) == "高い" ? %HTML_HEART(, COLOR2_K39("PINK"))% # ！ \@
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 36)
+					CASE 0
+						CALL HTMLPRINTW(@"「아아웃, 아앗%LOCALS:3% 엉덩이 중(안)에서……움찔움찔 하고 있지만……」")
+					CASE 1
+						CALL HTMLPRINTW(@"「읏%LOCALS:3% 저기, 이제(벌써) 나오지 않는거야？ 이래서야무슨 물건발리나 있고……」")
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 37)
+					CASE 0
+						CALL HTMLPRINTW(@"「아아웃, 아앗%LOCALS:3% 엉덩이 중(안)에서……움찔움찔 해……」")
+					CASE 1
+						PRINTFORMW 「우대신, 유석에 이제 한계같네요？」 
+						PRINTFORMW 「안에 나오지 않으면 조금 어딘지 부족하지만♪」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			LOCALS:0 '= TENSION(TARGET, 8) == "高い" ? HTML_HEART(, COLOR2_K39("PINK")) # "！？" 
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 38)
+					CASE 0
+						CALL HTMLPRINTW(@"「%LOCALS:3% 나오고 있닷, 가득사정비친다……！」")
+						PRINTFORMW 「히, 병아리……신인데……엉덩이에 정액 따라져 흥분해버린다의……！！」
+					CASE 1
+						CALL HTMLPRINTW(@"「아아앗%LOCALS:3% 얏, 안돼엣！ 그렇게 따르면……흘러넘쳐 버리는 것！」")
+						PRINTFORMW 「응, 안돼……나와버린다！ 엉덩이로부터, 액이 나와버린다……！」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 39)
+					CASE 0
+						CALL HTMLPRINTW(@"「읏하앗%LOCALS:3% 나오고 있닷, 어, 엉덩이에 이렇게 따라졋……！」")
+						PRINTFORMW 「아！ (이)다, 안돼……액이, 흘러넘쳐 버립니다……」
+					CASE 1
+						CALL HTMLPRINTW(@"「아앗%LOCALS:3% 괴, 굉장하닷……아직사정하지만 멈추지 않네요……」") 
+						CALL HTMLPRINTW(@"「이렇게 쏟아……이 액신을 엉덩이로 임신하게 할 생각입니까？ %LOCALS:5%」")
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			LOCALS:0 '= TENSION(TARGET, 8) == "高い" ? HTML_HEART(, COLOR2_K39("PINK")) # "！" 
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 40)
+					CASE 0
+						CALL HTMLPRINTW(@"「아앗%LOCALS:3% 아, 안으로 뷰크뷰크는……」")
+						PRINTFORMW 「그렇게 엉덩이가 기분 좋았어…？」
+					CASE 1
+						CALL HTMLPRINTW(@"「아아읏%LOCALS:3% 싫다, 싫닷……벌써 가 버리다니…」")
+						PRINTFORMW 「이래서야무슨, 어딘지 부족하지만……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 41)
+					CASE 0
+						CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있다, 안에 나오고 있다……」")
+						CALL HTMLPRINTW(@"「그렇게 모여 있던 것입니까？ 읏, 그런 이유 없겠지요. 후후%LOCALS:5%」")
+					CASE 1
+						PRINTFORMW 「……이제 이는 끝냈습니다」
+						CALL HTMLPRINTW(@"「나는 아직만족하고 있지 않아요？ %CNAME(MASTER, TARGET)%에는, 좀 더 노력해 받습니다%LOCALS:5%」")
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他の사정
+		;-------------------------------------------------
+		IF GROUPMATCH(GET_SHOOTING(MASTER), "사정", "전립선사정")
+			;//関数化が妥当だけど、どのようにするか考えがまとまらないのでとりあえずLOCALSで
+			;LOCALS:0 = \@ TENSION(TARGET, 8) == "高い" || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEART(, COLOR2_K39("PINK"))% # ！ \@
+			;LOCALS:1 = \@ TENSION(TARGET, 8) == "高い" || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEARTB(, COLOR2_K39("PINK"))% # ！ \@
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				CALL SHOOT_VARIATION_K39
+				;정액중독LV分岐
+				SELECTCASE ABL:TARGET:정액중독
+					;정액중독LV6以上
+					CASE IS >= 6
+						CALL HTMLPRINTW(@"「아앗！ 좋앗%LOCALS:3% 안에 나오는 것이 견딜 수 없는 것%LOCALS:3%」")
+						PRINTFORMW 「병아리는,%TNAME_K39()%하！ 정액 정말 좋아하는, 안된 신인 것……！」
+					;정액중독LV3以上
+					CASE IS >= 3
+						CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 안에 나오는 것 너무 좋아……%LOCALS:3%」")
+					;정액중독LV3未満
+					CASEELSE
+						CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 배안, 있었는지……」")
+				ENDSELECT
+			;상사상애以外
+			ELSE
+				CALL SHOOT_VARIATION_K39
+				;정액중독LV分岐
+				SELECTCASE ABL:TARGET:정액중독
+					;정액중독LV3以上
+					CASE IS >= 3
+						CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 안에 나오는 것, 버릇이 되어 버립니다……%LOCALS:3%」")
+					;정액중독LV3未満
+					CASEELSE
+						CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 나의 안에……액이 가득……%LOCALS:3%」")
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;//안빼고なし時に죠교자がＡ절정
+	;=================================================
+	;죠교자が同時にＡ절정
+	;=================================================
+	IF TCVAR:TARGET:Ａ절정 && TCVAR:MASTER:사정 ;&& !TFLAG:안빼고
+		;-------------------------------------------------
+		;애태움中に
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 > 1
+			SELECTCASE COMGRONAME(TFLAG:REACT분류)
+				;소극적으로 한다
+				CASE "소극적으로 한다", "용서를 빌다"
+					PRINTFORMW （(이)나다……초조하게 해에도 치워 구 되어 버려서……）
+				;적극적으로 한다
+				CASE "적극적으로 한다", "태연하게 한다"
+					PRINTFORMW 「이나, 안돼！ 초조하게 해…그렇게 되면(자), 내가！」
+				;その他
+				CASEELSE
+					PRINTFORMW （(이)나다…초조하게 해 이, 이인가 되어버린다……）
+			ENDSELECT
+			CALL TA_EX_K39
+			;TWAITで間を取る
+			TWAIT 500, 0
+			;地の文を呼ぶ
+			CALL EX_SITUATION_K39
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;LOCALS:0 = \@ TENSION(TARGET, 8) == "高い" || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEART(, COLOR2_K39("PINK"))% # ！ \@
+			;LOCALS:1 = \@ TENSION(TARGET, 8) == "高い" || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEARTB(, COLOR2_K39("PINK"))% # ！ \@
+			;LOCALS:2 = \@ TENSION(TARGET, 8) == "高い" || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEART(, COLOR2_K39("PINK"))% # ！？ \@
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 42)
+					CASE 0
+						CALL HTMLPRINTW(@"「앗%LOCALS:3% 아아앗！ 가 버린닷……가 버린닷%LOCALS:1%」")
+						CALL HTMLPRINTW(@"「읏하앗%LOCALS:4% 아, 안으로 움찔움찔 햇……！！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「아%RAND_SPLIT("아아/")%ぁっ%LOCALS:3% あひぃっ！ きちゃうっ、なにかきちゃうっ%LOCALS:3%」")
+						CALL HTMLPRINTW(@"「읏히앗%LOCALS:4% 안됏, 안돼엣%LOCALS:3% 이, 쿠웃……！」")
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 43)
+					CASE 0
+						CALL HTMLPRINTW(@"「아아%RAND_SPLIT("아/")%っ%LOCALS:3% あっ……出してぇっ！ 中に사정してくださいっ！」")
+						CALL HTMLPRINTW(@"「읏후아앗%LOCALS:4% 나오지 않았는데……가 버린닷！ 가 버립니닷……！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「아%RAND_SPLIT("아아/")%んっ%LOCALS:3% んっくぅっ……イきますっ、イきますぅっっ……！」")
+						CALL HTMLPRINTW(@"「응앗%LOCALS:4% 아, 안으로, 움찔움찔 해엣……간다앗……！」")
+				ENDSELECT
+			ENDIF
+			CALL QUAKE(4)
+			TWAIT 500, 0
+			;地の文を呼ぶ
+			CALL EX_SITUATION_K39
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他사정
+		;-------------------------------------------------
+		IF GROUPMATCH(GET_SHOOTING(MASTER), "사정", "대량사정", "조루", "전립선사정")
+			CALL TA_EX2_K39
+			TWAIT 500, 0
+			;地の文を呼ぶ
+			CALL EX_SITUATION_K39
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;//안빼고、죠교자のＡ절정なし
+	;=================================================
+	;애태움から
+	;=================================================
+	IF TCVAR:MASTER:애태움도 && TCVAR:MASTER:사정 ;&& ALLSAMES(0, TFLAG:안빼고, TCVAR:TARGET:Ａ절정)
+		;LOCALS:0 = \@ TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEART(, COLOR2_K39("PINK"))% # ！ \@
+		;LOCALS:1 = \@ TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEARTB(, COLOR2_K39("PINK"))% # ！ \@
+		;LOCALS:2 = \@ TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || GET_KFLAG_K39("상사상애") && PERCENT(75) ? %HTML_HEART(, COLOR2_K39("PINK"))% # ！？ \@
+		;LOCALS:3 = \@ RAND:2 ? LOCALS:0 # LOCALS:1 \@
+		;-------------------------------------------------
+		;애태움中に（드라이사정は弾く）
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 > 1 && !SHOOTING(MASTER, "드라이사정")
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있다……엉덩이안에 나오고 있다……」")
+				PRINTFORMW 「우대신, 그렇게 기분 좋았다？」
+			;それ以外
+			ELSE
+				CALL HTMLPRINTW(@"「앗%LOCALS:3%, 안에 나와……」")
+				CALL HTMLPRINTW(@"「후후,참다할 수 없었던 것 같네요%LOCALS:5%」")
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;トドメ（드라이사정）
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 == 1 && SHOOTING(MASTER, "드라이사정")
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 44)
+					CASE 0
+						CALL HTMLPRINTW(@"「읏%LOCALS:4% 움찔움찔 하고 있지만, 나오지 않는 것 같구나……」")
+					CASE 1
+						CALL HTMLPRINTW(@"「응앗%LOCALS:4% 가고 있는 것 같지만, 이제(벌써) 나오지 않는거네…」")
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 45)
+					CASE 0
+						CALL HTMLPRINTW(@"「아앗%LOCALS:4% 움찔움찔 하고 있지만, 이제(벌써) 나오지 않는 것 같네요……」")
+					CASE 1
+						CALL HTMLPRINTW(@"「응앗%LOCALS:4% 가고 있는 것 같지만, 나오지 않네요……」")
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;トドメ（사정）
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 == 1 && GROUPMATCH(GET_SHOOTING(MASTER), "사정", "대량사정", "조루", "전립선사정")
+			CALL SHOOT_VARIATION_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 46)
+					CASE 0
+						CALL HTMLPRINTW(@"「아앗%LOCALS:4% 안으로, 엉덩이 중(안)에서 뷰크뷰크는%LOCALS:5%」")
+					CASE 1
+						CALL HTMLPRINTW(@"「응앗%LOCALS:4% 뜨겁닷！ 배안 타 버린닷！」")
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(2, 47)
+					CASE 0
+						CALL HTMLPRINTW(@"「아앗%LOCALS:4% 안으로, 엉덩이 중(안)에서 뷰크뷰크는%LOCALS:5%」")
+					CASE 1
+						CALL HTMLPRINTW(@"「응앗%LOCALS:4% 뜨겁닷！ 배안, 탈 것 같다……」")
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;//안빼고、죠교자のＡ절정、애태움無し
+	;=================================================
+	;その他사정（드라이사정）
+	;=================================================
+	IF SHOOTING(MASTER, "드라이사정") ;&& ALLSAMES(0, TCVAR:MASTER:애태움도, TFLAG:안빼고, TCVAR:TARGET:Ａ절정)
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(2, 48)
+				CASE 0
+					CALL HTMLPRINTW(@"「아아웃, 아앗%LOCALS:3% 엉덩이 중(안)에서……움찔움찔 하고 있지만……」")
+				CASE 1
+					CALL HTMLPRINTW(@"「읏%LOCALS:3% 저기, 이제(벌써) 나오지 않는거야？ 이래서야무슨, 물건발없지만……」")
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(2, 49)
+				CASE 0
+					PRINTFORMW 「우대신, 유석에 이제 한계같네요？」
+				CASE 1
+					PRINTFORMW 「안에 나오지 않으면 조금 어딘지 부족하네요…」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他사정（대량사정）
+	;=================================================
+	IF SHOOTING(MASTER, "대량사정")
+		CALL SHOOT_VARIATION_K39
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(2, 50)
+				CASE 0
+					CALL HTMLPRINTW(@"「%LOCALS:4% 나오고 있닷, 가득사정비친다……%LOCALS:3%」")
+				CASE 1
+					CALL HTMLPRINTW(@"「아아앗%LOCALS:4% 얏, 안돼엣！ 그렇게 따르면……흘러넘쳐 버린닷%LOCALS:3%」")
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 51)
+				CASE 0
+					{
+					PRINTFORMW 「\@ TENSION(TARGET, 8) == "비싸다" || IS_CONDITION(TARGET, "정욕") 
+;OriginalString : ひ、히나 # わ、わたし \@っ……神様なのに……おしりに사정されて悦ぶ、変態になっちゃうっっ……！！」
+						? 히,히나 # 나, 나 \@읏……신님인데……엉덩이에사정되고 기뻐하는, 변태가 되어 버린닷……！！」
+					}
+				CASE 1
+					CALL HTMLPRINTW(@"「응앗%LOCALS:3% 안돼엣……나와 버린다%LOCALS:3% 엉덩이의 구멍으로부터 액이 나와 버린닷……！」")
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(2, 52)
+				CASE 0
+					CALL HTMLPRINTW(@"「읏하앗%LOCALS:4% 나오고 있닷, 어, 엉덩이에 이렇게 따라졋……%LOCALS:3%」")
+				CASE 1
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 괴, 굉장하닷……아직사정하지만 멈추지 않네요……」")
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 53)
+				CASE 0
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 아, 안됏……액이, 흘러넘쳐 버립니다……」")
+				CASE 1
+					CALL HTMLPRINTW(@"「이렇게 쏟아……이 액신을 엉덩이로 임신하게 할 생각입니까？ \@ TENSION(TARGET, 8) == "비싸다" ? ……%HTML_HEARTB(, COLOR2_K39("PINK"))% # \@」")
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他사정（조루）
+	;=================================================
+	IF SHOOTING(MASTER, "조루")
+		CALL SHOOT_VARIATION_K39
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(2, 54)
+				CASE 0
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 아, 안으로 뷰크뷰크는……」")
+				CASE 1
+					CALL HTMLPRINTW(@"「아앙%LOCALS:3%읏, 싫다, 싫닷……빠른 야」")
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 55)
+				CASE 0
+					PRINTFORMW 「그렇게 엉덩이가 기분 좋았어…？」
+				CASE 1
+					PRINTFORMW 「이래서야 조금 어딘지 부족하지만……」
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(2, 56)
+				CASE 0
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있다, 안에 나오고 있다……」")
+				CASE 1
+					PRINTFORMW 「……이제 이는 끝냈습니다」
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 57)
+				CASE 0
+					PRINTFORMW 「그렇게 류의 것입니까？ 그런은 두는 없는데요%LOCALS:5%」
+				CASE 1
+					PRINTFORM 「 나는 아직 만족하지 않았습니다？ %CNAME(MASTER, TARGET)%(은)는 좀 더 노력해 줍니다
+					CALL PRINT_SYMBOL_K39
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他사정（Ａ責사정）
+	;=================================================
+	IF SHOOTING(MASTER, "전립선사정")
+		PRINTFORM 「%RAND_SPLIT("응/응응/앗/아웃")%！ 네,
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 에…？ 나의…(이)가 아니고, 자신의 엉덩이가 기분 좋아서 내 버렸다 (뜻)이유？」
+			CALL HTMLPRINTW(@"「……완전히. 그렇지만 어쩔 수 없네요.남자읏, 그렇게 되고 있는 것 같으니까. 키득%LOCALS:5%」")
+		ELSE
+			PRINTFORMW 응입니다…？ 나의…(은)는 아니고, 자신의 엉덩이가 기분 좋아서 내 버렸습니다인가？」
+			CALL HTMLPRINTW(@"「……완전히. 그렇지만 어쩔 수 없네요. 남자는, 그렇게 되고 있는 것 같으니까. 후후%LOCALS:5%」")
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他사정
+	;=================================================
+	IF SHOOTING(MASTER, "사정")
+		CALL SHOOT_VARIATION_K39
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			;정액중독LV分岐
+			SELECTCASE ABL:TARGET:정액중독
+				;정액중독LV6以上
+				CASE IS >= 6
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 좋앗%LOCALS:3% 안에 나오는 것 너무 좋앗%LOCALS:3%」")
+					PRINTFORMW 「%TNAME_K39()%(은)는,%TNAME_K39()%하！ 정액 정말 좋아하는, 안된 신인 것……！」
+				;정액중독LV3以上
+				CASE IS >= 3
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 안에 나오는 것 너무 좋아……」")
+				;정액중독LV3未満
+				CASEELSE
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 배안, 있었는지……」")
+			ENDSELECT
+		;상사상애以外
+		ELSE
+			;정액중독LV分岐
+			SELECTCASE ABL:TARGET:정액중독
+				;정액중독LV3以上
+				CASE IS >= 3
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 안에 나오는 것, 버릇이 되어 버립니다……」")
+				;정액중독LV3未満
+				CASEELSE
+					CALL HTMLPRINTW(@"「아앗%LOCALS:3% 나오고 있닷, 나의 안에……액이 가득……」")
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;죠교대상사정 RANDEVENT(59) ～
+;────────────────────────────────────
+;・죠교대상が사정する場合に表示
+;・사정量による分岐は필요に応じ加減して使うのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:MASTER:사정 && !TCVAR:MASTER:방뇨
+	LOCALS:0 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEART(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:1 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEARTB(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:2 '= RAND:2 ? LOCALS:0 # LOCALS:1 
+	LOCALS:3 '= RAND:2 ? HTML_HEARTB(, COLOR2_K39("PINK")) # HTML_HEART(, COLOR2_K39("PINK")) 
+	LOCALS:4 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") ? "……" + LOCALS:3 # "" 
+	[SKIPSTART]
+	;=================================================
+	;전립선사정(Ａ절정時に쾌Ｃに関わらず사정)
+	;=================================================
+	IF SHOOTING(MASTER, "전립선사정")
+		;-------------------------------------------------
+		;입で
+		;-------------------------------------------------
+		//IF MA_CHECK_K39("입")
+		//ENDIF
+		;-------------------------------------------------
+		;손で
+		;-------------------------------------------------
+		IF MA_CHECK_K39("손")
+		ENDIF
+		;-------------------------------------------------
+		;페니스で
+		;-------------------------------------------------
+		//IF MA_CHECK_K39("페니스")
+		//ENDIF
+		;-------------------------------------------------
+		;로터で
+		;-------------------------------------------------
+		//IF MA_CHECK_K39("로터")
+		//ENDIF
+		;-------------------------------------------------
+		;항문비즈で
+		;-------------------------------------------------
+		IF MA_CHECK_K39("항문비즈")
+		ENDIF
+		;-------------------------------------------------
+		;항문바이브で
+		;-------------------------------------------------
+		IF MA_CHECK_K39("항문바이브")
+		ENDIF
+		;-------------------------------------------------
+		;관장그릇＋플러그で
+		;-------------------------------------------------
+		IF MA_CHECK_K39("관장그릇＋플러그")
+		ENDIF
+	ENDIF
+	[SKIPEND]
+	
+	;GET_NORMALACTNUM(TFLAG:ACT)でコンビネーションにも配慮すべきと思いつつ
+	;손間に躊躇してそのままだったり。真面目にやると割りと酷い事になるんでねぇ
+	;=================================================
+	;스마타で동시절정
+	;=================================================
+	IF TCVAR:TARGET:Ｃ절정 && IS_NOWACTNAME("성기마찰한다")
+		IF RAND:3
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 58)
+					CASE 0
+						CALL HTMLPRINTW(@"「야앗%LOCALS:2% 안됏%LOCALS:2% 그렇게 비비면 안돼엣！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「히앗%LOCALS:2% 아앗%LOCALS:2% 스쳣……기분 좋아져 버린다앗！」")
+					CASE 2
+						CALL HTMLPRINTW(@"「아앗%LOCALS:2% 그렇게했다라행은 끝낸닷%LOCALS:2% 가 버린닷！」")
+				ENDSELECT
+				SELECTCASE RANDEVENT(3, 59)
+					CASE 0
+						CALL HTMLPRINTW(@"「이, 이제(벌써)%LOCALS:2% 이, 쿠웃！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「후앗%LOCALS:2% 간닷%LOCALS:2% 간다앗……！」")
+					CASE 2
+						CALL HTMLPRINTW(@"「앗%LOCALS:2% 앗%LOCALS:2% 아아아앗……！」")
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 60)
+					CASE 0
+						CALL HTMLPRINTW(@"「야, 하앗%LOCALS:2% 좋은 곳이 스쳐, 나！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「응핫, 아앗%LOCALS:2% 그렇게, 비비어지면……%LOCALS:2%」")
+					CASE 2
+						CALL HTMLPRINTW(@"「아, 아앗%LOCALS:2% 스쳣, 이상하게！ 이상하게 되어 버립니다앗！」")
+				ENDSELECT
+				SELECTCASE RANDEVENT(3, 61)
+					CASE 0
+						CALL HTMLPRINTW(@"「이제(벌써), 이제(벌써)%LOCALS:2% 가 버립니닷！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「아앗, 안됏%LOCALS:2% 이, 간다앗！」")
+					CASE 2
+						CALL HTMLPRINTW(@"「이, 이런 응의%LOCALS:2% 이런 건은！ 아아앗！」")
+				ENDSELECT
+			ENDIF
+			CALL QUAKE(4)
+			TWAIT 500, 0
+			CALL SHOOT_VARIATION_K39
+		ELSE
+			CALL TC_EX_K39
+			TWAIT 500, 0
+			CALL SHOOT_VARIATION_K39
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;これもコンビネーションに派生する可能性を考えないと、と思いつつそのままだったり
+	;=================================================
+	;파이즈리で동시절정
+	;=================================================
+	IF TCVAR:TARGET:Ｂ절정 && IS_NOWACTNAME("파이즈리한다") && !TCVAR:TARGET:분유
+		IF RAND:3
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 62)
+					CASE 0
+						CALL HTMLPRINTW(@"「야앗, 안됏%LOCALS:2% 그렇게 비비면 안돼엣%LOCALS:2%」")
+					CASE 1
+						CALL HTMLPRINTW(@"「히앗%LOCALS:2% 젖가슴 스쳣……기분 좋아져 버린다앗！」")
+					CASE 2
+						CALL HTMLPRINTW(@"「아앗%LOCALS:2% 그렇게했다라행은 끝낸닷！ 가 버린닷！」")
+				ENDSELECT
+				SELECTCASE RANDEVENT(3, 63)
+					CASE 0
+						CALL HTMLPRINTW(@"「이, 이제(벌써)%LOCALS:2% 이, 쿠웃！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「후앗%LOCALS:2% 간닷, 간다앗……！」")
+					CASE 2
+						CALL HTMLPRINTW(@"「아, 앗%LOCALS:2% 아아아앗……！」")
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 64)
+					CASE 0
+						CALL HTMLPRINTW(@"「야%LOCALS:2% 하앗……가슴하지만 스쳐, 나！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「응핫, 아앗%LOCALS:2% 그렇게, 비비어지면……」")
+					CASE 2
+						CALL HTMLPRINTW(@"「아, 아앗%LOCALS:2% 유두가, 스쳐……！」")
+				ENDSELECT
+				SELECTCASE RANDEVENT(3, 65)
+					CASE 0
+						CALL HTMLPRINTW(@"「이제(벌써), 이제(벌써)%LOCALS:2% 가 버립니닷！」")
+					CASE 1
+						CALL HTMLPRINTW(@"「아앗%LOCALS:2% 안됏……이, 간다앗！」")
+					CASE 2
+						CALL HTMLPRINTW(@"「이, 이런 응의……이런 건은%LOCALS:2% 아아앗！」")
+				ENDSELECT
+			ENDIF
+			CALL QUAKE(4)
+			TWAIT 500, 0
+			CALL SHOOT_VARIATION_K39
+		ELSE
+			CALL TB_EX_K39
+			TWAIT 500, 0
+			CALL SHOOT_VARIATION_K39
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;bit = 0で죠교대상
+	;=================================================
+	;자위で사정
+	;=================================================
+	IF GETBIT(TEQUIP:자위중, 0)
+		;-------------------------------------------------
+		;顔射자위절정
+		;-------------------------------------------------
+		IF ME_PLAYER(1) == 9
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 66)
+					CASE 0
+						CALL HTMLPRINTW(@"「좋아,입에 내……전부 마셔 준다%LOCALS:4%」")
+					CASE 1
+						PRINTFORMW 「%TNAME_K39()%(이)가 말해도 좋아……이봐요, 좀 더 시고 있어……」
+					CASE 2
+						PRINTFORMW 「전부 받아 들여 준다……그대로 말해……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 67)
+					CASE 0
+						CALL HTMLPRINTW(@"「좋아요, 그대로 나의입에 내 주세요%LOCALS:4%」")
+					CASE 1
+						PRINTFORMW 「말해도 좋아요. , 좀 더 시고 있어……」
+					CASE 2
+						PRINTFORMW 「%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다. 그대로 내 주세요……」
+				ENDSELECT
+			ENDIF
+			;RETURNせずに사정種分岐に放り投げる。各分岐に入ったらそこでRETURN
+			;という訳なんで、ここでRETURNしてないのはミスじゃない。と、未来の自分に言っておく
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;드라이사정
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF SHOOTING(MASTER, "드라이사정")
+				;エフェクトを処理
+				CALL SHOOT_VARIATION_K39
+				;汎用処理
+				CALL PRINT_KOJO_EV20_1_K39
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					PRINT  라고,
+					SELECTCASE RANDEVENT(3, 68)
+						CASE 0
+							PRINTFORMW 굳이 나오지 않지만……？」
+						CASE 1
+							PRINTFORMW 이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+						CASE 2
+							PRINTFORMW 이제 텅텅같구나……」
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(3, 69)
+						CASE 0
+							PRINTFORMW  이비치는데 나오지 않아요……」
+						CASE 1
+							PRINTFORMW  벌벌 하고 있지만, 아무것도 나오지 않아요……」
+						CASE 2
+							PRINTFORMW  나오지 않아요……이제 최후입니까？」
+					ENDSELECT
+				ENDIF
+				RETURN 1
+			ENDIF
+			
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;대량사정
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF SHOOTING(MASTER, "대량사정")
+				CALL SHOOT_VARIATION_K39
+				CALL HTMLPRINTW(@"「아앗！？ %RAND_SPLIT("읏쿠, 코쿠/응읏, 응")%……んく、んくっ……んくっ%LOCALS:2%」")
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(3, 71)
+						CASE 0
+							PRINTFORMW 「개, 이렇게 많이……이제 마시지 못한다……」
+						CASE 1
+							CALL HTMLPRINTW(@"「아읏%LOCALS:2% 안됏……흐, 흘러넘쳐 버린다……」")
+						CASE 2
+							CALL HTMLPRINTW(@"「굉장하다%LOCALS:2% 아직 멈추지 않는다……저기, 나의 얼굴 질척질척 해만족？」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(3, 73)
+						CASE 0
+							CALL HTMLPRINTW(@"「후후, 액이 이렇게. 이것은 아직 짜낼 수 있을 것 같네요%LOCALS:4%」")
+						CASE 1
+							PRINTFORMW 「굉장한 양이군요……액이 흘러넘쳐 버릴 것 같습니다……」
+						CASE 2
+							PRINTFORMW 「액신을 이렇게 예 해……만족했습니까？」
+					ENDSELECT
+				ENDIF
+				RETURN 1
+			ENDIF
+			
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;조루
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF SHOOTING(MASTER, "조루")
+				;エフェクトを処理
+				CALL SHOOT_VARIATION_K39
+				;汎用処理
+				CALL PRINT_KOJO_EV20_1_K39
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(3, 75)
+						CASE 0
+							PRINTFORMW  그렇게 빨리 내지 말아……」
+						CASE 1
+							PRINTFORMW  이제 이의？ 스스로 하는 것이 그렇게 좋았다？」
+						CASE 2
+							PRINTFORMW  (이)나다 , 아직 준비하고 있지 않는데……」
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(3, 77)
+						CASE 0
+							PRINTFORMW  그렇게 빨리 나와서는 곤란합니다……」
+						CASE 1
+							PRINTFORMW  벌써 내 버렸습니까？ 그렇게 기분 좋았던 것일까 해들 」
+						CASE 2
+							PRINTFORMW  준비하고 있지 않는 동안에 나오면(자), 액이 흘러넘쳐 버립니다……」
+					ENDSELECT
+				ENDIF
+				RETURN 1
+			ENDIF
+			
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			;통상
+			;〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓
+			IF SHOOTING(MASTER, "사정")
+				PRINTFORM 「응！？ %RAND_SPLIT("읏쿠, 코쿠/응푸…응/츄쿠, 응")%……
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					IF ABL:TARGET:정액중독 > 3
+						PRINTFORM %RAND_SPLIT("우후/후후")%,%RAND_SPLIT("ご馳走様/美味しい")%
+						CALL PRINT_SYMBOL2_K14
+					ELSE
+						PRINTFORMW 네%RAND_SPLIT("익숙해지지 않네요/근심손(이)예요")%, 이 느낌……」
+					ENDIF
+				;その他
+				ELSE
+					IF ABL:TARGET:정액중독 > 3
+						PRINTFORM %RAND_SPLIT("우후/후후")%,%RAND_SPLIT("ご馳走様で했다/美味しいです")%
+						CALL PRINT_SYMBOL2_K14
+					ELSE
+						PRINTFORMW 네%RAND_SPLIT("익숙해지지 않네요/근심손(이)군요")%, 이 느낌……」
+					ENDIF
+				ENDIF
+				RETURN 1
+			ENDIF
+		ENDIF
+		
+		;顔射以外を処理
+		;MC_PLAYERの引数を偽にして죠교대상自身を参照…、できてるのかこれｗ
+		;-------------------------------------------------
+		;통상
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && MC_PLAYER(-1) == 1
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 82)
+					CASE 0
+						PRINTFORM 「이봐요, 좀 더 시고 있어.%CNAME(MASTER, TARGET)%가 이구곳, 분명하게 보고 있어 준다
+						CALL PRINT_SYMBOL_K39
+					CASE 1
+						PRINTFORMW 「응, 이구곳을 볼 수 있어라고 어떤 느낌？」
+					CASE 2
+						PRINTFORM 「좋아, 사정해 보여……우대신, 어쩐지 흥분해버린다
+						CALL PRINT_SYMBOL_K39
+				ENDSELECT
+			ELSE
+				SELECTCASE RANDEVENT(3, 84)
+					CASE 0
+						PRINTFORM 「좋아요, 그대로이는 끝내도. 분명하게 보고 있어 줄테니까
+						CALL PRINT_SYMBOL_K39
+					CASE 1
+						PRINTFORMW 「이구곳을 볼 수 있는 것은 어떤 느낌입니까？」
+					CASE 2
+						PRINTFORM 「부끄러워하지 않고, 그대로 사정해 주세요……이것, 나도 흥분해 버리네요
+						CALL PRINT_SYMBOL_K39
+				ENDSELECT
+			ENDIF
+			CALL SHOOT_VARIATION_K39
+			;RETURNせずに下位に流す。
+			;사정種分岐に落ちる、もしくは分岐を抜けきった時点でRETURN
+			;-------------------------------------------------
+			;드라이사정
+			;-------------------------------------------------
+			IF SHOOTING(MASTER, "드라이사정")
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(3, 83)
+						CASE 0
+							PRINTFORMW 「！？ 벌벌 하고 있지만, 굳이 나오지 않지만……？」
+						CASE 1
+							PRINTFORMW 「！？ 이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+						CASE 2
+							PRINTFORM 「！？ 이제 텅텅 보고 싶다……조금 짜 너무 취했는지 해들
+							CALL PRINT_SYMBOL_K39
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(3, 85)
+						CASE 0
+							PRINTFORMW 「！？ 이비치는데 나오지 않는 것 같네요……」
+						CASE 1
+							PRINTFORMW 「！？ 벌벌 하고 있지만, 아무것도 나오지 않아요……」
+						CASE 2
+							PRINTFORMW 「응……나오지 않아요……이제 최후입니까？」
+					ENDSELECT
+				ENDIF
+				RETURN 1
+			ENDIF
+			
+			;-------------------------------------------------
+			;대량사정
+			;-------------------------------------------------
+			IF SHOOTING(MASTER, "대량사정")
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(3, 87)
+						CASE 0
+							PRINTFORMW 「！？ 이렇게 많이……응, 스스로 하는 것이 그렇게 좋았어？」
+						CASE 1
+							PRINTFORM 「！？ 그렇게 가득 사정해 버려서……조금 과분할지도
+							CALL PRINT_SYMBOL_K39
+						CASE 2
+							PRINTFORMW 「！？ 굉장한, 아직 멈추지 않구나……응, 가득 내 만족？」
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(3, 89)
+						CASE 0
+							PRINTFORM 「！？ 후후, 액이 이렇게. 이것은 아직 짜 잡힐 것 같네요
+							CALL PRINT_SYMBOL_K39
+						CASE 1
+							PRINTFORMW 「！？ 굉장한 양이군요……자위가 그렇게 좋았겠지요인가？」
+						CASE 2
+							PRINTFORM 「！？ 아직 멈추지 않아요……조금 과분한 느낌이군요
+							CALL PRINT_SYMBOL_K39
+					ENDSELECT
+				ENDIF
+				RETURN 1
+			ENDIF
+			
+			;-------------------------------------------------
+			;조루
+			;-------------------------------------------------
+			IF SHOOTING(MASTER, "조루")
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(3, 91)
+						CASE 0
+							PRINTFORMW 「아！？ 그렇게 빨리 내지 말아……」
+						CASE 1
+							PRINTFORMW 「！？ 이제 이의？ 스스로 하는 것이 그렇게 좋았다？」
+						CASE 2
+							PRINTFORMW 「아！？ (이)나다 , 아직 준비하고 있지 않는데……」
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(3, 93)
+						CASE 0
+							PRINTFORMW 「！？ 상당히 빠르네요？ 모여 있을 것은 없습니다만……」
+						CASE 1
+							PRINTFORMW 「！？ 벌써 내 버렸습니까？ 스스로 하는 것이, 그렇게 기분 좋았겠지요인가」
+						CASE 2
+							PRINTFORMW 「！？ 대강, 이제 이는 끝냈습니다」
+					ENDSELECT
+				ENDIF
+				RETURN 1
+			ENDIF
+			;사정1, 3, 4以外は処理せずにリターン
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;分岐の統廃合を했다余波でRANDEVENTの이벤트번호が飛び飛びに
+	;いずれ整理しないと
+	;=================================================
+	;스마타で사정
+	;=================================================
+	IF IS_NOWACTNAME("성기마찰한다") && MC_CHECK_K39("膣입")
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(3, 96)
+				CASE 0
+					CALL HTMLPRINTW(@"「좋아, 이대로스마타그래서가게해줘준다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 사정해도 좋아……이봐요, 좀 더 켜……」
+				CASE 2
+					PRINTFORMW 「전부 받아 들여 준다……그대로 사정해……」
+			ENDSELECT
+		ELSE
+			SELECTCASE RANDEVENT(3, 98)
+				CASE 0
+					CALL HTMLPRINTW(@"「좋아요, 이대로스마타그래서가게해줘줍니다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 내도 좋아요. , 좀 더 문질러……」
+				CASE 2
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다. 그대로 내 주세요……」
+			ENDSELECT
+		ENDIF
+		CALL SHOOT_VARIATION_K39
+		;//RETURNせずに下位に流す。条件にヒットしなかった時点でRETURN
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINT  라고,
+				SELECTCASE RANDEVENT(3, 97)
+					CASE 0
+						PRINTFORMW 굳이 나오지 않지만……？」
+					CASE 1
+						PRINTFORMW 이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+					CASE 2
+						PRINTFORMW 이제 텅텅 보고 싶다……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 99)
+					CASE 0
+						PRINTFORMW  이비치는데 나오지 않아요……」
+					CASE 1
+						PRINTFORMW  벌벌 하고 있지만, 아무것도 나오지 않아요……」
+					CASE 2
+						PRINTFORMW  나오지 않아요……이제 최후입니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(2, 101)
+					CASE 0
+						PRINTFORMW  개, 이렇게 많이……가랑이로 임신해버릴 그렇게……」
+					CASE 1
+						PRINTFORMW  굉장한, 아직 멈추지 않는다……응, 나의 몸 질퍽질퍽하게 해 만족？」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 103)
+					CASE 0
+						PRINTFORM  액이 이렇게……이것은 아직 짜 잡힐 것 같네요
+						CALL PRINT_SYMBOL_K39
+					CASE 1
+						PRINTFORMW  굉장한 양이군요……가랑이로 임신시킬 생각입니까？」
+					CASE 2
+						PRINTFORMW  나를 이렇게 예 해……만족했습니까？ 우대신……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 105)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 내지 말아……」
+					CASE 1
+						PRINTFORMW  이제 이의？ 유석에 너무 조금 빠르다고 생각합니다만―？」
+					CASE 2
+						PRINTFORMW  (이)나다 , 아직 준비하고 있지 않는데……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 107)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 나와서는 곤란합니다……」
+					CASE 1
+						PRINTFORMW  벌써 내 버렸습니까？ 그렇게 기분 좋았던 것일까 해들♪」
+					CASE 2
+						PRINTFORMW  준비하고 있지 않는 동안에 나오면(자), 액이 흘러넘쳐 버립니다……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		;//사정1, 3, 4以外は処理せずにリターン
+	ENDIF
+	
+	;=================================================
+	;입による애무で사정(펠라など)
+	;=================================================
+	IF (IS_NOWACTNAME("입으로 애무") && TFLAG:ACT파생 == 1) || MC_CHECK_K39("입") || TEQUIP:죠교대상Ｃ사용 == 2
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(3, 110)
+				CASE 0
+					CALL HTMLPRINTL(@"「いいよ、お입に出して……全部飲んであげる%LOCALS:4%」")
+				CASE 1
+					PRINTFORML 「말해도 좋아……지금 이나 키라고 주기 때문에……」
+				CASE 2
+					PRINTFORML 「전부 받아 들여 준다……그대로입속에 내……」
+			ENDSELECT
+		ELSE
+			SELECTCASE RANDEVENT(3, 112)
+				CASE 0
+					CALL HTMLPRINTL(@"「いいですよ、そのまま私の입に出してください%LOCALS:4%」")
+				CASE 1
+					PRINTFORML 「말해도 좋아요. 지금 이나 키라고 줍니다……」
+				CASE 2
+					PRINTFORML 「%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다. 내가 말해 주세요……」
+			ENDSELECT
+		ENDIF
+		;フェードアウト       //関数内でコンフィグを参照して필요ならCLEARLINEを行う
+		CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(, , "펠라", 1)
+		;エフェクト
+		CALL SHOOT_VARIATION_K39
+		;//RETURNせず사정種分岐へ。分岐に落ちたらRETURN。漏れたら汎用処理へ。
+		
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINT  라고,
+				SELECTCASE RANDEVENT(3, 111)
+					CASE 0
+						PRINTFORMW 굳이 나오지 않지만……？」
+					CASE 1
+						PRINTFORMW 이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+					CASE 2
+						PRINTFORMW 이제 텅텅같구나……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 113)
+					CASE 0
+						PRINTFORMW  이비치는데 나오지 않아요……」
+					CASE 1
+						PRINTFORMW  벌벌 하고 있지만, 아무것도 나오지 않아요……」
+					CASE 2
+						PRINTFORMW  나오지 않아요……이제 최후입니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			PRINTFORMW 「아！？ 구, 코쿠……응구, 응구……응구！」
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 115)
+					CASE 0
+						PRINTFORMW 「개, 이렇게 많이……이제 마시지 못한다……」
+					CASE 1
+						PRINTFORMW 「팥고물, 안돼……개, 흘러넘쳐버린다……」
+					CASE 2
+						PRINTFORMW 「굉장한, 아직 멈추지 않는다……응,%TNAME_K39()%(을)를 액 바를 수 있는으로 해 만족？ 우대신…」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 117)
+					CASE 0
+						PRINTFORMW 「후후, 액이 이렇게. 이것은 아직 짜 잡힐 것 같네요♪」
+					CASE 1
+						PRINTFORMW 「굉장한 양이군요……액이 흘러넘쳐 버릴 것 같습니다……」
+					CASE 2
+						PRINTFORMW 「액신을 이렇게 예 해……만족했습니까？ 우대신……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 120)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 내지 말아……」
+					CASE 1
+						PRINTFORMW  이제 이의？ %TNAME_K39()%의 입이 그렇게 좋았다？」
+					CASE 2
+						PRINTFORMW  (이)나다 , 아직 준비하고 있지 않는데. 액이 흘러넘쳐버린다……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 122)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 나와서는 곤란합니다……」
+					CASE 1
+						PRINTFORMW  벌써 내 버렸습니까？ 그렇게 기분 좋았던 것일까 해들♪」
+					CASE 2
+						PRINTFORMW  준비하고 있지 않는 동안에 나오면(자), 액이 흘러넘쳐 버립니다……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他の사정
+		;-------------------------------------------------
+		IF GROUPMATCH(GET_SHOOTING(MASTER), "사정", "전립선사정")
+			PRINTFORM 「응！？ %RAND_SPLIT("읏쿠, 코쿠/응푸…응/츄쿠, 응")%……
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				IF ABL:TARGET:정액중독 > 3
+					PRINTFORM %RAND_SPLIT("우후/후후")%,%RAND_SPLIT("ご馳走様/美味しい")%
+					CALL PRINT_SYMBOL2_K14
+				ELSE
+					PRINTFORMW 네%RAND_SPLIT("익숙해지지 않네요/근심손(이)예요")%, 이 느낌……」
+				ENDIF
+			;その他
+			ELSE
+				IF ABL:TARGET:정액중독 > 3
+					PRINTFORM %RAND_SPLIT("우후/후후")%,%RAND_SPLIT("ご馳走様で했다/美味しいです")%
+					CALL PRINT_SYMBOL2_K14
+				ELSE
+					PRINTFORMW 네%RAND_SPLIT("익숙해지지 않네요/근심손(이)군요")%, 이 느낌……」
+				ENDIF
+			ENDIF
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;=================================================
+	;손による애무で사정
+	;=================================================
+	IF IS_NOWACTNAME("손으로 애무") || MC_CHECK_K39("손") || TEQUIP:죠교대상Ｃ사용 == 1
+		;台詞、地の文、エフェクトを表示했다ら사정種分岐へ
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(3, 127)
+				CASE 0
+					PRINTFORML 「좋아, 좋아하는 때에 내……이대로 손으로 이나 키라고 준다」
+				CASE 1
+					CALL HTMLPRINTL(@"「うふ、ビックンビックンさせちゃって。このイク寸前の손応えが最高ね%LOCALS:4%」")
+				CASE 2
+					PRINTFORML 「이봐요, 분명하게 눈을 봐. 응시하면서 이나 키라고 준다…」
+			ENDSELECT
+		ELSE
+			SELECTCASE RANDEVENT(3, 130)
+				CASE 0
+					CALL HTMLPRINTL(@"「가버려なんですね？ いいですよ、このまま손で가게해줘あげます%LOCALS:4%」")
+				CASE 1
+					PRINTFORML 「손안으로 벌벌 하는 감촉이 감선이군요♪ 이봐요, 언제라도 이라고 해 예요」
+				CASE 2
+					PRINTFORML 「이대로 액을 뽑아 줍니다. 좋아하는 때에 내 주세요…」
+			ENDSELECT
+		ENDIF
+		PRINTFORMDL %CALLNAME%(은)는 %CALLNAME:MASTER%의\@ TCVAR:MASTER:위치전후 == 1 ? 눈을 응시하고 # 귀를 애무하기 \@(이)면서
+		PRINTFORMDW 페니스를 격렬하게 잡아당겨%CALLNAME:MASTER%(을)를 절정으로 이끌었다……
+		CALL SHOOT_VARIATION_K39
+		;RETURNしないで下位に流す。各分岐内でRETURN。漏れたら汎用処理へ
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINT  라고,
+				SELECTCASE RANDEVENT(3, 129)
+					CASE 0
+						PRINTFORMW 굳이 나오지 않지만……？」
+					CASE 1
+						PRINTFORMW 이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+					CASE 2
+						PRINTFORMW 이제 텅텅같구나……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 132)
+					CASE 0
+						PRINTFORMW  이비치는데 나오지 않아요……」
+					CASE 1
+						PRINTFORMW  벌벌 하고 있지만, 아무것도 나오지 않아요……」
+					CASE 2
+						PRINTFORMW  나오지 않아요……이제 최후입니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 135)
+					CASE 0
+						PRINTFORM  이렇게 내 버려서……조금 과분하네요
+						CALL PRINT_SYMBOL_K39
+					CASE 1
+						PRINTFORM  우대신, 마구 이렇게 따돌려 버려서……액 있고, 액 있고 원
+						CALL PRINT_SYMBOL_K39
+					CASE 2
+						PRINTFORM  굉장한, 아직 사정이 멈추지 않는다 ……이봐요, 전부 나올 때까지 시고 있어 준다
+						CALL PRINT_SYMBOL_K39
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 138)
+					CASE 0
+						PRINTFORM  가득 냈어요……그럼 최후의 한 방울까지 내 버릴까요
+						CALL PRINT_SYMBOL_K39
+					CASE 1
+						PRINTFORMW  이렇게 내 버려……조금은 남겨 둬 주세요？」
+					CASE 2
+						PRINTFORM  굉장한, 아직 사정이 멈추지 않는다 ……, 전부 뽑아 버릴까요
+						CALL PRINT_SYMBOL_K39
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			;汎用処理
+			CALL PRINT_KOJO_EV20_1_K39
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 141)
+					CASE 0
+						PRINTFORMW  이제 , 그렇게 빨리 내지 말아……」
+					CASE 1
+						PRINTFORMW  이제 이의？ %TNAME_K39()%에 시고 쉬지만 그렇게 좋았다？」
+					CASE 2
+						PRINTFORMW  (이)나다 , 아직 준비하고 있지 않는데. 이크시는 그렇게 말해！」
+						CALL FADEIN(15, "「～응라고」")
+						CALL FADEOUT(15, @"「%RAND_SPLIT("후후/키득")%…」")
+						CALL FADE_CLINE(1)
+						WAIT
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 144)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 나와서는 곤란합니다……」
+					CASE 1
+						PRINTFORM  벌써 내 버렸습니까？ 그렇게 기분 좋았던 것일까 해들
+						CALL PRINT_SYMBOL_K39
+					CASE 2
+						PRINTFORMW  인내 할 수 없을 정도 기분 좋았겠지요인가？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		;사정2, 5は上層の処理のみでここでRETURN
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;파이즈리で사정：죠교자が거유の場合
+	;=================================================
+	IF (IS_NOWACTNAME("파이즈리한다") || MC_CHECK_K39("가슴")) && TALENT:TARGET:거유
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(3, 149)
+				CASE 0
+					CALL HTMLPRINTW(@"「큰 젖가슴으로 비비어지면 기분이 좋지요？ 이대로가게해줘준다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 가슴으로 사정해도 좋아……이봐요, 좀 더 켜 준다……」
+				CASE 2
+					PRINTFORMW 「이봐요, 젖가슴으로 이나 키라고 준다……그대로 사정해도 좋아……」
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(3, 152)
+				CASE 0
+					CALL HTMLPRINTW(@"「자, 이대로%CNAME(MASTER, TARGET)%의 정말 좋아하는가슴그래서가게해줘줍니다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 가슴에 내도 좋아요. , 좀 더 켜 줍니다……」
+				CASE 2
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다. 그대로 내 주세요……」
+			ENDSELECT
+		ENDIF
+		PRINTFORMD %CALLNAME:TARGET%(은)는 
+		SELECTCASE RANDEVENT(3, 150)
+			CASE 0
+				PRINTFORMD %CALLNAME:MASTER%의 페니스의 첨단을 빨면서
+			CASE 1
+				PRINTFORMD 스스로의 타액을 도 하면서
+			CASE 2
+				PRINTFORMD 때때로 유두를 칠하면서
+		ENDSELECT
+		PRINTFORMDW 그 풍부한 가슴으로 페니스를 격렬하게 잡아당%CALLNAME:MASTER%(을)를 절정으로 이끌었다……
+		;フェードアウト
+		CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(COLOR2_K39("WHITE"), , "파이즈리", , 1)
+		CALL SHOOT_VARIATION_K39
+		;//사정2, 5の枠は設けずに、条件から漏れた時点でRETURN시킨다
+		
+		;드라이사정/대량사정/조루であるなら汎用処理を呼ぶ
+		SIF GROUPMATCH(GET_SHOOTING(MASTER), "드라이사정", "대량사정", "조루")
+			CALL PRINT_KOJO_EV20_1_K39
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINT 라고,
+				SELECTCASE RANDEVENT(3, 151)
+					CASE 0
+						PRINTFORMW  굳이 나오지 않지만……？」
+					CASE 1
+						PRINTFORMW  이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+					CASE 2
+						PRINTFORMW  이제 텅텅 보고 싶다……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 154)
+					CASE 0
+						PRINTFORMW  이비치는데 나오지 않아요……」
+					CASE 1
+						PRINTFORMW  벌벌 하고 있지만, 아무것도 나오지 않아요……」
+					CASE 2
+						PRINTFORMW  나오지 않아요……이제 최후입니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 157)
+					CASE 0
+						PRINTFORMW  이렇게 많이………이봐요, 가슴의 사이에 모여 안다？」
+					CASE 1
+						PRINTFORMW  팥고물, 안돼……가슴의 사이부터 흘러넘쳐버린다……」
+					CASE 2
+						PRINTFORMW  굉장한, 아직 멈추지 않는다……응,%TNAME_K39()%의 %RAND_SPLIT("몸/신체")%…질퍽질퍽하게 해 만족？」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 160)
+					CASE 0
+						PRINTFORM  액이 이렇게……이것은 아직 짜 잡힐 것 같네요
+						CALL PRINT_SYMBOL_K39
+					CASE 1
+						PRINTFORM  굉장한 양이군요……이봐요, 가슴의 골짜기에 이렇게 많이
+						CALL PRINT_SYMBOL_K39
+					CASE 2
+						PRINTFORMW  나를 이렇게 예 해……만족했습니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 163)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 내지 말아……」
+					CASE 1
+						PRINTFORMW  이제 이의？ \@ TENSION(TARGET, 8) == "비싸다" ? 히나 # 나 \@의 젖가슴이 그렇게 좋았다？」
+					CASE 2
+						PRINTFORMW  (이)나다 , 아직 준비하고 있지 않는데……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 166)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 나와서는 곤란합니다……」
+					CASE 1
+						PRINTFORMW  벌써 내 버렸습니까？ 그렇게 기분 좋았던 것일까 해들♪」
+					CASE 2
+						PRINTFORMW  준비하고 있지 않는 동안에 나오면(자), 액이 흘러넘쳐 버립니다……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;どうせ빈유では파이즈리自体発生しないと思われる
+	;=================================================
+	;파이즈리で사정：죠교자が빈유
+	;=================================================
+	;IF 구상記入チェック(100) && (IS_NOWACTNAME("파이즈리한다") || MC_CHECK_K39("가슴")) && TALENT:TARGET:빈유
+	;ENDIF
+	
+	;台詞、地の文、エフェクトを経由して사정種分岐へ
+	;=================================================
+	;파이즈리で사정：죠교자が거유、빈유以外場合
+	;=================================================
+	IF IS_NOWACTNAME("파이즈리한다") || MC_CHECK_K39("가슴")
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			SELECTCASE RANDEVENT(3, 171)
+				CASE 0
+					CALL HTMLPRINTW(@"「젖가슴으로 비비어지는 것 기분이 좋지요？ 이대로가게해줘준다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 가슴으로 사정해도 좋아……이봐요, 좀 더 켜 준다……」
+				CASE 2
+					PRINTFORMW 「이봐요, 젖가슴으로 이나 키라고 준다……그대로 사정해도 좋아……」
+			ENDSELECT
+		;その他
+		ELSE
+			SELECTCASE RANDEVENT(3, 174)
+				CASE 0
+					CALL HTMLPRINTW(@"「자, 이대로%CNAME(MASTER, TARGET)%의 정말 좋아하는가슴그래서가게해줘줍니다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 가슴에 내도 좋아요. , 좀 더 켜 줍니다……」
+				CASE 2
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다. 그대로 내 주세요……」
+			ENDSELECT
+		ENDIF
+		SELECTCASE RANDEVENT(3, 172)
+			CASE 0
+				PRINTFORMD 병아리는 %CALLNAME:MASTER%의 페니스의 첨단을 빨면서
+			CASE 1
+				PRINTFORMD 병아리는 스스로의 타액을 도 하면서
+			CASE 2
+				PRINTFORMD 병아리는 때때로 유두를 칠하면서
+		ENDSELECT
+		PRINTFORMDW 그 가슴으로 페니스를 격렬하게 잡아당%CALLNAME:MASTER%(을)를 절정으로 이끌었다……
+		;フェードアウト
+		CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(COLOR2_K39("WHITE"), , "파이즈리", , 1)
+		CALL SHOOT_VARIATION_K39
+		;//사정2, 5の枠は設けずに、条件から漏れたらRETURNさせて終了
+		
+		;드라이사정/대량사정/조루であるなら汎用処理を呼ぶ
+		SIF GROUPMATCH(GET_SHOOTING(MASTER), "드라이사정", "대량사정", "조루")
+			CALL PRINT_KOJO_EV20_1_K39
+		
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINT  라고,
+				SELECTCASE RANDEVENT(3, 173)
+					CASE 0
+						PRINTFORMW 굳이 나오지 않지만……？」
+					CASE 1
+						PRINTFORMW 이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+					CASE 2
+						PRINTFORMW 이제 텅텅 보고 싶다……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 176)
+					CASE 0
+						PRINTFORMW  이비치는데 나오지 않아요……」
+					CASE 1
+						PRINTFORMW  벌벌 하고 있지만, 아무것도 나오지 않아요……」
+					CASE 2
+						PRINTFORMW  나오지 않아요……이제 최후입니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 179)
+					CASE 0
+						PRINTFORMW  이렇게 많이………이봐요, 가슴의 사이에 모여 안다？」
+					CASE 1
+						PRINTFORMW  안돼……가슴의 사이부터 흘러넘쳐버린다……」
+					CASE 2
+						PRINTFORMW  굉장한, 아직 멈추지 않는다……」
+						PRINTFORMW 「응,%TNAME_K39()%의 몸 질퍽질퍽하게 해 만족？」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 182)
+					CASE 0
+						PRINTFORM  액이 이렇게……이것은 아직 짜 잡힐 것 같네요
+						CALL PRINT_SYMBOL_K39
+					CASE 1
+						PRINTFORM  굉장한 양이군요……이봐요, 가슴의 골짜기에 이렇게 많이
+						CALL PRINT_SYMBOL_K39
+					CASE 2
+						PRINTFORMW  나를 이렇게 예 해……만족했습니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 190)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 내지 말아……」
+					CASE 1
+						PRINTFORML  이제 이의？」
+						PRINTFORMW 「%TNAME_K39()%의 젖가슴이 그렇게 좋았다？」
+					CASE 2
+						PRINTFORMW  (이)나다 , 아직 준비하고 있지 않는데……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 193)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 나와서는 곤란합니다……」
+					CASE 1
+						PRINTFORM  벌써 내 버렸습니까？ 그렇게 기분 좋았던 것일까 해들
+						CALL PRINT_SYMBOL_K39
+					CASE 2
+						PRINTFORMW  준비하고 있지 않는 동안에 나오면(자), 액이 흘러넘쳐 버립니다……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;발による애무で사정(발コキ)
+	;=================================================
+	IF IS_NOWACTNAME("풋잡하기") || MC_CHECK_K39("발")
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			;RANDEVENT(198)
+			SELECTCASE RANDEVENT(3, 198)
+				CASE 0
+					CALL HTMLPRINTW(@"「발그리고 비비어지는 것 기분이 좋다？ 좋아……이대로가게해줘준다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 사정해도 좋아……이봐요, 좀 더 다리로 켜 준다……」
+				CASE 2
+					PRINTFORMW 「이봐요,%TNAME_K39()%의 고간을 자주(잘) 봐……이대로 다리로 이나 키라고 준다……」
+			ENDSELECT
+		ELSE
+			;RANDEVENT(201)
+			SELECTCASE RANDEVENT(3, 201)
+				CASE 0
+					CALL HTMLPRINTW(@"「자, 이대로발그래서가게해줘줍니다%LOCALS:4%」")
+				CASE 1
+					PRINTFORMW 「이대로 내도 좋아요. 이봐요, 좀 더 다리로 켜 줍니다……」
+				CASE 2
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다. 그대로 내 주세요……」
+			ENDSELECT
+		ENDIF
+		PRINTFORMD %CALLNAME%(은)는 
+		SELECTCASE RANDEVENT(3, 199)
+			CASE 0
+				PRINTD 스스로의 행위에 흥분해, 상기 나눈 표정으로
+			CASE 1
+				PRINTD 한쪽 발로 음낭을 자극하면서, 짓밟도록(듯이)
+			CASE 2
+				PRINTD 고간을 과시하면서 양 다리로
+		ENDSELECT
+		PRINTFORMDW 페니스를 격렬하게 잡아당%CALLNAME:MASTER%(을)를 절정으로 이끌었다……
+		CALL SHOOT_VARIATION_K39
+		;//RETURNせず下位へ。漏れたら終端でRETURN
+		
+		;드라이사정/대량사정/조루であるなら汎用処理を呼ぶ
+		SIF GROUPMATCH(GET_SHOOTING(MASTER), "드라이사정", "대량사정", "조루")
+			CALL PRINT_KOJO_EV20_1_K39
+		;-------------------------------------------------
+		;드라이사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "드라이사정")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINT  라고,
+				SELECTCASE RANDEVENT(3, 200)
+					CASE 0
+						PRINTFORMW 굳이 나오지 않지만？」
+					CASE 1
+						PRINTFORMW 이제 나오지 않는거야？ 어쩐지 어딘지 부족하지만……」
+					CASE 2
+						PRINTFORMW 이제 텅텅 보고 싶다……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 203)
+					CASE 0
+						PRINTFORMW  이비치는데 나오지 않아요……」
+					CASE 1
+						PRINTFORMW  벌벌 하고 있지만, 아무것도 나오지 않아요……」
+					CASE 2
+						PRINTFORMW  나오지 않아요……이제 최후입니까？」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;대량사정
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "대량사정")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 206)
+					CASE 0
+						PRINTFORMW  이렇게 많이……우대신, 켜 전부 짜 취해 준다♪」
+					CASE 1
+						PRINTFORM  %RAND_SPLIT("우후/후후")%, 가득 나왔다
+						CALL AUTOHEARTCB2_K39
+						PRINTFORMW  응,%TNAME_K39()%의 다리가 그렇게 좋았다？」
+					CASE 2
+						PRINTFORMW  굉장한, 아직 멈추지 않는다……응,%TNAME_K39()%의 다리 질퍽질퍽하게 해 만족？ 우대신…」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 209)
+					CASE 0
+						PRINTFORM  액이 이렇게……이것은 아직 짜 잡힐 것 같네요
+					CASE 1
+						PRINTFORMW  굉장한 양이군요……이 냄새\@ ABL:정액중독 > 3 ? , 흥분해 버립니다…♪ # 에는 익숙해지지 않지만… \@」
+					CASE 2
+						PRINTFORMW  나를 이렇게 예 해……만족했습니까？ 우대신……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;조루
+		;-------------------------------------------------
+		IF SHOOTING(MASTER, "조루")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				SELECTCASE RANDEVENT(3, 212)
+					CASE 0
+						PRINTFORMW  이제 , 그렇게 빨리 내지 말아……」
+					CASE 1
+						PRINTFORMW  이제 이의？ 다리로 켜지는 것이 그렇게 좋았다？」
+					CASE 2
+						PRINTFORMW  (이)나다 , 아직 준비하고 있지 않는데……좀 더 참아……」
+				ENDSELECT
+			;その他
+			ELSE
+				SELECTCASE RANDEVENT(3, 215)
+					CASE 0
+						PRINTFORMW  그렇게 빨리 나와서는 곤란합니다……」
+					CASE 1
+						PRINTFORM  벌써 내 버렸습니까？ 그렇게 기분 좋았던 것일까 해들
+						CALL PRINT_SYMBOL_K39
+					CASE 2
+						PRINTFORMW  그렇게 모여있는 리가 없는데요？ 후후」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;오나홀で사정
+	;=================================================
+	IF MC_CHECK_K39("오나홀") || TEQUIP:오나홀
+		CALL SHOOT_VARIATION_K39
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+				IF GET_KFLAG_K39("상사상애")
+					PRINTFORMW 「…만족할 것 같은 얼굴 해 버려서」
+					PRINTFORMW 「완전히 짜 놓쳐 만족하여 기뻐함은 일이야？」
+				ELSE
+					PRINTFORMW 「어머나, 이제 나오지 않는 것 같네요？」
+					PRINTFORMW 「유석에 너무 할까요…」
+				ENDIF
+			CASE "대량사정"
+				IF GET_KFLAG_K39("상사상애")
+					PRINTFORMW 「…진짜 기가 막힐 정도로 낸 원이군요」
+					PRINTFORMW 「안으로부터 흘러넘쳐 오고 있고…이제 쭉 이만큼으로 좋지 않아？」
+					;フェードアウト
+					CALL FADE(20, COLOR2_K39("HINA"), COLOR2_K39("black"), "「킥킥」")
+					CALL FADE_CLINE(1)
+				ELSE
+					PRINTFORMW 「안에 완전히 해결되지 않아서 흘러넘쳐 오네요」
+					CALL HTMLPRINTW(@"「이것이 그렇게 좋았던 것입니까？ 후후%LOCALS:4%」")
+				ENDIF
+			;その他
+			CASEELSE
+				IF GET_KFLAG_K39("상사상애")
+					PRINTFORMW 「이런 것은 조금 어떨까라고 생각하는데…」
+					CALL HTMLPRINTW(@"「%CNAME(MASTER, TARGET)%하지만 그래서 좋다면, 뭐 별로 좋지만 말야. 후후%LOCALS:4%」")
+				ELSE
+					PRINTFORMW 「기분 좋으면 뭐든지 좋을까요？」
+					CALL HTMLPRINTW(@"「나는 별로 상관하지 않지만 말야. 후후%LOCALS:4%」")
+				ENDIF 
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;基本的にここまでくる事が無いよう分岐を設定するのが望ましい
+	;-----------------------------------
+	;漏れたものはここで処理
+	;-----------------------------------
+	CALL SHOOT_VARIATION_K39
+	SELECTCASE GET_SHOOTING(MASTER)
+		CASE "드라이사정"
+			PRINTFORMW 「\@ GET_KFLAG_K39("상사상애") ? 뭔가 물건발리나 있고 느낌…… # 아무것도 나오지 않네요？ \@」
+		CASE "대량사정"
+			PRINTFORMW 「\@ GET_KFLAG_K39("상사상애") ? ……완전히. 기가 막히는만큼 출했다원이군요？ # 후후, 자주(잘) 이렇게 나오는 것이군요 \@」
+		CASE "조루"
+			PRINTFORMW 「\@ GET_KFLAG_K39("상사상애") ? ……이조루라든지 말해지면, 다치거나 한다 # 이런, 조금 빨리 없습니까 \@？ 후후…」
+		;その他
+		CASEELSE
+			CALL HTMLPRINTW(@"「\@ GET_KFLAG_K39("상사상애") ? 액 있고, 액 있고 원……%HTML_HEARTB(, COLOR2_K39("PINK"))% # 후훗, 내 버린 것이군요 \@」")
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;죠교자사정
+;────────────────────────────────────
+;・죠교자が사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:TARGET:사정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｃ절정 RANDEVENT(161) ～(180)
+;────────────────────────────────────
+;・죠교대상がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;・사정구상を방치すると사정もこの箇所で処理されて悲しい事になるんで、最低限何らかのものを用意すべき
+;・もしくは!NOWEX:MASTER:사정なり!TCVAR:MASTER:사정で弾くというのもひとつのやりかた
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:Ｃ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｖ절정 RANDEVENT(181) ～ (200)
+;────────────────────────────────────
+;・죠교대상がＶ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:Ｖ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ａ절정
+;────────────────────────────────────
+;・죠교대상がＡ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:Ａ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｂ절정
+;────────────────────────────────────
+;・죠교대상がＢ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:Ｂ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교자Ｃ절정
+;────────────────────────────────────
+;・죠교자がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;・사정は사정구상の分岐で書くのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:TARGET:Ｃ절정
+	LOCALS:0 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEART(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:1 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEARTB(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:2 '= RAND:2 ? LOCALS:0 # LOCALS:1 
+	;bit = 1で죠교자
+	;=================================================
+	;자위でＣ절정
+	;=================================================
+	IF GETBIT(TEQUIP:자위중, 1)
+		;RANDEVENTで汎用処理と振り分ける
+		SELECTCASE RANDEVENT(2, 220)
+			CASE 1
+				CALL TC_EX_K39
+			CASE 2
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 221)
+						CASE 0
+							CALL HTMLPRINTW(@"「안돼엣%LOCALS:2% 손가락이, 손가락이 멈추지 않는 것%LOCALS:2%」")
+						CASE 1
+							CALL HTMLPRINTW(@"「얏%LOCALS:2% 스스로！ 이, 이런 건……안 되는데！！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 222)
+						CASE 0
+							CALL HTMLPRINTL(@"「もうぅっ……イっちゃうっ%LOCALS:2% イっちゃうっっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ひぅっ！ あんっ%LOCALS:2% あッ……いっ、イクっ…！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 223)
+						CASE 0
+							CALL HTMLPRINTW(@"「얏%LOCALS:2% 싫엇！ 보지 맛！ 그런 눈으로, 나를 보지 맛！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「나, 나%LOCALS:2% 자신의 손가락으로, 이렇게 기분 좋고…！」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 224)
+						CASE 0
+							CALL HTMLPRINTL(@"「ひぅっ！ あッ%LOCALS:2% イくっ、イくうぅっ…ッ…！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「だめっ！ も、もぅっ%LOCALS:2% いくっ、イきますぅぅっっ…ッ…！」")
+					ENDSELECT
+				ENDIF
+				;終端でまとめてQUAKE
+				CALL QUAKE(4)
+				;ウェイトで一旦止める
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;입による애무で절정(クンニなど)
+	;=================================================
+	IF (IS_NOWACTNAME("입으로 애무를 강요") && GROUPMATCH(TFLAG:ACT파생, 0, 2)) || TC_CHECK_K39("입")
+		SELECTCASE RANDEVENT(2, 225)
+			CASE 1
+				CALL TC_EX_K39
+			CASE 2
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 226)
+						CASE 0
+							CALL HTMLPRINTW(@"「히앗%LOCALS:2% 안됏, 그런 곳 씹으면 안돼엣！！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「%RAND_SPLIT("아아/앙/하아/응아")%っ%LOCALS:2% んくっ……だめぇっ%LOCALS:2% もうっ、もうぅっ！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 227)
+						CASE 0
+							CALL HTMLPRINTL(@"「イっちゃうっ%LOCALS:2% イっちゃうぅっ！！ あぁぁっ…！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ！ イっ、くぅぅっっ！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 228)
+						CASE 0
+							CALL HTMLPRINTW(@"「싫어엇%LOCALS:2% 싫어엇！ 그런 곳까지, 빨려지면……%LOCALS:2%」")
+						CASE 1
+							CALL HTMLPRINTW(@"「안돼엣%LOCALS:2% 안됩니닷！ 이렇게…읏…이렇게당했다랏……%LOCALS:2%」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 229)
+						CASE 0
+							CALL HTMLPRINTL(@"「イきますっ！ イっちゃいますっ…ッ…%LOCALS:2% ああぁぁぁっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「イっ…イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+					ENDSELECT
+				ENDIF
+				;PRINT文は改行し、QUAKEの後でWAITをかける
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;페니스による애무で절정(스마타)
+	;=================================================
+	IF IS_NOWACTNAME("성기마찰한다") || TC_CHECK_K39("페니스")
+		SELECTCASE RANDEVENT(2, 230)
+			CASE 0
+				CALL TC_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 231)
+						CASE 0
+							CALL HTMLPRINTW(@"「히앗%LOCALS:2% 안됏%LOCALS:2% 거기뿐 칠하면 안돼엣！！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「야앗%LOCALS:2% 그렇게 비비면！ 가 버린다%LOCALS:2% 가 버린다！！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 232)
+						CASE 0
+							CALL HTMLPRINTL(@"「ふぁぁっ！ だめっ%LOCALS:2% イっ、くぅぅっっ！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「あっ%LOCALS:2% あぁっ！ イクぅっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RAND(2, 233)
+						CASE 0
+							CALL HTMLPRINTW(@"「싫어엇%LOCALS:2% 안됏%LOCALS:2% 안됩니닷…！…거기뿐, 비비지 마앗！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「아웃%LOCALS:2% 아앗%LOCALS:2% 그렇게 비비어지면！ 이제(벌써), 이제(벌써), 나……！」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 234)
+						CASE 0
+							CALL HTMLPRINTL(@"「ひぅっ%LOCALS:2% あッ%LOCALS:2% イくっ、イくうぅっ…ッ…！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「イきますっ！ イっちゃいますっ…ッ…%LOCALS:2% ああぁぁぁっ！！」")
+					ENDSELECT
+				ENDIF
+				;PRINTを改行。QUAKEの後にWAIT
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-----------------------------------
+	;汎用処理
+	;-----------------------------------
+	CALL TC_EX_K39
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;죠교자Ｖ절정 RANDEVENT(261) ～ (280)
+;────────────────────────────────────
+;・죠교자がＶ절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:TARGET:Ｖ절정
+	LOCALS:0 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEART(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:1 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEARTB(, COLOR2_K39("PINK")) # "！"
+	LOCALS:2 '= RAND:2 ? LOCALS:0 # LOCALS:1
+	[SKIPSTART]
+	;=================================================
+	;同時にＡ절정/Ｂ절정(다중절정)
+	;=================================================
+	IF TCVAR:TARGET:Ａ절정 || TCVAR:TARGET:Ｂ절정
+		;Ｖ+ＡＢ절정
+		IF ALLSAMES(1, TCVAR:Ａ절정, TCVAR:Ｂ절정)
+		;Ｖ+Ａ절정
+		ELSEIF TCVAR:Ａ절정
+		;Ｖ+Ｂ절정
+		ELSEIF TCVAR:Ｂ절정
+		ENDIF
+	ENDIF
+	[SKIPEND]
+	
+	;=================================================
+	;자위でＶ절정(바이브)
+	;=================================================
+	IF GETBIT(TEQUIP:자위중, 1) && TV_CHECK_K39("바이브")
+		SELECTCASE RANDEVENT(2, 240)
+			CASE 0
+				CALL TV_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 241)
+						CASE 0
+							CALL HTMLPRINTW(@"「안됏！ 이런 건 안돼엣%LOCALS:2% %TNAME_K39()%！ 몹쓸 신님이 되어 버린다！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「읏쿳, 이런 완구로！ 아, 아앗%LOCALS:2% 아니, 싫어엇！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 242)
+						CASE 0
+							CALL HTMLPRINTL(@"「ひぅっ%LOCALS:2% あぁッ……イくっ、イくうぅっ…ッ…！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ひぅっ！ あんっ%LOCALS:2% あッ……いっ、イクっ…！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 243)
+						CASE 0
+							CALL HTMLPRINTW(@"「아니, 보지 맛！ 이런 모습 보지 마앗！ 그, 그렇지만, 멈추지 않고%LOCALS:2%」")
+						CASE 1
+							CALL HTMLPRINTW(@"「읏쿳, 나, 이런 완구로！ 앗%LOCALS:2% 아앗！ 아니, 싫어엇！ 」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 244)
+						CASE 0
+							CALL HTMLPRINTL(@"「イっ…イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ひぅっ！ あッ%LOCALS:2% イくっ、イくうぅっ…ッ…！！」")
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;페니스による애무で절정(섹스)
+	;=================================================
+	IF IS_NOWACTNAME("정상위시킨다/후배위시킨다/역강간/대면좌위시킨다/배면좌위시킨다") || V_SEX(MASTER)
+		;-------------------------------------------------
+		;애태움中に절정
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 > 1
+			SELECTCASE RANDEVENT(2, 245)
+				CASE 0
+					CALL HTMLPRINTW(@"「아앗%LOCALS:2% 거짓말！ 애태움비치는데, 내가 가 버린다앗！」")
+				CASE 1
+					CALL HTMLPRINTW(@"「응앗%LOCALS:2% 애태움비치는데…가 버린다！ 가게 되어 버린다앗！」")
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 246)
+				CASE 0
+					CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ、だめぇっ！ イっ、くぅぅっっ！！」")
+				CASE 1
+					CALL HTMLPRINTL(@"「ダめぇっ！ も、もうっ！ イクッ%LOCALS:2% ああぁぁっっっ！！！」")
+			ENDSELECT
+			;改行、QUAKE、WAITで
+			CALL QUAKE(4)
+			WAIT
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------
+		;その他
+		;-------------------------------
+		SELECTCASE RANDEVENT(2, 247)
+			CASE 0
+				CALL TV_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 248)
+						CASE 0
+							CALL HTMLPRINTW(@"「야앗%LOCALS:2% 아앗！ 앗%LOCALS:2% 굉장햇…좋아앗！ 이제(벌써), 이제(벌써), 가 버린다앗！！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「아읏, 응앗%LOCALS:2% 아아앗! 가 버린닷%LOCALS:2% 보지 쑤컹쑤컹 되어어엇！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 249)
+						CASE 0
+							CALL HTMLPRINTL(@"「あっ、あぁっ%LOCALS:2% イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ、だめぇっ！ イっ、くぅぅっっ！！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 250)
+						CASE 0
+							CALL HTMLPRINTW(@"「하앗！ 아앗%LOCALS:2% 앗, 이, 이런 건%LOCALS:2% 응앗…」")
+						CASE 1
+							CALL HTMLPRINTW(@"「앗%LOCALS:2% 하앗！ 아아앗%LOCALS:2% 가게해줘읏！ 가게해줘주세욧……！」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 251)
+						CASE 0
+							CALL HTMLPRINTL(@"「だめっ！ も、もぅっ%LOCALS:2% いくっ、イきますぅぅっっ…ッ…！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「あぁっ%LOCALS:2% イきますっ！ イっちゃいますっ…ッ…！ ああぁぁぁっ！！」")
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		;地の文を呼ぶ
+		CALL EX_SITUATION_K39
+		RETURN 1
+	ENDIF
+	
+	;-----------------------------------
+	;その他汎用処理
+	;-----------------------------------
+	CALL TV_EX_K39
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;죠교자Ａ절정
+;────────────────────────────────────
+;・죠교자がＡ절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:TARGET:Ａ절정
+	LOCALS:0 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEART(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:1 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEARTB(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:2 '= RAND:2 ? LOCALS:0 # LOCALS:1 
+	;=================================================
+	;同時にＢ절정(다중절정)
+	;=================================================
+	;IF TCVAR:TARGET:Ｂ절정
+	;ENDIF
+	
+	;Ａに対する입으로 애무強制は안면승마の場合のみ発生
+	;=================================================
+	;안면승마항문で절정
+	;=================================================
+	IF (IS_NOWACTNAME("입으로 애무를 강요") && TFLAG:ACT파생 == 3) || TEQUIP:안면승마항문 || TA_CHECK_K39("입")
+		SELECTCASE RANDEVENT(2, 260)
+			CASE 0
+				CALL TA_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 261)
+						CASE 0
+							CALL HTMLPRINTW(@"「히앗%LOCALS:2% 안됏, 그렇게 엉덩이 빨아서는 안돼엣！！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「아아읏%LOCALS:2% 응쿳…… 안돼엣！ 이제(벌써), 이제(벌써)%LOCALS:2%」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 262)
+						CASE 0
+							CALL HTMLPRINTL(@"「イっちゃうっ%LOCALS:2% イっちゃうぅっ！！ あぁぁっ…！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ！ イっ、くぅぅっっ！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 263)
+						CASE 0
+							CALL HTMLPRINTW(@"「싫어엇%LOCALS:2% 싫어엇！ 그런 곳까지, 빨려지면……！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「안돼엣%LOCALS:2% 안됩니닷！ 이렇게…읏…이렇게당했다랏……！」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 264)
+						CASE 0
+							CALL HTMLPRINTL(@"「イきますっ！ イっちゃいますっ…ッ…%LOCALS:2% ああぁぁぁっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「イっ…イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;페니스による애무で절정(Ａ성교봉사)
+	;=================================================
+	IF IS_NOWACTNAME("항문섹스시킨다") || A_SEX(MASTER)
+		;-------------------------------------------------
+		;애태움中に절정
+		;-------------------------------------------------
+		IF TCVAR:MASTER:애태움도 > 1
+			SELECTCASE RANDEVENT(2, 265)
+				CASE 0
+					CALL HTMLPRINTW(@"「아앗！？ 거짓말！ 애태움비치는데, 내가 가 버린다앗%LOCALS:2%」")
+				CASE 1
+					CALL HTMLPRINTW(@"「응앗%LOCALS:2% 애태움비치는데…가 버린다！ 가게 되어 버린다앗%LOCALS:2%」")
+			ENDSELECT
+			SELECTCASE RANDEVENT(2, 266)
+				CASE 0
+					CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ、だめぇっ%LOCALS:2% イっ、くぅぅっっ！！」")
+				CASE 1
+					CALL HTMLPRINTL(@"「ダめぇっ%LOCALS:2% も、もうっ！ イクッ%LOCALS:2% ああぁぁっっっ！！！」")
+			ENDSELECT
+			CALL QUAKE(4)
+			WAIT
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+		SELECTCASE RANDEVENT(2, 267)
+			CASE 0
+				CALL TA_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 268)
+						CASE 0
+							CALL HTMLPRINTW(@"「야앗, 아앗%LOCALS:2% 앗, 굉장햇…좋아앗%LOCALS:2% 이제(벌써), 이제(벌써)%LOCALS:2% 가 버린다앗！！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「아읏%LOCALS:2% 응앗！ 아아앗%LOCALS:2% 가 버린닷%LOCALS:2% 엉덩이 쑤컹쑤컹 되어어엇！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 269)
+						CASE 0
+							CALL HTMLPRINTL(@"「あっ、あぁっ%LOCALS:2% イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ、だめぇっ%LOCALS:2% イっ、くぅぅっっ！！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 270)
+						CASE 0
+							CALL HTMLPRINTW(@"「하앗！ 아앗%LOCALS:2% 앗, 이, 이런 건！ 응앗…%LOCALS:2%」")
+						CASE 1
+							CALL HTMLPRINTW(@"「앗%LOCALS:2% 하앗！ 아아앗%LOCALS:2% 가게해줘읏！ 가게해줘주세욧……！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 271)
+						CASE 0
+							CALL HTMLPRINTL(@"「だめっ！ も、もぅっ……いくっ%LOCALS:2% イきますぅぅっっ…ッ…！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「あぁっ%LOCALS:2% イきますっ%LOCALS:2% イっちゃいますっ…ッ…！ ああぁぁぁっ！！」")
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-----------------------------------
+	;その他汎用処理
+	;-----------------------------------
+	CALL TA_EX_K39
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;죠교자Ｂ절정
+;────────────────────────────────────
+;・죠교자がＢ절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:TARGET:Ｂ절정
+	LOCALS:0 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEART(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:1 '= TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") || (GET_KFLAG_K39("상사상애") && PERCENT(75)) ? HTML_HEARTB(, COLOR2_K39("PINK")) # "！" 
+	LOCALS:2 '= RAND:2 ? LOCALS:0 # LOCALS:1 
+	;=================================================
+	;同時に분유 //空분유は面倒なので弾く
+	;=================================================
+	IF TCVAR:TARGET:분유
+		IF GROUPMATCH(GET_SPLAYING_MILK(TARGET), "분유", "大量분유")
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				CALL HTMLPRINTW(@"「야, 안됏%LOCALS:2% 나와 버린다%LOCALS:2% 젖가슴으로 있어 버린다앗！」")
+				CALL HTMLPRINTL(@"「やぁっ%LOCALS:2% おっぱい出하면서…イっ、ちゃうぅぅっ！」")
+			;その他
+			ELSE
+				PRINTFORMW 「아！？ , 그런…나, 이런 건……」
+				CALL HTMLPRINTL(@"「いやっ！ だめっ%LOCALS:2% おっぱい出하면서、イってしまいますっ！ あぁぁっ！」")
+			ENDIF
+			CALL QUAKE(4)
+			WAIT
+			RETURN 1
+		;ELSE
+			;//空분유はとりあえず방치
+		ENDIF
+	ENDIF
+	
+	;=================================================
+	;자위でＢ절정
+	;=================================================
+	IF GETBIT(TEQUIP:자위중, 1)
+		SELECTCASE RANDEVENT(2, 280)
+			CASE 0
+				CALL TB_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 281)
+						CASE 0
+							CALL HTMLPRINTW(@"「안됏%LOCALS:2% 이런 건 안돼엣！ %TNAME_K39()%！ 몹쓸 신님이 되어 버린다！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「읏쿳, 스스로 만지작거렷……아앗%LOCALS:2% 아니, 안돼엣！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 282)
+						CASE 0
+							CALL HTMLPRINTL(@"「ひぅっ%LOCALS:2% あぁッ……イくっ%LOCALS:2% イくうぅっ…ッ…！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ひぅっ%LOCALS:2% あんっ%LOCALS:2% あッ……いっ、イクっ…！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 283)
+						CASE 0
+							CALL HTMLPRINTW(@"「아니, 보지 맛！ 이런 모습 보지 마앗！ 그, 그렇지만, 멈추지 않고%LOCALS:2%」")
+						CASE 1
+							CALL HTMLPRINTW(@"「읏쿳, 나, 스스로 위로햇！ 앗%LOCALS:2% 아앗！ 얏, 아앗！」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 284)
+						CASE 0
+							CALL HTMLPRINTL(@"「イっ…イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ひぅっ！ あッ……イくっ%LOCALS:2% イくうぅっ…ッ…！！」")
+					ENDSELECT
+				ENDIF
+				;改行、QUAKE、WAIT
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;입による애무で절정(입で가슴애무를 강요等)
+	;=================================================
+	IF (IS_NOWACTNAME("가슴애무강제") && TFLAG:ACT파생 == 2) || TB_CHECK_K39("입")
+		SELECTCASE RANDEVENT(2, 285)
+			CASE 0
+				CALL TB_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 286)
+						CASE 0
+							CALL HTMLPRINTW(@"「히앗%LOCALS:2% 안됏, 그렇게유두핥기안돼엣！！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「%RAND_SPLIT("아아/읏")%っ！ んくっ…… だめぇっ%LOCALS:2% もうっ、もうぅっ！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 287)
+						CASE 0
+							CALL HTMLPRINTL(@"「イっちゃうっ%LOCALS:2% イっちゃうぅっ！！ あぁぁっ…！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ！ イっ%LOCALS:2% くぅぅっっ！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 288)
+						CASE 0
+							CALL HTMLPRINTW(@"「응아앗%LOCALS:2% 안됏%LOCALS:2% 그렇게 유두를 핥아등……！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「안돼엣%LOCALS:2% 안됩니닷！ 이렇게…읏…%LOCALS:2% 이렇게당했다랏……！」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 289)
+						CASE 0
+							CALL HTMLPRINTL(@"「イきますっ！ イっちゃいますっ…ッ…%LOCALS:2% ああぁぁぁっ！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「イっ…イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;페니스による애무で절정(파이즈리など)
+	;=================================================
+	IF (IS_NOWACTNAME("파이즈리한다") || TB_CHECK_K39("페니스"))
+		SELECTCASE RANDEVENT(2, 290)
+			CASE 0
+				CALL TB_EX_K39
+			CASE 1
+				;상사상애
+				IF GET_KFLAG_K39("상사상애")
+					SELECTCASE RANDEVENT(2, 291)
+						CASE 0
+							CALL HTMLPRINTW(@"「히앗%LOCALS:2% 안됏%LOCALS:2% 거기뿐 칠하면 안돼엣！！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「야앗%LOCALS:2% 그렇게 비비면！ 가 버린다%LOCALS:2% 가 버린다！！」")
+					ENDSELECT
+					SELECTCASE RANDEVENT(2, 292)
+						CASE 0
+							CALL HTMLPRINTL(@"「ふぁぁっ%LOCALS:2% だめっ%LOCALS:2% イっ、くぅぅっっ！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「あっ、あぁっ%LOCALS:2% イクぅぅっっ%LOCALS:2% イっちゃうぅぅっっ！！」")
+					ENDSELECT
+				;その他
+				ELSE
+					SELECTCASE RANDEVENT(2, 293)
+						CASE 0
+							CALL HTMLPRINTW(@"「싫어엇！ 안됏%LOCALS:2% 안됩니닷…！ 거기뿐, 비비지 마앗！」")
+						CASE 1
+							CALL HTMLPRINTW(@"「아웃, 아앗%LOCALS:2% 그렇게 비비어지면！ 이제(벌써)%LOCALS:2% 이제(벌써), 나……！」")
+					ENDSELECT
+					SELECTCASE  RANDEVENT(2, 294)
+						CASE 0
+							CALL HTMLPRINTL(@"「ひぅっ%LOCALS:2% あッ……イくっ、イくうぅっ…ッ…！！」")
+						CASE 1
+							CALL HTMLPRINTL(@"「イきますっ！ イっちゃいますっ…ッ…%LOCALS:2% ああぁぁぁっ！！」")
+					ENDSELECT
+				ENDIF
+				CALL QUAKE(4)
+				WAIT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-----------------------------------
+	;その他汎用処理
+	;-----------------------------------
+	CALL TB_EX_K39
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;죠교대상시오후키
+;────────────────────────────────────
+;・죠교대상が시오후키の場合に表示
+;・現状、ACT손가락삽입한다時にＧスポット責めに派生했다場合にのみ起きる
+;・주인님の시오후키は無い
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:시오후키
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상실금
+;────────────────────────────────────
+;・죠교대상が실금する場合に表示
+;・죠교대상に素質:오줌싸개が無ければ発生しない
+;・Ｃ절정なしで실금だけというのは稀にあるケース
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:MASTER:방뇨
+	;とりあえず地の文のみ엘리스구상から引っ張ってきた
+	;自分の구상で色々使いまわしてると別の구상で違う名前が出たりするのがアレなんで
+	;今後はなるべく%CALLNAME:TARGET%表記でいくのが望ましいのかな、と
+	;=================================================
+	;성교봉사중
+	;=================================================
+	IF IS_NOWACTNAME("역강간/정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다/항문섹스시킨다") || TEQUIP:성교봉사중
+		PRINTFORMDL %CALLNAME:MASTER%(은)는 복받치는 뇨의를 견디지 않고,
+		PRINTFORMDL %CALLNAME:TARGET%의\@ TEQUIP:성교봉사중 != 6 ? 질 # 장 \@안에 방뇨해 버렸다…
+		PRINTL
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「어？ , 조금…, 이것………」
+			PRINTFORMW 「농담이지요？ 라는 단계가 아니네요……」
+		ELSE
+			PRINTFORMW 「어？ 좀, 설마 이것……」
+			PRINTFORMW 「――완전히. 정말로 곤란한 사람이군요……」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	PRINTFORM 「\@ GET_KFLAG_K39("상사상애") ? 우훗, 방법이 없는 사람이네 # 아라아라, 방법이 없는 사람이군요 \@
+	CALL PRINT_SYMBOL_K39
+	RETURN 1
+ENDIF
+
+;-------------------------------------------------
+;EV20の汎用処理
+;-------------------------------------------------
+@PRINT_KOJO_EV20_1_K39
+PRINTFORM 「%RAND_SPLIT("읏/응읏/앗/아앗/아읏")%\@ TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕") ? … # \@
+;죠교자の만족度が高いか정욕상태
+IF TENSION(TARGET, 8) == "高い" || IS_CONDITION(TARGET, "정욕")
+	CALL AUTOHEARTCB_K39
+ELSE
+	PRINT ！？
+ENDIF
+
+;-------------------------------------------------切り取り線-------------------------------------------------

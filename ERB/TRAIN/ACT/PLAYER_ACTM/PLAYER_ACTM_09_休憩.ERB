@@ -1,0 +1,160 @@
+﻿;────────────────────────────────────
+;휴식 (休み90/服薬91/치료92)
+;────────────────────────────────────
+@ACT_M9(ARG = 0)
+;1以上なら判定を行わない
+#DIM LCOUNT, 1
+
+;関数初期化
+CALL ACT_M_INIT(9)
+
+;処理開始
+
+LOCALS = ACT_ACTM9
+
+CALL CHA_CRI_VAR, "基準値"
+CALLFORM %LOCALS%_REFERENCE
+
+CALL CHA_CRI_VAR, "죠교자の素質"
+CALLFORM %LOCALS%_TALENT_T
+
+CALL CHA_CRI_VAR, "죠교자の체력"
+CALLFORM %LOCALS%_PHYSICAL_T
+
+CALL CHA_CRI_VAR, "죠교자の기력"
+CALLFORM %LOCALS%_MENTAL_T
+
+CALL CHA_CRI_VAR, @"죠교자の상태(%CONDITION(TCVAR:상태변화)%)"
+CALLFORM %LOCALS%_CONDITION_T
+
+CALL CHA_CRI_VAR, "연속행동보정"
+CALLFORM %LOCALS%_PREV
+
+CALL CHA_CRI_VAR, "ヒート値"
+CALLFORM %LOCALS%_HEAT
+
+CALL CHA_CRI_VAR, "구상보정値"
+CALL ACT_ACTM_KOJO_CORRECTION_T, 9
+
+CALL CHA_CRI_VAR, "ACT보정値"
+CALLFORM %LOCALS%_CORRECTION(ARG)
+
+;ARGが1以上なら処理中断
+SIF ARG
+	RETURN RESULT
+
+CALL CHA_CRI_VAR, "実行判定"
+CALLFORM %LOCALS%_ABLE
+
+;────────────────────────────────────
+;最終判定
+;────────────────────────────────────
+CALL DEF_CRI_VAR("最大前者")
+LOCAL = GET_CRI_VAR("決定")
+IF LOCAL == -1
+;OriginalString : (휴식カウンタ이상)
+	PRINTL (휴게 카운터 이상)
+	TFLAG:ACT = 90
+ELSE
+	TFLAG:ACT = GET_ACTNUM(RESULTS)
+ENDIF
+CALL ANA_CRI_VAR()
+
+;-------------------------------------------------------------------------
+;基準値
+;-------------------------------------------------------------------------
+@ACT_ACTM9_REFERENCE
+;배합지식があるときに増加する動作にするために修正@kap
+CALL ADD_CRI_VAR("치료한다", -5)
+;要らないかもと思ったので試しに無効化@これみ
+[SKIPSTART]
+CALL DIM_CRI_VAR("휴식시킨다", 5)
+CALL DIM_CRI_VAR("영양제를 먹인다", 8)
+CALL DIM_CRI_VAR("치료한다", 10)
+[SKIPEND]
+
+;-------------------------------------------------------------------------
+;죠교자の素質を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM9_TALENT_T
+
+;배합지식がない <<---------？
+SIF TALENT:배합지식
+	CALL ADD_CRI_VAR("치료한다", 5)
+
+;────────────────────────────────────
+;ゲージや상태による変動
+;────────────────────────────────────
+;-------------------------------------
+;죠교자の체력
+;-------------------------------------
+@ACT_ACTM9_PHYSICAL_T
+
+;죠교자の체력が[0→3, 900→0]を加算(0～3)
+CALL ADD_CRI_VAR("휴식시킨다", LINE_CALC(BASE:체력, "0→3,900→0,LIMIT/0～3"))
+
+;-------------------------------------
+;죠교자の기력
+;-------------------------------------
+@ACT_ACTM9_MENTAL_T
+
+;죠교자の기력が[0→-9～0, 450→0]を加算(-9～0)
+CALL ADD_CRI_VAR("치료한다", , LINE_CALC(BASE:기력, "0→-9,450→0,LIMIT/-9～0"))
+
+;-------------------------------------
+;죠교자の상태
+;-------------------------------------
+@ACT_ACTM9_CONDITION_T
+
+;죠교자の상태(0=통상/1=피폐/2=쇠약/3=무기력/4=몽롱/5=정욕/6=분노/7=싫증/8=울굴)
+SELECTCASE GET_CONDITION(TARGET)
+	CASE "무기력"
+		CALL ADD_CRI_VAR("치료한다", -3)
+	CASE "몽롱"
+		CALL ADD_CRI_VAR("치료한다", , -4)
+ENDSELECT
+
+;────────────────────────────────────
+;同じ행동연속실행の確率をダウンします
+;────────────────────────────────────
+@ACT_ACTM9_PREV
+SIF INRANGE(TFLAG:전ACT, 90, 92)
+	CALL ADD_CRI_VAR(GET_ACTNAME(TFLAG:전ACT), -3 * TFLAG:동일행동보너스, -4 * TFLAG:동일행동보너스)
+
+;────────────────────────────────────
+;ヒート値を差し引きます
+;────────────────────────────────────
+@ACT_ACTM9_HEAT
+
+;栄養剤히트値
+SIF FLAG:영양히트 > 0
+	CALL ADD_CRI_VAR("영양제를 먹인다", -FLAG:영양히트)
+;치료히트値
+SIF FLAG:치료히트 > 0
+	CALL ADD_CRI_VAR("치료한다", -FLAG:치료히트)
+
+;────────────────────────────────────
+;보정値計算
+;────────────────────────────────────
+@ACT_ACTM9_CORRECTION(ARG)
+#DIM LCOUNT
+
+;ARGが0以外なら보정値を計算し、以後の処理を行わない
+IF ARG
+	FOR LCOUNT, 90, 93
+		CALL ACT_M_RES_CALC(LCOUNT, GET_CRI_VAR(GET_ACTNAME(LCOUNT) + "累計"))
+	NEXT
+ELSE
+	;보정値を判定値に加算する
+	CALL ACT_ACTM_CORRECTION(9)
+ENDIF
+
+;────────────────────────────────────
+;その他変動や実行不可能の判定
+;────────────────────────────────────
+@ACT_ACTM9_ABLE
+#DIM LCOUNT
+
+;不可能判定
+CALL ACT_ACTM_ABLE(9)
+

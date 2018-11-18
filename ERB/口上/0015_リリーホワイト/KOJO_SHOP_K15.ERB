@@ -1,0 +1,939 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	[릴리 화이트]구상 ショップ이벤트구상ファイル
+;
+;	ショップから呼び出される구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;//暫定版@/L(2015/01/15)
+
+;========================================================================
+;ショップ이벤트구상
+;========================================================================
+
+;────────────────────────────────────
+;EV101, 의상変更
+;────────────────────────────────────
+;・ショップから의상変更を行った場合に表示
+;-------------------------------------------------
+@KOJO_EVENT_K15_101(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=
+;　一の位…（0, もう着てる、1, 着替えた、2, 恥ずかしくて着られない、3, 嫌がって着ない、9, 持ってない）
+;　十の位…（0, 통상、10, 반라、20, 전라、30, 속옷無し）
+;　百の位…코스프레のために保留
+;　千の位…（0, 죠교자, 1000, 죠교대상）
+;　例（죠교대상が恥ずかしがって전라にできなかった＝1022）
+;-------------------------------------------------
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が着替えた
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG < 1000 && (ARG % 10) == 1
+	SELECTCASE ARG
+		;통상되었다
+		CASE 1
+			IF TALENT:TARGET:임신 && TALENT:TARGET:주인님
+;OriginalString : 「赤ちゃんもいますし、暖かくしないとですね♪」
+				PRINTFORML 「아기도 있고, 따뜻하게 하지 않으면이군요♪」
+			ELSE
+				IF RAND:2 == 0
+;OriginalString : 「やっぱりいつもの服が一番落ち着きますね」
+					PRINTFORML 「역시 평소의 옷이 제일 침착하네요」
+				ELSE
+;OriginalString : 「これなら%RAND_SPLIT("脱がす愉しみもあり/着衣えっちもでき")%ますもんね♪」
+					PRINTFORML 「이것이라면%RAND_SPLIT("벗기는 즐거움도 있어/착의 엣치도 성과")%것이군요♪」
+				ENDIF
+			ENDIF
+			RETURN 1
+		;반라되었다
+		CASE 11
+			IF TALENT:TARGET:임신 && TALENT:TARGET:주인님
+				;フレーバーだよ！
+;OriginalString : 「シースルーのマタニティドレスって…ヘンタイっ♪」
+				PRINTFORML 「시 스루의 마타니티드레스는…헨타이♪」
+			ELSE
+;OriginalString : 「ちょっと身軽になりま했다っ」
+				PRINTFORML 「조금 홀가분하게 되었던」
+			ENDIF
+			RETURN 1
+		;전라되었다
+		CASE 21
+			IF TALENT:TARGET:임신 && TALENT:TARGET:주인님
+;OriginalString : 「ちょっとスース―しますね…」
+				PRINTFORML 「조금 스스―하네요…」
+;OriginalString : 「ほら、お腹の子が風邪ひかないように…」
+				PRINTFORML 「이봐요, 배의 아이가 감기 걸리지 않게…」
+;OriginalString : 「いつもリリーの事、ぎゅってしててくださいね♪」
+				PRINTFORML 「언제나 릴리의 일, 는 하고 있어 주세요♪」
+			ELSE
+				IF RAND:2 == 0
+;OriginalString : 「%RAND_SPLIT("裸になっちゃいま했다/お股がスース―します")%…えへへっ」
+					PRINTFORML 「%RAND_SPLIT("알몸에지금했다/가랑이가 스스―합니다")%…네에에 」
+;OriginalString : 「これなら、いつでもどこでもエッチできますね♪」
+					PRINTFORML 「이것이라면, 언제 어디서나 섹스할 수 있네요♪」
+				ELSE
+;OriginalString : 「それじゃ、最後の一枚も……えへへっ%RAND_SPLIT("、脱いじゃいま했다/")%♪」
+					PRINTFORML 「그러면, 마지막 한 장도……네에에%RAND_SPLIT(", 탈는 지금했다/")%♪」
+				ENDIF
+			ENDIF
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が恥ずかしがって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG < 1000 && (ARG % 10) == 2
+	SELECTCASE ARG
+		;반라だって恥ずかしい
+		CASE 12
+;OriginalString : 「%RAND_SPLIT("あの/ですから…その/嫌じゃないんですけど")%、まだ恥ずかしくて…」
+			PRINTFORML 「%RAND_SPLIT("저/그러니까…그/혐이 아닙니다만")%, 아직 부끄러워서…」
+			RETURN 1
+		;普段から전라はちょっと……
+		CASE 22
+;OriginalString : 「%RAND_SPLIT("えっと/無理言わないでください/その")%…まだ心の準備が……うぅ…」
+			PRINTFORML 「%RAND_SPLIT("엣또/무리 말하지 말아 주세요/그")%…아직 마음의 준비가………」
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が嫌がって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG < 1000 && (ARG % 10) == 3
+	SELECTCASE ARG
+		;반라だって恥ずかしい
+		CASE 13
+;OriginalString : 「あの、まだ恥ずかしくて…」
+			PRINTFORML 「저, 아직 부끄러워서…」
+			RETURN 1
+		;普段から전라はちょっと……
+		CASE 23
+;OriginalString : 「えっと…まだ心の準備が……うぅ…」
+			PRINTFORML 「어와…아직 마음의 준비가………」
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교자が着替えるのをやめた
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;%CALLNAME:TARGET%의 의상はすでに[　　]に設定されています
+;------------------------------------------------
+IF 구상記入チェック(0) && ARG < 1000 && (ARG % 10) == 0
+	SELECTCASE ARG
+		;통상のまま
+		CASE 0
+;OriginalString : 
+			PRINTFORML 
+			RETURN 1
+		;반라のまま
+		CASE 10
+;OriginalString : 
+			PRINTFORML 
+			RETURN 1
+		;전라のまま
+		CASE 20
+;OriginalString : 
+			PRINTFORML 
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상を着替え시켰다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG >= 1000 && (ARG % 10) == 1
+	SELECTCASE ARG
+		;통상되었다
+		CASE 1001
+			IF RAND:2 == 0
+;OriginalString : 「やっぱりそれが一番似合いますね」
+				PRINTFORML 「역시 그것이 제일 어울리네요」
+			ELSE
+;OriginalString : 「やっぱりそれが一番似合いますね」
+				PRINTFORML 「역시 그것이 제일 어울리네요」
+;OriginalString : 「まぁ、%RAND_SPLIT("すぐに/죠교が始れば")%脱がしちゃうんですけどね♪」
+				PRINTFORML 「아무튼,%RAND_SPLIT("곧바로/죠교하지만 시작하면")%탈이 해 버립니다지만♪」
+			ENDIF
+			RETURN 1
+		;반라되었다
+		CASE 1011
+;OriginalString : 「ちょっとドキドキしちゃいますね」
+			PRINTFORML 「조금 두근두근 있네요」
+			RETURN 1
+		;전라되었다
+		CASE 1021
+			IF RAND:2 == 0
+;OriginalString : 「%RAND_SPLIT("もう/ほら")%、隠しちゃダメですよ？」
+				PRINTFORML 「%RAND_SPLIT("이제(벌써)/이봐요")%, 숨기면 안되어요？」
+;OriginalString : 「%RAND_SPLIT("恥ずかしいところ/えっちな身体")%、リリーに全部見せてくださいね♪」
+				PRINTFORML 「%RAND_SPLIT("부끄러운 곳/엣치한 신체")%, 릴리에 전부 보여 주세요♪」
+			ELSE
+;OriginalString : 「裸になりたいって…ふふっ」
+				PRINTFORML 「알몸이 되고 싶다고…후후」
+;OriginalString : 「%RAND_SPLIT("ヘンタイさん/えっちですね")%♪」
+				PRINTFORML 「%RAND_SPLIT("변태씨/엣치하네요")%♪」
+			ENDIF
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が恥ずかしがって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG >= 1000 && (ARG & 10) == 2
+	SELECTCASE ARG
+		;반라だって恥ずかしい
+		CASE 1012
+;OriginalString : 「むぅ、残念です…」
+			PRINTFORML 「, 유감입니다…」
+			RETURN 1
+		;普段から전라なんて恥ずかしい
+		CASE 1022
+;OriginalString : 「だめ…ですか？」
+			PRINTFORML 「안돼…입니까？」
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が嫌がって着替えられない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG >= 1000 && (ARG & 10) == 3
+	SELECTCASE ARG
+		;반라は嫌
+		CASE 1013
+;OriginalString : 「むぅ、残念です…」
+			PRINTFORML 「, 유감입니다…」
+			RETURN 1
+		;普段から전라なんて嫌
+		CASE 1023
+;OriginalString : 「だめ…ですか？」
+			PRINTFORML 「안돼…입니까？」
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상を着替え시킨다のをやめた FIRSTEVENT(70)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;%CALLNAME:MASTER%의 의상はすでに[　　]に設定されています
+;------------------------------------------------
+IF 구상記入チェック(0) && ARG >= 1000 && (ARG % 10) == 0
+	SELECTCASE ARG
+		;통상のまま
+		CASE 1000
+;OriginalString : 
+			PRINTFORML 
+			RETURN 1
+		;반라のまま
+		CASE 1010
+;OriginalString : 
+			PRINTFORML 
+			RETURN 1
+		;전라のまま
+		CASE 1020
+;OriginalString : 
+			PRINTFORML 
+			RETURN 1
+	ENDSELECT
+ENDIF
+
+;────────────────────────────────────
+;EV102, 죠교자変更
+;────────────────────────────────────
+;・죠교자を交代시켰다ときに表示
+;-------------------------------------------------
+@KOJO_EVENT_K15_102(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(0, 구상主が他のキャラに任せた、1, 구상主が죠교자되었다)
+;旧죠교자は「%CALLNAME:SHOP_OLDTARGET%」、新죠교자は「%CALLNAME:SHOP_NEWTARGET%」で参照できる
+;구상主はTARGETで参照
+;-------------------------------------------------
+;・반항각인は죠교자毎に保存されるので、MARK:MASTER:반항각인などとしてしまうと0にしかならないので注意
+;・これは굴복각인も同様です
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;他の죠교자に交代
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	IF AFFECTION("상사상애")
+;OriginalString : 「あとは%CALLNAME:SHOP_NEWTARGET%ちゃんにお任せしますね」
+		PRINTFORML 「나머지는 %CALLNAME:SHOP_NEWTARGET%에 맡기네요」
+;OriginalString : 「%CNAME(MASTER)%、いい子にするんですよ？　ふふっ」
+		PRINTFORML 「%CNAME(MASTER)%, 좋은 아이로 합니다？ 후후」
+;OriginalString : 「それじゃ…リリーは%CNAME(MASTER)%の침대で待ってますから、ゆっくり愉しんできてくださいね
+		PRINTFORM 「그러면…릴리는%CNAME(MASTER)%의 침대에서 기다리고 있으니까, 천천히 즐겨 와 주세요
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTFORMW 」
+	ELSE
+;OriginalString : 「%CNAME(MASTER)%、%CALLNAME:SHOP_NEWTARGET%ちゃんに迷惑をかけないようにね？」
+		PRINTFORML 「%CNAME(MASTER)%,%CALLNAME:SHOP_NEWTARGET%에 폐를 끼치지 않게？」
+;OriginalString : 「それと…時々でいいですから……」
+		PRINTFORML 「그것과…가끔으로 좋으니까……」
+;OriginalString : 「죠교が終わったら、リリーのお部屋にも遊びに来て欲しいな♪」
+		PRINTFORMW 「조교가 끝나면(자), 릴리의 방에도 놀러 왔으면 좋은데♪」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さまが죠교자되었다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	;주인님
+	IF TALENT:TARGET:주인님
+		;상사상애
+		IF AFFECTION("상사상애")
+			IF RAND:2 == 0
+;OriginalString : 「お帰りなさい、%CNAME(MASTER)%♪」
+				PRINTFORML 「돌아가세요,%CNAME(MASTER)%♪」
+;OriginalString : 「寂しい思いを시켰다ぶん、たっぷり愛してくださいね
+				PRINTFORM 「외로운 생각을 시킨 만큼, 충분히 사랑해 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ELSE
+;OriginalString : 「リリーに죠교して欲しいんですか？　ふむ…」
+				PRINTFORMW 「릴리에 조교해 주었으면 합니까？ …」
+;OriginalString : 「それじゃあ、まずはリリーを『ぎゅっ』って抱きしめてください」
+				PRINTFORMW 「그러면 아, 우선은 릴리를 「」는 꼭 껴안아 주세요」
+;OriginalString : 「それから『寂しくさせてごめんね』『ちゃんと참다できたね、偉いね』って頭なでなでして…」
+				PRINTFORMW 「그리고 「외롭게 해 미안해요」 「제대로 참을 수 있었군요, 훌륭하다」는 머리 어루만지고 어루만지고 해…」
+;OriginalString : 「優しく침대に連れて行って…いっぱいの愛で、リリーを満たしてくださいね
+				PRINTFORM 「상냥하게 침대에 데려 가…가득한 사랑으로, 릴리를 채워 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ENDIF
+		;その他
+		ELSE
+;OriginalString : 「%CNAME(MASTER)%、ちゃんといい子にしてま했다か？」
+			PRINTFORML 「%CNAME(MASTER)%, 분명하게 좋은 아이로 하고 있었습니다인가？」
+;OriginalString : 「……おいで、%CNAME(MASTER)%がどんなヘンタイさんに죠교されちゃったのか……」
+			PRINTFORML 「……와,%CNAME(MASTER)%하지만 어떤 헨타이씨에게 조교되어 버렸어인가……」
+;OriginalString : 「침대の上でたっぷり聞かせてもらいますからねっ♪」
+			PRINTFORMW 「침대 위에서 충분히 들으니까요♪」
+		ENDIF
+	;普通の조수
+	ELSE
+		;상사상애
+		IF AFFECTION("죠교完了")
+;OriginalString : 「%RAND_SPLIT("ロリコン/ヘンタイ/マゾ豚")%さんこんにちはっ
+			PRINTFORM 「%RAND_SPLIT("로리콘/변태/마조돼지")%씨 안녕하세요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+;OriginalString : 「またリリーに죠교당했다くなっちゃったんですか？　ふふっ」
+			PRINTFORML 「또 릴리에 조교되고 싶어져 버렸습니다인가？ 후후」
+;OriginalString : 「それじゃ……금일からまた、オナニー禁止で頑張りましょうねっ」
+			PRINTFORML 「그러면……오늘부터 또, 자위 금지로 노력해요」
+;OriginalString : 「참다했다ぶんだけ、リリーがたっぷり可愛がってあげますから
+			PRINTFORM 「참은 만큼만, 릴리가 충분히 귀여워해 줄테니까
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		;その他
+		ELSE
+;OriginalString : 「あの、どうぞよろしくお願いします」
+			PRINTFORML 「저, 아무쪼록 잘 부탁드립니다」
+;OriginalString : 「%CNAME(SHOP_OLDTARGET, TARGET)%ちゃんみたいに上손に出来るかわかりませんけど…」
+			PRINTFORML 「%CNAME(SHOP_OLDTARGET, TARGET)%같이 능숙하게 할 수 있을까 모르지만…」
+;OriginalString : 「リリーと一緒に、いっぱい愉しみましょうねっ♪」
+			PRINTFORMW 「릴리와 함께, 가득 즐겨요♪」
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV110, 마력使用
+;────────────────────────────────────
+;・마력を消費して何らかの特典を購入했다ときに表示
+;-------------------------------------------------
+@KOJO_EVENT_K15_110(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(0, 마력使用前、1, 죠교기교、2, 지식を得る前、3, 배합지식취득、4, 매혹취득、5, 금단의지식취득、6, 도구능숙취득、
+;	7, 技術を得る前、8, 혀기술취득、9, 손가락기술취득、10, 긴박능숙、11, 새드消去/새드취득、12, 더러움무시취득、 38, 착의플레이선호、39, 허리기술)
+;이벤트구상：アイテム
+;引数内訳…
+;ARG=(13, アイテム練成前、14, 로터練成、15,바이브練成、16, 항문비즈練成、 17, 페니스밴드練成、 18, 항문바이브練成
+; 19, 클리캡練成、 20, 유두캡練成、21, 오나홀練成)
+;이벤트구상：責め具錬成
+;引数内訳…
+;ARG=(22, 責め具練成前、23, 눈가리개練成、24, 채찍練成、 25, 밧줄練成、 26, 볼개그練成、27,  바늘練成、28, 관장세트練成
+; 29, 삼각목마練成、 30, 거울練成、 31, 개목걸이練成、 32, 도구をカスタマイズ했다)
+;その他이벤트
+;引数内訳…
+;ARG=(33, 후타나리化/戻す、34, 거유化/戻す、35, 빈유化/戻す、36, 精力の限界値上昇)
+;-------------------------------------------------
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さま마력使用前
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(0) && FIRSTEVENT(0)
+;OriginalString : 「」
+		PRINTFORML 「」
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;初回以外の処理
+	;-------------------------
+	IF RAND:2 == 0
+;OriginalString : 「さてと、%RAND_SPLIT("どうしましょう/気になるものはありますか")%？」
+		PRINTFORML 「그런데와%RAND_SPLIT("어떻게 하지요/신경이 쓰이는 것은 있습니까")%？」
+	ELSE
+;OriginalString : 「%RAND_SPLIT("どうしましょうか/え～っと/迷いますね")%……%RAND_SPLIT("うん/よし")%、%CNAME(MASTER)%が選んでいいですよ♪」
+		PRINTFORML 「%RAND_SPLIT("어떻게 할까요/에～와/헤매네요")%……%RAND_SPLIT("うん/よし")%,%CNAME(MASTER)%하지만 선택해도 좋아요♪」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さまの죠교기교がアップ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && ARG == 1
+;OriginalString : 
+	PRINTFORML 
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さま지식を得る前
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 2
+;OriginalString : 「お勉強は苦손なんですけど…」
+	PRINTFORML 「공부는 서투릅니다만…」
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さま素質を취득
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・필요に応じて個別の条件に切り分けて下さい
+;3, 배합지식취득、4, 매혹취득、5, 금단의지식취득、6, 도구능숙취득、
+;7, 技術を得る前、8, 혀기술취득、9, 손가락기술취득、10, 긴박능숙、
+;11, 새드消去/새드취득、12, 더러움무시취득、 38, 착의플레이선호、39, 허리기술
+;------------------------------------------------
+IF 구상記入チェック(0) && (INRANGE(ARG, 3, 12) || GROUPMATCH(ARG, 38, 39))
+;OriginalString : 
+	PRINTFORML 
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さまアイテム錬成前
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 13
+	IF RAND:3 == 0
+;OriginalString : 「アイテムは捨てられないので…」
+		PRINTFORML 「아이템은 버려지지 않기 때문에…」
+;OriginalString : 「신중함に選ばないとですね…」
+		PRINTFORML 「신중하게 선택하지 않으면이군요…」
+	ELSEIF RAND:2 == 0
+;OriginalString : 「%RAND_SPLIT("えっちな/オトナの")%オモチャですか…%RAND_SPLIT("見てるだけでドキドキしちゃいます/へぇ～/")%…」
+		PRINTFORML 「%RAND_SPLIT("엣치한/어른의")%장난감입니까…%RAND_SPLIT("見てるだけでドキドキしちゃいます/へぇ～/")%…」
+	ELSE
+;OriginalString : 「%CNAME(MASTER)%が使う%RAND_SPLIT("ものですし/んですから")%、どれでも好きなのを選んでいいですよ」
+		PRINTFORML 「%CNAME(MASTER)%하지만 사용한다%RAND_SPLIT("물건이고/응그러니까")%, 어떤 것에서도 좋아하는 것을 선택해도 좋아요」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さまアイテム練成
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && INRANGE(ARG, 14, 21)
+	SELECTCASE ARG
+		;로터
+		CASE 14
+;			PRINTFORMDL 　強力微細動로터！
+;			PRINTFORMDL 　『董子の落とし物』
+;OriginalString : 「いわゆるピンク로터ですね」
+			PRINTFORML 「이른바 핑크 로터군요」
+;OriginalString : 「完全防水みたいですし、これなら安心して使えそうです♪」
+			PRINTFORML 「완전 방수같고, 이것이라면 안심해 사용할 수 있을 것 같습니다♪」
+		;바이브
+		CASE 15
+;			PRINTFORMDL 　最上の悦びを당신に！
+;			PRINTFORMDL 　『プリスティンビート』
+;OriginalString : 「子宮まで届くような強烈바이브レーションが売りなんですって♪」
+			PRINTFORML 「자궁까지 닿는 것 같은 강열바이브레이션이 매도라고♪」
+;OriginalString : 「へぇ…なんだかとっても凄そうです……」
+			PRINTFORML 「에…어쩐지 매우 굉장한 것 같습니다……」
+		;항문비즈
+		CASE 16
+;			PRINTFORMDL 　連なる珠の快感！
+;			PRINTFORMDL 　『～●●おかえり尻小玉●●～』
+;OriginalString : 「やわらか素材が売りなんですって♪」
+			PRINTFORML 「이나 짚이나 소재가 매도라고♪」
+;OriginalString : 「拡張用はもちろん、疑似배설も楽しめる…」
+			PRINTFORML 「확장용은 물론, 유사 배설도 즐길 수 있다…」
+;OriginalString : 「ふふっ、早く試してみたくなっちゃいま했다
+			PRINTFORM 「후후, 빨리 시험해 보고 싶어져 버렸습니다
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;페니스밴드
+		CASE 17
+;			PRINTFORMDL 　科学世紀の玩具！
+;			PRINTFORMDL 　『秘裂倶楽部のオカルト棒』
+;OriginalString : 「リリー\@ TALENT:MASTER:남자 ? にお尻を犯して欲しいの # と섹스했다いんですか \@？」
+			PRINTFORML 「릴리\@ TALENT:MASTER:남자 ? 에 엉덩이를 범했으면 좋은거야 # (와)과섹스했다있지 않습니까 \@？」
+;OriginalString : 「……ふふっ♪　それじゃあ、一番太いのにしておきましょうね
+			PRINTFORM 「……후후♪ 그러면 아, 제일 굵은데 해 두어요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;항문바이브
+		CASE 18
+;			PRINTFORMDL 　항문専用ディルド
+;			PRINTFORMDL 　『肛魔姦ＥＸ～４９５年の波紋～』
+;			PRINTFORML 「吸尻鬼退治の必須アイテムだそうです」
+;			PRINTFORML 「これは一般用に調整されてますけど……」
+;			PRINTFORML 「本物を使うと正気を失うほど気持ちがいいとか」
+;			PRINTFORML 「気になりますね……」
+;OriginalString : 「ほら、これ凄い形をしてますよっ♪」
+			PRINTFORML 「이봐요, 이것 굉장한 형태를 하고 있어요♪」
+;OriginalString : 「\@ TALENT:MASTER:남자 ? 前立腺を的確に刺激する # 항문から膣裏を強引に震わせる \@のに最も適했다形なんですって…」
+			PRINTFORML 「\@ TALENT:MASTER:남자 ? 전립선을 정확하게 자극한다 # 항문로부터 질리를 억지로 진동시킨다 \@의에 가장 적합한 형태라고…」
+;OriginalString : 「未知の快感……早く試してみたいですね
+			PRINTFORM 「미지의 쾌감……빨리 시험해 보고 싶네요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;클리캡
+		CASE 19
+;			PRINTFORMDL 　클리토리스吸引로터！
+;			PRINTFORMDL 　『클리캡テン・Ｍさん～お股が水浸し～』
+;OriginalString : 「可愛いデザインですね」
+			PRINTFORML 「사랑스러운 디자인이군요」
+;OriginalString : 「お豆さん専用の로터って事でしょうか……」
+			PRINTFORML 「콩씨전용의 로터는 일입니까……」
+;OriginalString : 「うん、折角ですし二つ貰っちゃいましょう♪」
+			PRINTFORML 「응, 절각이고 2세있읍시다♪」
+		;유두캡
+		CASE 20
+;			PRINTFORMDL 　吸引乳首責め로터！
+;			PRINTFORMDL 　『乳道使い～ＩＣＨＩＲＩＮ～』
+;OriginalString : 「へぇ…『激しい運動でも外れない』ですか…」
+			PRINTFORML 「에…「격렬한 운동에서도 빗나가지 않는다」입니까…」
+;OriginalString : 「うん、これなら죠교にもピッタリですね♪」
+			PRINTFORML 「응, 이것이라면 조교에도 꼭 맞네요♪」
+		;오나홀
+		CASE 21
+;OriginalString : 　極上名器を妄想再現！？
+			PRINTFORMDL  극상 명기를 망상 재현！？
+;OriginalString : 　『オナホ妖精（白레즈ver）』
+			PRINTFORMDL  「오나호 요정（흰 백합ver）」
+;OriginalString : 「……これが欲しいんですか？　ふ～ん……」
+			PRINTFORML 「……이것을 갖고 싶습니까？ ～응……」
+;OriginalString : 「『春を運ぶ妖精』ねぇ……へぇ～……」
+			PRINTFORML 「 「봄을 옮기는 요정」응……에～……」
+;OriginalString : 「まぁ、構いませんけどね……」
+			PRINTFORML 「아무튼, 상관하지 않지만……」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さま責め具練成前
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 22
+;OriginalString : 「ＳＭグッズがいっぱいですね…」
+	PRINTFORML 「ＳＭ상품이 가득해 무릎…」
+;OriginalString : 「どう？　気になるものはありますか？」
+	PRINTFORML 「어때？ 신경이 쓰이는 것은 있습니까？」
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さまＳＭグッズ錬成
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && INRANGE(ARG, 23, 32)            ;도구カスタマイズも含める
+	;派生を処理
+	SELECTCASE ARG
+		;눈가리개
+		CASE 23
+;OriginalString : 「睡眠用…じゃないですよね？　ふふっ♪」
+			PRINTFORML 「수면용…(이)가 아니지요？ 후후♪」
+		;채찍
+		CASE 24
+;OriginalString : 「キャットオブナインテイル、いわゆるバラ채찍ですね」
+			PRINTFORML 「캐트오브나인테일, 이른바 장미채찍이군요」
+;OriginalString : 「これは革も柔らかい素材ですし……」
+			PRINTFORML 「이것은 가죽도 부드러운 소재이고……」
+;OriginalString : 「うん、初めての子には丁度よさそうですね♪」
+			PRINTFORML 「응, 처음의 아이에게는 꼭 좋은 것 같네요♪」
+		;밧줄
+		CASE 25
+;OriginalString : 「麻밧줄……あっ凄い、ちゃんと鞣してありますよ」
+			PRINTFORML 「마승……아굉장하다, 분명하게 유 되어 있어요」
+;OriginalString : 「安い밧줄だと毛羽が擦れて痛くなっちゃうんですけど……」
+			PRINTFORML 「싼 줄이라면 보풀이 스쳐 아파져 버립니다지만……」
+;OriginalString : 「うん、これなら大丈夫そうですね♪」
+			PRINTFORML 「응, 이것이라면 괜찮아 그렇네요♪」
+		;볼개그
+		CASE 26
+;OriginalString : 「これ着けたら、とっても한심한格好になっちゃいますよ？」
+			PRINTFORML 「이것 대면(자), 매우 한심한 모습이 되어 버려요？」
+;OriginalString : 「입が閉じられないから、涎垂らして喘ぎっぱなしになっちゃったり……」
+			PRINTFORML 「입이 닫혀지지 않기 때문에, 군침 늘어뜨려 허덕이고 있을 뿐이 되어 버리거나……」
+;OriginalString : 「……まぁ、それがお望みなら構いませんけどね
+			PRINTFORM 「……아무튼, 그것이 소망이라면 상관하지 않지만
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;바늘
+		CASE 27
+;OriginalString : 「바늘が欲しいの？　え～っと、それじゃあ……」
+			PRINTFORML 「바늘을 갖고 싶은거야？ 네～와 그러면 아……」
+;OriginalString : 「これ、純金の바늘にしましょうねっ♪」
+			PRINTFORML 「이것, 순금의 바늘로 해요♪」
+;OriginalString : 「こういうのはね、鉄や銅、銀でもダメ……」
+			PRINTFORML 「이런 것 쳐 철이나 동, 은에서도 안 됨……」
+;OriginalString : 「金じゃなきゃイけないって事、教えてあげますね
+			PRINTFORM 「돈이 아니면 이없다는 것, 가르쳐 주네요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;관장세트
+		CASE 28
+;OriginalString : 「배설관리って、人としての尊厳を奪うのに一番効果的なんですよね……」
+			PRINTFORML 「배설 관리는, 사람으로서의 존엄을 빼앗는데 제일 효과적이예요……」
+;OriginalString : 「もちろん、健康목적でも使えますけど……」
+			PRINTFORML 「물론, 건강 목적으로도 사용할 수 있습니다만……」
+;OriginalString : 「マゾ豚さんは、これでどうされるのがお望みなんでしょうか……ふふっ
+			PRINTFORM 「매저키스트돼지씨는, 이것으로 어떻게 하시는 것이 바래 무엇이지요……후후
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;삼각목마
+		CASE 29
+;OriginalString : 「えぇ……これ拷問器具ですよ？」
+			PRINTFORML 「네……이것 고문 기구예요？」
+;OriginalString : 「まぁ、%CNAME(MASTER)%がいいならリリーは止めませんけど」
+			PRINTFORML 「아무튼,%CNAME(MASTER)%하지만 좋으면 릴리는 멈추지 않지만」
+		;거울
+		CASE 30
+;OriginalString : 「壁掛けの거울、実はマジックミラーで했다……なんてね♪」
+			PRINTFORML 「벽걸이의 대거울, 실은 매직 밀러였습니다……(이)라니♪」
+;OriginalString : 「恥ずかしいところ全部見える様な、一番大きい鏡にしましょうね
+			PRINTFORM 「부끄러운 곳 전부 보이는 것 같은, 제일 큰 거울로 해요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;개목걸이
+		CASE 31
+;OriginalString : 「可愛い개목걸이がいいですよね……う～ん……」
+			PRINTFORML 「사랑스러운 목걸이가 좋지요……～응……」
+;OriginalString : 「リリーの노예さんだって一目でわかるような……」
+			PRINTFORML 「릴리의 노예도 한눈에 아는 것 같은……」
+;OriginalString : 「うん、白地に赤のライン…これにしましょう♪」
+			PRINTFORML 「응, 흰 바탕에 빨강의 라인…이것으로 합시다♪」
+		;도구をカスタマイズ
+		CASE 32
+			;AAの類はフォントを指定してください。環境によってはズレが生じます@/L
+			SIF CHKFONT("ＭＳ ゴシック")
+				;フォントをＭＳ ゴシックに
+				SETFONT "ＭＳ ゴシック"
+;OriginalString : ???『도구をカスタマイズするっていうなら……』
+			PRINTFORMDW ???「도구를 커스터마이즈 한다 라고 한다면……」
+;OriginalString : 　 「えっ……？」
+			PRINTFORMW   「어……？」
+;OriginalString : 　
+			PRINTFORMW 　
+;OriginalString : 　＿人人人人人人人人人人人人人人人人人人人人＿
+			PRINTFORMDL  ＿사람들 사람들 사람들 사람들 사람들 사람들 사람들 사람들 사람들 사람들＿
+;OriginalString : 　＞　是非！　私に！　任せてくれませんか！？　＜
+			PRINTFORMDL  ＞ 부디！ 나에게！ 맡겨 주지 않겠습니까！？ ＜
+;OriginalString : 　￣Y^Y^Y^Y^YY^Y^Y^Y^YY^Y^Y^Y^YY^Y^Y^Y^YY^Y^￣
+			PRINTFORMDL  ￣Y^Y^Y^Y^YY^Y^Y^Y^YY^Y^Y^Y^YY^Y^Y^Y^YY^Y^￣
+;OriginalString : 　　　　　　　　　 _-‐[]‐-､_
+			PRINTFORMDL           _-‐[]‐-､_
+;OriginalString : 　　　　　　 ...＜.＿ｒへ、_＿＞..、
+			PRINTFORMDL        ...＜.＿ｒ에,_＿＞..,
+;OriginalString : 　　　　　.´:::::
+			PRINTFORMDL      .´:::::;:- =＝= - ､:::｀.、
+;OriginalString : 　　　　／::::::〈＿（＿＿）＿〉:::::＼
+			PRINTFORMDL     ／::::::〈＿（＿＿）＿〉:::::＼
+;OriginalString : 　　　/:::／::::::::::::::::::::::::::::'.
+			PRINTFORMDL    /:::／::::::::::::::::::::::::::::'.
+;OriginalString : 　　 /::/:::::::ト ､.＿＿＿__.ノ）:'
+			PRINTFORMDL    /::/:::::::트 ､.＿＿＿__.노）:';:::::',
+;OriginalString : 　　/::/:::::::::＼ｒｧ‐-､＿__.／:::'
+			PRINTFORMDL   /::/:::::::::＼ｒｧ‐-､＿__.／:::';::::／
+;OriginalString : 　　￣＼:::::::::／／　／::|::::::／￣￣￣｀ヽ
+			PRINTFORMDL   ￣＼:::::::::／／ ／::|::::::／￣￣￣｀□
+;OriginalString : 　　　　 ￣￣ ／／　／＿／￣￣￣￣　　　ヽ　　',
+			PRINTFORMDL      ￣￣ ／／ ／＿／￣￣￣￣   □  ',
+;OriginalString : 　　　　　　／　　 ∧　||　 |__!、 人、__人　　|
+			PRINTFORMDL       ／   ∧ ||  |__!, 사람,__인  |
+;OriginalString : 　　　　 ／　　　 /　ヽ||　 ﾊ_」＼＿_ｧテｒ､Y ﾊハ
+			PRINTFORMDL      ／    / □||  ﾊ_」＼＿_ｧ테ｒ､Y ﾊ하
+;OriginalString : 　,'￣￣｀ヽ　　 /　　 ||　ｧ'l
+			PRINTFORMDL  ,'￣￣｀□   /   || ｧ'l;ﾊ　　弋_り ﾊ/　　|
+;OriginalString :  ! 　　　 　　 ／ 　 　!!　ﾊ ﾟｰﾞ　　　 "ｿ　　　/
+			PRINTFORMDL  !        ／    !! ﾊ ﾟｰﾞ    "ｿ   /
+;OriginalString : 　＼＿＿..　'´ 　　/⌒i)　ハ" l7 ￣`l　く_ノ ｲ
+			PRINTFORMDL  ＼＿＿.. '´   /⌒i) 하" l7 ￣`l 구_노 ｲ
+;OriginalString : 　　　　　　　　　 |　　ﾘノト ､ .＿_ノ_イノ| /
+			PRINTFORMDL           |  ﾘ노트 ､ .＿_노_이노| /
+;OriginalString : 　　　　　　　　　く＼_||__7 ／/[こ_7／`ヽ/ﾚ'
+			PRINTFORMDL          구＼_||__7 ／/[와_7／`□/ﾚ'
+;OriginalString : 　　　　　　　　　/｀　|| |./､/::-::!／　　〉
+			PRINTFORMDL          /｀ || |./､/::-::!／  〉
+;OriginalString : 　　　　　　　　　| 　/⌒ヽ/:::×:::/ 　　ｲ
+			PRINTFORMDL          |  /⌒□/:::×:::/   ｲ
+;OriginalString : 　　　　　　　　　ヽ_(_r､ ｿ｀7ヽ‐-､　 　/
+			PRINTFORMDL          □_(_r､ ｿ｀7□‐-､   /
+;OriginalString : 　　　　　　　　　　　[ミ］ｲ_／　　　　／
+			PRINTFORMDL            [미］ｲ_／    ／
+;OriginalString : 　　　　　　　　 r--／[Ｔ」`―r‐---‐へ＿
+			PRINTFORMDL          r--／[Ｔ」`―r‐---‐우와＿
+;OriginalString : 　　　　　　　 〈.／⌒o/　　　!　 　　　＼`ヽ
+			PRINTFORMDL         〈.／⌒o/   !     ＼`□
+;OriginalString : 　　　　　　　　 |⌒ヽ./⌒o＿_ﾊ　　o／￣＼　/
+			PRINTFORMDL          |⌒□./⌒o＿_ﾊ  o／￣＼ /
+;OriginalString : 　　　　　　　　　`'ｰ7´￣ ﾌ､＿_」__ノ_＿_／
+			PRINTFORMDL          `'ｰ7´￣ ﾌ､＿_」__노_＿_／
+;OriginalString : 　　　　　　　　　　/　　／＼＿__/＼　　∨
+			PRINTFORMDL           /  ／＼＿__/＼  ∨
+;OriginalString : 　　　　　　　　　 /　 ,'　　　　　 ヽ.　',
+			PRINTFORMDL           /  ,'      □. ',
+;OriginalString : 　　　　　　　　 ,'　〈　　　　　　　 l　ハ
+			PRINTFORMDL          ,' 〈  l 하
+;OriginalString : 　　　　　　　　ｌ__v_)　　　　　　 （_v__ｊ
+			PRINTFORMDL         ｌ__v_)       （_v__ｊ
+;OriginalString : 　　　　　　　　 └─┘　　　　　　　└─┘
+			PRINTFORMDL          └─┘       └─┘
+			;フォントのリセット
+			SETFONT
+		;既存部分は汎用処理に。
+		CASEELSE
+;OriginalString : 「えっちと言うより…凶悪なカタチですね……」
+			PRINTFORML 「어 좀 말하는 것보다…흉악한 모양이군요……」
+;OriginalString : 「これ、どう使うんでしょうか……？」
+			PRINTFORML 「이것, 어떻게 사용하는 것입니까……？」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さま후타나리化or후타나리消去
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 33
+	;=================================================
+	;후타나리化
+	;=================================================
+	IF 구상記入チェック(100) && TALENT:TARGET:후타나리
+		IF RAND:2 == 0
+;OriginalString : 「%RAND_SPLIT("후타나리ちんぽ/リリーにもおちんちん")%生えちゃいま했다ぁ
+			PRINTFORM 「%RAND_SPLIT("후타나리자지/릴리에도 자지")%나 버렸습니다
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+;OriginalString : 「ねぇ、%RAND_SPLIT("早く使ってみましょうよ/早く試してみましょうよ/これで犯して欲しいんですよね")%
+			PRINTFORM 「응,%RAND_SPLIT("빨리 사용해 봅시다/빨리 시험해 봅시다/이것으로 범했으면 좋지요")%
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		ELSE
+;OriginalString : 「あの、生えてる여자が好きなんですか……？」
+			PRINTFORML 「저, 나있는 여자 아이를 좋아합니까……？」
+;OriginalString : 「でも『コレ』……ちょっと%RAND_SPLIT("大き/凶悪/太")%過ぎる気がします……」
+			PRINTFORML 「 그렇지만 「코레」……조금%RAND_SPLIT("대나무/흉악/태")%지날 생각이 듭니다……」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;후타나리消去
+	;=================================================
+	IF 구상記入チェック(100) && !TALENT:TARGET:후타나리
+;OriginalString : 「%RAND_SPLIT("후타나리ちんぽ/リリーにもおちんちん")%なくなっちゃいま했다……」
+		PRINTFORML 「%RAND_SPLIT("후타나리자지/릴리에도 자지")%없어져 버렸습니다……」
+;OriginalString : 「元通りなのに、なんだか変な感じがします……」
+		PRINTFORML 「그전대로인데, 어쩐지 이상한 느낌이 듭니다……」
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さま거유化or통상に戻す
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 34
+	;=================================================
+	;거유化
+	;=================================================
+	IF 구상記入チェック(100) && TALENT:TARGET:거유
+;OriginalString : 「これでだけ大きなおっぱいなら……ふふっ
+		PRINTFORM 「이것으로만 큰 젖가슴이라면……후후
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTFORML 」
+;OriginalString : 「色んなこと、できそうですね
+		PRINTFORM 「여러 가지 일, 할 수 있을 것 같네요
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTFORML 」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;元に戻す
+	;=================================================
+	IF 구상記入チェック(100) && !TALENT:TARGET:거유
+;OriginalString : 「ちっちゃくなっちゃいま했다……」
+		PRINTFORML 「작아져 버렸습니다……」
+;OriginalString : 「でもこのくらいが丁度いいんでしょうか、ね♪」
+		PRINTFORML 「 그렇지만 이 정도가 꼭 좋을까요, 군요♪」
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;[릴리 화이트]さま빈유化or통상に戻す
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 35
+	;=================================================
+	;빈유化
+	;=================================================
+	IF 구상記入チェック(100) && TALENT:TARGET:빈유
+		;죠교대상が남자
+		IF TALENT:MASTER:남자
+;OriginalString : 「男の子は大きなおっぱいが好きって聞きますけど……」
+			PRINTFORML 「사내 아이는 큰 젖가슴을 좋아한다는 것은 (듣)묻습니다만……」
+;OriginalString : 「%CNAME(MASTER)%は『こーゆうの』が好きなんですね……ふふっ
+			PRINTFORM 「%CNAME(MASTER)%(은)는 「개-해」가 좋아하네요……후후
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORML 」
+		;条件なし
+		ELSE
+;OriginalString : 「乳比べしようって……もう、ずるいですよ？」
+			PRINTFORML 「젖 비교하자고……이제, 간사해요？」
+;OriginalString : 「大きさじゃ負けても、感度なら負けませんからねっ」
+			PRINTFORMW 「크기는 져도, 감도라면 지지 않기 때문에」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;元に戻す
+	;=================================================
+	IF 구상記入チェック(100) && !TALENT:TARGET:빈유
+;OriginalString : 「つるペタリリーじゃご不満で했다か？」
+		PRINTFORML 「매다는 페타리리는 불만이었습니까？」
+;OriginalString : 「まぁ、ちょっとはあった方がリリーも嬉しいですけどね♪」
+		PRINTFORML 「아무튼, 조금은 있던 (분)편이 릴리도 기쁘지만♪」
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;EV111, 주인님として新しい죠교자を雇った
+;────────────────────────────────────
+@KOJO_EVENT_K15_111(ARG)
+;-------------------------------------------------
+;・新しい죠교자がTARGETになっているため、구상主はTARGETではないので注意
+;・구상主を参照했다い場合はFLAG:주인님で
+;-------------------------------------------------
+;戻り値（1,表示、2,表示して加入했다キャラの加入구상をスキップ）
+;-------------------------------------------------
+IF 구상記入チェック(100)
+;	;//NO:TARGETで雇った相손を参照することが可能です
+;	IF 0
+;	;대요정/플랑の場合
+;	ELSEIF GROUPMATCH(NO:TARGET, 4, 11)
+;		;CSTR:(FLAG:주인님):호칭목록 = 元の名前_呼ばせたい名前/%CSTR:(FLAG:주인님):호칭목록%
+;		CSTR:(FLAG:주인님):호칭목록 = %CALLNAME:TARGET%_リリーちゃん/%CSTR:(FLAG:주인님):호칭목록%
+;	;대요정の場合
+;	ELSEIF NO:TARGET == 4 && CALLNAME:TARGET == "대요정"
+;		;CSTR:(FLAG:2):호칭목록 = 元の名前_呼ばせたい名前/%CSTR:(FLAG:2):호칭목록%
+;		CSTR:(FLAG:2):호칭목록 = 대요정_大/%CSTR:(FLAG:2):호칭목록%
+;	ELSE
+;		;その他召喚可能な相손（레이무/마리사/파츄리/사쿠야/레밀리아/유카리/유카/히나/早苗）は呼び捨て
+;	ENDIF
+	;%CNAME(TARGET, (FLAG:주인님))%　
+	SELECTCASE NO:TARGET
+		;대요정　分岐を大ちゃん구상に合わせる
+		CASE 4
+;				;죠교대상の반항각인Lv7以上
+;				IF MARK:(FLAG:주인님):반항각인 >= 7
+;					PRINTFORML 「」
+;				;죠교대상の반항각인Lv4以上
+;				ELSEIF MARK:(FLAG:주인님):반항각인 >= 4
+;					PRINTFORML 「」
+;				;죠교대상の반항각인Lv3以下
+;				ELSE
+;OriginalString : 「あのね、リリーのお友達の妖精で…大ちゃんって言うんですけど……」
+				PRINTFORML 「저기요, 릴리의 친구의 요정으로…대라고 말합니다만……」
+;OriginalString : 「なかなか精が손に入らなくて困ってるみたいで、協力してくれませんか？」
+				PRINTFORML 「좀처럼 정령이 손에 들어 오지 않아서 곤란하고 있는 것 같아, 협력해 주지 않겠습니까？」
+;OriginalString : 「大丈夫。とっても可愛くていい子ですから、당신もきっと気に入ると思いますよ♪」
+				PRINTFORMW 「괜찮아. 매우 사랑스럽고 좋은 아이이기 때문에, 당신도 반드시 마음에 들거라고 생각해요♪」
+;OriginalString : （それとね……大人しく見えますけど、ほんとはリリーよりもえろえろですから……
+				PRINTFORM （그것과……얌전하게 보입니다만, 사실은 릴리보다 타라 이기 때문에……
+				CALL HEARTCB
+;OriginalString : ）
+				PRINTFORML ）
+;OriginalString : （『そっち』の方も、期待してくれていいですからねっ
+				PRINTFORM （「그쪽」도, 기대해 주어도 좋으니까
+				CALL HEARTCB
+;OriginalString : ）
+				PRINTFORMW ）
+		;その他
+		CASEELSE
+;OriginalString : 「紹介しますね。금일から搾精を손伝ってくれる%CNAME(TARGET, (FLAG:주인님))%です♪」
+			PRINTFORML 「소개하네요. 오늘부터 착정을 도와 준다%CNAME(TARGET, (FLAG:주인님))%입니다♪」
+;OriginalString : 「당신ならもう一人分くらい余裕かなって……%RAND_SPLIT("えへ/えへへ/うふふ/ね/ふふ")%っ♪」
+			PRINTFORML 「당신이라면 또 한사람 분 정도 여유일까는……%RAND_SPLIT("에헤/에헤헤/우후후/저기/후후")%♪」
+;OriginalString : 「ほら、ちゃんとご挨拶してくださいね？」
+			PRINTFORML 「이봐요, 분명하게 인사해 주세요？」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV112, [릴리 화이트]さまが죠교자として加入했다
+;────────────────────────────────────
+@KOJO_EVENT_K15_112(ARG)
+;-------------------------------------------------
+;・주인님の名前は「FLAG:주인님」で参照できる
+;・주인님が雇用구상で戻り値2を返していると表示されない
+;・구상主はTARGET
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	;죠교대상の반항각인Lv5以上
+	IF MARK:(FLAG:주인님):반항각인 >= 5
+;OriginalString : 「はじめまして、릴리 화이트です。リリーって呼んでくださいね」
+		PRINTFORML 「처음 뵙겠습니다, 릴리 화이트입니다. 릴리라고 불러 주세요」
+;OriginalString : 「あんまり%CNAME((FLAG:주인님), TARGET)%を困らせちゃダメですよ？」
+		PRINTFORML 「별로%CNAME((FLAG:주인님), TARGET)%고안되어요？」
+;OriginalString : 「これからはリリーも一緒に죠교のお손伝いをしますから、覚悟してくださいね♪」
+		PRINTFORMW 「지금부터는 릴리도 함께 조교를 돕기 때문에, 각오 해 주세요♪」
+	;죠교대상の반항각인Lv4以下
+	ELSE
+;OriginalString : 「こんにちは、%CNAME(MASTER)%」
+		PRINTFORML 「안녕하세요,%CNAME(MASTER)%」
+;OriginalString : 「릴리 화이트っていいます。気軽に『リリー』って呼んでくださいね」
+		PRINTFORML 「릴리 화이트라고 합니다. 부담없이 「릴리」라고 불러 주세요」
+;OriginalString : 「%CNAME((FLAG:주인님), TARGET)%と一緒にたっぷり搾ってあげますから…楽しみに待っててね♪」
+		PRINTFORMW 「%CNAME((FLAG:주인님), TARGET)%(와)과 함께 충분히 짜 줄테니까…기다려지게 기다리고 있어♪」
+	ENDIF
+	RETURN 1
+ENDIF

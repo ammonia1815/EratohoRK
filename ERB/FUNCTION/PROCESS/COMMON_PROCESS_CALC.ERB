@@ -1,0 +1,1191 @@
+﻿;-------------------------------------------------
+;汎用関数置き場
+;表示フロー、計算処理などを切り出했다もの。
+;または内部処理的な関数
+;-------------------------------------------------
+
+;-------------------------------------------------
+;計算関連
+;-------------------------------------------------
+
+;────────────────────────────────────
+;죠교대상행동による一括ソース보정
+;────────────────────────────────────
+@REACT_TYPE_CHECK
+SELECTCASE COMGRONAME(TFLAG:REACT분류)
+	CASE "소극적으로 한다"
+		;快感ソースは基準値とする
+		;非快感ソースの보정
+		;圧力に屈してしぶしぶ従う内容
+		TIMES SOURCE:MASTER:접촉     , 0.90
+		TIMES SOURCE:MASTER:애정     , 1.00
+		TIMES SOURCE:MASTER:성행위   , 1.00
+		TIMES SOURCE:MASTER:고통     , 0.90
+		TIMES SOURCE:MASTER:구속     , 1.00
+		TIMES SOURCE:MASTER:노출     , 1.00
+		TIMES SOURCE:MASTER:불결     , 1.50
+		TIMES SOURCE:MASTER:이탈     , 1.00
+		TIMES SOURCE:MASTER:중독충족 , 1.00
+		TIMES SOURCE:MASTER:트라우마 , 1.00
+		TIMES SOURCE:MASTER:굴종     , 1.20
+		TIMES SOURCE:MASTER:달성     , 0.50
+		TIMES SOURCE:MASTER:열락     , 0.75
+		TIMES SOURCE:MASTER:반항     , 0.75
+		TIMES SOURCE:MASTER:공포     , 1.20
+	CASE "태연하게 한다"
+		;快感ソースの보정
+		;봉사系ACTか、성교主導権が죠교대상のとき죠교자快感増加
+		IF MENUMATCH(TFLAG:ACT, "봉사") || SEX_INITIATIVE(MASTER)
+			TIMES SOURCE:쾌Ｃ , 2.00
+			TIMES SOURCE:쾌Ｖ , 2.00
+			TIMES SOURCE:쾌Ａ , 2.00
+			TIMES SOURCE:쾌Ｂ , 2.00
+		ENDIF
+		;자위のとき죠교대상快感増加
+		IF GROUPMATCH(1, MC_PLAYER(), MV_PLAYER(), MA_PLAYER(), MB_PLAYER())
+			TIMES SOURCE:MASTER:쾌Ｃ , 1.20
+			TIMES SOURCE:MASTER:쾌Ｖ , 1.20
+			TIMES SOURCE:MASTER:쾌Ａ , 1.20
+			TIMES SOURCE:MASTER:쾌Ｂ , 1.20
+		ENDIF
+		;성교主導権が죠교대상のとき、성교種に応じて죠교대상快感減少
+		IF SEX_INITIATIVE(MASTER)
+			IF TEQUIP:성교봉사중 || TEQUIP:조수성교봉사중
+				TIMES SOURCE:MASTER:쾌Ｃ , 0.75
+			ELSEIF TEQUIP:성교중 == 3
+				TIMES SOURCE:MASTER:쾌Ｖ , 0.75
+			ENDIF
+		ENDIF
+		;非快感ソースの보정
+		;自分を保ちつつ飄々と命令に従って見せる内容
+		TIMES SOURCE:MASTER:접촉     , 1.50
+		TIMES SOURCE:MASTER:애정     , 0.50
+		TIMES SOURCE:MASTER:성행위   , 1.50
+		TIMES SOURCE:MASTER:고통     , 0.75
+		TIMES SOURCE:MASTER:구속     , 0.80
+		TIMES SOURCE:MASTER:노출     , 1.50
+		TIMES SOURCE:MASTER:불결     , 0.50
+		TIMES SOURCE:MASTER:이탈     , 2.00
+		TIMES SOURCE:MASTER:중독충족 , 1.20
+		TIMES SOURCE:MASTER:트라우마 , 0.75
+		TIMES SOURCE:MASTER:굴종     , 0.50
+		TIMES SOURCE:MASTER:달성     , 2.50
+		TIMES SOURCE:MASTER:열락     , 0.75
+		TIMES SOURCE:MASTER:반항     , 1.20
+		TIMES SOURCE:MASTER:공포     , 0.50
+	CASE "적극적으로 한다"
+		;快感ソースの보정
+		;봉사系ACTか、성교主導権が죠교대상のとき죠교자快感増加
+		IF MENUMATCH(TFLAG:ACT, "봉사") || SEX_INITIATIVE(MASTER)
+			TIMES SOURCE:쾌Ｃ , 2.50
+			TIMES SOURCE:쾌Ｖ , 2.50
+			TIMES SOURCE:쾌Ａ , 2.50
+			TIMES SOURCE:쾌Ｂ , 2.50
+		ENDIF
+		;자위のとき죠교대상快感増加
+		IF GROUPMATCH(1, MC_PLAYER(), MV_PLAYER(), MA_PLAYER(), MB_PLAYER())
+			TIMES SOURCE:MASTER:쾌Ｃ , 2.00
+			TIMES SOURCE:MASTER:쾌Ｖ , 2.00
+			TIMES SOURCE:MASTER:쾌Ａ , 2.00
+			TIMES SOURCE:MASTER:쾌Ｂ , 2.00
+		ENDIF
+		;非快感ソースの보정
+		;命令に従い적극적으로봉사행동を行う内容
+		TIMES SOURCE:MASTER:접촉     , 2.00
+		TIMES SOURCE:MASTER:애정     , 2.00
+		TIMES SOURCE:MASTER:성행위   , 1.50
+		TIMES SOURCE:MASTER:고통     , 0.75
+		TIMES SOURCE:MASTER:구속     , 0.80
+		TIMES SOURCE:MASTER:노출     , 1.50
+		TIMES SOURCE:MASTER:불결     , 0.50
+		TIMES SOURCE:MASTER:이탈     , 1.20
+		TIMES SOURCE:MASTER:중독충족 , 2.00
+		TIMES SOURCE:MASTER:트라우마 , 0.50
+		TIMES SOURCE:MASTER:굴종     , 1.50
+		TIMES SOURCE:MASTER:달성     , 2.00
+		TIMES SOURCE:MASTER:열락     , 1.25
+		TIMES SOURCE:MASTER:반항     , 0.50
+		TIMES SOURCE:MASTER:공포     , 1.00
+	CASE "受け入れる"
+		;快感ソースの보정
+		;죠교대상快感増加
+		TIMES SOURCE:MASTER:쾌Ｃ , 2.50
+		TIMES SOURCE:MASTER:쾌Ｖ , 2.50
+		TIMES SOURCE:MASTER:쾌Ａ , 2.50
+		TIMES SOURCE:MASTER:쾌Ｂ , 2.50
+		;봉사系ACTか、성교主導権が죠교대상のとき죠교자快感減少
+		IF MENUMATCH(TFLAG:ACT, "봉사") || SEX_INITIATIVE(MASTER)
+			TIMES SOURCE:쾌Ｃ , 0.75
+			TIMES SOURCE:쾌Ｖ , 0.75
+			TIMES SOURCE:쾌Ａ , 0.75
+			TIMES SOURCE:쾌Ｂ , 0.75
+		ENDIF
+		;非快感ソースの보정
+		;쾌락に溺れて命令遂行よりも自分が気持ち良くなる方に重点がある
+		TIMES SOURCE:MASTER:접촉     , 2.00
+		TIMES SOURCE:MASTER:애정     , 2.00
+		TIMES SOURCE:MASTER:성행위   , 2.50
+		TIMES SOURCE:MASTER:고통     , 0.50
+		TIMES SOURCE:MASTER:구속     , 1.00
+		TIMES SOURCE:MASTER:노출     , 2.00
+		TIMES SOURCE:MASTER:불결     , 1.00
+		TIMES SOURCE:MASTER:이탈     , 1.00
+		TIMES SOURCE:MASTER:중독충족 , 2.50
+		TIMES SOURCE:MASTER:트라우마 , 0.75
+		TIMES SOURCE:MASTER:굴종     , 2.50
+		TIMES SOURCE:MASTER:달성     , 1.00
+		TIMES SOURCE:MASTER:열락     , 2.50
+		TIMES SOURCE:MASTER:반항     , 0.75
+		TIMES SOURCE:MASTER:공포     , 0.75
+	CASE "용서를 빌다"
+		;快感ソースの보정
+		;봉사系ACTか、성교主導権が죠교대상のとき죠교자快感減少
+		IF MENUMATCH(TFLAG:ACT, "봉사") || SEX_INITIATIVE(MASTER)
+			TIMES SOURCE:쾌Ｃ , 0.50
+			TIMES SOURCE:쾌Ｖ , 0.50
+			TIMES SOURCE:쾌Ａ , 0.50
+			TIMES SOURCE:쾌Ｂ , 0.50
+		ENDIF
+		;성교主導権が죠교대상のとき、성교種に応じて죠교대상快感減少
+		IF SEX_INITIATIVE(MASTER)
+			IF TEQUIP:성교봉사중 || TEQUIP:조수성교봉사중
+				TIMES SOURCE:MASTER:쾌Ｃ , 0.50
+			ELSEIF TEQUIP:성교중 == 3
+				TIMES SOURCE:MASTER:쾌Ｖ , 0.50
+			ENDIF
+		ENDIF
+		;자위のとき죠교대상快感減少
+		IF GROUPMATCH(1, MC_PLAYER(), MV_PLAYER(), MA_PLAYER(), MB_PLAYER())
+			TIMES SOURCE:MASTER:쾌Ｃ , 0.50
+			TIMES SOURCE:MASTER:쾌Ｖ , 0.50
+			TIMES SOURCE:MASTER:쾌Ａ , 0.50
+			TIMES SOURCE:MASTER:쾌Ｂ , 0.50
+		ENDIF
+		;非快感ソースの보정
+		;怯えたりして竦んでしまい만족に命令に従えていない
+		TIMES SOURCE:MASTER:접촉     , 0.50
+		TIMES SOURCE:MASTER:애정     , 0.50
+		TIMES SOURCE:MASTER:성행위   , 1.00
+		TIMES SOURCE:MASTER:고통     , 2.00
+		TIMES SOURCE:MASTER:구속     , 1.25
+		TIMES SOURCE:MASTER:노출     , 0.50
+		TIMES SOURCE:MASTER:불결     , 1.50
+		TIMES SOURCE:MASTER:이탈     , 1.50
+		TIMES SOURCE:MASTER:중독충족 , 0.75
+		TIMES SOURCE:MASTER:트라우마 , 2.50
+		TIMES SOURCE:MASTER:굴종     , 2.00
+		TIMES SOURCE:MASTER:달성     , 0.50
+		TIMES SOURCE:MASTER:열락     , 0.50
+		TIMES SOURCE:MASTER:반항     , 0.50
+		TIMES SOURCE:MASTER:공포     , 2.00
+	;거부・날뛴다・逃げる・何もなし
+	CASEELSE
+		;봉사系ACTか、성교主導権が죠교대상のとき죠교자快感減少
+		IF MENUMATCH(TFLAG:ACT, "봉사") || SEX_INITIATIVE(MASTER)
+			TIMES SOURCE:쾌Ｃ , 0.30
+			TIMES SOURCE:쾌Ｖ , 0.30
+			TIMES SOURCE:쾌Ａ , 0.30
+			TIMES SOURCE:쾌Ｂ , 0.30
+		ENDIF
+		;성교主導権が죠교대상のとき、성교種に応じて죠교대상快感減少
+		IF SEX_INITIATIVE(MASTER)
+			IF TEQUIP:성교봉사중 || TEQUIP:조수성교봉사중
+				TIMES SOURCE:MASTER:쾌Ｃ , 0.30
+			ELSEIF TEQUIP:성교중 == 3
+				TIMES SOURCE:MASTER:쾌Ｖ , 0.30
+			ENDIF
+		ENDIF
+		;非快感ソースの보정
+		;概ね抵抗に寄る
+		TIMES SOURCE:MASTER:접촉     , 0.50
+		TIMES SOURCE:MASTER:애정     , 0.50
+		TIMES SOURCE:MASTER:성행위   , 0.50
+		TIMES SOURCE:MASTER:고통     , 1.00
+		TIMES SOURCE:MASTER:구속     , 1.00
+		TIMES SOURCE:MASTER:노출     , 1.00
+		TIMES SOURCE:MASTER:불결     , 1.00
+		TIMES SOURCE:MASTER:이탈     , 1.00
+		TIMES SOURCE:MASTER:중독충족 , 1.00
+		TIMES SOURCE:MASTER:트라우마 , 1.00
+		TIMES SOURCE:MASTER:굴종     , 1.00
+		TIMES SOURCE:MASTER:달성     , 1.00
+		TIMES SOURCE:MASTER:열락     , 0.50
+		TIMES SOURCE:MASTER:반항     , 2.00
+		TIMES SOURCE:MASTER:공포     , 1.00
+ENDSELECT
+
+;────────────────────────────────────
+;의상のソース보정
+;────────────────────────────────────
+@CLOTHES_CHECK
+;하반신속옷
+;팬티・パンスト
+IF TEQUIP:MASTER:하반신속옷 == 2 || TEQUIP:MASTER:하반신속옷 == 4
+	;로터や조수の행동にもかかってしまうけど今は仕方ない
+	;暫定的なものとします
+	IF !TALENT:벽통과
+		TIMES SOURCE:MASTER:쾌Ｃ , 0.95
+		TIMES SOURCE:MASTER:쾌Ｖ , 0.90
+		TIMES SOURCE:MASTER:쾌Ａ , 0.90
+	ENDIF
+	TIMES SOURCE:MASTER:노출 , 0.95
+;ドロワ・트렁크
+ELSEIF TEQUIP:MASTER:하반신속옷 == 1 || TEQUIP:MASTER:하반신속옷 == 3
+	IF !TALENT:벽통과
+		TIMES SOURCE:MASTER:쾌Ｃ , 0.90
+		TIMES SOURCE:MASTER:쾌Ｖ , 0.80
+		TIMES SOURCE:MASTER:쾌Ａ , 0.80
+	ENDIF
+	TIMES SOURCE:MASTER:노출 , 0.90
+ENDIF
+
+;상반신속옷
+;ブラ・붕대
+IF TEQUIP:MASTER:상반신속옷 == 1 || TEQUIP:MASTER:상반신속옷 == 3
+	SIF !TALENT:벽통과
+		TIMES SOURCE:MASTER:쾌Ｂ , 0.80
+	TIMES SOURCE:MASTER:노출 , 0.90
+;キャミ・Ｔ셔츠
+ELSEIF TEQUIP:MASTER:상반신속옷 == 2 || TEQUIP:MASTER:상반신속옷 == 2
+	SIF !TALENT:벽통과
+		TIMES SOURCE:MASTER:쾌Ｂ , 0.95
+	TIMES SOURCE:MASTER:노출 , 0.80
+ENDIF
+
+;하반신겉옷
+;치마바지・바지
+IF TEQUIP:MASTER:하반신겉옷 > 1
+	IF TALENT:착의플레이선호 == 0
+		IF !TALENT:벽통과
+			TIMES SOURCE:MASTER:쾌Ｃ , 0.60
+			TIMES SOURCE:MASTER:쾌Ｖ , 0.70
+			TIMES SOURCE:MASTER:쾌Ａ , 0.70
+		ENDIF
+		TIMES SOURCE:MASTER:노출 , 0.60
+	ELSE
+		IF !TALENT:벽통과
+			TIMES SOURCE:MASTER:쾌Ｃ , 0.80
+			TIMES SOURCE:MASTER:쾌Ｖ , 0.90
+			TIMES SOURCE:MASTER:쾌Ａ , 0.90
+		ENDIF
+		TIMES SOURCE:MASTER:노출 , 0.70
+	ENDIF
+;스커트
+ELSEIF TEQUIP:MASTER:하반신겉옷 == 1
+	IF TALENT:착의플레이선호 == 0
+		IF !TALENT:벽통과
+			TIMES SOURCE:MASTER:쾌Ｃ , 0.70
+			TIMES SOURCE:MASTER:쾌Ｖ , 0.80
+			TIMES SOURCE:MASTER:쾌Ａ , 0.80
+		ENDIF
+		TIMES SOURCE:MASTER:노출 , 0.70
+	ELSE
+		TIMES SOURCE:MASTER:노출 , 0.90
+	ENDIF
+ENDIF
+
+;상반신겉옷
+;겉옷
+IF TEQUIP:MASTER:상반신겉옷 && TALENT:착의플레이선호 == 0
+	SIF !TALENT:벽통과
+		TIMES SOURCE:MASTER:쾌Ｂ , 0.60
+	TIMES SOURCE:MASTER:노출 , 0.60
+ENDIF
+
+;전신겉옷
+IF TALENT:착의플레이선호 == 0
+	;기모노、도사복
+	IF TEQUIP:MASTER:전신겉옷 && TEQUIP:MASTER:전신겉옷 != 3
+		IF !TALENT:벽통과
+			TIMES SOURCE:MASTER:쾌Ｃ , 0.60
+			TIMES SOURCE:MASTER:쾌Ｖ , 0.70
+			TIMES SOURCE:MASTER:쾌Ａ , 0.70
+			TIMES SOURCE:MASTER:쾌Ｂ , 0.60
+		ENDIF
+		TIMES SOURCE:MASTER:노출 , 0.40
+	;원피스
+	ELSEIF TEQUIP:MASTER:전신겉옷 == 3
+		IF !TALENT:벽통과
+			TIMES SOURCE:MASTER:쾌Ｃ , 0.70
+			TIMES SOURCE:MASTER:쾌Ｖ , 0.80
+			TIMES SOURCE:MASTER:쾌Ａ , 0.80
+			TIMES SOURCE:MASTER:쾌Ｂ , 0.70
+		ENDIF
+		TIMES SOURCE:MASTER:노출 , 0.60
+	ENDIF
+ENDIF
+
+;カスタム服装/코스프레
+;노예복
+IF TEQUIP:MASTER:코스프레 == 1
+	TIMES SOURCE:MASTER:접촉 , 1.05
+	TIMES SOURCE:MASTER:애정 , 0.80
+	TIMES SOURCE:MASTER:노출 , 1.40
+	SOURCE:MASTER:이탈 += 100
+	TIMES SOURCE:MASTER:이탈 , 1.10
+	SOURCE:MASTER:중독충족 += GET_ABL(MASTER, "마조끼") * GET_ABL(MASTER, "구속중독") * (GET_ABL(MASTER, "구속중독") + 10 + CFLAG:MASTER:죠교레벨 * 5) / 1000
+	SIF ABL:MASTER:마조끼 + ABL:MASTER:구속중독 > 4
+		TIMES SOURCE:MASTER:중독충족 , 1.25
+	TIMES SOURCE:MASTER:트라우마 , 1.20
+	SOURCE:MASTER:굴종 += 50
+	TIMES SOURCE:MASTER:굴종 , 1.25
+	TIMES SOURCE:MASTER:반항 , 0.75
+ENDIF
+
+;-------------------------------------------------
+;関数名:SET_KISS
+;概　要:任意の箇所で키스の処理を行う
+;引　数:なし（MASTER-TARGET間のみ）
+;使用例 CALL SET_KISS
+;-------------------------------------------------
+@SET_KISS
+#LOCALSIZE 1
+;키스に伴う一連の処理 불결SOURCEについては割愛
+SOURCE:MASTER:접촉 = 150 + GET_TRAINLV(TARGET) * 5
+SOURCE:MASTER:애정 = 100 + CFLAG:M호의 / 50 + GET_ABL(TARGET, "애무") * (GET_ABL(TARGET, "기교") / 10 + TALENT:혀기술 * 2) + GET_ABL(TARGET, "봉사정신") * 5
+SOURCE:MASTER:성행위 = 50 + SOURCE:MASTER:애정 / 15
+;汚れが相互に移動
+CALL MOVE_STAIN("입", TARGET, "입", MASTER)
+;경험を付与
+EXP:키스경험 += 1
+EXP:MASTER:키스경험 += 1
+
+;-------------------------------------------------
+;関数名:SUCKING_NIPPLES
+;概　要:任意の箇所でARGに対する乳首吸いの処理を行う
+;引　数:0 行為の대상　省略するとTARGET。MASTER-TARGET間のみ
+;使用例 CALL SUCKING_NIPPLES
+;-------------------------------------------------
+@SUCKING_NIPPLES(ARG = -2)
+#LOCALSIZE 2
+ARG = ARG == MASTER ? MASTER # TARGET
+IF ARG == MASTER
+	SOURCE:MASTER:쾌Ｂ = 150 + ACT_FROM(TARGET, 4) * (3 + TALENT:혀기술) / 3
+	SOURCE:MASTER:접촉 = 75 + GET_TRAINLV(TARGET) * 10
+	SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
+	SOURCE:MASTER:성행위 = 50 + SOURCE:MASTER:쾌Ｂ / 10
+	;汚れが相互に移動
+	CALL MOVE_STAIN("입", TARGET, "가슴", MASTER)
+	EXP:MASTER:Ｂ경험 += 1
+ELSE
+	SOURCE:MASTER:접촉 = 50 + GET_TRAINLV(TARGET) * 5 + CFLAG:MASTER:죠교레벨 * 5
+	SOURCE:MASTER:애정 = 50 + CFLAG:M호의 / 50 + GET_ABL(TARGET, "봉사정신") * 5
+	LOCAL:1 = ACT_TO(TARGET, 4) * (3 + TALENT:MASTER:손가락기술) / 10
+	;汚れが相互に移動
+	CALL MOVE_STAIN("가슴", TARGET, "입", MASTER)
+	SOURCE:MASTER:성행위 += 50 + LOCAL:1 / 8
+	SOURCE:MASTER:달성 += LOCAL:1 / 4
+	SOURCE:쾌Ｂ += LOCAL:1
+	EXP:Ｂ경험 += 1
+ENDIF
+
+;-------------------------------------------------
+;関数名:ACT_FROM
+;概　要:MASTERに対して애무を行うときの計算を行う関数
+;引　数:ARG:0…MASTERに애무を行うキャラの등록번호(TARGET/ASSI/ASSI:1/ASSI:2)
+;      :ARG:1…行う애무の種類
+;              (1.Ｃ애무/2.Ｖ애무/3.Ａ애무/4.Ｂ애무/5.Ｖ성교/6.Ａ성교/7.Ｖ성교봉사/8.Ａ성교봉사/11.Ｃ도구/12.Ｖ도구/13.Ａ도구/14.Ｂ도구)
+;戻り値:計算結果
+;備　考:式中関数
+;@ABL_REVISIONにおける、S:1～S:8・S:11～S:14・S:21～S:27・S:31～S:34の代替
+;
+;기교-감각:  0   1   2   3   4   5   6   7   8   9  10
+;　 基本値:100 121 144 169 196 225 256 289 324 361 400
+;-------------------------------------------------
+@ACT_FROM(ARG:0, ARG:1)
+#FUNCTION
+#LOCALSIZE 1
+SELECTCASE ARG:1
+	;Ｃ애무/Ｖ애무/Ａ애무/Ｂ애무
+	CASE 1 TO 4
+		LOCAL = MAX(ABL:(ARG:0):기교 + ABL:(ARG:0):애무 - ABL:MASTER:(2 + ARG:1), MARK:(ARG:0):굴복각인)
+	;Ｖ성교/Ａ성교
+	CASE 5, 6
+		LOCAL = MAX(ABL:(ARG:0):기교 + ABL:(ARG:0):성교 - ABL:MASTER:(ARG:1 - 1), MARK:(ARG:0):굴복각인)
+	;Ｖ성교봉사/Ａ성교봉사
+	CASE 7, 8
+		LOCAL = MAX(ABL:(ARG:0):기교 + ABL:(ARG:0):성교 + ABL:(ARG:0):(ARG:1 - 3) - ABL:MASTER:Ｃ감각, MARK:(ARG:0):굴복각인)
+	;Ｃ도구/Ｖ도구/Ａ도구/Ｂ도구
+	CASE 11 TO 14
+		LOCAL = MAX(ABL:(ARG:0):기교 + ABL:(ARG:0):도구 - ABL:MASTER:(ARG:1 - 8), MARK:(ARG:0):굴복각인)
+	;正体不明
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+RETURNF POWER(LOCAL + 10, 2) * LIMIT(MAX(CFLAG:(ARG:0):죠교레벨 * 10 / (CFLAG:MASTER:죠교레벨 + 1), MIN(CFLAG:(ARG:0):M호의 / 200, 30)), 10, 1000) / 10
+
+
+;-------------------------------------------------
+;関数名:ACT_TO
+;概　要:MASTERが애무を行うときの計算を行う関数
+;引　数:ARG:0…MASTERが애무を行う대상キャラの등록번호(TARGET/ASSI/ASSI:1/ASSI:2)
+;      :ARG:1…行う애무の種類
+;              (1.Ｃ애무/2.Ｖ애무/3.Ａ애무/4.Ｂ애무/5.Ｖ성교/6.Ａ성교/7.Ｖ성교봉사/8.Ａ성교봉사)
+;戻り値:計算結果
+;備　考:式中関数
+;@ABL_REVISIONにおける、S:41・S:43～S:48・S:51・S:53～S:58の代替
+;
+;기교-감각:  0   1   2   3   4   5   6   7   8   9  10
+;　 基本値:100 121 144 169 196 225 256 289 324 361 400
+;-------------------------------------------------
+@ACT_TO(ARG:0, ARG:1)
+#FUNCTION
+#LOCALSIZE 1
+SELECTCASE ARG:1
+	;Ｃ애무/Ｖ애무/Ａ애무/Ｂ애무
+	CASE 1 TO 4
+		LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:(ARG:0):(2 + ARG:1), MARK:(ARG:0):굴복각인)
+	;Ｖ성교/Ａ성교
+	CASE 5, 6
+		LOCAL = MAX(ABL:MASTER:기교 + ABL:MASTER:(ARG:1 - 1) - ABL:(ARG:0):Ｃ감각, MARK:(ARG:0):굴복각인)
+	;Ｖ성교봉사/Ａ성교봉사
+	CASE 7, 8
+		LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:(ARG:0):(ARG:1 - 3), MARK:(ARG:0):굴복각인)
+	;正体不明
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+RETURNF POWER(LOCAL + 10, 2) * LIMIT(MAX(CFLAG:MASTER:죠교레벨 * 10 / (CFLAG:(ARG:0):죠교레벨 + 1), MIN(CFLAG:(ARG:0):호의 / 200, 30)), 10, 1000) / 10
+
+
+;-------------------------------------------------
+;関数名:GET_ABL
+;概　要:보정能力値취득関数
+;引　数:ARG:0…キャラ등록번호
+;       ARG:1…ABL名称
+;戻り値:보정後のABL値
+;備　考:式中関数
+;@ABL_REVISIONにおける、A:1～A:29・B:1～B:30・C:1～C:29の代替
+;-------------------------------------------------
+@GET_ABL(ARG, ARGS)
+#FUNCTION
+;ARGSが空なら0を返す
+SIF ARGS == ""
+	RETURNF 0
+;指定が間違っていたらエラー落ちしてくれるはず
+RETURNF 100 - 500 / (5 + ABL:ARG:ARGS)
+
+
+;-------------------------------------------------
+;関数名:GET_TRAINLV
+;概　要:보정죠교레벨취득関数
+;引　数:ARG…キャラ등록번호
+;戻り値:보정後の죠교레벨
+;備　考:式中関数
+;@ABL_REVISIONにおける、A:30・C:30の代替
+;-------------------------------------------------
+@GET_TRAINLV(ARG)
+#FUNCTION
+RETURNF 50 - 2000 / (40 + CFLAG:ARG:죠교레벨)
+
+
+;-------------------------------------------------
+;関数名:GET_REVISION
+;概　要:汎用보정値취득関数
+;引　数:ARG:0…参照する数値
+;       ARG:1…上限
+;       ARG:2…上昇率
+;戻り値:보정後の値
+;備　考:式中関数
+;ある数値を、上限値に漸近していく数値に変換했다いときに
+;ARG:2が小さいとすぐに上限に達する、大きいと逆になかなか上限まで近づかない
+;	ぱ。注：使っている形跡がないんだけど…どう使うつもりだったんだろう
+;-------------------------------------------------
+@GET_REVISION(ARG:0, ARG:1, ARG:2)
+#FUNCTION
+RETURNF ARG:1 - ARG:2 * ARG:1 / (ARG:2 + ARG:0)
+
+
+;-------------------------------------------------
+;関数名:GET_REVISION_SQRT
+;概　要:汎用보정値취득関数・平方根法
+;引　数:ARG:0…参照する数値
+;       (>=0の場合はそのまま、<0の場合はARG:0、返り値の符号を反転する)
+;       ARG:1…目標値(<0の場合はARG:1、ARG:2の符号を反転して扱う, 初期値=100)
+;       ARG:2…目標値での返り値(制限なし, 初期値=100)
+;戻り値:보정後の値
+;備　考:式中関数
+;『ARG:0』が0から∞へ増加していくとき、
+;『ARG:0 ==     0』のとき『返り値 =     0』
+;『ARG:0 == ARG:1』のとき『返り値 = ARG:2』
+;『ARG:0 ==    ∞』のとき『返り値 =  ±∞』となるように変換する
+;このとき、ARG:0が大きくなるほど増加速度は小さくなる
+;ARG:0(=X)と返り値(=Y)との関係は「Y=A√X」となる
+;※このときAはARG:1,2によって決まる
+;
+;※ARG:1が0であると、どうにもならないので0を返す
+;
+;計算誤差が大きいので注意！
+;-------------------------------------------------
+@GET_REVISION_SQRT(ARG:0, ARG:1 = 100, ARG:2 = 100)
+#FUNCTION
+;LOCAL初期化
+VARSET LOCAL
+;ARGのどれかが0の時は、常に0を返す
+SIF ARG:0 == 0 || ARG:1 == 0 || ARG:2 == 0
+	RETURNF 0
+;ARG:0が負なら正にして、返り値の符号を反転する
+IF ARG:0 < 0
+	ARG:0 = -ARG:0
+	LOCAL:1 = 1
+ENDIF
+;ARG:1が負なら正にし、ARG:2の符号を反転する
+IF ARG:1 < 0
+	ARG:1 = -ARG:1
+	ARG:2 = -ARG:2
+ENDIF
+;ARG:0の平方根をとり、ARG:1でARG:2が返るよう調整する
+LOCAL = SQRT(ARG:0 * 10000) * ARG:2 / SQRT(ARG:1) / 100
+;ARG:0が負だったときの、返り値の符号反転
+SIF LOCAL:1
+	LOCAL = -LOCAL
+;値を返す
+RETURNF LOCAL
+
+
+;-------------------------------------------------
+;関数名:GET_REVISION_SQRT_PROP
+;概　要:汎用보정値취득関数・平方根/比例混合法
+;引　数:ARG:0…参照する数値
+;       (>=0の場合はそのまま、<0の場合はARG:0、返り値の符号を反転する)
+;       ARG:1…目標値(<0の場合はARG:1、ARG:2の符号を反転して扱う, 初期値=100)
+;       ARG:2…目標値での返り値(制限なし, 初期値=100)
+;       ARG:3…第二目標値(<0の場合はARG:3、ARG:4の符号を反転して扱う, 初期値=100)
+;       ARG:4…第二目標値での返り値(制限なし, 初期値=100)
+;戻り値:보정後の値
+;備　考:式中関数
+;『ARG:0』が0から∞へ増加していくとき、
+;『ARG:0 ==     0』のとき『返り値 =     0』
+;『ARG:0 == ARG:1』のとき『返り値 = ARG:2』
+;『ARG:0 == ARG:3』のとき『返り値 = ARG:4』
+;『ARG:0 ==    ∞』のとき『返り値 =  ±∞』となるように変換する
+;このとき、ARG:0が大きくなるほど増加速度は小さくなる
+;ARG:0(=X)と返り値(=Y)との関係は「Y=B*A√X+(1-B)*A'X」となる
+;※まず、「Y=A√X, Y=A'X」が共にARG:1,2の条件を만족するよう設定し、
+;　その後ARG:3,4の条件を満たすBを設定する
+;
+;※ARG:1が0であると、どうにもならないので0を返す
+;※ARG:3が0の時、ARG:4も0なら平方根法利用、それ以外なら0を返す
+;※ARG:3がARG:1と等しい時、ARG:4もARG:2と等しいなら平方根法利用、それ以外なら0を返す
+;
+;計算誤差が大きいので注意！
+;-------------------------------------------------
+@GET_REVISION_SQRT_PROP(ARG:0, ARG:1 = 100, ARG:2 = 100, ARG:3 = 100, ARG:4 = 100)
+#FUNCTION
+;LOCAL初期化
+VARSET LOCAL
+;ARG,0-2のどれかが0の時は、常に0を返す
+SIF ARG:0 == 0 || ARG:1 == 0 || ARG:2 == 0
+	RETURNF 0
+;ARG:0が負なら正にして、返り値の符号を反転する
+IF ARG:0 < 0
+	ARG:0 = -ARG:0
+	LOCAL:3 = 1
+ENDIF
+;ARG:1が負なら正にし、ARG:2の符号を反転する
+IF ARG:1 < 0
+	ARG:1 = -ARG:1
+	ARG:2 = -ARG:2
+ENDIF
+;目標値と第二目標値が同じ
+IF ARG:1 == ARG:3
+	;ARG:4がARG:2と等しくなければ0を返す
+	SIF ARG:4 != ARG:2
+		RETURNF 0
+	;平方根法利用
+	LOCAL = 0
+;第二目標値が0
+ELSEIF ARG:3 == 0
+	;ARG:4が0でなければ0を返す
+	SIF ARG:4 != 0
+		RETURNF 0
+	;平方根法利用
+	LOCAL = 0
+;問題なし
+ELSE
+	;ARG:3が負なら正にし、ARG:4の符号を反転する
+	IF ARG:3 < 0
+		ARG:3 = -ARG:1
+		ARG:4 = -ARG:2
+	ENDIF
+	;混合比を計算する
+	LOCAL:1 = ARG:3 * ARG:2 * 100 / ARG:1
+	LOCAL:2 = SQRT(ARG:3 * 10000) * ARG:2 / SQRT(ARG:1)
+	LOCAL = (ARG:4 * 100 - LOCAL:2) * 100 / (LOCAL:1 - LOCAL:2)
+ENDIF
+;混合比に基づき、√ARG:0とARG:0を混合する
+LOCAL:1 = LOCAL * (ARG:0 * ARG:2 * 100 / ARG:1)
+LOCAL:2 = (100 - LOCAL) * (SQRT(ARG:0 * 10000) * ARG:2 / SQRT(ARG:1))
+LOCAL = (LOCAL:1 + LOCAL:2) / 10000
+;ARG:0が負だったときの、返り値の符号反転
+SIF LOCAL:3
+	LOCAL = -LOCAL
+;値を返す
+RETURNF LOCAL
+
+
+;-------------------------------------------------
+;関数名:GET_REVISION_SQRT_PROP_TEST
+;概　要:汎用보정値취득関数・平方根/比例混合法『試験』
+;引　数:ARG:0  …今のところ不要
+;       ARG:1-4…GET_REVISION_SQRT_PROPに渡す
+;戻り値:なし
+;備　考:関数(式中間数ではない)
+;GET_REVISION_SQRT_PROPの返り値を確認する
+;
+;※디버그用！
+;  だっせぇ손抜き実装になってるので構文の利用には注意！
+;
+;※※こんな関数を外付けで作らにゃならん時点で
+;    不良品関数なのだという説があります
+;
+;@これみ
+;-------------------------------------------------
+@GET_REVISION_SQRT_PROP_TEST(ARG:0, ARG:1 = 100, ARG:2 = 100, ARG:3 = 0, ARG:4 = 0)
+;LOCAL初期化
+VARSET LOCAL
+;両引数が同符号もしくはどちらかが0
+IF SIGN(ARG:1) == SIGN(ARG:3) || SIGN(ARG:1) == 0 || SIGN(ARG:3) == 0
+	;最大幅취득
+	LOCAL:3 = ABS(ARG:1) < ABS(ARG:3) ? ABS(ARG:3) # ABS(ARG:1)
+	;有効1桁で処理
+	LOCAL:3 = ROUND(LOCAL:3, , 1)
+	;最低10필요
+	SIF LOCAL:3 < 10
+		LOCAL:3 = 10
+	;基準を취득
+	LOCAL:4 = ARG:1 > ARG:3 ? ARG:3 # ARG:1
+	;基準が正なら0に、負なら有効1桁で処理
+	LOCAL:4 = LOCAL:4 < 0 ? ROUND(LOCAL:4, , 1) # 0
+;両引数が異符号
+ELSE
+	;最大幅취득
+	LOCAL:3 = ABS(ARG:1) < ABS(ARG:3) ? ABS(ARG:3) # ABS(ARG:1)
+	;有効1桁で処理後倍にする
+	LOCAL:3 = ROUND(LOCAL:3, , 1) * 2
+	;最低10필요
+	SIF LOCAL:3 < 10
+		LOCAL:3 = 10
+	;基準を취득
+	LOCAL:4 = ARG:1 > ARG:3 ? ARG:3 # ARG:1
+	;有効1桁で処理
+	LOCAL:4 = ROUND(LOCAL:4, , 1)
+ENDIF
+;-5つめから表示を始める
+LOCAL = -5
+;表示を黄色くする
+SETCOLOR 255, 255, 0
+DO
+	;0に達すると元の色に、11からは黄色くする
+	SIF LOCAL == 0
+		RESETCOLOR
+	SIF LOCAL == 11
+		SETCOLOR 255, 255, 0
+	;今回の引数を計算する
+	LOCAL:1 = LOCAL:4 + LOCAL:3 * LOCAL / 10
+	;전회의引数と同じであれば表示しない
+	SIF LOCAL:1 == LOCAL:2
+		BREAK
+	;今回の分を表示
+;OriginalString : {LOCAL:1, 10} = {GET_REVISION_SQRT_PROP(LOCAL:1, ARG:1, ARG:2, ARG:3, ARG:4), 20}
+	PRINTFORML {LOCAL:1, 10} = {GET_REVISION_SQRT_PROP(LOCAL:1, ARG:1, ARG:2, ARG:3, ARG:4), 20}
+	;今回の引数を기록しておく
+	LOCAL:2 = LOCAL:1
+	;次の表示に移行
+	LOCAL++
+;5つ余分に進んだら終了
+LOOP LOCAL <= 15
+;色を戻す
+RESETCOLOR
+;入力待ちをする
+WAIT
+;終了
+RETURN RESULT
+
+
+;-------------------------------------------------
+;関数名:LINE_CALC
+;概　要:折れ線グラフ関数
+;引　数:ARG …参照する数値
+;       ARGS…関数形状設定(,区切りで命令を代入)
+;書　式：ARGSに代入する(正規表現…解説)
+;        \d→\d        …ARG→その時の返り値
+;                        ※ARGは小さい順に記述すること
+;        LIMIT/\d?～\d?…数値～数値の範囲に返り値を収める
+;                        ※複数存在時は最後のものを採用
+;        (NO)ADJUST    …四捨五入調整処理のオンオフ(デフォルトはオン)
+;                        ※四捨五入調整：参照する数値を+0.5として扱う
+;備　考:式中間数
+;-------------------------------------------------
+@LINE_CALC(ARG, ARGS)
+#FUNCTION
+#LOCALSIZE 1
+#LOCALSSIZE 10
+#DIM LCOUNT
+#DIM LRESULT
+#DIM LFIND
+#DIM LFLAG
+#DIM LVAR, 10
+#DIM LFUNC, 10
+#DIM LLIM, 3
+#DIM LADJ
+#DIMS LTEMPS
+;命令をLOCALSに順に代入
+SPLIT ARGS, ",", LOCALS, LRESULT
+;ARG指定値保存数플래그を初期化
+VARSET LFLAG
+;LIMIT指定初期化
+VARSET LLIM
+;ADJUST指定初期化
+LADJ = 1
+;LOCALSの数ぶんループ
+FOR LCOUNT, 0, LRESULT
+	;文中に"→"があれば\d→\d命令と見なす
+	LFIND = STRFINDU(LOCALS:LCOUNT, "→")
+	IF LFIND != -1
+		;指定が完結していれば処理しない
+		SIF LFLAG < 0
+			CONTINUE
+		;ARG指定を読み出し保存
+		LTEMPS = %SUBSTRINGU(LOCALS:LCOUNT, 0, LFIND)%
+		LVAR:LFLAG = TOINT(LTEMPS)
+		;その時の返り値を読み出し保存
+		LTEMPS = %SUBSTRINGU(LOCALS:LCOUNT, LFIND + 1)%
+		LFUNC:LFLAG = TOINT(LTEMPS)
+		;指定値保存をカウント
+		LFLAG++
+		;ARG指定値が参照するARG以上で、かつ指定値保存が2回以上行われていれば
+		;指定を完了했다と見なす
+		SIF ARG >= LVAR:(LFLAG - 1) && LFLAG >= 2
+			LFLAG = -LFLAG
+	ENDIF
+	;文中に"LIMIT"があればLIMIT命令と見なす
+	IF STRFINDU(LOCALS:LCOUNT, "LIMIT") != -1
+		;波線の位置を確認
+		LFIND = STRFINDU(LOCALS:LCOUNT, "～")
+		;LIMIT指定初期化
+		VARSET LLIM
+		;一つ目の値を読み出す
+		LTEMPS = %SUBSTRINGU(LOCALS:LCOUNT, 6, LFIND - 6)%
+		;指定があれば保存し기록
+		IF LTEMPS != ""
+			LLIM:1 = TOINT(LTEMPS)
+			LLIM |= 1
+		ENDIF
+		;二つ目の値を読み出す
+		LTEMPS = %SUBSTRINGU(LOCALS:LCOUNT, LFIND + 1)%
+		;指定があれば保存し기록
+		IF LTEMPS != ""
+			LLIM:2 = TOINT(LTEMPS)
+			LLIM |= 2
+		ENDIF
+	ENDIF
+	;文中に"ADJUST"があればADJUST命令と見なす
+	IF STRFINDU(LOCALS:LCOUNT, "ADJUST") != -1
+		;NOADJUSTであれば
+		IF STRFINDU(LOCALS:LCOUNT, "NO") != -1
+			;ADJUST指定を切る
+			LADJ = 0
+		ELSE
+			;ADJUST指定を入れる
+			LADJ = 1
+		ENDIF
+	ENDIF
+NEXT
+
+;\d→\d命令処理
+;LFLAGを正に固定
+LFLAG = ABS(LFLAG)
+;実際の位置へ指定を移動
+LFLAG--
+;命令がなかった場合
+IF LFLAG == -1
+	;0を返す
+	LOCAL = 0
+;命令が一つしかなかった場合
+ELSEIF LFLAG == 0
+	;その唯一の返り値指定に従う
+	LOCAL = LFUNC
+;命令が二つ以上あった場合
+;ARG指定が同一
+ELSEIF LVAR:LFLAG == LVAR:(LFLAG - 1)
+	;後者の返り値指定に従う
+	LOCAL = LFUNC:LFLAG
+;ARG指定が異なる
+ELSE
+	;使用する部分の指定を利用し、返り値を生成
+	LOCAL = (ARG - LVAR:(LFLAG - 1)) * 100 / (LVAR:LFLAG - LVAR:(LFLAG - 1))
+	LOCAL = ((LFUNC:LFLAG - LFUNC:(LFLAG - 1)) * LOCAL + LADJ * 50) / 100
+	LOCAL += LFUNC:(LFLAG - 1)
+ENDIF
+;LIMIT命令処理
+;存在すれば処理
+IF LLIM
+	;二つの値の中で存在しないものは参照するARGとする
+	SIF !(LLIM & 1)
+		LLIM:1 = ARG
+	SIF !(LLIM & 2)
+		LLIM:2 = ARG
+	;一つ目が二つ目より大きければ並び替える
+	SIF LLIM:1 > LLIM:2
+		SWAP LLIM:1, LLIM:2
+	;LIMIT処理
+	LOCAL = LIMIT(LOCAL, LLIM:1, LLIM:2)
+ENDIF
+;値を返す
+RETURNF LOCAL
+
+
+;-------------------------------------------------
+;関数名:GET_ASYMPTOTE
+;概　要:漸近曲線취득関数
+;引　数:ARG:0…参照する数値
+;       ARG:1…目標値
+;       ARG:2…接近速度(正の数、大きいほど遅い)
+;戻り値:なし
+;備　考:式中間数
+;目標値に向けて0から単調増加(減少)する関数です
+;接近速度は目標値に依らず割合が同じになります
+;ARG:0、ARG:1にあまり大きい値が入るとオーバーフローします
+;@これみ
+;-------------------------------------------------
+@GET_ASYMPTOTE(ARG:0, ARG:1, ARG:2 = 0)
+#FUNCTION
+LOCAL = ARG:0 < 0 ? -1 # 1
+RETURNF LOCAL * (ARG:1 * ARG:0 * ARG:0) / (ARG:2 + ARG:0 * ARG:0)
+
+;-------------------------------------------------
+;関数名:ABSQSI
+;概　要:正負対応平方根関数
+;備　考:式中間数
+;-------------------------------------------------
+@ABSQSI(ARG)
+#FUNCTION
+RETURNF SQRT(ABS(ARG))*SIGN(ARG)
+
+
+;-------------------------------------------------
+;関数名:ABCBSI
+;概　要:正負対応立方根関数
+;備　考:式中間数
+;-------------------------------------------------
+@ABCBSI(ARG)
+#FUNCTION
+RETURNF CBRT(ABS(ARG))*SIGN(ARG)
+
+
+;-------------------------------------------------
+;関数名:ABLOSI_10
+;概　要:正負対応常用対数関数
+;備　考:式中間数
+;-------------------------------------------------
+@ABLOSI_10(ARG)
+#FUNCTION
+RETURNF LOG10(ABS(ARG))*SIGN(ARG)
+
+
+;-------------------------------------------------
+;関数名:ABLOSI_E
+;概　要:正負対応自然対数関数
+;備　考:式中間数
+;-------------------------------------------------
+@ABLOSI_E(ARG)
+#FUNCTION
+RETURNF LOG(ABS(ARG))*SIGN(ARG)
+
+
+;-------------------------------------------------
+;関数名:ROUND
+;概　要:端数処理
+;引　数:ARG:0…丸める数値
+;       ARG:1…丸める方法
+;              0=RN最近接偶数への丸め(おすすめ)
+;              1=RZ切り捨て,2=RI切り上げ
+;       ARG:2…有効桁(有効数字の考え方。0なら利用しない)
+;       ARG:3…絶対桁(小数点上n桁という考え方。0なら利用しない)
+;戻り値:丸めた結果
+;備　考:式中間数
+;
+;小数が常に切り捨てられるEmueraでは
+;一定の需要があるのではないでしょうか@これみ
+;
+;※もしもこの関数を頻繁に利用するようであれば
+;  最後に桁を戻さないオプションなどを追加するといいと思う
+;-------------------------------------------------
+@ROUND(ARG, ARG:1 = 0, ARG:2 = 0, ARG:3 = 0)
+#FUNCTION
+;LOCAL初期化
+VARSET LOCAL
+;ARG:1以降に負の値が存在すれば処理は行わない
+SIF MIN(ARG:1, ARG:2, ARG:3) < 0
+	RETURNF ARG
+;有効桁指定を絶対桁指定に変換する
+SIF ARG:2 != 0
+	LOCAL = LOG10(ABS(ARG)) + 1 - ARG:2
+;絶対桁指定と比較し、大きいものを採用
+LOCAL = MAX(LOCAL, ARG:3)
+;桁指定が0以下になればそのままの値を返す
+SIF LOCAL <= 0
+	RETURNF ARG
+;桁指定がARGを超過했다場合0を返す
+SIF LOCAL > LOG10(ABS(ARG)) + 1
+	RETURNF 0
+;最近接偶数への丸め時、振り分け処理
+IF ARG:1 == 0
+	;処理する値を抜き出す
+	LOCAL:1 = ABS(ARG) / POWER(10, LOCAL - 1) % 10
+	;下一桁が4以下なら0に接近
+	IF LOCAL:1 < 5
+		ARG:1 = 1
+	;下一桁が6以上なら+-∞に接近
+	ELSEIF LOCAL:1 > 5
+		ARG:1 = 2
+	;ちょうど5であれば
+	ELSE
+		;処理する値の一つ上に対し偶奇を判定する
+		LOCAL:1 = ABS(ARG) / POWER(10, LOCAL) % 2
+		;偶数なら0に接近、奇数なら+-∞に接近
+		ARG:1 = LOCAL:1 + 1
+	ENDIF
+ENDIF
+;処理する値の一つ上まで一旦切り捨てる
+LOCAL:1 = ABS(ARG) / POWER(10, LOCAL) % 10
+;切り上げなら+-1を발す
+SIF ARG:1 == 2
+	LOCAL:1++
+;桁を戻して結果を返す
+RETURNF SIGN(ARG) * LOCAL:1 * POWER(10, LOCAL)
+
+;-------------------------------------------------
+;その他の内部処理
+;-------------------------------------------------
+;-------------------------------------------------
+;조수と交代関数@ASSISWAP
+;죠교途中にTARGETとASSIを『一時的』、『内部処理的』に交代시킨다ときに使います
+;この関数のポイントは、TEQUIPやEX等のデータは移動しない点です（交代시켰다うえでデータだけ戻している）
+;구상表示のときのみASSIをTARGETのつもりで呼び出す、といった用途に使います。決してそのままにしないこと
+;繰り返すようですが、『普通に交代했다ければSWAP TARGET, ASSIだけ書いてください』
+;交代中であることはISSWAP関数で確認できます
+;-------------------------------------------------
+@ASSISWAP
+#LOCALSIZE 2
+;TARGETが관리しているMASTERのデータを移動
+;そもそもMASTERのデータがTARGETで관리されている事自体がアレな気もするが、まぁ仕方ない
+;変数大移動でPALAM, SOURCE, EX, NOWEXの各変数はそれぞれのキャラに移管済みなので、それらのSWAP処理を削除@revkoishi(14/05/19)
+
+;죠교대상が装備しているTEQUIPを移し変えます
+FOR LOCAL:0, 10, 100
+	SWAP TEQUIP:TARGET:(LOCAL:0), TEQUIP:ASSI:(LOCAL:0)
+NEXT
+SWAP TARGET, ASSI
+LOCAL:1 = !LOCAL:1
+RETURN ISSWAP(1, LOCAL:1)
+
+@ISSWAP(ARG:0, ARG:1)
+#FUNCTION
+#LOCALSIZE 1
+LOCAL:0 = ARG:0 ? ARG:1 # LOCAL:0
+RETURNF LOCAL:0
+
+
+;-------------------------------------------------
+;REACT분류設定関数@SET_COMGRO
+;REACT분류を文字列で設定するだけの関数@これみ
+;-------------------------------------------------
+@SET_COMGRO(ARGS)
+TFLAG:REACT분류 = COMGRONUM(ARGS)
+IF TFLAG:REACT분류 == -1
+	CALLF PRINT_ERRORMESSAGE(@"@SET_COMGRO に無効な指定(%ARGS%)が渡されま했다")
+	RETURN -1
+ENDIF
+RETURN RESULT
+
+;-------------------------------------------------
+;REACT인상設定関数@SET_COMIMP
+;REACT인상を文字列で設定するだけの関数@これみ
+;-------------------------------------------------
+@SET_COMIMP(ARGS)
+IF 0
+ELSEIF ARGS == "영향なし" || ARGS == ""
+	TFLAG:REACT인상 = 0
+ELSEIF ARGS == "好印象大"
+	TFLAG:REACT인상 = 1
+ELSEIF ARGS == "好印象小"
+	TFLAG:REACT인상 = 2
+ELSEIF ARGS == "悪印象小"
+	TFLAG:REACT인상 = 3
+ELSEIF ARGS == "悪印象大"
+	TFLAG:REACT인상 = 4
+ELSEIF ARGS == "0から遠ざかる"
+	TFLAG:REACT인상 = 5
+ELSEIF ARGS == "0に近づく"
+	TFLAG:REACT인상 = 6
+ELSE
+;OriginalString : 
+	PRINTL 
+;OriginalString : @SET_COMIMP に無効な指定が渡されま했다
+	PRINTL @SET_COMIMP 에 무효인 지정이 건네받았습니다
+;OriginalString : 
+	PRINTL 
+ENDIF
+RETURN RESULT
+
+;-------------------------------------------------
+;의존도변화関数@ADD_DEPEND
+;相互の의존도を同時に加算します
+;引数はTARGET・MASTERの順
+;-------------------------------------------------
+@ADD_DEPEND(ARG, ARG:1)
+CFLAG:TARGET:의존도 += ARG
+CFLAG:MASTER:의존도 += ARG:1
+RETURN RESULT
+
+;==================================================
+;
+;	汚れ関連関数
+;
+;==================================================
+
+
+;-------------------------------------------------
+;関数名:SET_STAIN
+;概　要:ARGのARGSにARGS:1の汚れをつける
+;引　数:0 汚れをつける箇所
+;引　数:1 汚れの種類
+;引　数:2 汚れをつける대상
+;使用例 CALL SET_STAIN("입", "愛液", TARGET)
+;-------------------------------------------------
+@SET_STAIN(ARGS, ARGS:1, ARG = -99)
+#LOCALSIZE 1
+SIF ARG == -99
+	ARG = TARGET
+SELECTCASE ARGS
+	CASE "입"
+		LOCAL = 0
+	CASE "손"
+		LOCAL = 1
+	CASE "페니스"
+		LOCAL = 2
+	CASE "바기나"
+		LOCAL = 3
+	CASE "항문"
+		LOCAL = 4
+	CASE "가슴"
+		LOCAL = 5
+	CASE "발"
+		LOCAL = 6
+ENDSELECT
+SELECTCASE ARGS:1
+	CASE "愛液"
+		SETBIT STAIN:ARG:LOCAL, 0
+	CASE "페니스"
+		SETBIT STAIN:ARG:LOCAL, 1
+	CASE "정액"
+		SETBIT STAIN:ARG:LOCAL, 2
+	CASE "항문"
+		SETBIT STAIN:ARG:LOCAL, 3
+	CASE "모유"
+		SETBIT STAIN:ARG:LOCAL, 4
+	CASE "血"
+		SETBIT STAIN:ARG:LOCAL, 5
+	CASE "粘液"
+		SETBIT STAIN:ARG:LOCAL, 6
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:GET_STAIN
+;概　要:ARGのARGSにARGS:1の汚れがついているかを判定する
+;引　数:0 汚れの箇所
+;引　数:1 汚れの種類
+;引　数:2 汚れのある대상
+;使用例 GET_STAIN("바기나", "정액", TARGET)
+;-------------------------------------------------
+@GET_STAIN(ARGS, ARGS:1, ARG = -99)
+#FUNCTION
+#LOCALSIZE 1
+SIF ARG == -99
+	ARG = TARGET
+SELECTCASE ARGS
+	CASE "입"
+		LOCAL = 0
+	CASE "손"
+		LOCAL = 1
+	CASE "페니스"
+		LOCAL = 2
+	CASE "바기나"
+		LOCAL = 3
+	CASE "항문"
+		LOCAL = 4
+	CASE "가슴"
+		LOCAL = 5
+	CASE "발"
+		LOCAL = 6
+ENDSELECT
+SELECTCASE ARGS:1
+	CASE "愛液"
+		RETURNF GETBIT(STAIN:ARG:LOCAL, 0)
+	CASE "페니스"
+		RETURNF GETBIT(STAIN:ARG:LOCAL, 1)
+	CASE "정액"
+		RETURNF GETBIT(STAIN:ARG:LOCAL, 2)
+	CASE "항문"
+		RETURNF GETBIT(STAIN:ARG:LOCAL, 3)
+	CASE "모유"
+		RETURNF GETBIT(STAIN:ARG:LOCAL, 4)
+	CASE "血"
+		RETURNF GETBIT(STAIN:ARG:LOCAL, 5)
+	CASE "粘液"
+		RETURNF GETBIT(STAIN:ARG:LOCAL, 6)
+ENDSELECT
+
+;========================================
+;汚れ移動関数
+;関数名:MOVE_STAIN
+;概　要:ARGのARGS:1とARG:1のARG:1のARGSの間の汚れを相互に移動する
+;引　数:0 汚れの移る箇所
+;引　数:1 汚れの移る대상
+;引　数:2 汚れの種類
+;引　数:3 汚れの元の대상
+;使用例:CALL MOVE_STAIN("입", TARGET, "페니스", MASTER)
+;========================================
+@MOVE_STAIN(ARGS, ARG, ARGS:1, ARG:1)
+#LOCALSIZE 1
+SELECTCASE ARGS:1
+	CASE "입"
+		LOCAL = 0
+	CASE "손"
+		LOCAL = 1
+	CASE "페니스"
+		LOCAL = 2
+	CASE "바기나"
+		LOCAL = 3
+	CASE "항문"
+		LOCAL = 4
+	CASE "가슴"
+		LOCAL = 5
+	CASE "발"
+		LOCAL = 6
+ENDSELECT
+SELECTCASE ARGS
+	CASE "입"
+		STAIN:ARG:입 |= STAIN:(ARG:1):LOCAL
+		STAIN:(ARG:1):LOCAL = STAIN:ARG:입
+	CASE "손"
+		STAIN:ARG:손 |= STAIN:(ARG:1):LOCAL
+		STAIN:(ARG:1):LOCAL = STAIN:ARG:손
+	CASE "페니스"
+		STAIN:ARG:페니스 |= STAIN:(ARG:1):LOCAL
+		STAIN:(ARG:1):LOCAL = STAIN:ARG:페니스
+	CASE "바기나"
+		STAIN:ARG:바기나 |= STAIN:(ARG:1):LOCAL
+		STAIN:(ARG:1):LOCAL = STAIN:ARG:바기나
+	CASE "항문"
+		STAIN:ARG:항문 |= STAIN:(ARG:1):LOCAL
+		STAIN:(ARG:1):LOCAL = STAIN:ARG:항문
+	CASE "가슴"
+		STAIN:ARG:가슴 |= STAIN:(ARG:1):LOCAL
+		STAIN:(ARG:1):LOCAL = STAIN:ARG:가슴
+	CASE "발"
+		STAIN:ARG:발 |= STAIN:(ARG:1):LOCAL
+		STAIN:(ARG:1):LOCAL = STAIN:ARG:발
+ENDSELECT

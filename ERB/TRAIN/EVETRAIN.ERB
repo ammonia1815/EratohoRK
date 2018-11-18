@@ -1,0 +1,405 @@
+﻿;────────────────────────────────────
+;죠교開始の処理
+;────────────────────────────────────
+@EVENTTRAIN
+#DIM LCOUNT
+#DIM 可能만족보数
+
+;(죠교자別)죠교횟수加算
+CFLAG:죠교횟수++
+
+;죠교開始直前に마력消費処理をはさむ(샌드박스のみ、指定時)
+SIF FLAG:모드 == 1 && FLAG:AI자유도
+	CALL MANAGE_MP
+
+FLAG:조교중 = 1
+;의상をInitialize
+TEQUIP:MASTER:악세서리 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:악세서리 # 0
+TEQUIP:MASTER:신발안       = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:신발안 # 0
+TEQUIP:MASTER:하반신속옷 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:하반신속옷 # 0
+TEQUIP:MASTER:상반신속옷 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:상반신속옷 # 0
+TEQUIP:MASTER:하반신겉옷 = CFLAG:MASTER:의상 < 1 ? EQUIP:MASTER:하반신겉옷 # 0
+TEQUIP:MASTER:상반신겉옷 = CFLAG:MASTER:의상 < 1 ? EQUIP:MASTER:상반신겉옷 # 0
+TEQUIP:MASTER:전신겉옷   = CFLAG:MASTER:의상 < 1 ? EQUIP:MASTER:전신겉옷 # 0
+TEQUIP:MASTER:코스프레   = CFLAG:MASTER:의상 == 3 ? EQUIP:MASTER:코스프레 # 0
+
+TEQUIP:MASTER:노예목걸이 = EQUIP:MASTER:노예목걸이
+
+TEQUIP:악세서리 = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:악세서리 # 0
+TEQUIP:신발안       = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:신발안 # 0
+TEQUIP:하반신속옷 = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:하반신속옷 # 0
+TEQUIP:상반신속옷 = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:상반신속옷 # 0
+TEQUIP:하반신겉옷 = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:하반신겉옷 # 0
+TEQUIP:상반신겉옷 = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:상반신겉옷 # 0
+TEQUIP:전신겉옷   = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:전신겉옷 # 0
+TEQUIP:코스프레   = CFLAG:TARGET:의상 == 3 ? EQUIP:TARGET:코스프레 # 0
+
+;-1に初期化するTFLAGをリセット
+TFLAG:전ACT = -1
+TFLAG:전REACT분류 = -1
+TFLAG:ACT분류예약 = -1
+CVARSET TCVAR, GETNUM(TCVAR, "행동예약"), -1
+TCVAR:금일만족보너스 = -1
+
+;조교중に用いるCFLAGをリセット
+FOR LOCAL, 30, 34
+	CVARSET CFLAG, LOCAL, 50
+NEXT
+FOR LOCAL, 250, 260
+	CVARSET CFLAG, LOCAL
+NEXT
+TFLAG:가능한COM수 = 0
+;절정関連のリセット
+FOR LCOUNT, 0, CHARANUM
+	VARSET EX:LCOUNT:0
+	VARSET NOWEX:LCOUNT:0
+	VARSET TCVAR:LCOUNT:0, 0, 70, 100
+NEXT
+
+;자세関連
+CVARSET TCVAR, GETNUM(TCVAR,           "자세")
+CVARSET TCVAR, GETNUM(TCVAR,     "전회의자세")
+CVARSET TCVAR, GETNUM(TCVAR,       "위치전후")
+CVARSET TCVAR, GETNUM(TCVAR, "전회의위치전후")
+CVARSET TCVAR, GETNUM(TCVAR,       "위치상하")
+CVARSET TCVAR, GETNUM(TCVAR, "전회의위치상하")
+
+;現在の아라이멘도=平時아라이멘도
+CFLAG:평상시 = LIMIT(CFLAG:평상시, -999, 999)
+CFLAG:아라이멘도 = CFLAG:평상시 / 10
+;노예목걸이装備中
+SIF TEQUIP:MASTER:노예목걸이 == 1
+	CFLAG:아라이멘도 = -99
+
+;開始時の죠교자の사정ゲージが0になっていたので、ここで修正
+BASE:사정 = MAXBASE:사정
+;소변ゲージの設定
+BASE:MASTER:소변 = 0
+MAXBASE:MASTER:소변 = 10000 - TALENT:MASTER:조루 * 5000 + TALENT:MASTER:싫증 * 5000
+;まだ解消してない피폐を죠교フェースに反応
+TFLAG:조교자소모도 = CFLAG:소모
+TFLAG:소모도 = CFLAG:MASTER:소모
+
+TCVAR:MASTER:발기도 = 1000 * (BASE:MASTER:사정 + 5000) * (MAXBASE:MASTER:이성 - BASE:MASTER:이성) / ((MAXBASE:MASTER:사정 + 5000) * MAXBASE:MASTER:이성)
+
+;長期보정値用初期化処理
+CALL ACT_M_RESEARCH_L(0)
+
+CALLF _UNEXTRACTION(MASTER, 1, 0)	;안빼고상태遅延判定플래그初期化@revkoishi(14/07/15)
+
+;────────────────────────────────────
+;今回の방침
+;────────────────────────────────────
+;선택可能な대만족보너스がいくつあるか
+可能만족보数 = 0
+FOR LCOUNT, 0, 12
+	SIF SATISBONUS_ABLE(LCOUNT)
+		可能만족보数++
+NEXT
+
+
+;ご褒美があったときは방침変更を飛ばすように
+IF (!CFLAG:만족보 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5 && CFLAG:죠교레벨 > 4) || !可能만족보数
+	;お尻をいじめてみようかな処理？
+	;なんだこれ意味わからん…Ａ감각上がるほど出にくくなるの？
+	;暫定残し
+	SELECTCASE ABL:MASTER:Ａ감각
+		CASE 0
+			TFLAG:금일의방침 = !RAND:3
+		CASE 1
+			TFLAG:금일의방침 = !RAND:4
+		CASE 2
+			TFLAG:금일의방침 = !RAND:6
+		CASE 3
+			TFLAG:금일의방침 = !RAND:8
+		CASE 4
+			TFLAG:금일의방침 = !RAND:12
+	ENDSELECT
+	;確率でいつもどおりでない방침をとるように
+	IF !RAND:5
+		LOCAL = RAND:4
+		IF BASE:MASTER:체력 < 2 * MAXBASE:MASTER:체력 / 3 && LOCAL == 0
+			TFLAG:금일의방침 = 4
+		ELSEIF	BASE:MASTER:사정 < 9 * MAXBASE:MASTER:체력 / 10 && LOCAL == 1
+			TFLAG:금일의방침 = 3
+		ELSEIF ITEM:개목걸이  && LOCAL == 2
+			TFLAG:금일의방침 = 6
+		;ELSEIF GETBIT(FLAG:60,0)  && LOCAL == 3
+		;	TFLAG:금일의방침 = 9
+		;징계・は반발依存に했다いが仕様がさだまっていないので後回し
+		;ELSEIF RAND:((2 + MARK:반항각인) * (TALENT:새드 + 1)) > RAND:30
+		;	TFLAG:금일의방침 = 2
+		ENDIF
+	ENDIF
+ENDIF
+
+;죠교開始구상
+DRAWLINE
+RESULT = 0
+IF CFLAG:소모 > 5
+	CALL KOJO_EVENT(11, 1)
+ELSEIF CFLAG:MASTER:소모 > 5
+	CALL KOJO_EVENT(11, 2)
+ELSE
+	CALL KOJO_EVENT(11)
+ENDIF
+
+LOCAL = 0
+IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일의방침 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5
+	SKIPDISP 0
+	PRINTL
+	CALL PRINT_RAINBOW2W(@"★★%CALLNAME:TARGET%님 대만족 보너스★★", 30)
+	PRINTL
+	;오토모드の際の処理
+	IF FLAG:오토모드 > 0
+		LOCAL = FLAG:우선대만족보너스 % 100
+		SIF LOCAL == 12
+			LOCAL = RAND:12
+		SIF !LOCAL:1 && LOCAL == 6
+			LOCAL = FLAG:우선대만족보너스 / 100
+		SIF !LOCAL:2 && LOCAL == 7
+			LOCAL = FLAG:우선대만족보너스 / 100
+		;選んだものが実行できない場合
+		IF !SATISBONUS_ABLE(LOCAL)
+			FOR LCOUNT, 0, 20
+				SIF SATISBONUS_ABLE(LCOUNT)
+					LOCAL = LCOUNT
+			NEXT
+		ENDIF
+		PRINTFORMW %AUTO_SPLIT("언제나처럼/항문을괴롭혀/징계해/격렬하게/응석부리게/망가질때까지/밖에서해/임신해/쉬게/抱かれたい/봉사하게/かわいがって/ランダム", "/", LOCAL)%(을)를 선택했습니다
+		RESULT = LOCAL
+		LOCAL = 0
+	;통상の処理
+	;OriginalString : (@"%HTMLBUTTON("[ 0] - 언제나처럼", "0", "통상")%")
+	;OriginalString : (@"%HTMLBUTTON("[ 1] - 항문을 괴롭혀", "1", @"\@ 
+	ELSE
+		CALL KOJO_EVENT(16)
+		PRINTFORMW %CALLNAME:TARGET%(은)는 매우 기분이 좋은 모습으로, 오늘은 무엇을 하고 싶을지 질문했다
+		PRINTL
+		SIF SATISBONUS_ABLE(0)
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 0] - 언제나처럼", "0", "통상")%")
+		SIF SATISBONUS_ABLE(1)
+			{
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 1] - 항문을 괴롭혀", "1", @"\@ 
+			CFLAG:M호의 + CFLAG:호의 >= 10000 && (TALENT:TARGET:후타나리 || ITEM:페니스밴드) 
+			? 성교++ # 애무++ 도구++ 가학+ \@")%")
+			}
+		;OriginalString : (@"%HTMLBUTTON("[ 2] - 징계해", "2", "징계・플래그が立つ")%")
+		SIF SATISBONUS_ABLE(2)
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 2] - 징계해", "2", "징계・플래그が立つ")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 3] - 격렬하게", "3", "도구+ 봉사+ 가학++")%")
+		SIF SATISBONUS_ABLE(3)
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 3] - 격렬하게", "3", "도구+ 봉사+ 가학++")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 4] - 응석부리게", "4", @"\@ 
+		SIF SATISBONUS_ABLE(4)
+			{
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 4] - 응석부리게", "4", @"\@ 
+			CFLAG:M호의 + CFLAG:호의 >= 10000 && ITEM:페니스밴드 && !PENIS(MASTER) 
+			? 성봉++ # 애무+ 봉사++ \@")%")
+			}
+		;OriginalString : (@"%HTMLBUTTON("[ 5] - 망가질때까지", "5", "가학++ 이상++")%")
+		SIF SATISBONUS_ABLE(5)
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 5] - 망가질때까지", "5", "가학++ 이상++")%")
+;OriginalString : (@"%HTMLBUTTON("[ 6] - 밖에서해", "6", "야외플레이")%")
+		SIF SATISBONUS_ABLE(6)
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 6] - 밖에서해", "6", "야외플레이")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[ 7] - %CALLNAME%님을 임신시키게", "7", "성봉++")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 8] - 쉬게", "8", "휴식による죠교のスキップ")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[ 9] - %CALLNAME%님에게 안기게", "9", "성교++")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[10] - %CALLNAME%님을 봉사하게", "10", "봉사++")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[11] - 귀여워해", "11", @"회화+ 애무++\@ 
+		;호의+호감도10000以上、죠교자が임신できる
+		SIF SATISBONUS_ABLE(7)
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 7] - %CALLNAME%님을 임신시키게", "7", "성봉++")%")
+		SIF SATISBONUS_ABLE(8)
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 8] - 쉬게", "8", "휴식による죠교のスキップ")%")
+		;호의+호감도10000以上
+		SIF SATISBONUS_ABLE(9)
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 9] - %CALLNAME%님에게 안기게", "9", "성교++")%")
+		;반항각인なしかつM호의1000以上
+		SIF SATISBONUS_ABLE(10)
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[10] - %CALLNAME%님을 봉사하게", "10", "봉사++")%")
+		;호의2000, M호의1000が필요
+		SIF SATISBONUS_ABLE(11)
+			{
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[11] - 귀여워해", "11", @"회화+ 애무++\@ 
+			!TALENT:MASTER:남자 ?  성교+ # \@")%")
+			}
+		REDRAW 0
+		$INPUT_LOOP
+		INPUT
+		IF !SATISBONUS_ABLE(RESULT)
+			CLEARLINE 1
+			GOTO INPUT_LOOP
+		ENDIF
+		REDRAW 1
+	ENDIF
+	SELECTCASE RESULT
+		;통상
+		CASE 0
+		;항문
+		CASE 1
+		;징계・
+		CASE 2
+			TFLAG:징계・플래그 = 1
+		;하드
+		CASE 3
+		;イチャイチャ
+		CASE 4
+		;이상
+		CASE 5
+		;야외
+		CASE 6
+			TEQUIP:야외플레이 = 1
+		;애만들기
+		CASE 7
+		;휴식
+		CASE 8
+		;抱いて
+		CASE 9
+		;ご봉사
+		CASE 10
+		;귀여워해
+		CASE 11
+	ENDSELECT
+	TFLAG:금일의방침 = RESULT
+	TCVAR:금일만족보너스 = RESULT
+	;ここでリセットされると금일의방침箇所での参照に使えないのでコメントアウト
+	;CFLAG:만족보 = 0
+	PRINTL
+	CALL KOJO_EVENT(16, 1)
+	CALL VOIDLINE_IF(RESULT)
+	SIF TFLAG:금일의방침 != 8
+		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 대답을 들으면 조교의 준비를 시작했다
+	LOCAL = 1
+	IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
+		SKIPDISP 1
+	ENDIF
+ENDIF
+
+IF !LOCAL && TFLAG:금일의방침
+	CALL KOJO_EVENT(17)
+	CALL VOIDLINE_IF(RESULT)
+ENDIF
+
+;방침決定後の地の文
+SELECTCASE POLICY("금일")
+	CASE "통상"
+	CASE "항문"
+		{
+		PRINTFORMW 이번%CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의\@ CFLAG:만족보 
+		? リクエストに応え、 # \@항문を開発することに決めた…
+		}
+	CASE "징계・"
+		{
+		PRINTFORMW %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%\@ CFLAG:만족보 
+		? のリクエストに応え、 # に \@징계・をすることに했다…
+		}
+	CASE "하드"
+		{
+		PRINTFORMW %CALLNAME:TARGET%(은)는 \@ CFLAG:만족보 
+		? %CALLNAME:MASTER%의 リクエストに応え、 # \@いつもより激しく죠교することに했다…
+		}
+	CASE "イチャイチャ"
+		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 손짓 해, 상냥하게 껴안았다… 
+	CASE "이상"     ;嗜虐と정욕と言っても要するに이상系というだけなんで微妙な気はする
+		PRINTFORMW %CALLNAME:TARGET%(은)는 기학과 정욕에 미친 눈으로 %CALLNAME:MASTER%(을)를 응시해 왔다…
+	CASE "야외"
+		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 목걸이를 붙이게 하면(자), 외출의 준비를 시작했다…
+	;以下、ご褒美でしか出ない
+	CASE "애만들기"
+		PRINTFORMW %CALLNAME:TARGET%(은)는 아이를 내려 주시는 것의 기대로부터%CALLNAME:MASTER%에 바짝 다가오고는 왔다…
+	CASE "휴식"
+		;휴식。INFO.ERBに処理を移動
+	CASE "抱いて"
+		{
+		PRINTFORMW %CALLNAME:TARGET%(은)는 지금부터 안기는 것에의 기대에 신체를 뜨겁고 불 비출 수 있다%CALLNAME:MASTER%(을)를\@ 
+		!TALENT:새드 ? 優しく # \@抱き寄せた…
+		}
+	CASE "ご봉사"
+		PRINTFORMW %CALLNAME:TARGET%(은)는 기특한 제의(신청)에 만족인 미소를 띄우면서,%CALLNAME:MASTER%(을)를 불러 대고 그 머리를 상냥하게 어루만졌다…
+	CASE "귀여워해"
+		PRINTFORMW %CALLNAME:TARGET%(은)는 미소지으면서 %CALLNAME:MASTER%에 가까워져, 액에 살그머니 입맞춤했다…
+ENDSELECT
+
+;금일의방침地の文を抜けてからリセット
+CFLAG:만족보 = 0
+
+IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
+	CALL SHOW_AUTOMODE_UPCHECK, 1
+	SKIPDISP 0
+	DRAWLINE
+	PRINTFORML {FLAG:연수+1}년{FLAG:일수+1}일째(%GET_TIME()%) %GET_SEASON()% %GET_DAY()%의 행 　남편님：%CALLNAME:1%
+	DRAWLINE
+	SKIPDISP 1
+ENDIF
+
+;대만족보너스の可否
+@SATISBONUS_ABLE(ARG)
+#FUNCTION
+;대만족보너스自体が봉인されていれば0を返す
+SIF CFLAG:대만족보너스봉인
+	RETURNF 0
+SELECTCASE ARG
+	;언제나처럼
+	CASE 0
+	;항문을괴롭혀
+	CASE 1
+	;징계해
+	CASE 2
+	;격렬하게
+	CASE 3
+	;응석부리게
+	CASE 4
+	;망가질때까지
+	CASE 5
+	;밖에서해
+	CASE 6
+		SIF !ITEM:개목걸이
+			RETURNF 0
+	;임신해
+	CASE 7
+		SIF !(CFLAG:M호의 + CFLAG:호의 >= 10000 && !TALENT:임신 && FLAG:임신 && !TALENT:남자 && PENIS(MASTER))
+			RETURNF 0
+	;쉬게
+	CASE 8
+	;안아줬으면
+	CASE 9
+		SIF !(CFLAG:M호의 + CFLAG:호의 >= 10000 && !TALENT:MASTER:남자 && (TALENT:후타나리 || ITEM:페니스밴드))
+			RETURNF 0
+	;봉사하게
+	CASE 10
+		SIF !(!MARK:반항각인 && CFLAG:M호의 >= 1000)
+			RETURNF 0
+	;かわいがって
+	CASE 11
+		SIF !(CFLAG:호의 >= 2000 && CFLAG:M호의 >= 1000)
+			RETURNF 0
+	[SKIPSTART]
+	実装する場合はペニバンと排他にすべきか？
+	というか今更別枠でやる意味は薄い。やるなら방침[9]と統合して内部で分ける方がいいかな
+	;孕ませて
+	CASE 12
+		SIF !(CFLAG:M호의 + CFLAG:호의 >= 10000 && !TALENT:MASTER:임신 && FLAG:죠교대상임신 && !TALENT:MASTER:남자 && TALENT:후타나리)
+			RETURN 0
+	[SKIPEND]
+	;未定義
+	CASEELSE
+		RETURNF 0
+ENDSELECT
+;個別に봉인されていなければ
+RETURNF !CFLAG:(1200+ARG)
+
+
+;────────────────────────────────────
+;汚れのリセット
+;────────────────────────────────────
+@STAIN_RESET
+RESET_STAIN MASTER
+RESET_STAIN TARGET
+SIF ASSI:1 >= 0
+	RESET_STAIN ASSI:1
+SIF ASSI:2 >= 0
+	RESET_STAIN ASSI:2
+SIF ASSI:3 >= 0
+	RESET_STAIN ASSI:3

@@ -1,0 +1,150 @@
+﻿;特殊能力행동の試作案です。はっきり言えばかなり손抜きですが、このやり方は죠교자思考ルーチンへの負担が一番少ないです
+;────────────────────────────────────
+;죠교자の特殊能力のチェック。特定の죠교자と행동の組み合わせによって特殊能力행동に변화します
+;────────────────────────────────────
+@SP_CHECK
+IF NO:TARGET == 1
+	;바늘＝＞패스 웨이 존 니들
+	IF IS_NOWACTNAME("바늘") && CFLAG:죠교레벨 > 0
+		TFLAG:ＳＰ행동 = 200
+	;밧줄で긴박＝＞팔방귀박진
+	ELSEIF IS_NOWACTNAME("밧줄") && ABL:기교 > 2
+		TFLAG:ＳＰ행동 = 201
+	ENDIF
+ELSEIF NO:TARGET == 28
+	;不気味な微笑み＝＞광기의 눈동자
+	IF IS_NOWACTNAME("기분나쁘게 웃다") && ABL:이상 > 1
+		TFLAG:ＳＰ행동 = 202
+	;このキャラクターの新しい特殊能力を作りたい時はこのように拡張してください
+	;ELSEIF TFLAG:ACT == XX && CFLAG:죠교레벨 > X && ABL:X > X && ...
+	;	TFLAG:ＳＰ행동 = 2XX
+	ENDIF
+;新しいキャラクターの特殊能力を作りたい時はこちらから拡張してください
+;ELSEIF NO:TARGET == XX
+ENDIF
+
+
+;────────────────────────────────────
+;죠교자の特殊能力행동の実行。（）の中にベースとなる죠교指令からの変更点を説明
+;────────────────────────────────────
+@SP_ACTION
+;────────────────────────────────────
+;패스 웨이 존 니들（고통보정、죠교시간短縮）
+;────────────────────────────────────
+IF TFLAG:ＳＰ행동 == 200
+	SOURCE:MASTER:고통 = 320 * (TALENT:새드 + 2) + (ABL:기교 + 1) * (ABL:가학 + 2) * (2 + TALENT:바느질 * 3) + (ABL:기교 * 2 + CFLAG:죠교레벨) * (TALENT:새드 + TALENT:바느질 * 2 + 1) * (12 + TALENT:새드)
+	SIF TALENT:마음씨착한
+		TIMES SOURCE:MASTER:고통 , 0.80
+	SOURCE:MASTER:이탈 = 200 + SOURCE:MASTER:고통 / 2 - CFLAG:MASTER:죠교레벨 * 30 - ABL:MASTER:마조끼 * 60 - ABL:MASTER:고통중독 * 200
+	SIF SOURCE:MASTER:이탈 < 0
+		SOURCE:MASTER:이탈 = 0
+	SOURCE:MASTER:중독충족 = ABL:MASTER:마조끼 * (ABL:MASTER:고통중독 - 1) * (ABL:MASTER:고통중독 + 1) * SOURCE:MASTER:고통 / 100
+	SIF SOURCE:MASTER:중독충족 < 0
+		SOURCE:MASTER:중독충족 = 0
+	SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 / 2 - SOURCE:MASTER:중독충족
+	SIF SOURCE:MASTER:트라우마 < 0
+		SOURCE:MASTER:트라우마 = 0
+	SIF CFLAG:MASTER:트라우마 == 62
+		TIMES SOURCE:MASTER:트라우마 , 1.50
+	;出血
+	IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+		STAIN:MASTER:페니스 |= 32
+	ELSE
+		STAIN:MASTER:바기나 |= 32
+	ENDIF
+	STAIN:MASTER:가슴 |= 32
+	SIF TEQUIP:자위중
+		TEQUIP:자위중 = 0
+	SIF TEQUIP:성교중
+		TEQUIP:성교중 = 0
+	TFLAG:경과시간 += 1
+;────────────────────────────────────
+;팔방귀박진（구속보정、죠교시간短縮）
+;────────────────────────────────────
+ELSEIF TFLAG:ＳＰ행동 == 201
+	IF TEQUIP:밧줄 == 0
+		SOURCE:MASTER:구속 = 120 + (MARK:반항각인 + CFLAG:죠교레벨 * 2 + 1) * (ABL:기교 * 2 + 1) * 5 * (TALENT:긴박능숙 * 3 + 2)
+		SOURCE:MASTER:중독충족 = ABL:MASTER:마조끼 * (ABL:MASTER:구속중독 - 1) * (ABL:MASTER:구속중독 + 1) * SOURCE:MASTER:구속 / 100
+		;装備번호は変わらないが、INFO.ERBとUSERCOM.ERBで表示するメッセージを設定できます
+		TEQUIP:밧줄 = 1 + SOURCE:MASTER:구속 / 500
+	ELSE
+		TEQUIP:밧줄 = 0
+	ENDIF
+	SIF TEQUIP:자위중
+		TEQUIP:자위중 = 0
+	SIF TEQUIP:성교중
+		TEQUIP:성교중 = 0
+	TFLAG:경과시간 += 1
+;────────────────────────────────────
+;광기의 눈동자（ランダムパラメータ上昇、이탈に보정）
+;────────────────────────────────────
+ELSEIF TFLAG:ＳＰ행동 == 202
+	SIF RAND:6 > 2
+		TFLAG:강제탈의 = 6
+	SIF RAND:6 > 2
+		TFLAG:자주탈의 = 6
+	A = RAND:14
+	B = RAND:14
+	SIF B == A
+		B += 1 + RAND:3
+	SIF B > 13
+		B -= 13
+	PALAM:MASTER:A += 500 + RAND:500
+	PALAM:MASTER:B += 300 + RAND:300
+	SOURCE:MASTER:이탈 = (3 + RAND:5) * (CFLAG:죠교레벨 + 3) * 50
+	SOURCE:MASTER:트라우마 = 250 + RAND:5 * 100
+	SIF CFLAG:MASTER:트라우마 == 9
+		TIMES SOURCE:MASTER:트라우마 , 1.50
+	SIF TEQUIP:자위중 == 2
+		TEQUIP:자위중 = 0
+	SIF TEQUIP:자위중 == 3
+		TEQUIP:자위중 = 1
+	SIF TEQUIP:성교중
+		TEQUIP:성교중 = 0
+	TFLAG:경과시간 += 1
+	TFLAG:기출의화제 |= 32
+ENDIF
+@SP_TRAIN_MESSAGE
+;패스 웨이 존 니들
+IF TFLAG:ＳＰ행동 == 200
+	IF PENIS(MASTER)
+;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 体に
+		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 몸에
+;OriginalString : 慣れた손つきで退魔の바늘を突きたてた…
+		PRINTFORML 익숙해진 손놀림으로 퇴마의 바늘을 찔러 세웠다…
+	ELSE
+;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 乳首や클리토리스に
+		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 유두나 클리토리스에
+;OriginalString : 慣れた손つきで退魔の바늘を突きたてた…
+		PRINTFORML 익숙해진 손놀림으로 퇴마의 바늘을 찔러 세웠다…
+	ENDIF
+;팔방귀박진
+ELSEIF TFLAG:ＳＰ행동 == 201
+	;解除
+	IF TFLAG:ACT파생 == 1
+;OriginalString : %CALLNAME:TARGET%의 不思議な力によって、
+		PRINTFORML %CALLNAME:TARGET%의 이상한 힘에 의해,
+;OriginalString : %CALLNAME:MASTER%を구속してる御札は一瞬で%CALLNAME:TARGET%의 손に戻った…
+		PRINTFORML %CALLNAME:MASTER%(을)를 구속하고 있는 지폐는 일순간으로 %CALLNAME:TARGET%의 손에 돌아왔다…
+	;통상
+	ELSE
+;OriginalString : %CALLNAME:TARGET%は御札を使って結界を張ると
+		PRINTFORML %CALLNAME:TARGET%(은)는 지폐를 사용해 결계를 치면(자)
+;OriginalString : 念を送って%CALLNAME:MASTER%의 身体の자유を奪った…
+		PRINTFORML 생각을 보내%CALLNAME:MASTER%의 신체의 자유를 빼앗았다…
+	ENDIF
+ELSEIF TFLAG:ＳＰ행동 == 202
+	;PRINTL ＜シックスナイン＞
+	IF TSTR:前죠교指令 == "シックスナイン"
+;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 顔にまたがっ하며 
+		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 얼굴에 걸친 채로
+;OriginalString : 페니스를咥えて離さない…
+		PRINTFORML 페니스를 질네라고 떼어 놓지 않는다…
+	ELSE
+;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 顔にまたがって밀어 넘어트린다と
+		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 얼굴에 걸쳐 밀어 넘어뜨리면(자)
+;OriginalString : 無防備되었다股間に舌を這わせ始めた…
+		PRINTFORML 무방비가 된 고간에 혀를 기게 한 시작했다…
+	ENDIF
+ENDIF
+

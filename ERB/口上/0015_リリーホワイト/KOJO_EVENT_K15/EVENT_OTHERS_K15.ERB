@@ -1,0 +1,456 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;		[릴리 화이트]구상 その他이벤트구상ファイル
+;
+;	대만족보너스、本日の방침이벤트구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;EV16, 대만족보너스구상（죠교開始時）
+;========================================================================
+;・@EVENTTRAINから呼び出される
+;・대만족보너스を得ている場合、죠교開始時に表示される
+;・タイミングは죠교開始구상(EV11)の後、죠교자행동前구상(EV12)の前
+;-------------------------------------------------
+@KOJO_EVENT_K15_16(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(0.선택前/1.선택後)
+;-------------------------------------------------
+
+;────────────────────────────────────
+;선택前구상
+;────────────────────────────────────
+;・上機嫌な様子で、금일は何を당했다いかとたずねる
+;・구상表示前に地の文(%CALLNAME:TARGET%님 대만족 보너스)
+;・구상表示の後に地の文(%CALLNAME:TARGET%は上機嫌な様子で、금일は何を당했다いかとたずねてきた)が続く
+;・地の文の後に선택肢が表示される
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;대만족보너스선택前
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 0
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTEVENT(0)
+		PRINTFORMW 「조교를 시작하기 전에,%CNAME(MASTER)%에 듣고 싶은데요……
+		PRINTFORMW  「릴리의 신체를 마음대로 하고 싶다」 「 좀 더 격렬하게 꾸짖었으면 좋겠다」는,
+		PRINTFORM  그런 식으로 생각한 일, 없습니까？……키득…당연, 어느
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTL  
+		PRINTFORMDW 릴리는 부드러운 지체를 꽉 누르도록(듯이) 해 %CALLNAME:MASTER%(으)로 하고늘어지고 걸리면(자),
+		PRINTFORMDW 귓전에 입술을 대어 달게 녹는 것 같은 소리로 속삭여 왔다……
+		PRINTL  
+		PRINTFORMW 「매일, 양질인 정령을 릴리에 바쳐 줘……고마워요 오차 있습니다」
+		PRINTFORMW 「릴리군요, 이렇게 보여%CNAME(MASTER)%상당히 마음에 들고 있는 거에요？」
+		PRINTFORM 「……그러니까, 이것은 릴리로부터의 그저 답례……특별한 「 포상」입니다
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTL  
+		PRINTFORMW 「이봐요, 부끄러워하지 않고 말해 봐？ 릴리에 어떤 일을 시라고 갖고 싶다？」
+		PRINTFORM 「오늘만은 특별……%CNAME(MASTER)%의 부탁해요, 뭐든지 (들)물어 주어요
+		CALL HEARTCB
+		PRINTFORMW 」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		SELECTCASE RANDEVENT(2, 0)
+			CASE 0
+				PRINTFORMW 「응, 릴리로 했으면 좋은 일은 있습니까？」
+				PRINTFORMW 「언제 응도 노력하고 있다%CNAME(MASTER)%에, 릴리로부터의 특별한 「-」입니다 」
+				PRINTFORM 「이봐요 , 사양하지 않고 말해 봐
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORMW 「응, 오늘은 어떤 일이 시 싶습니까？」
+				PRINTFORMW 「%CNAME(MASTER)%의 인 망상, 릴리가 실현되어 주는군……」
+				PRINTFORM 「이봐요, 와
+				CALL HEARTCB
+				PRINTFORM  특별한 「 포상」의 시간이에요
+				CALL HEARTCB
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;선택後구상
+;────────────────────────────────────
+;・죠교대상の返答に対して、一言
+;・구상表示に後に地の文(%CALLNAME:TARGET%は%CALLNAME:MASTER%의 返事を聞くと죠교の準備を始めた)が続く
+;・上記の地の文を表示했다後に、선택肢毎の地の文が表示される
+;・휴식が선택당했다場合はEV12, ご褒美による中止に続く
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;대만족보너스선택後
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && ARG == 1
+	;=================================================
+	;언제나처럼
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "통상")
+		SELECTCASE RANDEVENT(2, 1)
+			CASE 0
+				PRINTFORMW 「언제나 대로로 좋습니까！？」
+				PRINTFORMW 「 좀 더 굉장한 일도 할 수 있습니다만……욕구가 없네요」
+				PRINTFORM 「뭐는 여하튼……희망에 따를 수 있도록, 언제나 대로완장있네요
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORMW 「평소의 방식으로 만족하고 있다고 일입니까？」
+				PRINTFORMW 「어쩐지 조있네요……네에에♪」
+				PRINTFORM 「언제나 대로로…그렇지만, 언제나 이상으로 만족시켜 보이네요
+				CALL HEARTCB
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;항문을괴롭혀
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "항문")
+		SELECTCASE RANDEVENT(2, 2)
+			CASE 0
+				PRINTFORM 「엉덩이, 기분 있고이지요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「이봐요, 엉덩이를 여기를 향해……「」는 열어 봐？」
+				PRINTFORM 「후후……가득, 가득 괴롭혀 주네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+			CASE 1
+				PRINTFORM 「 이제 완전히 엉덩이 어치노포로군요
+				CALL HEARTCB
+				PRINTFORMW 」
+				IF TALENT:MASTER:남자
+					PRINTFORMW 「사내 아이이니까, 불필요하게 느껴버리는 의 것인지인？ 후후♪」
+					PRINTFORM 「와……%RAND_SPLIT("고양이짱/여자")%같이 가득 울릴 수 있어 주네요
+					CALL HEARTCB
+					PRINTFORMW 」
+				ELSE
+					PRINTFORM 「보지보다 여기를 좋아한다 라고……드 변태군요
+					CALL HEARTCB
+					PRINTFORMW 」
+					PRINTFORM 「와……%RAND_SPLIT("고양이짱/암퇘지")%같이 가득 울릴 수 있어 주네요
+					CALL HEARTCB
+					PRINTFORMW 」
+				ENDIF
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;선택する事によって(TFLAG:징계・플래그)が立つ
+	;=================================================
+	;징계해
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "징계・")
+		SELECTCASE RANDEVENT(2, 3)
+			CASE 0
+				PRINTFORMW 「변함 없이%RAND_SPLIT("도Ｍ의 변태씨/마조돼지씨")%다운 리퀘스트군요……」
+				PRINTFORM 「좋아요…릴리도 사양하지 않기 때문에, 마음껏 울부짖어 주세요
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORMW 「이런 때까지 「징계나무」를 조르다니……」
+				PRINTFORMW 「정말로 뿌리로부터의%RAND_SPLIT("도Ｍ의 변태씨/마조돼지씨")%이군요……」
+				PRINTFORMW 「이봐요, 여기에 오세요……%CNAME(MASTER)%안의 더러운 것, 전부 짜기 시작해 주기 때문에！」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;격렬하게
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "하드")
+		SELECTCASE RANDEVENT(2, 4)
+			CASE 0
+				PRINTFORMW 「미쳐버릴 정도의 쾌감으로, 실신할 때까지 이키 걷고 싶다……입니까？」
+				PRINTFORM 「당신의 인 꿈……릴리가 실현되어 주네요
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORMW 「정말, 쾌락에 탐욕이군요……키득♪」
+				PRINTFORM 「와……넋을 잃어버릴 정도의 쾌감, 가르쳐 주네요
+				CALL HEARTCB
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;응석부리게
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "イチャイチャ")
+		SELECTCASE RANDEVENT(2, 5)
+			CASE 0
+				PRINTFORM 「커져도, 아직 아직 감씨군요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「이봐요, 와……～라고 해, 가득한으로 어루만지고 해 준다……」
+				PRINTFORM 「좋아할 뿐(만큼), 마마에게 응석부려도 좋으니까……
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORM 「마마의 젖가슴이 그리워져 버렸습니다인가？ (이)라니
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「이봐요, 와……%CNAME(MASTER)%의 마음 속의 괴로운 일, 괴로운 일……」
+				PRINTFORM 「릴리가～빨아내 주네요
+				CALL HEARTCB
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;망가질때까지
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "이상")
+		SELECTCASE RANDEVENT(2, 6)
+			CASE 0
+				PRINTFORMW 「릴리의 장난감이 되고 싶은거야？ 아하하♪」
+				PRINTFORM 「좋아요……욕망인 채, 터무니없게 범해 주네요
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORM 「릴리도,%CNAME(MASTER)%의 일을 터무니없게 범하고 싶다고 쭉 생각했어
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORM 「 이제, 참지 않아 좋아……망가질 때까지, 시라고 준다
+				CALL HEARTCB
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;개목걸이の所持が条件
+	;=================================================
+	;밖에서해
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "야외")
+		SELECTCASE RANDEVENT(2, 7)
+			CASE 0
+				PRINTFORMW 「밖에 가, 누군가에게 깨닫아지면 어떻게 합니다？」
+				PRINTFORMW 「요정씨에게 목걸이를 끌려, 인 장난 떠날 수 있어 볼 수 있어버릴 야？」
+				PRINTL  
+				PRINTFORMW 「은……그것이 좋지요♪」
+				PRINTFORM 「절각이고……인 모습, 보이고 붙이게 될까요
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORMW 「기분 전환에 외도 좋지요♪」
+				PRINTFORM 「오늘은 날씨도 좋으니까, 누군가에게 만날 수 있을지도……(이)라니
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORM 「절각이고,%RAND_SPLIT("대짱의 집/사니짱들의 집/치르노짱의 집/마을/신사")%의 근처에서 시있습니까？　키득
+				CALL HEARTCB
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;호의+호감도が10000以上で可能になる
+	;=================================================
+	;임신해
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "애만들기")
+		;---------------------
+		;初回
+		;---------------------
+		IF 구상記入チェック(100) && !TALENT:TARGET:처녀 && FIRSTEVENT(7)
+			PRINTFORMW 「잉키……싶다……？」
+			PRINTFORMW 「그 , 어와！！ 아기가……네！？」
+			PRINTL  
+			PRINTFORMDW 릴리의 얼굴이 마치 삶아지고 낙지와 같이 수원까지 새빨갛게 물들어 간다……
+			PRINTFORMDW 양손으로 얼굴을 덮어 가려,%CALLNAME:MASTER%의 시선으로부터 피하듯이 숙였다……
+			PRINTL  
+			PRINTFORMW 「아니요 그……있고, 싫지……없습니다, 지만……」
+			PRINTFORMW 「지금까지도……가득, 섹스했습니다만……」
+			PRINTFORMW 「%CNAME(MASTER)%(으)로부터……이런 식으로 요구되다니 생각하지 않아서……」
+			PRINTL  
+			PRINTFORMDW 릴리는 당장 스러질 것 같은 작은 소리로, 「기쁩니다…」(이)라고 중얼거렸다……
+			PRINTL  
+			PRINTFORM 「, 그러면………할까요
+			CALL HEARTCB
+			PRINTFORMW 」
+			RETURN 1
+		ENDIF
+		;---------------------
+		;その他
+		;---------------------
+		SELECTCASE RANDEVENT(2, 8)
+			CASE 0
+				PRINTFORM 「응……, 하자
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORM 「자궁이 빠져버릴 정도……키-역, 가득 질우치데 이바지해
+				CALL HEARTCB
+				PRINTFORMW 」
+			CASE 1
+				PRINTFORMW 「언제나 쳐 아기가 할 수 없게 배려를 하고 있습니다만……」
+				PRINTFORM 「안녕하세요……그런 것 신경쓰지 말고,%CNAME(MASTER)%(와)과 연결되어도 좋지요……
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리가 제의 하변에 손을 더하면(자), 신체의 안쪽으로부터 희미한 복숭아색의 빛이 떠올라 온다…
+				PRINTFORMDW 일순간의 명 멸망의 뒤, 복숭아색의 빛이 사라지고……릴리는 황홀의 표정을 띄워%CALLNAME:MASTER%(을)를 응시해 왔다…
+				PRINTL  
+				PRINTFORMW 「지금이라면, 정말로 잉지도 모르겠군요……」
+				PRINTFORM 「릴리를%CNAME(MASTER)%태우고-역에서, 잉키라고 주세요……
+				CALL HEARTCB
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;죠교대상の소모に関わらず선택可能
+	;=================================================
+	;쉬게
+	;=================================================
+	IF 구상記入チェック(100) && IS_POLICY("금일", "휴식")
+		;죠교대상が소모している
+		IF CFLAG:MASTER:소모 >= 3
+			PRINTFORMW 「……체력, 붙일까요」
+			PRINTFORM 「 포상은 또 이번에 주기 때문에, 천천히 쉬어 주세요
+			CALL HEARTCB
+			PRINTFORMW 」
+		;実はそれほど疲れていない
+		ELSE
+			PRINTFORMW 「좋아 , 오늘의 조교는 휴가입니다！」
+			PRINTFORM 「가끔 씩은 보통으로 놀거나 데이트 하는 것도 좋을지도 모르겠네요
+			CALL HEARTCB
+			PRINTFORMW 」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;========================================================================
+;EV17, 本日の방침구상
+;========================================================================
+;・@EVENTTRAINから呼び出される
+;・タイミングは죠교開始구상(EV11)の後、죠교자행동前구상(EV12)の前
+;・대만족보너스を得ている場合はそちらが우선される(即ち、この箇所が呼び出される事はない)
+;・죠교자により本日の방침が決定당했다場合に表示
+;・구상表示の後にPRINTLを挟んで地の文。地の文は방침毎に専用のものになる
+;・애만들기、휴식はご褒美でしか出ないのでこの箇所では不要
+;・Ａ감각が4までは確率（Ａ감각、0で1/3）でTFLAG:금일의방침 == 1（Ａ開発）になり1/5の確率で他の방침によって上書きされる
+;・Ａ감각が5以降になると금일의방침 == 1（Ａ開発）になる可能性は無くなる（감각が上昇すればＡ開発の필요はない、という仕様？）
+;-------------------------------------------------
+@KOJO_EVENT_K15_17(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(現状、派生なし)
+;-------------------------------------------------
+
+;一行空ける(この손の処理は最終的にはシステム側で賄いたいと考える)
+PRINTL
+
+;ABL:MASTER:Ａ감각 < 5の条件の時のみ発生する可能性がある
+;Ａ감각の上昇に伴い発生確率が落ちてゆき（0=1/3, 1=1/4, 2=1/6. 3=1/8. 4=1/12。さらに1/5で他の방침で上書き）、Ａ감각5以上では完全に発生しなくなる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;방침が항문開発
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_POLICY("금일", "항문")
+	PRINTFORMW 「안녕하세요……엉덩이, 할까요」
+	SELECTCASE RANDEVENT(2, 10)
+		CASE 0
+			PRINTFORMW 「괜찮아요……천천히 길들여, 훌륭한 성감대로 해 올리기 때문에♪」
+		CASE 1
+			IF TALENT:MASTER:남자
+				PRINTFORM 「전립선 자극으로, 노려라 드라이 오르가즘입니다
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSE
+				PRINTFORM 「보지에 지지 않을 정도 , 기분 좋게 해 주니까요
+				CALL HEARTCB
+				PRINTFORMW 
+			ENDIF
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;방침が징계・
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_POLICY("금일", "징계・")
+	PRINTFORMW 「언제나 감들이므로, 오늘은 기분을 바꾸어 징계나무의 날로 할까요」
+		;마조끼4以上
+		IF ABL:MASTER:마조끼 > 4
+			PRINTFORM 「은……드Ｍ의 돼지씨에게는 포상일지도 모르지만
+			CALL HEARTCB
+			PRINTFORMW 」
+		ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;방침がいつもより激しく
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_POLICY("금일", "하드")
+	PRINTFORMW 「오늘은 조금 격렬하게 해 볼까요？」
+	PRINTFORMW 「키득……괜찮아, 부수거나는 하지 않기 때문에」
+		;마조끼4以上
+		IF ABL:MASTER:마조끼 > 4
+			PRINTFORM 「오히려 드Ｍ의 돼지씨에게는 꼭 좋을지도 모르겠네요
+			CALL HEARTCB
+			PRINTFORMW 」
+		ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;방침がイチャイチャ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_POLICY("금일", "イチャイチャ")
+	SELECTCASE RANDEVENT(2, 11)
+		CASE 0
+			PRINTFORM 「응……감, 할까요
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTFORMW 「～라고 얼싸안아, 가득 키스도 해……」
+			PRINTFORM 「지르르 될 때까지, 이나 키넘읍시다
+			CALL HEARTCB
+			PRINTFORMW 」
+		CASE 1
+			PRINTFORM 「와……오늘은 가득 응석부리게 해 주네요
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTFORMW 「마마와 언니와 신부와 애인과……후는, 어와……」
+			PRINTFORMW 「응,%CNAME(MASTER)%(은)는 어떤 릴리에 응석부리고 싶습니까？」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;방침が이상
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_POLICY("금일", "이상")
+	PRINTFORMW 「가끔이군요,%CNAME(MASTER)%(을)를 부수어 버리고 싶은 충동에 사로잡혀……」
+	PRINTFORM 「그렇게, 예를 들면……오늘같은 날이라든지, 군요
+	CALL HEARTCB
+	PRINTFORMW 」
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;방침が야외
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_POLICY("금일", "야외")
+	PRINTFORMW 「오늘은 외출하기 때문에,%CNAME(MASTER)%도 빨리 준비해 주세요」
+	PRINTFORMW 「 어째서는……기분 전환이에요♪」
+	RETURN 1
+ENDIF
+;メモ　RANDEVENT（0～11）
+
+

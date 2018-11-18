@@ -1,0 +1,200 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+;	히나구상　オープニング구상ファイル
+
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+[SKIPSTART]
+	VCSでバージョン관리する以上ファイルヘッダーの履歴は不要
+	面倒なだけだし、時々忘れるし、切り捨てられて然るべき文化
+	過去の物もこの際バッサリ切り捨てる
+
+	最近はミニマリズムに傾倒
+	필요なものは最低限確保했다上で可能な限りシンプルに했다い意向
+
+	エディタ Sublime Text3
+	テーマ   Spacegray
+	この環境で最も美しく見えるように！
+[SKIPEND]
+
+;EV1, オープニング구상
+;#####################
+[SKIPSTART]
+	구상主(TARGET)が主人である場合にのみ表示される
+	戻り値を2と했다場合はOP後の本体側のタイトルロゴは表示されない
+	노멀모드以外の場合、죠교대상がNO:MASTER == 0(いわるゆる당신)でない可能性あり
+[SKIPEND]
+
+@KOJO_MALE_EVENT_K39_1(ARG)
+#LOCALSIZE 1
+VARSET LOCAL
+
+;//////////////////////////
+;//모드に依らない共通処理
+;//////////////////////////
+
+;GameBase判定処理 //望ましくない動作環境は蹴る
+CALL CHK_GAMEBASE_K39
+
+;呼び名を代入 //代入しない場合、히나はデフォルトで「あんた」と呼んでくるCSVの設定ｗ
+;============
+;플레이ヤーが名前を設定している場合
+IF NO:MASTER == 0 && CALLNAME:MASTER != "당신"
+	IF TALENT:MASTER:남자          ;//名前入力済みかつ男
+		CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴方/%CSTR:(TARGET):호칭목록%
+	ELSEIF TALENT:MASTER:후타나리    ;//名前入力済みかつ후타나리
+		CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+	ELSE                             ;//名前入力済みかつそれ以外（女）
+		CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+	ENDIF
+;죠교대상が남자の場合
+ELSEIF TALENT:MASTER:남자
+	CSTR:(TARGET):호칭목록 = 당신_貴方/%CSTR:(TARGET):호칭목록%
+;죠교대상が후타나리の場合
+ELSEIF TALENT:MASTER:후타나리
+	CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+;その他の場合
+ELSE
+	CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+ENDIF
+
+;各種봉인処理
+;============
+;ACT類
+CFLAG:1035 = 100 ;//항문섹스を봉인(事実上、全ての성교系を봉인)
+CFLAG:1075 = 100 ;//페니스밴드장착を봉인
+CFLAG:1070 = 100 ;//どうせ出ないだろうけど、その他容認できない이상系(1070~1074)を봉인
+CFLAG:1071 = 100 ;//
+CFLAG:1072 = 100 ;//
+CFLAG:1074 = 100 ;//
+
+;만족보너스
+CFLAG:안아줬으면봉인 = 1
+
+;////////////////////
+;//以下모드毎の処理
+;////////////////////
+
+;노멀모드
+;==============
+IF !FLAG:모드 ;(0=통상/1=샌드박스/9=엑스트라)
+	[SKIPSTART]
+	;OPスキップ処理 //コメントアウト
+	;==============
+	PRINTFORMDW  오프닝을 스킵 합니까？
+	PRINTL
+	PRINTFORMDL [0] 네
+	PRINTFORMDL [1] 아니오
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		CASE 0
+			GOTO SKIP
+		CASE 1
+			PRINTL
+	ENDSELECT
+	[SKIPEND]
+
+	;OP開始
+	;======
+	;カットイン用のフォントをセットする
+	CALL SETFONT_K39
+	;現在のREDRAWを保存
+	LOCAL:0 = CURRENTREDRAW()
+	;全画面カットインの為にREDRAW 0で描画を抑制する
+	REDRAW 0
+	;コンフィグをオーバーライド
+	CALLF ANIME_CONFIG("TIMES", 1)
+	;全画面カットイン2 통상のFULLCUTINより若干早い
+	{
+	CALL FULLCUTIN2(
+	33, 
+	17, 
+;OriginalString : ――この気持ちに気付かなければ", 
+	"――이 기분을 알아차리지 않으면", 
+;OriginalString : 　", 
+	" ", 
+;OriginalString : 　", 
+	" ", 
+;OriginalString : 　　　　　　こんなに苦しまずにいられたのに")
+	"      이렇게 괴로워하지 않고 있을 수 있었는데")
+	}
+	;REDRAWを戻す
+	REDRAW LOCAL:0
+	;フォントを戻す
+	CALL RESETFONT_K39
+	CALL TWAIT3_K39
+
+	;////////////////////////////////////////////
+	;//히나のモノローグはデフォルトカラーで表示する
+	;////////////////////////////////////////////
+
+	;CALL FADE_BGCOLOR_K39(10, 0x140A00, 0x00001E, 0, 0)
+	PRINTFORMDL 만남은 돌연이었다
+	PRINTFORMDW 그것이 무료의 우연이었는가, 혹은 필연이었는가, 이 나는 모른다――
+	;キャラカットイン
+	CALL CHARA_CUTIN(CSTR:두명, CSTR:등장명, CSTR:로마자)
+	PRINTL
+	PRINTFORMDL 그런데도 1개(살)만 뚜렷한 것이 있다
+	PRINTFORMDW 그 날 이래, 나는 고독을 알아, 사랑을 알아, 미움을 알았다――
+	PRINTL
+	PRINTFORMDL 버릴 수 있어 흐르게 된 종이 인형보다 바꾸어 신이 된 이 몸
+	PRINTFORMDW 사람의 액을 불제, 모으는 액신은 자신의 의사에 관련되지 않고, 주위의 사람을 불행하게 해 버린다
+	PRINTFORMDL  고로, 사람이든 요든 주위에 들러 붙는 사람은 없었지만, 그것은 당연한일로서 받아들이고 있었다
+	PRINTFORMDW 혼자서 있는데는 익숙해져 있다. 고독을 벗삼아, 다만 담담하게 액을 불제 모아 사람들을 액재로부터 지킨다
+	PRINTL
+	PRINTFORMDW 몇시인가 이 몸이 헛되이 죽을 때까지, 그렇게 말한 날들이, 다만 조용하게 지나가는 것이라고 생각하고 있었다
+	;フェード、コンフィグ参照しての行削除、REDRAWによる描画抑制を全て１つで賄う
+	CALL FADE_TO_CLEARLINE(30, "あの出会いの時迄は――")
+	CALL TWAIT1_K39
+	;BGM_CUTINは引数0を正にして♪ではなくＢＧＭで表示
+	CALL BGM_CUTIN(CSTR:곡２, 1)   ;//厄神様の通り道　～ Dark Road
+	PRINTFORMDW 액을 모으고 싶은 개의 돌아가는 길, 평상시와 다르지 않는, 보아서 익숙한 화창한 풍경
+	PRINTFORMDW 하지만 그 날은 무엇인가가 차이가 났다. 무엇인가 무료 되지 않는 기색을 느꼈다――
+	PRINTL
+	PRINTFORMDW 정도 없고 그 기색의 정체가 보여 왔다. 저것은 액, 그것도 상당한 것이다
+	PRINTFORMDW 그리고 소용돌이치는 검은 액의 중심으로 사람의 그림자 같은 것이 보인다――
+	PRINTL
+	PRINTFORMDW 의식을 잃고 있는 것 같지만, 이만큼의 액 투성이가 되고 있어 당연한 일
+	PRINTFORMDW 그러나 보통 인간이, 이 정도의 액을 모으고 붐비는 것은 본 일이 없고, 조금 기묘한 느낌이 든다
+	PRINTFORMDW 그런데도 사람의 액재를 불우노는 이 나의 의무, 버려 둘 수 있는 것도 없다
+	PRINTL
+	PRINTFORMDW 접근해 보면, 아무래도 기절하고 있는 것만으로 생명에 이상은 없는 것 같다
+	PRINTFORMDW 그리고 그 손에는 이미 원형을 두지 않는다”무엇인가”하지만 잡아지고 있다
+	PRINTFORMDW 의심스럽게 생각하면서도, 지금은 그런 일에 상관하고 있을 때는 아니다
+	PRINTFORMDW 살그머니 동요시켜 보면 정도 없애 의식을 되찾아, 이쪽의 존재를 알아차리는 것 같았다
+	PRINTL
+	PRINTFORMW 「 나는 카기야마병아리, 사람의 액을 불액신입니다」
+	PRINTFORMW 「%CNAME(MASTER, TARGET)%의 액재, 내가 모두 맡읍시다」
+	CALL BGM_CUTIN(CSTR:곡１, 1) ;//ＢＧＭカットイン 運命のダークサイド
+	PRINTL
+	;引数が多いものは引数毎に改行했다方が可読性が向上する(だろう)的な考え
+	{
+	CALL FADE(
+	40, 
+	GETCOLOR(), 
+	GETBGCOLOR(), 
+;OriginalString : 　　私は無邪気にそう言い放った", 
+	"  나는 순진하게 그렇게 말해 발했다", 
+;OriginalString : 　　　　　　　　　この先に待ち受ける運命も知らずに――")
+	"         이 앞에 기다리는 운명도 알지 못하고――")
+	}
+	;コンフィグを参照して필요なら行削除を行いさらにREDRAW 0で削除中の描画を抑制する
+	CALL FADE_CLINE(1)
+	CALL TWAIT3_K39
+	;$SKIP
+
+	;OP경과判定。後の이벤트はOPを경과していない場合は排他にする
+	;現状남자用なので大했다意味はないけど
+	KFLAG:(FLAG:주인님):50 = 1
+	;RESULT値内訳(0.表示しない/1,OPを表示했다後本体のタイトルロゴを表示/2, OPを表示後に本体のタイトルロゴを表示しない)
+	RETURN 2
+ENDIF
+
+
+;샌드박스または엑스트라모드時
+;======================================
+;노멀모드以外の場合は本体の汎用OPに飛ばす
+;汎用OPに飛ば했다際はこの箇所の戻り値に関わらずタイトルロゴが表示される
+IF FLAG:모드 != 0
+	;RESULT値0を返して汎用OPにパスする
+	RETURN 0
+ENDIF

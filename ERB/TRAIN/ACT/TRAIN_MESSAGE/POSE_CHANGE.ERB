@@ -1,0 +1,202 @@
+﻿
+;────────────────────────────────────
+;자세変更 地の文
+;
+;죠교자행동によって자세が変更되었다場合ここで表示します。
+;구상で指定することによって置換했다文章を表示し呼ばれないようにするべきかもしれないけど
+;今はまだできません。
+;────────────────────────────────────
+@POSE_CHANGE
+#LOCALSIZE 3
+VARSET LOCAL, -1
+;변화内容のチェック
+SIF TCVAR:MASTER:자세 != TCVAR:MASTER:전회의자세
+	LOCAL = TCVAR:MASTER:자세
+SIF TCVAR:MASTER:위치전후 != TCVAR:MASTER:전회의위치전후
+	LOCAL:1 = TCVAR:MASTER:위치전후
+SIF TCVAR:MASTER:위치상하 != TCVAR:MASTER:전회의위치상하
+	LOCAL:2 = TCVAR:MASTER:위치상하
+
+;何も変わっていないなら돌아가기
+SIF LOCAL < 0 && LOCAL:1 < 0 && LOCAL:2 < 0
+	RETURN 0
+
+;구상呼び出し
+CALL KOJO_POSE(LOCAL, LOCAL:1, LOCAL:2)
+
+;スレへの対応손段
+SIF MENU(GET_ACTM(TFLAG:ACT)) == "不明"
+;OriginalString : ＠＠＠エラーです。ACT번호{TFLAG:ACT}です、スレで報告くださいませ＠＠＠
+	PRINTFORMW ＠＠＠에러입니다.ACT번호{TFLAG:ACT}입니다, 스레로 보고해 주십시오＠＠＠
+
+;위치상하
+SELECTCASE LOCAL:2
+	;자유되었다
+	CASE 0
+;OriginalString : %CALLNAME:TARGET%は\@ TCVAR:MASTER:전회의위치상하 == 1 ? %CALLNAME:MASTER%의 위から降り # 上に乗っている%CALLNAME:MASTER%を押しのけ \@
+		PRINTFORM %CALLNAME:TARGET%(은)는 \@ TCVAR:MASTER:전회의위치상하 == 1 ? %CALLNAME:MASTER%의 위에서 내리고 # 위를 타고 있다%CALLNAME:MASTER%(을)를 밀치고 \@
+		IF LOCAL >= 0
+;OriginalString : ると、
+			PRINTFORML 와
+			;자세
+			SELECTCASE LOCAL
+				;자유
+				CASE 0
+;OriginalString : %CALLNAME:MASTER%には楽な자세を시켰다…
+					PRINTFORMW %CALLNAME:MASTER%에는 편한 자세를 시켰다…
+				;누움
+				CASE 1
+;OriginalString : %CALLNAME:MASTER%は누움に寝かせた…
+					PRINTFORMW %CALLNAME:MASTER%(은)는 위로 향해 재웠다…
+				;座り
+				CASE 2
+;OriginalString : %CALLNAME:MASTER%を\@ TEQUIP:야외플레이 ? 地面 # 침대 \@의 위에 앉혀た…
+					PRINTFORMW %CALLNAME:MASTER%(을)를\@ TEQUIP:야외플레이 ? 지면 # 침대 \@의 위에 앉게 했다…
+				;네발로 엎드림
+				CASE 3
+;OriginalString : %CALLNAME:MASTER%に네발로 엎드림にな\@ TCVAR:MASTER:위치전후 == 2 ? って尻を向け # \@るように言った…
+					PRINTFORMW %CALLNAME:MASTER%에 납죽 엎드림에\@ TCVAR:MASTER:위치전후 == 2 ? 라는 엉덩이를 향해라 # \@같게 말했다…
+				;기립
+				CASE 4
+;OriginalString : %CALLNAME:MASTER%に\@ TEQUIP:야외플레이 ? 地面 # 床 \@に立つように言った…
+					PRINTFORMW %CALLNAME:MASTER%에 \@ TEQUIP:야외플레이 ? 지면 # 마루 \@에 서도록(듯이) 말했다…
+				;무릎으로 서있다
+				CASE 10
+;OriginalString : %CALLNAME:MASTER%に\@ TEQUIP:야외플레이 ? 地面 # 침대 \@の上で무릎으로 서있다になるように言った…
+					PRINTFORMW %CALLNAME:MASTER%에 \@ TEQUIP:야외플레이 ? 지면 # 침대 \@의 위에서 히자타테가 되도록(듯이) 말했다…
+			ENDSELECT
+		ELSE
+;OriginalString : た…
+			PRINTFORMW …
+		ENDIF
+	;上に乗った
+	CASE 1
+;OriginalString : %CALLNAME:TARGET%は\@ TCVAR:MASTER:전회의위치상하 == 2 ? 上に乗っている%CALLNAME:MASTER%と身体を入れ替え # %CALLNAME:MASTER%의 위にのしかかり \@、깔고 앉으려고했다…
+		PRINTFORML %CALLNAME:TARGET%(은)는 \@ TCVAR:MASTER:전회의위치상하 == 2 ? 위를 타고 있다%CALLNAME:MASTER%(와)과 신체를 교체 # %CALLNAME:MASTER%의 위에 덮쳐 \@,깔고 앉으려고했다…
+	;上に乗せた
+	CASE 2
+		;정상위
+		IF IS_NOWACTNAME("정상위시킨다")
+;OriginalString : %CALLNAME:TARGET%は脚を開き、%CALLNAME:MASTER%に前から体を被せてくるように言った…
+			PRINTFORM %CALLNAME:TARGET%(은)는 다리를 열어,%CALLNAME:MASTER%에 전부터 몸을 씌워 오도록(듯이) 말했다…
+		ELSE
+;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%に、\@ TCVAR:MASTER:위치전후 == 3 ? 背中を # 身体を \@跨いで上になるように言った…
+			PRINTFORM %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에,\@ TCVAR:MASTER:위치전후 == 3 ? 등을 # 신체를 \@넘어 위가 되도록(듯이) 말했다…
+		ENDIF
+	;上下변화なし
+	CASEELSE
+;OriginalString : %CALLNAME:TARGET%は
+		PRINTFORM %CALLNAME:TARGET%은(는) 
+		IF LOCAL >= 0
+			;자세
+			SELECTCASE LOCAL
+				;누움
+				CASE 1
+					;イった後
+					IF NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정 || NOWEX:MASTER:사정
+;OriginalString : 、절정の余韻で腰が抜け、力なく横たわった%CALLNAME:MASTER%を見て만족げに頬を緩め
+						PRINTFORM , 절정의 여운으로 넋을 잃어 힘 없게 가로놓였다%CALLNAME:MASTER%(을)를 봐 만족스럽게 뺨을 느슨한
+					ELSE
+;OriginalString : %CALLNAME:MASTER%を누움に寝かせ
+						PRINTFORM %CALLNAME:MASTER%(을)를 위로 향해 재우고
+					ENDIF
+				;座り
+				CASE 2
+					;가버려、전회が누움
+					IF TCVAR:MASTER:가버려 && TCVAR:MASTER:전회의자세 == 1
+;OriginalString : 、快感を求めて身を起こし、앉다ように腰を引く%CALLNAME:MASTER%を眺めて笑みを浮かべ
+						PRINTFORM , 쾌감을 추구해 성공해, 앉도록(듯이) 허리를 당긴다%CALLNAME:MASTER%(을)를 바라봐 미소를 띄우고
+					;イった後
+					ELSEIF NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정 || NOWEX:MASTER:사정
+;OriginalString : 、절정の余韻で腰が抜け、くたりと座りこんだ%CALLNAME:MASTER%を見て만족げに頬を緩め
+						PRINTFORM , 절정의 여운으로 넋을 잃어 구 충분하고와 버티고 앉았다%CALLNAME:MASTER%(을)를 봐 만족스럽게 뺨을 느슨한
+					ELSE
+;OriginalString : %CALLNAME:MASTER%を\@ TEQUIP:야외플레이 ? 地面 # 침대 \@의 위에 앉혀
+						PRINTFORM %CALLNAME:MASTER%(을)를 \@ TEQUIP:야외플레이 ? 지면 # 침대 \@의 위에 앉혀
+					ENDIF
+				;네발로 엎드림
+				CASE 3
+;OriginalString : %CALLNAME:MASTER%を네발로 엎드림に\@ TCVAR:MASTER:위치전후 == 2 ? 시켜 엉덩이를 향해 # \@させ
+					PRINTFORM %CALLNAME:MASTER%(을)를 엎드리게 \@ TCVAR:MASTER:위치전후 == 2 ? 시켜 엉덩이를 향하게 # \@ 시키고
+				;기립
+				CASE 4
+;OriginalString : %CALLNAME:MASTER%に\@ TEQUIP:야외플레이 ? 地面 # 床 \@に立たせ
+					PRINTFORM %CALLNAME:MASTER%에 \@ TEQUIP:야외플레이 ? 지면 # 마루 \@에 립 더해라
+				;무릎으로 서있다
+				CASE 10
+					;가버려
+					IF TCVAR:MASTER:가버려
+;OriginalString : 、快感を求めて腰を浮かせ、무릎으로 서있다되었다%CALLNAME:MASTER%を眺めて笑みを浮かべ
+						PRINTFORM , 쾌감을 추구해 허리를 띄워 히자타테가 되었다%CALLNAME:MASTER%(을)를 바라봐 미소를 띄우고
+					ELSE
+;OriginalString : %CALLNAME:MASTER%を\@ TEQUIP:야외플레이 ? 地面 # 침대 \@の上で무릎으로 서있다にさせ
+						PRINTFORM %CALLNAME:MASTER%(을)를\@ TEQUIP:야외플레이 ? 지면 # 침대 \@의 위에서 히자타테에 시키고
+					ENDIF
+				;자유
+				CASEELSE
+;OriginalString : %CALLNAME:MASTER%に楽な자세をさせ
+					PRINTFORM %CALLNAME:MASTER%에 편한 자세를 시키고
+			ENDSELECT
+			SIF LOCAL:1 >= 0
+;OriginalString : ると、;PRINTFORML 와
+				PRINTFORML 
+		ENDIF
+		IF LOCAL:1 >= 0
+			;위치전후
+			SELECTCASE LOCAL:1
+				CASE 0
+					SELECTCASE TCVAR:MASTER:위치상하
+						CASE 0
+;OriginalString : 身体を離して、%CALLNAME:MASTER%의 전신를 핥아回すように見つめだ했다…
+							PRINTFORMW 신체를 떼어 놓아,%CALLNAME:MASTER%의 전신을 빨고 돌리도록(듯이) 응시하기 시작했다…
+						CASEELSE
+;OriginalString : 身体を重ね하며 、%CALLNAME:MASTER%의 전신를 핥아回すように見つめだ했다…
+							PRINTFORMW 신체를 거듭한 채로,%CALLNAME:MASTER%의 전신을 빨고 돌리도록(듯이) 응시하기 시작했다…
+					ENDSELECT
+				CASE 1
+					SELECTCASE TCVAR:MASTER:위치상하
+						CASE 0
+;OriginalString : %CALLNAME:MASTER%의 정면に回り込み、\@ RAND:2 ? その瞳を覗き込んだ… # 意味ありげに微笑んだ… \@
+							PRINTFORMW %CALLNAME:MASTER%의 정면으로 돌아 붐비어,\@ RAND:2 ? 눈을 맞추어… # 미소지었다… \@
+						CASE 1
+;OriginalString : %CALLNAME:MASTER%의 顔が見えるように向き直り、厭らしく笑って見下ろ했다…
+							PRINTFORMW %CALLNAME:MASTER%의 얼굴이 보이도록(듯이) 다시 향해 , 싫은 것 같게 웃어 내려다 보았다…
+						CASE 2
+;OriginalString : %CALLNAME:MASTER%의 顔が見えるように向きを変え시켰다…
+							PRINTFORMW %CALLNAME:MASTER%의 얼굴이 보이도록(듯이) 방향을 변화시켰다…
+					ENDSELECT
+				CASE 2
+					SELECTCASE TCVAR:MASTER:위치상하
+						CASE 0, 1
+							IF MENU(GET_ACTM(TFLAG:ACT)) == "가학"
+;OriginalString : %CALLNAME:MASTER%의 배후に回り込み、粘つく薄笑いを浮かべた…
+								PRINTFORMW %CALLNAME:MASTER%의 배후로 돌아 붐비어, 끈적거리는 엷은 웃음을 떠올렸다…
+							ELSEIF RAND:2
+;OriginalString : %CALLNAME:MASTER%의 배후に回り込み、\@ RAND:2 ? 肩越しに耳元に顔を寄せた… # 肩を抱き寄せた… \@
+								PRINTFORMW %CALLNAME:MASTER%의 배후로 돌아 붐비어,\@ RAND:2 ? 어깨를 끌어안아… # 귓가에 얼굴을 접했다… \@
+							ELSE
+;OriginalString : %CALLNAME:MASTER%의 身体を前後逆に回し、背中越しに身体を寄せ始めた…
+								PRINTFORMW %CALLNAME:MASTER%의 신체를 전후 반대로 돌려, 등넘어로 신체를 대기 시작했다…
+							ENDIF
+						CASE 2
+;OriginalString : 背を向けて跨るように%CALLNAME:MASTER%의 向きを変え시켰다…
+							PRINTFORMW 등을 돌려 걸치도록(듯이)%CALLNAME:MASTER%의 방향을 변화시켰다…
+					ENDSELECT
+				CASE 3
+					SELECTCASE TCVAR:MASTER:위치상하
+						CASE 0, 2
+;OriginalString : %CALLNAME:MASTER%に背を向けた…
+							PRINTFORMW %CALLNAME:MASTER%에 등을 돌렸다…
+						CASE 1
+;OriginalString : %CALLNAME:MASTER%의 顔に背を向けるように、跨いだまま向きを変えた…
+							PRINTFORMW %CALLNAME:MASTER%의 얼굴에 등을 돌리도록(듯이), 넘은 채로 방향을 바꾸었다…
+					ENDSELECT
+			ENDSELECT
+		ELSE
+;OriginalString : た…
+			PRINTFORMW …
+		ENDIF
+ENDSELECT
+;OriginalString : 
+PRINTL 
+CALL POSE_SHOW

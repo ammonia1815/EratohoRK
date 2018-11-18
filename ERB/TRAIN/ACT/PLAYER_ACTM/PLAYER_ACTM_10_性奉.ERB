@@ -1,0 +1,392 @@
+﻿;────────────────────────────────────
+;성교(봉사) (正常95/後背96/騎乗103/대면97/背面98/ＡＳ99)
+;────────────────────────────────────
+@ACT_M10(ARG = 0)
+;1以上なら判定を行わない
+#DIM LCOUNT, 1
+
+;関数初期化
+CALL ACT_M_INIT(10)
+
+;処理開始
+
+LOCALS = ACT_ACTM10
+
+CALL CHA_CRI_VAR, "基準値"
+CALLFORM %LOCALS%_REFERENCE
+
+CALL CHA_CRI_VAR, @"今回の방침(%POLICY("今")%)"
+CALLFORM %LOCALS%_COURCE
+
+CALL CHA_CRI_VAR, "죠교자の素質"
+CALLFORM %LOCALS%_TALENT_T
+
+CALL CHA_CRI_VAR, "죠교대상の素質"
+CALLFORM %LOCALS%_TALENT_M
+
+CALL CHA_CRI_VAR, "죠교자の能力"
+CALLFORM %LOCALS%_ABL_T
+
+CALL CHA_CRI_VAR, "밧줄"
+CALLFORM %LOCALS%_ROPE
+
+CALL CHA_CRI_VAR, "눈가리개"
+CALLFORM %LOCALS%_EYEMASK
+
+CALL CHA_CRI_VAR, "거울"
+CALLFORM %LOCALS%_T_MILLER
+
+CALL CHA_CRI_VAR, "体位"
+CALLFORM %LOCALS%_S_POSITION
+
+CALL CHA_CRI_VAR, "연속행동보정"
+CALLFORM %LOCALS%_PREV
+
+CALL CHA_CRI_VAR, "구상보정値"
+CALL ACT_ACTM_KOJO_CORRECTION_T, 10
+
+CALL CHA_CRI_VAR, "ACT보정値"
+CALLFORM %LOCALS%_CORRECTION(ARG)
+
+;ARGが1以上なら処理中断
+SIF ARG
+	RETURN RESULT
+
+CALL CHA_CRI_VAR, "実行判定"
+CALLFORM %LOCALS%_ABLE
+
+;────────────────────────────────────
+;最終判定
+;────────────────────────────────────
+CALL DEF_CRI_VAR("最大前者")
+LOCAL = GET_CRI_VAR("決定")
+
+;삽입する棒が無い場合、可能ならば페니스밴드に변화。페니스밴드が無いならここへは来ない
+IF !PENIS(MASTER) && !TEQUIP:페니스밴드
+	CALL ACT_ABLE26
+	IF RESULT
+		TFLAG:ACT분류 = 2
+		TFLAG:ACT     = 26
+	ELSE
+		TFLAG:ACT분류 = 0
+		TFLAG:ACT     = 0
+	ENDIF
+ELSEIF LOCAL == -1
+	SIF FLAG:디버그
+;OriginalString : (성교봉사ACT분류に実行可能なACTが存在しません)
+		PRINTL (성교 봉사ACT분류에 실행 가능한ACT하지만 존재하지 않습니다)
+	TFLAG:ACT = -1
+	CALL ACT_MENU_RESULT(2, "성봉")
+;삽입する棒が無い場合、
+ELSE
+	LOCAL = GET_ACTNUM(RESULTS)
+	TFLAG:ACT = LOCAL
+	;성교봉사연속数加算処理
+	SPLIT "351/352/354/355/356////353", "/", LOCALS
+	LOCAL = TOINT(LOCALS:(LOCAL - 95))
+	TFLAG:LOCAL++
+ENDIF
+CALL ANA_CRI_VAR()
+
+;-------------------------------------------------------------------------
+;基準値
+;-------------------------------------------------------------------------
+@ACT_ACTM10_REFERENCE
+
+;要らないかもと思ったので試しに無効化@これみ
+[SKIPSTART]
+CALL ADD_CRI_VAR("정상위시킨다", 10)
+CALL ADD_CRI_VAR("후배위시킨다", 8, 2)
+CALL ADD_CRI_VAR("역강간", 8, 2)
+CALL ADD_CRI_VAR("대면좌위시킨다", 8, 2)
+CALL ADD_CRI_VAR("배면좌위시킨다", 7, 3)
+CALL ADD_CRI_VAR("항문섹스시킨다", 5)
+[SKIPEND]
+
+;------------------------------------------
+;今回の죠교방침
+;------------------------------------------
+@ACT_ACTM10_COURCE
+;죠교방침(1=휴식/2=소프트/3=노멀/4=하드/5=이상)
+SELECTCASE POLICY("今")
+	CASE "소프트"
+		CALL ADD_CRI_VAR("정상위시킨다"  , 1, 2)
+		CALL ADD_CRI_VAR("대면좌위시킨다", 3)
+	CASE "하드"
+		CALL ADD_CRI_VAR("후배위시킨다"        , 4)
+		CALL ADD_CRI_VAR("배면좌위시킨다"      , 3)
+		CALL ADD_CRI_VAR("항문섹스시킨다", 2)
+	CASE "이상"
+		CALL ADD_CRI_VAR("항문섹스시킨다", 3)
+		CALL ADD_CRI_VAR("역강간", 1, 4)
+ENDSELECT
+
+
+;-------------------------------------------------------------------------
+;죠교자の素質を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM10_TALENT_T
+
+;죠교자が겁쟁이/굳셈
+IF TALENT:겁쟁이
+	CALL ADD_CRI_VAR("정상위시킨다", , 2)
+	CALL ADD_CRI_VAR("후배위시킨다" , -2)
+	CALL ADD_CRI_VAR("대면좌위시킨다", , 3)
+	CALL ADD_CRI_VAR("배면좌위시킨다", -2)
+	CALL ADD_CRI_VAR("역강간", -5)
+ELSEIF TALENT:굳셈
+	CALL ADD_CRI_VAR("후배위시킨다"  , 3)
+	CALL ADD_CRI_VAR("배면좌위시킨다", 2)
+	CALL ADD_CRI_VAR("항문섹스시킨다", 1)
+ENDIF
+
+;죠교자が반항적/솔직
+IF TALENT:반항적
+	CALL ADD_CRI_VAR("역강간", , 9)
+ELSEIF TALENT:솔직
+	CALL ADD_CRI_VAR("정상위시킨다", 2)
+	CALL ADD_CRI_VAR("역강간"   , -3)
+ENDIF
+
+;죠교자が일선을넘지않음
+IF TALENT:일선을넘지않음
+	CALL ADD_CRI_VAR("후배위시킨다"  , -3)
+	CALL ADD_CRI_VAR("역강간"      , -4)
+	CALL ADD_CRI_VAR("대면좌위시킨다", -1)
+	CALL ADD_CRI_VAR("배면좌위시킨다", -3)
+	CALL ADD_CRI_VAR("항문섹스시킨다", -5)
+ENDIF
+
+;죠교자が청초
+IF TALENT:청초
+	CALL ADD_CRI_VAR("정상위시킨다"  ,  3)
+	CALL ADD_CRI_VAR("후배위시킨다"  , -3)
+	CALL ADD_CRI_VAR("대면좌위시킨다",  2)
+	CALL ADD_CRI_VAR("배면좌위시킨다", -3)
+	CALL ADD_CRI_VAR("항문섹스시킨다", -3)
+	CALL ADD_CRI_VAR("역강간", -4)
+ENDIF
+
+;죠교자が튀고싶어함
+SIF TALENT:튀고싶어함
+	CALL ADD_CRI_VAR("역강간", , 5)
+
+;죠교자の처녀、정조관념などの処理
+IF TALENT:처녀 && CFLAG:M호의 < 1000
+	CALL ADD_CRI_VAR("정상위시킨다"  , -5 - TALENT:정조관념 * 5 + TALENT:정조무관심 * 3 - CFLAG:M호의 / 500)
+	CALL ADD_CRI_VAR("후배위시킨다"  , -5 - TALENT:정조관념 * 5 + TALENT:정조무관심 * 3 - CFLAG:M호의 / 500)
+	CALL ADD_CRI_VAR("역강간"      , -5 - TALENT:정조관념 * 5 + TALENT:정조무관심 * 3 - CFLAG:M호의 / 500)
+	CALL ADD_CRI_VAR("대면좌위시킨다", -5 - TALENT:정조관념 * 5 + TALENT:정조무관심 * 3 - CFLAG:M호의 / 500)
+	CALL ADD_CRI_VAR("배면좌위시킨다", -5 - TALENT:정조관념 * 5 + TALENT:정조무관심 * 3 - CFLAG:M호의 / 500)
+ENDIF
+
+;죠교자が수동적
+IF TALENT:수동적
+	CALL ADD_CRI_VAR("정상위시킨다", 3)
+	CALL ADD_CRI_VAR("후배위시킨다", 3)
+ENDIF
+
+;죠교자が헌신적
+IF TALENT:헌신적
+	CALL ADD_CRI_VAR("대면좌위시킨다", 2)
+	CALL ADD_CRI_VAR("배면좌위시킨다", 2)
+	CALL ADD_CRI_VAR("역강간"      , 3)
+ENDIF
+
+;죠교자が음호
+IF TALENT:음호
+	CALL ADD_CRI_VAR("정상위시킨다"  , 4, 2)
+	CALL ADD_CRI_VAR("후배위시킨다"  , 4, 2)
+	CALL ADD_CRI_VAR("역강간"      , 4, 2)
+	CALL ADD_CRI_VAR("대면좌위시킨다", 4, 2)
+	CALL ADD_CRI_VAR("배면좌위시킨다", 4, 2)
+ENDIF
+
+;죠교자が새드
+IF TALENT:새드
+	CALL ADD_CRI_VAR("정상위시킨다"  ,  2)
+	CALL ADD_CRI_VAR("후배위시킨다"  , -2)
+	CALL ADD_CRI_VAR("역강간"      ,  5)
+	CALL ADD_CRI_VAR("대면좌위시킨다",  3)
+	CALL ADD_CRI_VAR("배면좌위시킨다", -2)
+ENDIF
+
+;죠교자が心優しい
+IF TALENT:마음씨착한
+	CALL ADD_CRI_VAR("정상위시킨다"  , 2)
+	CALL ADD_CRI_VAR("대면좌위시킨다", 2)
+ENDIF
+
+;죠교舎が허리기술
+IF TALENT:MASTER:허리기술
+	CALL ADD_CRI_VAR("정상위시킨다", 2)
+	CALL ADD_CRI_VAR("역강간"    , 5)
+ENDIF
+
+;죠교자が변태적
+IF TALENT:변태적
+	CALL ADD_CRI_VAR("항문섹스시킨다", , 2)
+	CALL ADD_CRI_VAR("역강간", , 2)
+ENDIF
+
+;죠교자がＣ민감/둔감
+IF TALENT:Ｃ민감
+	CALL ADD_CRI_VAR("정상위시킨다"  , , 2)
+	CALL ADD_CRI_VAR("대면좌위시킨다", , 2)
+	CALL ADD_CRI_VAR("배면좌위시킨다", , 2)
+ELSEIF TALENT:Ｃ둔감
+	CALL ADD_CRI_VAR("대면좌위시킨다", , -2)
+	CALL ADD_CRI_VAR("배면좌위시킨다", , -2)
+ENDIF
+
+;죠교자がＶ민감/둔감
+IF TALENT:Ｖ민감
+	CALL ADD_CRI_VAR("정상위시킨다", , 4)
+	CALL ADD_CRI_VAR("후배위시킨다", , 4)
+	CALL ADD_CRI_VAR("역강간"    , , 4)
+	CALL ADD_CRI_VAR("대면좌위시킨다", , 4)
+	CALL ADD_CRI_VAR("배면좌위시킨다", , 4)
+ELSEIF TALENT:Ｖ둔감
+	CALL ADD_CRI_VAR("항문섹스시킨다", , 2)
+ENDIF
+
+;죠교자がＡ민감/둔감
+IF TALENT:Ａ민감
+	CALL ADD_CRI_VAR("항문섹스시킨다", , 3)
+ELSEIF TALENT:Ａ둔감
+	CALL ADD_CRI_VAR("항문섹스시킨다", -2)
+ENDIF
+
+;-------------------------------------------------------------------------
+;죠교대상の素質を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM10_TALENT_M
+
+;죠교대상が동정
+IF TALENT:MASTER:동정
+	CALL ADD_CRI_VAR("정상위시킨다"  , -7 + CFLAG:합의 * 5 + CFLAG:M호의 / 500 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("후배위시킨다"  , -7 + CFLAG:합의 * 5 + CFLAG:M호의 / 500 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("역강간"      , -7 + CFLAG:합의 * 5 + CFLAG:M호의 / 500 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("대면좌위시킨다", -7 + CFLAG:합의 * 5 + CFLAG:M호의 / 500 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("배면좌위시킨다", -7 + CFLAG:합의 * 5 + CFLAG:M호의 / 500 + GET_TRAINLV(TARGET) / 3)
+ENDIF
+
+;죠교대상が변태적
+SIF TALENT:MASTER:변태적
+	CALL ADD_CRI_VAR("항문섹스시킨다", 2, 1)
+
+;────────────────────────────────────
+;能力、パラメーターによる変動
+;────────────────────────────────────
+;-------------------------------------------------------------------------
+;죠교자の能力を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM10_ABL_T
+
+;죠교자のＣ감각
+IF ABL:Ｃ감각
+	CALL ADD_CRI_VAR("정상위시킨다"  , ABL:Ｃ감각, 1)
+	CALL ADD_CRI_VAR("대면좌위시킨다", ABL:Ｃ감각, 1)
+	CALL ADD_CRI_VAR("배면좌위시킨다", ABL:Ｃ감각, 1)
+ENDIF
+
+;죠교자のＶ감각
+IF ABL:Ｖ감각
+	CALL ADD_CRI_VAR("정상위시킨다"  , ABL:Ｖ감각, 2)
+	CALL ADD_CRI_VAR("후배위시킨다"  , ABL:Ｖ감각, 1)
+	CALL ADD_CRI_VAR("역강간"      , ABL:Ｖ감각, 2)
+	CALL ADD_CRI_VAR("대면좌위시킨다", ABL:Ｖ감각, 1)
+	CALL ADD_CRI_VAR("배면좌위시킨다", ABL:Ｖ감각, 1)
+ENDIF
+
+;죠교자のＡ감각
+SIF ABL:Ａ감각
+	CALL ADD_CRI_VAR("항문섹스시킨다", ABL:Ａ감각, 1)
+
+;죠교자のＡ경험が[0→-15, 20→0]を加算(-15～0)
+CALL ADD_CRI_VAR("항문섹스시킨다", LINE_CALC(EXP:Ａ경험, "0→-15,20→0,LIMIT/-15～0"))
+
+;────────────────────────────────────
+;전회의행동や状況による変動
+;────────────────────────────────────
+;-------------------------------------
+;밧줄
+;-------------------------------------
+@ACT_ACTM10_ROPE
+
+IF TEQUIP:밧줄
+	CALL ADD_CRI_VAR("후배위시킨다", -5)
+	CALL ADD_CRI_VAR("항문섹스시킨다", -5)
+ENDIF
+
+;-------------------------------------
+;눈가리개
+;-------------------------------------
+@ACT_ACTM10_EYEMASK
+
+IF TEQUIP:눈가리개
+	CALL ADD_CRI_VAR("후배위시킨다", -5)
+	CALL ADD_CRI_VAR("항문섹스시킨다", -5)
+ENDIF
+
+;-------------------------------------
+;거울
+;-------------------------------------
+@ACT_ACTM10_T_MILLER
+
+SIF TEQUIP:거울
+	CALL ADD_CRI_VAR("배면좌위시킨다", 3)
+
+;────────────────────────────────────
+;体位関連
+;────────────────────────────────────
+@ACT_ACTM10_S_POSITION
+#DIM LCOUNT
+
+;TEQUIP:성교봉사중 の引数と対応시킨다
+SPLIT "정상위시킨다/후배위시킨다/역강간/대면좌위시킨다/배면좌위시킨다/항문섹스시킨다", "/", LOCALS
+
+;体位変更の하드ル
+IF TEQUIP:성교봉사중
+	CALL ADD_CRI_VAR(LOCALS:(TEQUIP:성교봉사중), 5, 5)
+ENDIF
+
+;────────────────────────────────────
+;同じ행동연속실행の確率をダウンします
+;────────────────────────────────────
+@ACT_ACTM10_PREV
+
+LOCAL = 95, 96, 103, 97, 98
+SELECTCASE TFLAG:전ACT
+	;항문섹스は연속실행制限に引っかからない
+	CASE 95 TO 98, 103
+		LOCAL = FINDELEMENT(LOCAL, TFLAG:전ACT) + 351
+		CALL ADD_CRI_VAR(GET_ACTNAME(TFLAG:전ACT), -3 * TFLAG:LOCAL / 100, -4 * TFLAG:LOCAL / 100)
+ENDSELECT
+
+;────────────────────────────────────
+;보정値計算
+;────────────────────────────────────
+@ACT_ACTM10_CORRECTION(ARG)
+#DIM LCOUNT
+
+;ARGが0以外なら보정値を計算し、以後の処理を行わない
+IF ARG
+	FOR LCOUNT, 95, 100
+		CALL ACT_M_RES_CALC(LCOUNT, GET_CRI_VAR(GET_ACTNAME(LCOUNT) + "累計"))
+	NEXT
+	CALL ACT_M_RES_CALC(103, GET_CRI_VAR("역강간累計"))
+ELSE
+	;보정値を判定値に加算する
+	CALL ACT_ACTM_CORRECTION(10)
+ENDIF
+
+;────────────────────────────────────
+;その他変動や実行不可能の判定
+;────────────────────────────────────
+@ACT_ACTM10_ABLE
+#DIM LCOUNT
+
+;不可能判定
+CALL ACT_ACTM_ABLE(10)
+

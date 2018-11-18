@@ -1,0 +1,905 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;		릴리 화이트구상 その他の反応汎用リアクション구상ファイル
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=====================================================================
+;その他の反応 COM50番台
+;=====================================================================
+;・特定の場面で発生する変な행동
+;-------------------------------------------------
+
+;────────────────────────────────────
+;COM50, 자위를 시작한다
+;────────────────────────────────────
+;・REACT분류:受け入れる
+;・派生1,勝손にオナニーするなの場合は징계・포인트追加
+;・REACT인상:悪印象小
+;・참다플래그解消
+;-------------------------------------------------
+;・トリガー이벤트制
+;-------------------------------------------------
+;・밧줄で縛られていると駄目
+;・すでに자위してる、성교중、성교봉사중は弾かれる
+;-------------------------------------------------
+;TFLAG:REACT파생 == 0, 勝손にオナニーしてるけどいいか, 의존도변화(-1, 0)
+;TFLAG:REACT파생 == 1, 勝손にオナニーするな, 의존도변화(-3, +2)
+;=================================================
+@KOJO_COM_K15_50
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM50, 자위를 시작한다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;=================================================
+	;派生：勝손にオナニーするな
+	;=================================================
+	IF 구상記入チェック(20) && TFLAG:REACT파생 == 1
+		SELECTCASE RANDCOM(2, 0)
+			CASE 0
+;OriginalString : 「リリーは『オナニーして』なんて言いま했다っけ？」
+				PRINTFORMW 「릴리는 「자위하며」라고 말했던 가요？」
+;OriginalString : 「참다出来なくなっちゃったんですか？　ほんと、%RAND_SPLIT("仕方のない子なんですから/お猿さんみたいですね/こんなんじゃただの豚さんですね")%」
+				PRINTFORMW 「인내 할 수 없게 되어 버렸습니다인가？ 정말,%RAND_SPLIT("어쩔 수 없는 아이이니까/원숭이씨같네요/이런 것은 단순한 돼지씨군요")%」
+			CASE 1
+;OriginalString : 「リリーの言う事も聞かず、勝손に%RAND_SPLIT("オナニー/ひとりえっち")%しちゃうんですか？」
+				PRINTFORMW 「릴리가 말하는 일도 (듣)묻지 않고, 마음대로%RAND_SPLIT("자위/혼자 엣치")%해 버립니다인가？」
+;OriginalString : 「もう…『待て』もできない%RAND_SPLIT("ロリコン豚さん/お猿さん/ヘンタイさん")%にはキツイ징계・が필요ですかね…ふふっ♪」
+				PRINTFORMW 「 이제…「기다릴 수 있다」도 할 수 없다%RAND_SPLIT("로리콘돼지씨/원숭이씨/변태씨")%에는 심한 징계나무가 필요합니까…후후♪」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;회화系행동から実行
+	;=================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "회화")
+		;죠교자자위
+		IF GETBIT(TEQUIP:자위중, 1)
+;OriginalString : 「リリーのオナニー見て참다できなくなっちゃったの？　%RAND_SPLIT("ふふ/くす/あはは")%っ♪」
+			PRINTFORMW 「릴리의 자위 봐 참을 수 없게 되어 버렸어？ %RAND_SPLIT("후후/쿠스/아하하")%♪」
+		ELSEIF TEQUIP:오나홀
+;OriginalString : 「リリーとのお話よりオナホオナニーの方が楽しいのかな？　%RAND_SPLIT("ふふ/くす/あはは")%っ♪」
+			PRINTFORMW 「릴리와의 이야기 보다 오나호오나니가 즐거운 것인지？ %RAND_SPLIT("후후/쿠스/아하하")%♪」
+		ELSEIF TEQUIP:바이브 || TEQUIP:항문비즈 || TEQUIP:항문바이브
+;OriginalString : 「ねぇ、リリーに見られながらする바이브オナニーは気持ちいいですか？　%RAND_SPLIT("ふふ/くす/あはは")%っ♪」
+			PRINTFORMW 「응, 릴리로 보여지면서 하는 바이브래이터 자위는 기분이 좋습니까？ %RAND_SPLIT("후후/쿠스/아하하")%♪」
+		ENDIF
+		SELECTCASE RANDCOM(3, 1)
+			CASE 0
+;OriginalString : 「リリーはちゃんとお話했다かったんですけど……」
+				PRINTFORMW 「릴리는 분명하게 이야기 하고 싶었습니다만……」
+;OriginalString : 「ヘンタイさん相손じゃお입より身体に聞いた方がいいのかもしれませんね
+				PRINTFORM 「헨타이씨상대는 구에서(보다) 신체에 듣는 것이 좋은 것인지도 알려지겠네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「『待て』も出来ないなんて……%CNAME(MASTER)%って頭までお猿さんなんですね
+				PRINTFORM 「 「기다릴 수 있다」도 할 수 없다니……%CNAME(MASTER)%라는 머리까지 원숭이씨이군요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 2
+;OriginalString : 「勝손に一人で始めちゃうなんて%RAND_SPLIT("……イケナイ子/、まるでお猿さんみたい")%ですね
+				PRINTFORM 「마음대로 혼자서 시작해버린다는%RAND_SPLIT("……안 되는 아이/, 마치 원숭이씨같다")%(이)군요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;눈가리개
+	IF TEQUIP:눈가리개
+		IF RAND:2 == 0
+;OriginalString : 「目隠ししてこーふんしちゃいま했다？　%RAND_SPLIT("ふふ/くす/あはは")%っ%RAND_SPLIT("/、本当にヘンタイさんですね/、本当にえっちな子ですね")%
+			PRINTFORM 「눈 가림해 개-분해 버렸습니다？ %RAND_SPLIT("후후/쿠스/아하하")%%RAND_SPLIT("/、本当にヘンタイさんですね/、本当にえっちな子ですね")%
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		ELSE
+;OriginalString : 「ねぇ、참다できなくなっちゃうくらい目隠しオナニーって気持ち良いんですか？」
+			PRINTFORMW 「응, 참을 수 없게 되어버릴 정도 눈 가림 자위는 기분 좋습니까？」
+		ENDIF
+	;야외플레이
+	ELSEIF TEQUIP:야외플레이
+;OriginalString : 「お外に出て興奮し過ぎちゃいま했다か？　%RAND_SPLIT("ふふ/くす/あはは")%っ%RAND_SPLIT("/、本当にヘンタイさんですね/、本当にえっちな子ですね")%
+			PRINTFORM 「외에 나와 너무 흥분해 버렸습니다 인가？ %RAND_SPLIT("후후/쿠스/아하하")%%RAND_SPLIT("/、本当にヘンタイさんですね/、本当にえっちな子ですね")%
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+	;안면승마
+	ELSEIF TEQUIP:안면승마 || TEQUIP:안면승마항문
+;OriginalString : 「%RAND_SPLIT("ふふ/くす/あはは")%っ♪　お顔ぐりぐりされて%RAND_SPLIT("興奮し/참다できなくなっ")%ちゃいま했다か？」
+		PRINTFORMW 「%RAND_SPLIT("후후/쿠스/아하하")%♪　얼굴 때굴때굴 되어%RAND_SPLIT("興奮し/참다できなくなっ")%있었습니까？」
+	;죠교자자위
+	ELSEIF GETBIT(TEQUIP:자위중, 1)
+;OriginalString : 「リリーのオナニー見て참다できなくなっちゃったの？　%RAND_SPLIT("ふふ/くす/あはは")%っ♪」
+		PRINTFORMW 「릴리의 자위 봐 참을 수 없게 되어 버렸어？ %RAND_SPLIT("후후/쿠스/아하하")%♪」
+	;바이브系
+	ELSEIF TEQUIP:바이브 || TEQUIP:항문비즈 || TEQUIP:항문바이브
+;OriginalString : 「ねぇ、リリーに見られながらする바이브オナニーは気持ちいいですか？　%RAND_SPLIT("ふふ/くす/あはは")%っ♪」
+		PRINTFORMW 「응, 릴리로 보여지면서 하는 바이브래이터 자위는 기분이 좋습니까？ %RAND_SPLIT("후후/쿠스/아하하")%♪」
+	ENDIF
+	SELECTCASE RANDCOM(2, 2)
+		CASE 0
+;OriginalString : 「『待て』も出来ないなんて……%CNAME(MASTER)%って頭までお猿さんなんですね
+			PRINTFORM 「 「기다릴 수 있다」도 할 수 없다니……%CNAME(MASTER)%라는 머리까지 원숭이씨이군요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		CASE 1
+;OriginalString : 「勝손に一人で始めちゃうなんて%RAND_SPLIT("……イケナイ子/、まるでお猿さんみたい")%ですね
+			PRINTFORM 「마음대로 혼자서 시작해버린다는%RAND_SPLIT("……안 되는 아이/, 마치 원숭이씨같다")%(이)군요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;──────────────────────────────────
+;COM51, 도구를 제거한다
+;──────────────────────────────────
+;・REACT분류:날뛴다
+;・TEQUIP:(바이브/항문바이브/항문비즈/관장그릇＋플러그/클리캡/오나홀/유두캡/눈가리개/볼개그/페니스밴드)を장착している事が条件
+;・죠교대상が자위중である場合は中断になる
+;・REACT인상:悪印象大
+;・의존도변화(-3, -10)
+;-------------------------------------------------
+;・外す도구は一度に一つまで
+;※우선度は以下の通り
+;(눈가리개>관장그릇＋플러그>항문바이브>바이브> 오나홀>클리캡>볼개그>유두캡> 항문비즈)
+;-------------------------------------------------
+;선택可能な条件…
+;・TEQUIP:(바이브/항문바이브/항문비즈/관장그릇＋플러그/클리캡/오나홀/유두캡/눈가리개/볼개그/페니스밴드)を장착している事が条件
+;・TEQUIP:밧줄/성교중は実行不可
+;-------------------------------------------------
+;・外했다도구のTEQUIP번호がTFLAG:REACT파생に入る
+;・0203版現在、このCOMが선택肢に出てこない不具合あり？
+;-------------------------------------------------
+;=================================================
+@KOJO_COM_K15_51
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM51, 도구를 제거한다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	[SKIPSTART]
+	;=================================================
+	;Ａ系도구를 제거한다
+	;=================================================
+	IF 구상記入チェック(0) && GROUPMATCH(TFLAG:REACT파생, 25, 26, 27)
+	ENDIF
+	;=================================================
+	;Ｃ系도구를 제거한다
+	;=================================================
+	IF 구상記入チェック(0) && GROUPMATCH(TFLAG:REACT파생, 30, 31)
+	ENDIF
+	[SKIPEND]
+	
+	;-------------------------
+	;汎用処理
+	;-------------------------
+	SELECTCASE RANDCOM(4, 0)
+		CASE 0
+;OriginalString : 「折角着けてあげたのに外しちゃうんですか」
+			PRINTFORMW 「모처럼 대어 주었는데 제외해 버립니다인가」
+;OriginalString : 「주인님の気持ちのわからない노예さんですね……」
+			PRINTFORMW 「남편님의 기분을 모르는 노예군요……」
+		CASE 1
+;OriginalString : 「%CNAME(MASTER)%が欲しいって言うから손に入れたのに、そんなに嫌で했다か？」
+			PRINTFORMW 「%CNAME(MASTER)%(을)를 갖고 싶다고 말하기 때문에 손에 넣었는데, 그렇게 싫었습니까？」
+;OriginalString : 「リリーの호의がわからないなんてイケナイ子ですね……」
+			PRINTFORMW 「릴리의 호의를 모른다니 이케나이자군요……」
+		CASE 2
+;OriginalString : 「죠교なんですから、外されるとリリーも困っちゃうんですけど…」
+			PRINTFORMW 「조교이니까, 떼어지면(자) 릴리도 곤란해집니다만…」
+;OriginalString : 「もしかして、징계해欲しいんですか？」
+			PRINTFORMW 「혹시, 징계 기사라고 갖고 싶습니까？」
+		CASE 3
+;OriginalString : 「기분좋게 해あげるつもりだったのに……リリーを信用してくれないんですね」
+			PRINTFORMW 「기분 좋게 해 줄 생각이었는데……릴리를 신용해 주지 않네요」
+;OriginalString : 「やっぱり%RAND_SPLIT("ヘンタイさん/マゾ豚さん")%は痛い方がお好みですか？」
+			PRINTFORMW 「역시%RAND_SPLIT("변태씨/마조돼지씨")%(은)는 아픈 것이 기호입니까？」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;COM52, 이루는대로
+;────────────────────────────────────
+;・効果なし。実行できる反応が一つもない時の救済
+;・죠교자に好きなように嬲られかつ、言いなりになる的状況
+;・REACT파생毎にREACT분류、의존도변화が変わる
+;=================================================
+@KOJO_COM_K15_52
+;=================================================
+;REACT분류:受け入れる/의존도변화(+4, +10)
+;성교系ACT・역강간
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생1, 「無抵抗に犯される」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+	;PRINTFORML %CALLNAME:MASTER%は力の入らない身体を無抵抗に犯され、送り込まれる쾌락に喘いでいる…
+	;눈가리개
+	IF TEQUIP:눈가리개
+		SELECTCASE RANDCOM(2, 0)
+			CASE 0
+;OriginalString : 「リリーのえっちな허리기술は如何ですかっ
+				PRINTFORM 「릴리의 인 허리 사용은 어떻습니까
+				CALL HEARTCB
+;OriginalString : 　見えない分いっぱい想像してっ、%RAND_SPLIT("ん/はぁ")%っ、いっぱい感じてくらさいねっ
+				PRINTFORM  안보이는 분 가득 상상해,%RAND_SPLIT("응/하아")%, 가득 느껴 창고 차이군요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「視界も塞がれてぇ、%RAND_SPLIT("ん/はぁ")%っ、抵抗する기력もなくしちゃいま했다かっ
+				PRINTFORM 「시야도 찰 수 있어,%RAND_SPLIT("응/하아")%, 저항하는 기력도 없애 버렸습니다인가
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	ENDIF
+	IF IS_NOWACTNAME("역강간")
+		SELECTCASE RANDCOM(2, 1)
+			CASE 0
+;OriginalString : 「%RAND_SPLIT("根元までずぶずぶって挿れてぇ/おまんこきゅ～って締め하며 ぁ")%…今度はギリギリまで抜いてっ%RAND_SPLIT("あん/ひん")%っ
+				PRINTFORM 「%RAND_SPLIT("근원까지 푸욱푸욱은 넣어어/만내쉬는 숨～라는 합계하며 아")%…이번은 빠듯이까지 뽑아%RAND_SPLIT("あん/ひん")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「%CNAME(MASTER)%の精っ、リリーのおまんこでぜーんぶ搾り取っちゃいますからねぇ
+				PRINTFORM 「%CNAME(MASTER)%의 정령, 릴리의 보지로 전부 눌러 짬취있으니까요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「ほらほらぁっ
+				PRINTFORM 「이봐요 이봐요
+				CALL HEARTCB
+;OriginalString : 　참다しないで思いっ切りせーえきぴゅっぴゅしちゃいましょうねっ
+				PRINTFORM  참지 말고 마음껏 키-있어요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「気持ち良すぎてぇ、%RAND_SPLIT("あん/ひん")%っ、もう何も考えられないかな？　%RAND_SPLIT("あはは/くす/ふふ")%っ
+				PRINTFORM 「기분 너무 좋아,%RAND_SPLIT("앙/힝")%, 이제 아무것도 생각할 수 없을까？　%RAND_SPLIT("あはは/くす/ふふ")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	;リリーに犯される
+	ELSE
+		;당신남자
+		IF TALENT:MASTER:남자
+			IF PERCENT(50)
+;OriginalString : 「ねぇっ、%RAND_SPLIT("リリーのおちんぽ気持ちいですかっ/여자みたいな声出して恥ずかしくないんですかっ")%
+				PRINTFORM 「응,%RAND_SPLIT("릴리의 자지 기분 있고입니까/여자같은 소리 내 부끄럽지 않습니까")%
+				CALL HEARTCB
+;OriginalString : 　ほらっ、참다しないで思いっ切りせーえきぴゅっぴゅしちゃいましょうねっ
+				PRINTFORM  이봐요 , 참지 말고 마음껏 키-있어요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「お尻えっち気持ち良すぎてぇ、%RAND_SPLIT("あん/ひん")%っ、もう何も考えられないかな？　%RAND_SPLIT("あはは/くす/ふふ")%っ
+				PRINTFORM 「엉덩이기분 너무 좋아,%RAND_SPLIT("앙/힝")%, 이제 아무것도 생각할 수 없을까？　%RAND_SPLIT("あはは/くす/ふふ")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ELSE
+;OriginalString : 「여자に항문犯されて感じちゃうんですか？　%RAND_SPLIT("あはは/くす/ふふ")%っ
+				PRINTFORM 「여자 아이에게 어널 범해지고 느껴 버립니다인가？ %RAND_SPLIT("아하하/쿠스/후후")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「ほらぁっ、リリーのおちんぽでハメハメしてあげますからっ
+				PRINTFORM 「이봐요, 릴리의 로 하메하메 해 주기 때문에
+				CALL HEARTCB
+;OriginalString : 　だらしなく사정하면서っ、お尻アクメしちゃいましょうねっ
+				PRINTFORMW  야무지지 못하게 사정하면서 , 엉덩이 극치있어요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ENDIF
+		;당신女
+		ELSE
+			IF PERCENT(50)
+;OriginalString : 「ねぇっ、奥を%RAND_SPLIT("ぐりぐり/トントン")%ってされるの好きなんですかっ
+				PRINTFORM 「응 , 안쪽을%RAND_SPLIT("동글동글/똑똑")%라고 되는 것 좋아합니까
+				CALL HEARTCB
+;OriginalString : 　気持ち良すぎて何も考えられないかな？　%RAND_SPLIT("あはは/くす/ふふ")%っ
+				PRINTFORM  기분 너무 좋아 아무것도 생각할 수 없을까？ %RAND_SPLIT("아하하/쿠스/후후")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「リリーのおちんちんでいっぱい可愛がってあげますからっ、好きな時に好きなだけイってくださいねっ
+				PRINTFORM 「릴리의 자지로 가득 귀여워해 주기 때문에 , 좋아하는 때에 좋아할 뿐(만큼) 이는 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ELSE
+;OriginalString : 「まるでお人形さんみたいですねっ、%RAND_SPLIT("あはは/くす/ふふ")%っ
+				PRINTFORM 「마치 인형씨같네요,%RAND_SPLIT("아하하/쿠스/후후")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「ほらぁっ、一番奥の気持ちいいスイッチ押しちゃいますよっ
+				PRINTFORM 「이봐요, 가장 안쪽의 기분이 좋은 스윗치 밀기있어요
+				CALL HEARTCB
+;OriginalString : 　可愛い反応してっ、もっともっとリリーを愉しませてくださいねっ
+				PRINTFORMW  사랑스러운 반응해 , 좀더 좀더 릴리를 즐기게 해 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ENDIF
+		ENDIF
+	ENDIF
+		;당신가버려
+		IF TCVAR:MASTER:가버려
+			;実は죠교자も가버려
+			IF TCVAR:가버려
+;OriginalString : 「息っ、荒くなってきたねっ
+				PRINTFORM 「숨, 난폭해졌다
+				CALL HEARTCB
+;OriginalString : 　リリーも一緒にっ、%RAND_SPLIT("っひ/んはぁ")%っ、イっちゃいそうれすっ
+				PRINTFORM  릴리도 함께,%RAND_SPLIT("읏히/응하아")%, 이해변
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ELSE
+;OriginalString : 「息っ、荒くなってきたねっ
+				PRINTFORM 「숨, 난폭해졌다
+				CALL HEARTCB
+;OriginalString : 　それじゃっ、%RAND_SPLIT("っひ/んはぁ")%っ、もっと激しくいじめちゃいますねっ
+				PRINTFORM  그러면,%RAND_SPLIT("읏히/응하아")%, 좀 더 격렬하고 유지 엄청 있네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ENDIF
+		ENDIF
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;REACT분류:受け入れる/의존도변화(+10, +10)
+;성교系봉사系ACT・기승위
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생2, 「溺れたように허리를 흔든다」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 2
+	;%CALLNAME:MASTER%は%CALLNAME%の身体に溺れたように、息を乱してひたすら腰を振っている…
+	IF IS_NOWACTNAME("기승위")
+;OriginalString : 「んっ
+		PRINTFORM 「응
+		CALL HEARTCB
+;OriginalString : 　腰だけ別の生き物みたいに動いてっはぁん
+		PRINTFORM  허리만 다른 생물같이 움직여 는
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTFORMW 」
+;OriginalString : 「ほらっ、しっかりリリーのおちんぽの%RAND_SPLIT("形/味")%を覚えてっ、リリー専用の노예さんになっちゃいましょうねっ
+		PRINTFORM 「이봐요 , 확실히 릴리의 의%RAND_SPLIT("형태/맛")%(을)를 기억해 , 릴리 전용의 노예가 되어 버려요
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTFORMW 」
+	ELSE
+		IF PERCENT(50)
+;OriginalString : 腰を打ち付けるように動かすとリリーは%RAND_SPLIT("は했다なく/だらしなく")%表情を歪ませ、貪欲に쾌락を求めて\@ PENIS(MASTER) ? パンパンに張り詰めた肉幹 # おもちゃ의 페니스 \@をきゅうと締め上げる…
+			PRINTFORMDW 허리를 부딪히도록(듯이) 움직이면(자) 릴리는%RAND_SPLIT("하했다없고/야무지지 못하고")%표정을 비뚤어지게 해 탐욕에 쾌락을 추구해\@ PENIS(MASTER) ? パンパンに張り詰めた肉幹 # おもちゃ의 페니스 \@(을)를 옛 수도 조른다…
+		ELSE
+;OriginalString : 最奥をコツコツとノックする度にリリーは%RAND_SPLIT("歓喜の声を上げ/卑猥な嬌声を上げ/淫らな牝声を漏らし")%、%RAND_SPLIT("ビクビクと小さな身体を震わせている/は했다ないトロ顔を晒している")%…
+			PRINTFORMDW 최안쪽을 부지런히노크 할 때에 릴리는%RAND_SPLIT("환희의 소리를 높이고/추잡한 교성을 올려/추잡한 빈성을 흘림")%,%RAND_SPLIT("ビクビクと小さな身体を震わせている/は했다ないトロ顔を晒している")%…
+		ENDIF
+		SELECTCASE GET_ACTNAME(TFLAG:ACT)
+			CASE "정상위시킨다"
+;OriginalString : 「키스も忘れないでっ、リリーの事いっぱい愛してくださいねっ
+				PRINTFORM 「키스도 잊지 말고 , 릴리의 일 가득 사랑해 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「%RAND_SPLIT("イく時はぎゅぅってだいしゅきホールドして/リリーがぜーんぶ受け止めて")%あげますからっ、%RAND_SPLIT("ひん/あん")%っ、好きなだけ気持よくなって%RAND_SPLIT("いいんですよ/くださいね")%
+				PRINTFORM 「%RAND_SPLIT("행 구시는 는 매우 수기 hold 해/릴리가 전부 받아 들여")%주기 때문에,%RAND_SPLIT("ひん/あん")%, 좋아할 뿐(만큼) 기분 좋아져%RAND_SPLIT("좋아요/주세요")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE "후배위시킨다"
+;OriginalString : 「いつもより%RAND_SPLIT("激し/乱暴で")%っあはぁっ
+				PRINTFORM 「평소보다%RAND_SPLIT("격렬해져/난폭해")%아는
+				CALL HEARTCB
+;OriginalString : 　ごほーしなのに%RAND_SPLIT("犯されてるみたいで/リリーが징계・されてるみたいで")%っ
+				PRINTFORM  오- 하고인데%RAND_SPLIT("범해지고 있는 것 같아/릴리가징계·되고 있는 것 같아")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「こんなの腰抜けひゃっ、ひンッ、無理矢理イかされ%RAND_SPLIT("ひゃいましゅ/ちゃいます")%っ
+				PRINTFORM 「이런 건 겁쟁이, 히, 무리하게이인가 되고%RAND_SPLIT("있습니다/있습니다")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE "대면좌위시킨다"
+;OriginalString : 「器用に腰振っちゃって…%RAND_SPLIT("ンひっ/はぁっ")%…とっても可愛いですよっ
+				PRINTFORM 「손재주가 있게 허리 털어 버려서…%RAND_SPLIT("응힛/하앗")%…매우 사랑스러워요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「대면좌위だとっ、%CNAME(MASTER)%のえっちなお顔が良く見えて…リリーもこーふん%RAND_SPLIT("ひちゃいましゅ/しちゃいますっ")%
+				PRINTFORM 「대면자리정도라면 ,%CNAME(MASTER)%의 더 얼굴이 자주(잘) 보여…릴리도 개-응%RAND_SPLIT("있습니다/해 버립니닷")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE "배면좌위시킨다"
+;OriginalString : 「んっ、ぎゅって抱きしめてっ奥にっ…%RAND_SPLIT("ンひっ/はぁっ")%
+				PRINTFORM 「응, 는 꼭 껴안아 안쪽에…%RAND_SPLIT("응힛/하앗")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「%RAND_SPLIT("えへへ/あはぁ")%っ…もっとリリーの身体で気持ちよくなってくださいねっ
+				PRINTFORM 「%RAND_SPLIT("에헤헤/아하아")%…좀 더 릴리의 신체로 기분 좋아져 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE "항문섹스시킨다"
+;OriginalString : 「そんなに乱暴に당했다らっ%RAND_SPLIT("ンひっ/はぁっ")%
+				PRINTFORM 「그렇게 난폭하게 되면(자)%RAND_SPLIT("응힛/하앗")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「%RAND_SPLIT("おしりの穴/リリーの항문")%っ…おかしくなっちゃいますっ
+				PRINTFORM 「%RAND_SPLIT("엉덩이의 구멍/릴리의항문")%…이상하고 있습니다
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;ACT(의상変更/자위/방뇨/開帳/이라마치오)
+;REACT분류:受け入れる/의존도변화(+4, +10)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생3, 「言われるままゆっくり従う」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 3
+	;%CALLNAME:MASTER%はただ%CALLNAME%に言われるまま従った…
+;OriginalString : 「そう、ゆっくりでいいですからね」
+	PRINTFORMW 「그렇게, 느리고 좋으니까」
+;OriginalString : 「ゆっくりと…リリー好みのえっちな노예さんになりましょうね♪」
+	PRINTFORMW 「천천히…릴리 기호의 인 노예가 되어요♪」
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;봉사系ACT
+;REACT분류:受け入れる/의존도변화(+8, +10)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생4, 「魅入られたように봉사を繰り返す」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 4
+	;まるで魅入られたように、%CALLNAME:MASTER%は無心に%CALLNAME%に봉사했다…
+	;心ここに在らずといった様子で、その손つきは怪しいものだ…
+	SELECTCASE RANDCOM(2, 2)
+		CASE 0
+;OriginalString : 「ぼーっとしちゃって…ふふっ、ごほーし楽しくなっちゃいま했다か？」
+			PRINTFORMW 「-로 해 버려서…후후, 오- 해 즐거워져 버렸습니다인가？」
+;OriginalString : 「ちょっと焦れったいですけど、なんだか可愛いですっ
+			PRINTFORM 「조금 속상하지만, 어쩐지 사랑스럽습니다
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		CASE 1
+;OriginalString : 「ほらぁ、もっと%RAND_SPLIT("いやらしく/えっちに")%してくれなきゃリリーは만족しませんよっ♪」
+			PRINTFORMW 「이봐요, 좀 더%RAND_SPLIT("추잡하고/엣치하게")%해 주지 않으면 릴리는 만족하지 않아요♪」
+;OriginalString : 「なんて…聞こえてないかな？　%RAND_SPLIT("ふふふ/あはは")%っ♪」
+			PRINTFORMW 「은…들리지 않을까？ %RAND_SPLIT("후후후/아하하")%♪」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;ACT(脅す/징계・と宣言/고함치다/기분나쁘게 웃다/매도)
+;반항적な素質があり、굴복각인5以下の場合
+;REACT분류:소극적으로 한다/의존도변화(0, -2)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생5, 「悔しそうに睨む」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 5
+	;%CALLNAME:MASTER%は悔しそうに唇を噛み、%CALLNAME%を見上げた…
+	SELECTCASE RANDCOM(2, 3)
+		CASE 0
+;OriginalString : 「何か言いたそうな%RAND_SPLIT("表情/お顔")%ですね」
+			PRINTFORMW 「무엇인가 말하고 싶다고 하는%RAND_SPLIT("표정/얼굴")%(이)군요」
+;OriginalString : 「もっとリリーにいじめて欲しいのかな？　%RAND_SPLIT("ふふ/あはは")%っ♪」
+			PRINTFORMW 「 좀 더 릴리에 괴롭혔으면 좋은 것인지？ %RAND_SPLIT("후후/아하하")%♪」
+		CASE 1
+;OriginalString : 「ほら、そんなに怖い顔しちゃダメですよっ」
+			PRINTFORMW 「이봐요, 그렇게 무서운 얼굴 하면 안되어요」
+;OriginalString : 「%CNAME(MASTER)%を굴복시켰다くて…ゾクゾクしちゃうじゃないですかっ♪」
+			PRINTFORMW 「%CNAME(MASTER)%(을)를 굴복 시키고 싶어서…조크조크 해버린다가 아닙니까♪」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;ACT(脅す/징계・と宣言/고함치다/기분나쁘게 웃다/매도)
+;REACT분류:소극적으로 한다/의존도변화(+2, +10)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생6, 「怯えたように見つめる」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 6
+	;%CALLNAME:MASTER%は怯えたように%CALLNAME%を見つめた…
+	SELECTCASE RANDCOM(2, 4)
+		CASE 0
+;OriginalString : 「可愛い顔しちゃって…見てるといじめたくなっちゃいますっ」
+			PRINTFORMW 「사랑스러운 얼굴 해 버려서…보고 있다고(면) 괴롭히고 싶고 있습니다」
+;OriginalString : 「ほら、もっとリリーの事怖がってくださいねっ♪」
+			PRINTFORMW 「이봐요, 좀 더 릴리의 일 무서워해 주세요♪」
+		CASE 1
+;OriginalString : 「プルプル震えちゃってまるで%RAND_SPLIT("子犬さん/小さな子供")%みたい…」
+			PRINTFORMW 「프르풀 떨려 버려서 마치%RAND_SPLIT("강아지씨/작은 아이")%보고 싶다…」
+;OriginalString : 「ねぇ、そんなにリリーの事が怖いんですか？　%RAND_SPLIT("ふふ/あはは")%っ♪」
+			PRINTFORMW 「응, 그렇게 릴리의 일이 무섭습니까？ %RAND_SPLIT("후후/아하하")%♪」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;가학系ACT・고통が大きい場合
+;REACT분류:소극적으로 한다/의존도변화(+8, +10)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생7, 「声にならない悲鳴を上げてのたうちまわる」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 7
+	;%CALLNAME:MASTER%は고통のあまり声にならない悲鳴を上げてのたうち回った…
+	SELECTCASE RANDCOM(2, 5)
+		CASE 0
+;OriginalString : 「痛すぎて声%RAND_SPLIT("も出ませんか/の出し方忘れちゃいま했다か")%？　ふふっ♪」
+			PRINTFORMW 「너무 아파 소리%RAND_SPLIT("도 나오지 않습니까/(이)가 내는 방법 잊어 지금했다인가")%？　후후♪」
+;OriginalString : 「ほら、大丈夫ですよ…リリーが責任を持って痛くても感じちゃう%RAND_SPLIT("マゾ豚さん/ヘンタイさん")%にしてあげますからね
+			PRINTFORM 「이봐요, 괜찮아요…릴리가 책임을 가져 아파도 느껴버린다%RAND_SPLIT("마조돼지씨/변태씨")%(으)로 해 주니까요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		CASE 1
+;OriginalString : 「もうっ、%RAND_SPLIT("オーバー/大袈裟")%なんですから…」
+			PRINTFORMW 「 이제,%RAND_SPLIT("오버/과장")%이니까…」
+;OriginalString : 「%CNAME(MASTER)%はリリーの노예さんなんですから、こんなので根をあげちゃダメですよっ
+			PRINTFORM 「%CNAME(MASTER)%(은)는 릴리의 노예이니까, 이런 건으로 뿌리를 주면 안되어요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;快SOURCEあり
+;회화系ACTかつ자위중である場合
+;REACT분류:受け入れる/REACT인상:悪印象小/의존도변화(-2, +2)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생8, 「おなにーに夢中で聞いてない」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 8
+	;%CALLNAME:MASTER%は자위に没頭してまともに返事ができなかった…
+	;%CALLNAME%は不満そうだ…
+	SELECTCASE RANDCOM(2, 6)
+		CASE 0
+;OriginalString : 「リリーとお話できないくらい気持ちいいのかな？」
+			PRINTFORMW 「릴리와 이야기 할 수 없을 정도  기분이 좋은 것인지？」
+;OriginalString : 「まるでお猿さんみたいですね…まったくもう…」
+			PRINTFORMW 「마치 원숭이씨같네요…완전히 이제…」
+		CASE 1
+;OriginalString : 「ねぇ、\@ TALENT:MASTER:남자 ? おちんちんシコシコ # お豆さんクリクリ \@するのそんなに気持ちいいんですか？」
+			PRINTFORMW 「응,\@ TALENT:MASTER:남자 ? 자지 쫄깃쫄깃 # 콩씨 동글동글 \@하는 것 그렇게 기분이 좋습니까？」
+;OriginalString : 「お返事もちゃんとできないなんて…%RAND_SPLIT("イケナイ子なんですから…/ほんっとに頭までお猿さんみたいですね")%」
+			PRINTFORMW 「(답례)답장도 제대로 할 수 없다니…%RAND_SPLIT("안 되는 아이이니까…/정말 머리까지 원숭이씨같네요")%」
+	ENDSELECT
+	;죠교자も자위중
+	IF GETBIT(TEQUIP:자위중, 1)
+;OriginalString : 「%CNAME(MASTER)%がそんな態度なら…んっ、はぁ…リリーも一人で気持ちよくなっちゃいますからねっ」
+		PRINTFORMW 「%CNAME(MASTER)%하지만 그런 태도라면…응, 후~…릴리도 혼자서 기분 좋고 있으니까요」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;快SOURCEあり
+;회화系ACT
+;REACT분류:受け入れる/의존도변화(+4, +2)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생9, 「気持ちよくって生返事」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 9
+	;%CALLNAME:MASTER%は快感に身悶え하면서頷くことしかできなかった…
+	IF TEQUIP:밧줄 && PERCENT(70)
+;OriginalString : 「%RAND_SPLIT("밧줄が擦れて気持ちいいのかな？/もしかして밧줄酔いしちゃったんですか？")%　ふふっ♪」
+		PRINTFORMW 「%RAND_SPLIT("밧줄하지만 스쳐 기분이 좋은 걸까나？/혹시밧줄취해 해 버린 것입니까？")%　후후♪」
+	ELSEIF TEQUIP:항문바이브 || TEQUIP:항문비즈 || TEQUIP:관장그릇＋플러그
+;OriginalString : 「オモチャでお尻%RAND_SPLIT("ぶるぶるするの/ほじほじするの/いじめるの")%気持ちいねー♪　ふふっ♪」
+		PRINTFORMW 「장난감으로 엉덩이%RAND_SPLIT("부들부들 해/부비부비 해/괴롭혀")%기분 벼―♪　후후♪」
+	ELSEIF TEQUIP:바이브
+;OriginalString : 「あぁ、そう言えばお股に%RAND_SPLIT("바이브/オモチャ")%挿れ하며 で했다ねっ♪」
+		PRINTFORMW 「아, 그렇게 말하면 가랑이에%RAND_SPLIT("바이브/장난감")%삽까지 했다♪」
+	ENDIF
+	SELECTCASE RANDCOM(2, 7)
+		CASE 0
+;OriginalString : 「ほらっ、頷くだけじゃわかりませんよ？」
+			PRINTFORMW 「이봐요 , 수긍할 뿐(만큼)은 몰라요？」
+;OriginalString : 「ゆっくりでいいですから、ちゃんとお返事してみましょうねっ
+			PRINTFORM 「느리고 좋으니까, 분명하게 (답례)답장해 봐요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		CASE 1
+;OriginalString : 「ほらっ、頑張ってお話してみましょうね？」
+			PRINTFORMW 「이봐요 , 노력해 이야기 해 봐요？」
+;OriginalString : 「大丈夫ですよ、えっちな声が漏れちゃってもリリーは笑ったりなんかしませんからっ
+			PRINTFORM 「괜찮아요, 인 소리가 새어 버려서도 릴리는 웃거나 무엇을 하지 않기 때문에
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;快SOURCEあり
+;회화系ACT以外の場合
+;REACT분류:受け入れる/의존도변화(+4, +10)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생10, 「頭真っ白恍惚상태」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 10
+	;%CALLNAME:MASTER%は与えられる快感に翻弄され、恍惚となっている…
+	;疲れ切った頭の中は真っ白に染まり、何も考えることができない…
+	IF TEQUIP:밧줄 && PERCENT(70)
+;OriginalString : 「%RAND_SPLIT("밧줄が擦れて気持ちいいのかな？/もしかして밧줄酔いしちゃったんですか？")%　ふふっ♪」
+		PRINTFORMW 「%RAND_SPLIT("밧줄하지만 스쳐 기분이 좋은 걸까나？/혹시밧줄취해 해 버린 것입니까？")%　후후♪」
+	ELSEIF TEQUIP:항문바이브 || TEQUIP:항문비즈 || TEQUIP:관장그릇＋플러그
+;OriginalString : 「オモチャでお尻%RAND_SPLIT("ぶるぶるするの/ほじほじするの/いじめるの")%気持ちいねー♪　ふふっ♪」
+		PRINTFORMW 「장난감으로 엉덩이%RAND_SPLIT("부들부들 해/부비부비 해/괴롭혀")%기분 벼―♪　후후♪」
+	ELSEIF TEQUIP:바이브
+;OriginalString : 「%RAND_SPLIT("바이브/オモチャ")%で栓してるのにえっちなお汁止まりませんねー♪　ふふっ♪」
+		PRINTFORMW 「%RAND_SPLIT("바이브/장난감")%그리고 마개 해 더 국물 멈추지 않아요―♪　후후♪」
+	ENDIF
+	SELECTCASE RANDCOM(2, 8)
+		CASE 0
+;OriginalString : 「%RAND_SPLIT("えっちな/は했다ない/안쓰러운")%顔しちゃって…そんなに気持ちいのかな？」
+			PRINTFORMW 「%RAND_SPLIT("엣치한/하했다없다/야무지지 못하다")%얼굴 해 버려서…그렇게 기분 있고 의 것인지인？」
+;OriginalString : 「いいですよ…リリーが傍に居ますから、頭の中空っぽにしていっぱい気持ち良くなってくださいね
+			PRINTFORM 「좋아요…릴리가 옆에 있기 때문에, 머릿속 텅 비게 해 가득 기분 좋아져 주세요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		CASE 1
+;OriginalString : 「ねぇ、どこが気持ちいの？　もう%RAND_SPLIT("限界/가버려")%かな？」
+			PRINTFORMW 「응, 어디가 기분 있고의？ 이제%RAND_SPLIT("한계/가버려")%일까？」
+;OriginalString : 「リリーね、もっとも～っと気持ちい事いっぱい知ってるんですよ
+			PRINTFORM 「릴리군요, 가장～와 기분 있고 일 가득 알고 있는 거에요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+;OriginalString : 「ほら…%RAND_SPLIT("無防備/真っ白")%な%RAND_SPLIT("こころ/身体")%の一番深いところに、忘れられない쾌락を刻み込んであげるねっ
+			PRINTFORM 「이봐요…%RAND_SPLIT("무방비/진흰색")%%RAND_SPLIT("こころ/身体")%의 제일 깊은 곳에, 잊을 수 없는 쾌락을 새겨 준다
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;회화系ACT
+;REACT분류:受け入れる/의존도변화(+8, +4)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생11, 「自分でもわからないまま恥ずかしいことを입走る」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 11
+	;%CALLNAME:MASTER%はどこか茫然と했다まま受け答え했다…
+	;自分でもよく解らないままに恥ずかしいことを입走っている気がする…
+	SELECTCASE RANDCOM(2, 9)
+		CASE 0
+;OriginalString : 「ふふっ♪　%CNAME(MASTER)%って%RAND_SPLIT("本当に/根っからの")%ヘンタイさんなんですね
+			PRINTFORM 「후후♪ %CNAME(MASTER)%라고%RAND_SPLIT("정말로/뿌리로부터의")%헨타이씨이군요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+;OriginalString : 「あんなに\@ TALENT:MASTER:남자 ? 真面目そうな男の子が # 清純そうな子が \@こんなにえっちな事입走るなんて…」
+			PRINTFORMW 「그렇게\@ TALENT:MASTER:남자 ? 성실할 것 같은 사내 아이가 # 청순할 것 같은 아이가 \@이렇게 인 일 말해버리다니…」
+;OriginalString : 「もしみんなが知ったら、%CNAME(MASTER)%けーべつされちゃうかもしれませんねぇ
+			PRINTFORM 「만약 모두가 알면,%CNAME(MASTER)%-개 되어버릴까도 알려지겠네요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+		CASE 1
+;OriginalString : 「ねぇ、どこが気持ちいの？　もう%RAND_SPLIT("限界/가버려")%かな？」
+			PRINTFORMW 「응, 어디가 기분 있고의？ 이제%RAND_SPLIT("한계/가버려")%일까？」
+;OriginalString : 「リリーね、もっとも～っと気持ちい事いっぱい知ってるんですよ
+			PRINTFORM 「릴리군요, 가장～와 기분 있고 일 가득 알고 있는 거에요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+;OriginalString : 「ほら…%RAND_SPLIT("無防備/真っ白")%な%RAND_SPLIT("こころ/身体")%の一番深いところに、忘れられない쾌락を刻み込んであげるねっ
+			PRINTFORM 「이봐요…%RAND_SPLIT("무방비/진흰색")%%RAND_SPLIT("こころ/身体")%의 제일 깊은 곳에, 잊을 수 없는 쾌락을 새겨 준다
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;죠교자、もしくは죠교대상の상태によって일회휴게되었다場合
+;REACT분류:受け入れる/의존도변화(+4, +10)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;「일회휴게」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:일회휴게
+	;대만족보너스で쉬게を선택했다場合
+	;━━━━━━━━━━━━━━━━━━━━━━━━
+	;ご褒美による일회휴게の場合
+	;━━━━━━━━━━━━━━━━━━━━━━━━
+	IF 구상記入チェック(100) && IS_POLICY("금일", "휴식")
+	IF !TIME
+;OriginalString : 「ちょっと疲れちゃいま했다ね……금일はこのまま一緒にお昼寝しちゃいましょうか♪」
+		PRINTFORMW 「조금 지쳐 버렸습니다……오늘은 이대로 함께 점심잠있을까요♪」
+		SELECTCASE RANDCOM(2, 10)
+			CASE 0
+;OriginalString : 「ほら、%RAND_SPLIT("おいで……/いい子ですね♪　/ごろんってしましょうか♪　")%いっぱいぎゅぅってして、たっぷり甘やかしてあげますね
+				PRINTFORM 「이봐요,%RAND_SPLIT("와……/좋은 아이군요♪ /경 응은 할까요♪ ")%는 해, 충분히 응석부리게 해 주네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「それじゃ、今からリリーは%CNAME(MASTER)%専用の抱き枕になりますね」
+				PRINTFORMW 「그러면, 지금부터 릴리는%CNAME(MASTER)%전용의 안아 베개가 되네요」
+;OriginalString : 「ほら、遠慮しないで？　リリーの事いっぱいぎゅってして、疲れを癒してくださいね
+				PRINTFORM 「이봐요, 사양하지 말아줘？ 릴리의 일는 해, 피로를 달래 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	;夜間
+	ELSE
+;OriginalString : 「ふあぁ…あふ……もうお外も暗いですし、금일は早めにお風呂に入ってお休みしちゃいましょうか♪」
+		PRINTFORMW 「아………이제 외도 어두우며, 오늘은 빨리 목욕을 해 휴가있을까요♪」
+		SELECTCASE RANDCOM(3, 11)
+			CASE 0
+;OriginalString : 「先に入って待ってますから、%CNAME(MASTER)%も早く来てくださいね
+				PRINTFORM 「먼저 들어가 기다리고 있으니까,%CNAME(MASTER)%도 빨리 와 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「リリーが%RAND_SPLIT("お背中流して/隅々までごしごしして")%あげますから、たっぷり癒されてくださいね
+				PRINTFORM 「릴리가%RAND_SPLIT("등 밀어/구석구석까지 쓱쓱 해")%주기 때문에, 충분히 치유되어 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 2
+;OriginalString : 「偶にはゆっくり洗いっこするのも良いかもしれませんね
+				PRINTFORM 「이따금은 천천히 씻어 비비는 것도 좋을지도 모르겠네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;汎用処理
+	;-------------------------
+	;昼
+	IF !TIME
+		SELECTCASE RANDCOM(2, 12)
+			CASE 0
+;OriginalString : 「あの……大丈夫ですか？」
+				PRINTFORMW 「그……괜찮습니까？」
+;OriginalString : 「ほら、おいで……%CNAME(MASTER)%が早く元気になれるようにいっぱい%RAND_SPLIT("抱き締めて/なでなでして/ぎゅってして")%あげますね
+				PRINTFORM 「이봐요, 와……%CNAME(MASTER)%하지만 빨리 건강하게 될 수 있도록(듯이) 가득%RAND_SPLIT("껴안아/스윽스윽 해/꽉 해")%주네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「まだまだイけちゃいますか？　ふふっ♪」
+				PRINTFORMW 「아직도 이있습니까？ 후후♪」
+;OriginalString : 「でもリリーが疲れちゃったので、ちょっとだけお休みさせてくださいね
+				PRINTFORM 「 그렇지만 릴리가 지쳐 버렸어로, 조금 휴가 시켜 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	;夜間
+	ELSE
+		SELECTCASE RANDCOM(2, 13)
+			CASE 0
+;OriginalString : 「疲れちゃいま했다？　少し夜風を入れましょうか」
+				PRINTFORMW 「지쳐 버렸습니다？ 조금 밤바람을 넣을까요」
+;OriginalString : 「……%RAND_SPLIT("ほら、今夜は綺麗な月が見えますよ/静かな、いい夜ですね")%」
+				PRINTFORMW 「……%RAND_SPLIT("이봐요, 오늘 밤은 깨끗한 달이 보여요/조용한, 좋은 밤이군요")%」
+;OriginalString : 「%CNAME(MASTER)%もこっちに……いえ、やっぱり休んでいて下さい」
+				PRINTFORMW 「%CNAME(MASTER)%도 여기에……아니요 역시 쉬고 있어 주세요」
+;OriginalString : 「元気되었다ら、またいっぱい搾っちゃいますからね♪」
+				PRINTFORMW 「건강하게 되면(자), 또 가득 짜버릴 로부터♪」
+			CASE 1
+;OriginalString : 「動けないなら抱き締めちゃおっかな♪」
+				PRINTFORMW 「움직일 수 없으면 껴안으면 일까♪」
+;OriginalString : 「夜は長いんですから……早く元気になってくださいね
+				PRINTFORM 「밤은 길니까……빨리 건강하게 되어 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;------------------------------------------------
+;REACT분류:受け入れる/의존도변화(+4, +10)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생0, その他
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;%CALLNAME:MASTER%は身体を投げ出し、されるがままになっている…
+	IF MENUMATCH(TFLAG:ACT, "휴식") && PERCENT(60)
+		SELECTCASE GET_ACTNAME(TFLAG:ACT)
+			CASE "휴식시킨다"
+;OriginalString : 「頭もなでなでして欲しいですか？　ふふっ♪」
+				PRINTFORMW 「머리도 어루만지고 어루만지고해 주었으면 합니까？ 후후♪」
+;OriginalString : 「ちょっとおやすみ했다ら、またいっぱい\@ TALENT:MASTER:남자 ? ぴゅっぴゅしましょうね # 気持よくなりましょうね \@
+				PRINTFORM 「조금 휴업(휴가) 하면(자), 또 가득\@ TALENT:MASTER:남자 ? 해요 # 기분 좋아져요 \@
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE "영양제를 먹인다"
+				IF GETBIT(TFLAG:미약등사용, 1)
+;OriginalString : 「ね、元気になりま했다か？」
+					PRINTFORMW 「그런데, 건강하게 되었습니까？」
+;OriginalString : 「アソコも…ふふっ
+					PRINTFORM 「아소코도…후후
+					CALL HEARTCB
+;OriginalString : 　もう%RAND_SPLIT("準備万端みたい/大丈夫そう")%ですね
+					PRINTFORM  이제%RAND_SPLIT("준비만단같다/괜찮은 것 같다")%(이)군요
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				ELSE
+;OriginalString : 「リリーお손製のお薬の味は%RAND_SPLIT("如何/どう")%ですか？　ふふっ♪」
+					PRINTFORMW 「릴리수제의 약의 맛은%RAND_SPLIT("여하/어때")%입니까？　후후♪」
+;OriginalString : 「おいで、元気になるまで%RAND_SPLIT("リリーの膝枕でゆっくりおやすみしてくださいね/なでなでしてあげますね")%っ
+					PRINTFORM 「와, 건강하게 될 때까지%RAND_SPLIT("릴리의 무릎 베개로 천천히 휴가 해 주세요/스윽스윽 해 주네요")%
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				ENDIF
+		ENDSELECT
+	;휴식以外（死に구상？）
+	ELSE
+		SELECTCASE RANDCOM(2, 14)
+			CASE 0
+;OriginalString : 「%RAND_SPLIT("くす/ふふ")%っ、まるでお人形さんみたいですね♪」
+				PRINTFORMW 「%RAND_SPLIT("쿠스/후후")%, 마치 인형씨같네요♪」
+;OriginalString : 「そんなに無防備にしてると、わるーい妖精さんに食べられちゃいますよ
+				PRINTFORM 「그렇게 무방비로 하고 있으면, 나쁘다 요정씨에게 먹을 수 있게 되어요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「ふふっ、もうくたくたみたいですね♪」
+				PRINTFORMW 「후후, 이제 기진맥진 같네요♪」
+;OriginalString : 「ほら、おいで？　リリーが\@ TALENT:MASTER:남자 ? 疲れも一緒にヌキヌキして # 癒して \@あげますねっ
+				PRINTFORM 「이봐요, 와？ 릴리가\@ TALENT:MASTER:남자 ? 피로도 함께 누키누키 해 # 달래 \@주네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+

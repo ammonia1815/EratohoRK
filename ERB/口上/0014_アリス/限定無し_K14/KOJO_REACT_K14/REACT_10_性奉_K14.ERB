@@ -1,0 +1,2058 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	엘리스구상 성교봉사系個別リアクション구상ファイル
+;
+;	성교봉사系リアクション구상をまとめたファイル
+;
+;Version		Reason
+;1.71			@구상記入チェック仕様に
+;1.68			消極的反応分岐の条件無し部分をIS_NOWCOMNAMEに
+;1.67			REACT분류"受け入れる"分岐を追加。拒絶系処理を追加。REACT분류"소극적으로 한다"分岐を改変。
+;1.62			@IS_NOWCOMNAMEの新設に伴いSELECTCOMをIS_NOWCOMNAMEに変更。一部分岐の表示確率を見直し
+;1.60			ACT분류単体ファイルとして独立
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;성교봉사系
+;========================================================================
+;・COM20, 허리를 흔든다はACTによってREACT분류が변화する
+;・역강간の場合はREACT분류("受け入れる")
+;・その他성교봉사ACTではREACT분류("적극적으로 한다")扱いとなる
+;・この변화は関数@SEX_INITIATIVEにて行われる
+;-------------------------------------------------
+
+;────────────────────────────────────
+;REACT95, 정상위시킨다・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;-------------------------------------------------
+;想定されるCOM…
+;애무系反応
+;	COM:부끄러워한다/싫어한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;성교系反応
+;	COM:허리를 흔든다
+;고통系反応
+;	COM:날뛴다
+;봉사系反応
+;	COM:거부한다/소극적으로 한다/적극적으로 한다/애정을 담아 한다/태연하게 한다
+;その他反応
+;	COM:가게해줘！
+;-------------------------------------------------
+@KOJO_REACT_K14_95
+;-------------------------------------------------
+;・地の文はREAC分類で分岐
+;・REACT분류が날뛴다/거부の場合は취소扱い
+;・ACTが취소となった場合はTEQUIP:성교봉사중もリセット
+;・その他のREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)の場合は受容扱いとなる
+;・죠교대상が동정なら동정상실、죠교자が처녀なら처녀상실が起こる
+;・TEQUIP:성교봉사중が立っている際にREACT분류が날뛴다だと拒絶扱いになる(即ち、성교봉사系ACT以外でも拒絶処理となる場合がある)
+;-------------------------------------------------
+;오토모드用処理
+[IF_DEBUG]
+	IF TCVAR:처녀상실 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTREACT(100)
+		CALL PRINT_RAINBOW2W("처녀상실", 20)
+		CALL GAME_OVER_K14
+		FORCEWAIT
+		RETURN 1
+	ENDIF
+[ENDIF]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류が날뛴다/逃げる/거부
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("날뛴다/逃げる/거부") && FLAG:지문제어 == 2
+	CALL PRINT_ACTGR_10_REJECT_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;애태움開始
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 > 1 && IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+	CALL TEXTDISPLAY_CATEGORY_10_TEASE_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM, 쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(55) && IS_NOWCOMNAME("쾌감을 참는다") && TCVAR:MASTER:참다
+	CALL TEXTDISPLAY_CATEGORY_10_COM14_K14
+	RETURN 1
+ENDIF
+
+;COM15,쾌감을 받아들인다/COM16,기분 좋다!等を想定。ACT103,역강간の場合、COM20,허리를 흔든다もREACT분류受け入れるになる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류, 受け入れる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("受け入れる")
+	;=================================================
+	;죠교대상が가버려		子宮입に届くほど深く云々…
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		CALL PRINT_ACTGR_10_ACCEPT_0_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が가버려
+	;=================================================
+	IF 구상記入チェック(100) && PALAM:쾌Ｖ > 8500
+		CALL PRINT_ACTGR_10_ACCEPT_1_K14
+		RETURN 1
+	ENDIF
+	
+	;죠교대상/죠교자が가버려な場合以外を処理
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(70)
+		CALL PRINT_ACTGR_10_ACCEPT_2_K14
+		RETURN 1
+	ENDIF
+;条件から漏れたら汎用リアクション（COM）へ
+RETURN 0
+ENDIF
+
+;消極的反応をまとめる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류, 消極的に従った
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("소극적으로 한다/용서를 빌다")
+	;=================================================
+	;REACT부하2(無理を했다행동)
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+		;実は積極
+		IF COMCOR_POSI()
+			PRINTFORMW 「…응. 부끄러워해 보였더니, 허리는 멈추지 않구나…」
+			PRINTFORMW 「\@ AFFECTION("상사상애") ? 저기, # \@조금은 솔직해지면 어때\@ TENSION(TARGET, 7) == "高い" ? (이)야！ # ？ \@」
+			SIF IS_COMGRONAME("소극적으로 한다")
+				PRINTFORMW 「나머지%CNAME(MASTER, TARGET)%…, 나부터 시선을 일의,\@ AFFECTION("상사상애") ? 그만두세요！ # 그만두어 받을 수 있다？ \@」
+		;実は嫌
+		ELSE
+			PRINTFORMW 「…\@ IS_COMGRONAME("소극적으로 한다") ? 단조롭고 시시해요 # 나의 움직임에 맞추는 일도 할 수 없다든가\@. 싫증%RAND_SPLIT("(이)야/저기")%,%CNAME(MASTER, TARGET)%…」
+			PRINTFORMW 「그러니까, 그렇지 않아서！ 아 이제…, 정말로%RAND_SPLIT("속상하다/안타깝다/안절부절 한다")%\@ TENSION(TARGET, 7) == "高い" ? のよっ！ # わね… \@」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;REACT파생1, 消極的なのが気に入らないの場合はCOMで処理
+	;=================================================
+	;COM41,소극적으로 한다「消極的だけどいいか」
+	;=================================================
+	IF 구상記入チェック(55) && IS_NOWCOMNAME("소극적으로 한다") && TFLAG:REACT파생 == 0
+		IF AFFECTION("상사상애")
+			PRINTFORMW 「아…팥고물……아……」
+			PRINTFORMW 「응…초조하게 하지 마……좀 더 격렬하게 해……！」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「안타까워서……이상해질 것 같다…」
+			PRINTFORMW 「응……좀 더, 좀 더……！」
+		ELSEIF AFFECTION("권애")
+			PRINTFORMW 「무슨 소극적이구나……안타까워요…」
+		ELSE
+			PRINTFORMW 「 좀 더 허리 거절하세요…」
+			PRINTFORMW 「이봐요, 좀 더 마음껏…」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;허리를 흔든다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("허리를 흔든다")
+	;=================================================
+	;가버려상태
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		SELECTCASE TCVAR:MASTER:애태움도
+			CASE 1 ;애태움終了
+				;@AUOTHEART系を使い、地の文捏造箇所を分岐させてやれば一つに纏められそうだけど後回し
+				IF AFFECTION("상사상애")
+					;RR 2
+					SELECTCASE RANDREACT(2, 2)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 찔리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORM 「이나 , 격렬해져！ 팥고물
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あっ、あぁっ！！」")
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「은！ 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！ こ、こんなの…ってッ！」")
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+					PRINTFORMDW 자궁구까지 도려내지는 감각에, 앨리스는 머리카락을 흩뜨려 허덕여 번민이라고 있다…
+				ELSE
+					;RR 3
+					SELECTCASE RANDREACT(2, 3)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 찔리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나 , 격렬해져！ 아, 아！！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「은！ 아, 아！ 개, 이런 건…라는！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+					PRINTFORMDW 질내의 최안쪽까지 켜 거론되는 감각에, 앨리스는 미친 것처럼 허덕여 번민이라고 있다…
+				ENDIF
+			CASEELSE ;애태움無し
+				IF AFFECTION("상사상애")
+					;RR 4
+					SELECTCASE RANDREACT(2, 4)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORM 「아！ , 안쪽에 해당되어！ 아, 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「아, 아
+							CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+							PRINTFORM  팥고물, 후~！ 응응
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORM 「개, 이런 건…！ , 견딜 수 있는 것……
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					ENDSELECT
+				ELSE
+					;RR 5
+					SELECTCASE RANDREACT(2, 5)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「아！ , 안쪽에 해당되어！ 아, 아！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「아, 아！ 팥고물, 후~！ 응응！！」
+							CALL QUAKE(4)
+							PRINTFORMW 「개, 이런 건…！ , 견딜 수 있는 것……！」
+					ENDSELECT
+				ENDIF
+				PRINTFORMDW 자궁구에 닿을 정도의 깊고 격렬한 찌르기 포함에, 앨리스는 전신을 진동시키면서 허덕여 번민이라고 있다…
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;互いに정욕
+	;=================================================
+	IF 구상記入チェック(100) && (M_COND("정욕") && T_COND("정욕"))
+		CALL QUAKE(4)
+		PRINTFORMW 「은 , 팥고물！ 아……아…아, 아！！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응！ 도, 이제……정말로！ , 이상해져버리는！」
+		PRINTFORMDW 정욕에 고두 명은 서로 서로 미칠 듯하게 요구해 , 짐승과 같이 격렬하게 사귀고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が정욕
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「아,！ 개, 이런 건…이제, 견딜 수 있고！ 아…아″…」
+		CALL QUAKE(4)
+		PRINTFORMW 「아, 후~！ (이)나…도 , 다멕！ 아, 아！」
+		PRINTFORMDW 정욕에 고%CALLNAME:MASTER%의 격렬한 찌르기 포함에, 앨리스는 머리카락을 흩뜨리면서 격렬하게 허덕이고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が정욕
+	;=================================================
+	IF 구상記入チェック(100) && T_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「！ (이)나, 나다……요…멈추지 않게 되어버리는！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응,…하, 팥고물！ , 거기！ 아, 아…」
+		PRINTFORMDW 정욕에 고앨리스는 허리를 격렬하게 쳐 붙여 쾌락을 탐내고 있다…
+		RETURN 1
+	ENDIF
+	
+	;確率で汎用リアクションに
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(60)
+		IF AFFECTION("상사상애")
+			;RR 6
+			SELECTCASE RANDREACT(2, 6)
+				CASE 0
+					PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)% 응 좀 더, 좀 더…！」
+					CALL QUAKE(4)
+					PRINTFORM 「, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　そんな、激しくッ！ あんっ、あぁっ！」")
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORMW 「하, 하……응…응！ 아……아！」
+					CALL QUAKE(4)
+					PRINTFORM 「아……아, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　んッ、んぁぁっ！」")
+					PRINTFORMDW 앨리스는 물기를 띤 눈동자로%CALLNAME:MASTER%(을)를 응시하면서, 격렬한 찌르기 포함을 받아 들이고 있다…
+			ENDSELECT
+		ELSE
+			;RR 7
+			SELECTCASE RANDREACT(2, 7)
+				CASE 0
+					PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)% 하면서의 키스도 나쁘지 않은, 원이군요…」
+					CALL QUAKE(4)
+					PRINTFORMW 「, 아！ 그런, 격렬하고！ 팥고물, 아！」
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORMW 「하, 하……응…응！ 아……아！」
+					CALL QUAKE(4)
+					PRINTFORMW 「아……아, 아！ 응, 응！」
+					PRINTFORMDW 앨리스는 %CALLNAME:MASTER%(을)를 가만히 응시하면서, 격렬한 찌르기 포함을 받아 들이고 있다…
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;REACT96, 후배위시킨다・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;-------------------------------------------------
+;想定されるCOM…
+;애무系反応
+;	COM:부끄러워한다/싫어한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;성교系反応
+;	COM:허리를 흔든다
+;고통系反応
+;	COM:날뛴다
+;봉사系反応
+;	COM:거부한다/소극적으로 한다/적극적으로 한다/애정을 담아 한다/태연하게 한다
+;その他反応
+;	COM:가게해줘！
+;-------------------------------------------------
+@KOJO_REACT_K14_96
+;-------------------------------------------------
+;・地の文はREAC分類で分岐
+;・REACT분류が날뛴다/거부の場合は취소扱い
+;・ACTが취소となった場合はTEQUIP:성교봉사중もリセット
+;・その他のREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)の場合は受容扱いとなる
+;・죠교대상が동정なら동정상실、죠교자が처녀なら처녀상실が起こる
+;-------------------------------------------------
+;오토모드用処理
+[IF_DEBUG]
+	IF TCVAR:처녀상실 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTREACT(100)
+		CALL PRINT_RAINBOW2W("처녀상실", 20)
+		CALL GAME_OVER_K14
+		FORCEWAIT
+		RETURN 1
+	ENDIF
+[ENDIF]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류が날뛴다/逃げる/거부
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("날뛴다/逃げる/거부") && FLAG:지문제어 == 2
+	CALL PRINT_ACTGR_10_REJECT_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;애태움開始
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TCVAR:MASTER:가버려 && !TCVAR:MASTER:애태움도 > 1 && IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+	CALL TEXTDISPLAY_CATEGORY_10_TEASE_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(55) && IS_NOWCOMNAME("쾌감을 참는다")
+	IF TCVAR:MASTER:참다
+		CALL TEXTDISPLAY_CATEGORY_10_COM14_K14
+	ENDIF
+	RETURN 1
+ENDIF
+
+;COM15,쾌감을 받아들인다/COM16,기분 좋다!等を想定。ACT103,역강간の場合、COM20,허리를 흔든다もREACT분류受け入れるになる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류, 受け入れる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("受け入れる")
+	;=================================================
+	;죠교대상が가버려		子宮입に届くほど深く云々…
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		CALL PRINT_ACTGR_10_ACCEPT_0_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が가버려
+	;=================================================
+	IF 구상記入チェック(100) && PALAM:쾌Ｖ > 8500
+		CALL PRINT_ACTGR_10_ACCEPT_1_K14
+		RETURN 1
+	ENDIF
+	
+	;죠교대상/죠교자が가버려な場合以外を処理
+	;=================================================
+	;その他
+	;=================================================
+	IF 	구상記入チェック(70)
+		CALL PRINT_ACTGR_10_ACCEPT_2_K14
+		RETURN 1
+	ENDIF
+;条件から漏れたら汎用リアクション（COM）へ
+RETURN 0
+ENDIF
+
+;消極的反応をまとめる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;消極的に従った
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("소극적으로 한다/용서를 빌다")
+	;=================================================
+	;REACT부하2(無理を했다행동)
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+		;実は積極
+		IF COMCOR_POSI()
+			PRINTFORMW 「…응.\@ IS_COMGRONAME("용서를 빌다") ? 이 모습이 부끄럽다고…,%CNAME(MASTER, TARGET)%가 부끄러워해 어떻게 해！# 부끄러워해 보였더니, 허리는 멈추지 않구나… \@」
+			PRINTFORMW 「이봐요, 그런 것은 나…, 전혀 부족해. 좀 더 격렬하게 시라고 주세요…」
+		;実は嫌
+		ELSE
+			PRINTFORMW 「…\@ IS_COMGRONAME("소극적으로 한다") ? 단조롭고 시시해요 # 나의 움직임에 맞추는 일도 할 수 없다든가 \@. 싫증하구나,%CNAME(MASTER, TARGET)%…」
+			PRINTFORMW 「그러니까, 그렇지 않아서！ 아 이제…, 정말로%RAND_SPLIT("속상하다/안타깝다/안절부절 한다")%\@ TENSION(TARGET, 7) == "高い" ? のよっ！ # わね… \@」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;REACT파생1, 消極的なのが気に入らないの場合はCOMで処理
+	;=================================================
+	;COM41,소극적으로 한다「消極的だけどいいか」
+	;=================================================
+	IF 구상記入チェック(55) && IS_NOWCOMNAME("소극적으로 한다") && TFLAG:REACT파생 == 0
+		IF AFFECTION("상사상애")
+			PRINTFORMW 「응……좀 더……언제나 같이 범해……」
+			PRINTFORMW 「고기 인형을 취급하는 것 같이……망가질 정도로, 격렬하게 찔러……！」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「왜……이봐요, 좀 더 찔러」
+			PRINTFORMW 「얕으면 개요라고……안타까워서…미쳐 그래요…」
+		ELSEIF AFFECTION("권애")
+			PRINTFORMW 「무슨 소극적이구나……안타까워요…」
+		ELSE
+			PRINTFORMW 「 좀 더 허리 거절하세요…」
+			PRINTFORMW 「이봐요, 좀 더 마음껏…」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;허리를 흔든다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("허리를 흔든다")
+	;=================================================
+	;가버려상태
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		SELECTCASE TCVAR:MASTER:애태움도
+			CASE 1 ;애태움終了
+				;HEARTのある無しだけのお손軽処理でお茶を濁す！
+				IF AFFECTION("상사상애")
+					;RR 2
+					SELECTCASE RANDREACT(2, 2)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 찔리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORM 「이나 , 격렬해져！ 팥고물
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あっ、あぁっ！！」")
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「은！ 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！ こ、こんなの…ってッ！」")
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+				ELSE
+					;RR 3
+					SELECTCASE RANDREACT(2, 3)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 찔리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나 , 격렬해져！ 아, 아！！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「은！ 아, 아！ 개, 이런 건…라는！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+				ENDIF
+				PRINTFORMDW 배후로부터의 격렬한 찌르기 포함에, 앨리스는%RAND_SPLIT("머리카락을 흩뜨려/미친 것처럼")%허덕여 번민이라고 있다…
+			CASEELSE ;애태움無し
+				IF AFFECTION("상사상애")
+					;RR 4
+					SELECTCASE RANDREACT(2, 4)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORM 「아！ , 안쪽에 해당되어！ 아, 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「아, 아
+							CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+							PRINTFORM  팥고물, 후~！ 응응
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORM 「개, 이런 건…！ , 견딜 수 있는 것……
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					ENDSELECT
+				ELSE
+					;RR 5
+					SELECTCASE RANDREACT(2, 5)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「아！ , 안쪽에 해당되어！ 아, 아！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「아, 아！ 팥고물, 후~！ 응응！！」
+							CALL QUAKE(4)
+							PRINTFORMW 「개, 이런 건…！ , 견딜 수 있는 것……！」
+					ENDSELECT
+				ENDIF
+				PRINTFORMDW 배후로부터의 고문에 피학심이 자극되어 앨리스는 전신을 진동시키면서 허덕여 번민이라고 있다…
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;互いに정욕
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("정욕") && T_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「은 , 팥고물！ 아……아…아, 아！！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응！ 도, 이제……정말로！ , 이상해져버리는！」
+		PRINTFORMDW 정욕에 고두 명은 서로 서로 미칠 듯하게 요구해 , 짐승과 같이 격렬하게 사귀고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が정욕
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「아,！ (이)나, 나다！이런 모습…아…아″…」
+		CALL QUAKE(4)
+		PRINTFORMW 「아, 후~！ (이)나…도 , 다멕！ 아, 아！」
+		PRINTFORMDL 정욕에 고%CALLNAME:MASTER%(은)는 앨리스의 양손을 잡아,
+		PRINTFORMDW 활나름대로 된 그 신체를 배후로부터 마음껏 탐냈다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が정욕
+	;=================================================
+	IF 구상記入チェック(100) && T_COND("정욕") ;죠교자が정욕
+		CALL QUAKE(4)
+		PRINTFORMW 「！ (이)나, 나다……요…멈추지 않게 되어버리는！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응,…하, 팥고물！ , 거기！ 아, 아…」
+		PRINTFORMDW 정욕에 고앨리스는 상체를 위로 돌리고 뒤로 젖힐 수 있는이면서 격렬하게 허리를 거절해, 쾌락을 탐내고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(60)
+		IF AFFECTION("상사상애")
+			;RR 6
+			SELECTCASE RANDREACT(2, 6)
+				CASE 0
+					CALL QUAKE(4)
+					PRINTFORM 「아
+					CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+					PRINTFORM  아……아, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					PRINTFORMW 「이나, 나다 코레！ 굉장히, 흥분하면…(이)라고！」
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORM 「응…, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　ふぅ…んんっ…！」")
+					PRINTFORM 「이나다, 나…이런 적당한의에……(은)는 , 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！！」")
+					CALL QUAKE(4)
+			ENDSELECT
+		ELSE
+			;RR 7
+			SELECTCASE RANDREACT(2, 7)
+				CASE 0
+					CALL QUAKE(4)
+					PRINTFORMW 「아……아……아, 아！」
+					PRINTFORMW 「이나, 나다 코레！ 사……굉장히, 흥분하면…(이)라고！」
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORMW 「응…, 아！ …응응…！」
+					PRINTFORMW 「이나다, 나…이런 적당한의에……(은)는 , 아, 아！！」
+					CALL QUAKE(4)
+			ENDSELECT
+		ENDIF
+		PRINTFORMDL 배후로부터의 찔러 포함에,
+		PRINTFORMDW 앨리스는%PLEASURE_DESCRIPTION(TARGET)%허덕이고 있다…
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;REACT97, 대면좌위시킨다・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;-------------------------------------------------
+;想定されるCOM…
+;애무系反応
+;	COM:부끄러워한다/싫어한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;성교系反応
+;	COM:허리를 흔든다
+;고통系反応
+;	COM:날뛴다
+;봉사系反応
+;	COM:거부한다/소극적으로 한다/적극적으로 한다/애정을 담아 한다/태연하게 한다
+;その他反応
+;	COM:가게해줘！
+;-------------------------------------------------
+@KOJO_REACT_K14_97
+;-------------------------------------------------
+;・地の文はREAC分類で分岐
+;・REACT분류が날뛴다/거부の場合は취소扱い
+;・ACTが취소となった場合はTEQUIP:성교봉사중もリセット
+;・その他のREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)の場合は受容扱いとなる
+;・죠교대상が동정なら동정상실、죠교자が처녀なら처녀상실が起こる
+;-------------------------------------------------
+;오토모드用処理
+[IF_DEBUG]
+	IF TCVAR:처녀상실 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTREACT(100)
+		CALL PRINT_RAINBOW2W("처녀상실", 20)
+		CALL GAME_OVER_K14
+		FORCEWAIT
+		RETURN 1
+	ENDIF
+[ENDIF]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류が날뛴다/逃げる/거부
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("날뛴다/逃げる/거부") && FLAG:지문제어 == 2
+	CALL PRINT_ACTGR_10_REJECT_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;애태움開始
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 > 1 && IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+	IF TCVAR:MASTER:애태움도 > 1
+		CALL TEXTDISPLAY_CATEGORY_10_TEASE_K14
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(55) && IS_NOWCOMNAME("쾌감을 참는다") && TCVAR:MASTER:참다
+	IF TCVAR:MASTER:참다
+		CALL TEXTDISPLAY_CATEGORY_10_COM14_K14
+	ENDIF
+	RETURN 1
+ENDIF
+
+;COM15,쾌감을 받아들인다/COM16,기분 좋다!等を想定。ACT103,역강간の場合、COM20,허리를 흔든다もREACT분류受け入れるになる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류, 受け入れる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("受け入れる")
+	;=================================================
+	;죠교대상が가버려		子宮입に届くほど深く云々…
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		CALL PRINT_ACTGR_10_ACCEPT_0_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が가버려
+	;=================================================
+	IF 구상記入チェック(100) && PALAM:쾌Ｖ > 8500
+		CALL PRINT_ACTGR_10_ACCEPT_1_K14
+		RETURN 1
+	ENDIF
+	
+	;죠교대상/죠교자が가버려な場合以外を処理
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(70)
+		CALL PRINT_ACTGR_10_ACCEPT_2_K14
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;消極的に従った
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("소극적으로 한다/용서를 빌다")
+	;=================================================
+	;REACT부하2(無理を했다행동)
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동" && !TEQUIP:눈가리개
+		;実は積極
+		IF COMCOR_POSI()
+			PRINTFORMW 「…응.\@ IS_COMGRONAME("용서를 빌다") ? 이제 와서키스하지만 부끄럽다든가, 완전히… # 부끄러워해 보인 곳에서, 허리는 멈추지 않는거네… \@」
+			PRINTFORMW 「이봐요,\@ IS_COMGRONAME("용서를 빌다") ? 부끄러워하지 마 # 분명하게 나를 봐 \@. 좀 더 격렬하게 움직여…」
+		;実は嫌
+		ELSE
+			PRINTFORMW 「…\@ IS_COMGRONAME("소극적으로 한다") ? 단조롭고 시시해요 # 나의 움직임에 맞추는 일도 할 수 없다든가\@. 싫증하구나,%CNAME(MASTER, TARGET)%…」
+			PRINTFORMW 「그러니까, 그렇지 않아서！ 아 이제…, 정말로%RAND_SPLIT("속상하다/안타깝다/안절부절 한다")%\@ TENSION(TARGET, 7) == "高い" ? のよっ！ # わね… \@」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;REACT파생1, 消極的なのが気に入らないの場合はCOMで処理
+	;=================================================
+	;COM41,소극적으로 한다「消極的だけどいいか」
+	;=================================================
+	IF 구상記入チェック(55) && IS_NOWCOMNAME("소극적으로 한다") && TFLAG:REACT파생 == 0
+		IF AFFECTION("상사상애")
+			PRINTFORMW 「 좀 더 키스 해……좀 더 격렬하게 해……」
+			PRINTFORMW 「이런 건은 부족해요……응, 내가 망가져버릴 정도…격렬하게 찔러……！」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「왜……이봐요, 좀 더 찔러」
+			PRINTFORMW 「얕으면 개요라고……안타까워서…미쳐 그래요…」
+		ELSEIF AFFECTION("권애")
+			PRINTFORMW 「무슨 소극적이구나……안타까워요…」
+		ELSE
+			PRINTFORMW 「 좀 더 허리 거절하세요…」
+			PRINTFORMW 「이봐요, 좀 더 마음껏」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;허리를 흔든다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("허리를 흔든다")
+	;==================================================
+	;가버려상태
+	;==================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		SELECTCASE TCVAR:MASTER:애태움도
+			CASE 1 ;애태움終了
+				IF AFFECTION("상사상애")
+					;RR 2
+					SELECTCASE RANDREACT(2,2)
+						CASE 0
+							PRINTFORMW 「 좀 더 , 좀 더 강하게 안아！ %KOJO_RAND_K14(("키스"), 1)%」
+							CALL QUAKE(4)
+							PRINTFORM 「이나 , 격렬해져！ 팥고물
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あっ、あぁっ！！」")
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「은！ 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！ こ、こんなの…ってッ！」")
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+					;RR 3
+					SELECTCASE RANDREACT(2, 3)
+						CASE 0
+							PRINTFORMD 꼭 껴안을 수 있는이면서 최안쪽까지 도려내져
+						CASE 1
+							PRINTFORMD 자궁구까지 도려내지는 감각에,
+					ENDSELECT
+					PRINTFORMDW 앨리스는 %CALLNAME:MASTER%의 팔 중(안)에서 격렬하게 허덕이고 있다……
+				ELSE
+					;RR 4
+					SELECTCASE RANDREACT(2, 4)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 찔리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나 , 격렬해져！ 아, 아！！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「은！ 아, 아！ 개, 이런 건…라는！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+					PRINTFORMDW 앨리스는 %CALLNAME:MASTER%의 등에 손을 돌리고 해가 보고 붙으면서, 격렬하게 허덕여 번민이라고 있다…
+				ENDIF
+			CASEELSE ;애태움無し
+				IF AFFECTION("상사상애")
+					;RR 5
+					SELECTCASE RANDREACT(2, 5)
+						CASE 0
+							PRINTFORMW 「응 좀 더, 키스…%KOJO_RAND_K14(("키스"), 1)%」
+							CALL QUAKE(4)
+							PRINTFORM 「아！ , 안쪽에 해당되어！ 아, 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「아, 아
+							CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+							PRINTFORM  팥고물, 후~！ 응응
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							PRINTFORM 「 나…상당히 가 버린다 원이군요……응！ 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+					ENDSELECT
+					;RR 6
+					SELECTCASE RANDREACT(2, 6)
+						CASE 0
+							PRINTFORMD 앨리스는 탐욕에 입술을 요구하면서,
+						CASE 1
+							PRINTFORMD 앨리스는 스스로도 허리를 격렬하게 쳐 붙이면서,
+					ENDSELECT
+					PRINTFORMDW %CALLNAME:MASTER%의 팔 중(안)에서 격렬하게 허덕이고 있다…
+				ELSE
+					;RR 7
+					SELECTCASE RANDREACT(2, 7)
+						CASE 0
+							PRINTFORMW 「이봐요, 좀 더 키스 해…%KOJO_RAND_K14(("키스"), 1)%」
+							CALL QUAKE(4)
+							PRINTFORMW 「아！ , 안쪽에 해당되어！ 아, 아！」
+						CASE 1
+							PRINTFORMW （나쁘고, 없네요……이것. 어쩐지 안심한다……）
+							CALL QUAKE(4)
+							PRINTFORMW 「아, 아！ 팥고물, 후~！ 응응！！」
+					ENDSELECT
+					PRINTFORMDW 앨리스는 %CALLNAME:MASTER%에 제대로 해가 보고 붙으면서, 쾌락에 허덕이고 있다…
+				ENDIF
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;互いに정욕
+	;=================================================
+	IF 구상記入チェック(100) && (M_COND("정욕") && T_COND("정욕"))
+		PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)%」
+		CALL QUAKE(4)
+		PRINTFORMW 「은 , 팥고물！ 아……아…아, 아！！」
+		PRINTFORMDW 정욕에 고두 명은 서로의 입술을 탐내면서, 짐승과 같이 격렬하게 사귀고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が정욕
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「아,！ 개, 이런 건…이제, 견딜 수 있고！ 아…아″…」
+		CALL QUAKE(4)
+		PRINTFORMW 「아, 후~！ (이)나…도 , 다멕！ 아, 아！」
+		PRINTFORMDW 정욕에 고%CALLNAME:MASTER%의 격렬한 하급자압력에, 앨리스는 머리카락을 흩뜨리면서 격렬하게 허덕이고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が정욕
+	;=================================================
+	IF 구상記入チェック(100) && T_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「응,…하, 팥고물！ , 거기！ 아, 아…」
+		PRINTFORMW 「응, 좀 더！ 키스……해！」
+		PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)%」
+		PRINTFORMDW 정욕에 고앨리스는 %CALLNAME:MASTER%의 입술을 요구하면서, 허리를 격렬하게 쳐 붙이고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他
+	;=================================================
+	IF PERCENT(60)
+		IF AFFECTION("상사상애")
+			;RR 8
+			SELECTCASE RANDREACT(2, 8)
+				CASE 0
+						CALL QUAKE(4)
+					PRINTFORM 「아
+						CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+					PRINTFORM  아……아, 아
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+						CALL QUAKE(4)
+					PRINTFORMW 「응 좀 더！ 좀 더 키스 해…(이)라고！ %KOJO_RAND_K14(("키스"), 1)%」
+				CASE 1
+					PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)% （이렇게 하고 있으면, 굉장히 안심해요…）」
+						CALL QUAKE(4)
+					PRINTFORM 「아…
+						CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　はぁっ…ふぁ、あぁぁっ！」")
+			ENDSELECT
+		ELSE
+			;RR 9
+			SELECTCASE RANDREACT(2, 9)
+				CASE 0
+						CALL QUAKE(4)
+					PRINTFORMW 「아…아……아, 아！」
+						CALL QUAKE(4)
+					PRINTFORMW 「이봐요 좀 더, 좀 더 키스 해 주세요… %KOJO_RAND_K14(("키스"), 1)%」
+				CASE 1
+					PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)% （이렇게 하고 있으면,무슨 안심해요…）」
+						CALL QUAKE(4)
+					PRINTFORMW 「아…！ 후~…, 아！」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;REACT98, 배면좌위시킨다・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;-------------------------------------------------
+;想定されるCOM…
+;애무系反応
+;	COM:부끄러워한다/싫어한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;성교系反応
+;	COM:허리를 흔든다
+;고통系反応
+;	COM:날뛴다
+;봉사系反応
+;	COM:거부한다/소극적으로 한다/적극적으로 한다/애정을 담아 한다/태연하게 한다
+;その他反応
+;	COM:가게해줘！
+;-------------------------------------------------
+@KOJO_REACT_K14_98
+;-------------------------------------------------
+;・地の文はREAC分類で分岐
+;・REACT분류が날뛴다/거부の場合は취소扱い
+;・ACTが취소となった場合はTEQUIP:성교봉사중もリセット
+;・その他のREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)の場合は受容扱いとなる
+;・죠교대상が동정なら동정상실、죠교자が처녀なら처녀상실が起こる
+;-------------------------------------------------
+;오토모드用処理
+[IF_DEBUG]
+	IF TCVAR:처녀상실 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTREACT(100)
+		CALL PRINT_RAINBOW2W("처녀상실", 20)
+		CALL GAME_OVER_K14
+		FORCEWAIT
+		RETURN 1
+	ENDIF
+[ENDIF]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류が날뛴다/逃げる/거부
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("날뛴다/逃げる/거부") && FLAG:지문제어 == 2
+	CALL PRINT_ACTGR_10_REJECT_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;애태움開始
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 > 1 && IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+	CALL TEXTDISPLAY_CATEGORY_10_TEASE_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(55) && IS_NOWCOMNAME("쾌감을 참는다") && TCVAR:MASTER:참다
+	CALL TEXTDISPLAY_CATEGORY_10_COM14_K14
+	RETURN 1
+ENDIF
+
+;COM15,쾌감을 받아들인다/COM16,기분 좋다!等を想定。ACT103,역강간の場合、COM20,허리를 흔든다もREACT분류受け入れるになる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류, 受け入れる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("受け入れる")
+	;=================================================
+	;죠교대상が가버려		子宮입に届くほど深く云々…
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		CALL PRINT_ACTGR_10_ACCEPT_0_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が가버려
+	;=================================================
+	IF 구상記入チェック(100) && PALAM:쾌Ｖ > 8500
+		CALL PRINT_ACTGR_10_ACCEPT_1_K14
+		RETURN 1
+	ENDIF
+	
+	;죠교대상/죠교자が가버려な場合以外を処理
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(70)
+		CALL PRINT_ACTGR_10_ACCEPT_2_K14
+		RETURN 1
+	ENDIF
+;条件から漏れたらRETURN返さず汎用リアクション（COM）へ
+RETURN 0
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;消極的に従った
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("소극적으로 한다/용서를 빌다")
+	;=================================================
+	;REACT부하2(無理を했다행동)
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+		;実は積極
+		IF COMCOR_POSI()
+			PRINTFORMW 「\@ IS_COMGRONAME("용서를 빌다") ? 당황해 보인 것 치고는 적극적이 아니다… # 부끄러워해 보인 곳에서, 허리는 멈추지 않는거네… \@」
+			PRINTFORMW 「\@ IS_COMGRONAME("용서를 빌다") ? 좋아요, 거기…, 좀 더 만지작거려 # 이봐요, 좀 더 움직여 \@. 망가져버릴 정도 격렬하게 시라고…」
+		;実は嫌
+		ELSE
+			PRINTFORMW 「…\@ IS_COMGRONAME("소극적으로 한다") ? 단조롭고 시시해요 # 나의 움직임에 맞추는 일도 할 수 없다든가\@. 싫증하구나,%CNAME(MASTER, TARGET)%…」
+			PRINTFORMW 「그러니까, 그렇지 않아서！ 아 이제…, 정말로%RAND_SPLIT("속상하다/안타깝다/안절부절 한다")%\@ TENSION(TARGET, 7) == "高い" ? のよっ！ # わね… \@」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;REACT파생1, 消極的なのが気に入らないの場合はCOMで処理
+	;=================================================
+	;COM41,소극적으로 한다「消極的だけどいいか」
+	;=================================================
+	IF 구상記入チェック(55) && IS_NOWCOMNAME("소극적으로 한다") && TFLAG:REACT파생 == 0
+		IF AFFECTION("상사상애")
+			PRINTFORMW 「응……초조하게 하지 말고, 좀 더 격렬하게 해…」
+			PRINTFORMW 「이봐요, 젖가슴 좀 더 만지작거려……나를 그다지 학째 없고…」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「이나, 나다……초조하게 하지 말아…」
+			PRINTFORMW 「이런 건, 속상해서……이상해져버리는…！」
+		ELSEIF AFFECTION("권애")
+			PRINTFORMW 「무슨 소극적이구나……안타까워요…」
+		ELSE
+			PRINTFORMW 「이봐요 , 좀 더 허리 거절하세요」
+			PRINTFORMW 「사용할 수 없네요……」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;허리를 흔든다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("허리를 흔든다")
+	;=================================================
+	;가버려상태
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		SELECTCASE TCVAR:MASTER:애태움도
+			CASE 1 ;애태움終了
+				IF AFFECTION("상사상애")
+					;RR 2
+					SELECTCASE RANDREACT(2, 2)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 찔리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORM 「이나 , 격렬해져！ 팥고물
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あっ、あぁっ！！」")
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「은！ 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！ こ、こんなの…ってッ！」")
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+				ELSE
+					;RR 3
+					SELECTCASE RANDREACT(2, 3)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 찔리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나 , 격렬해져！ 아, 아！！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「은！ 아, 아！ 개, 이런 건…라는！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+				ENDIF
+				PRINTFORMDW 배후로부터의 격렬한 찌르기 포함에, 앨리스는%RAND_SPLIT("머리카락을 흩뜨려/미친 것처럼")%허덕여 번민이라고 있다…
+			CASEELSE ;애태움無し
+				IF AFFECTION("상사상애")
+					;RR 4
+					SELECTCASE RANDREACT(2, 4)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORM 「아！ , 안쪽에 해당되어！ 아, 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「아, 아
+							CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+							PRINTFORM  팥고물, 후~！ 응응
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORM 「개, 이런 건…！ , 견딜 수 있는 것……
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					ENDSELECT
+				ELSE
+					;RR 5
+					SELECTCASE RANDREACT(2, 5)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「아！ , 안쪽에 해당되어！ 아, 아！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「아, 아！ 팥고물, 후~！ 응응！！」
+							CALL QUAKE(4)
+							PRINTFORMW 「개, 이런 건…！ , 견딜 수 있는 것……！」
+					ENDSELECT
+				ENDIF
+				SELECTCASE RANDREACT(2, 6)
+					CASE 0
+						PRINTFORMDW 배후로부터의 고문에 피학심이 자극되어 앨리스는 전신을 진동시키면서 허덕여 번민이라고 있다…
+					CASE 1
+						PRINTFORMDW %CALLNAME:MASTER%(은)는 앨리스의 머리카락의 향기나에 황홀로 하면서, 열중해 허리를 계속 거절했다…
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;互いに정욕
+	;=================================================
+	IF 구상記入チェック(100) && (M_COND("정욕") && T_COND("정욕"))
+		CALL QUAKE(4)
+		PRINTFORMW 「은 , 팥고물！ 아……아…아, 아！！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응！ 도, 이제……정말로！ , 이상해져버리는！」
+		PRINTFORMDW 정욕에 고두 명은 서로 서로 미칠 듯하게 요구해 , 짐승과 같이 격렬하게 사귀고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が정욕
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「아,！ 개, 이런 건…이제, 견딜 수 있고！ 아…아″…」
+		CALL QUAKE(4)
+		PRINTFORMW 「아, 후~！ (이)나…도 , 다멕！ 아, 아！」
+		PRINTFORMDW 정욕에 고%CALLNAME:MASTER%의 배후로부터의 격렬한 찌르기 포함에, 앨리스는 머리카락을 흩뜨리면서 격렬하게 허덕이고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が정욕
+	;=================================================
+	IF 구상記入チェック(100) && T_COND("정욕") ;죠교자が정욕
+		CALL QUAKE(4)
+		PRINTFORMW 「！ (이)나, 나다……요…멈추지 않게 되어버리는！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응,…하, 팥고물！ , 거기！ 아, 아…！」
+		PRINTFORMDL 정욕에 고앨리스는 요염하고 불 비친 얼굴로%CALLNAME:MASTER%(을)를 되돌아 보면서,
+		PRINTFORMDW 그 지체를 구군요들 키, 격렬하게 허덕여 번민이라고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他
+	;=================================================
+	IF PERCENT(60)
+		IF AFFECTION("상사상애")
+			;RR 6
+			SELECTCASE RANDREACT(2, 7)
+				CASE 0
+					CALL QUAKE(4)
+					PRINTFORM 「아
+					CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+					PRINTFORM  아……아, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					PRINTFORMW 「이나, 나다 코레！ 굉장히, 흥분하면…(이)라고！」
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORM 「응…, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　ふぅ…んんっ…！」")
+					PRINTFORM 「이나다, 나…이런 적당한의에……(은)는 , 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！！」")
+					CALL QUAKE(4)
+			ENDSELECT
+		ELSE
+			;RR 7
+			SELECTCASE RANDREACT(2, 8)
+				CASE 0
+					CALL QUAKE(4)
+					PRINTFORMW 「아……아……아, 아！」
+					PRINTFORMW 「이나, 나다 코레！ 사……굉장히, 흥분하면…(이)라고！」
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORMW 「응…, 아！ …응응…！」
+					PRINTFORMW 「이나다, 나…이런 적당한의에……(은)는 , 아, 아！！」
+					CALL QUAKE(4)
+			ENDSELECT
+		ENDIF
+		PRINTFORMDL 배후로부터의 찔러 포함에,
+		PRINTFORMDW 앨리스는%PLEASURE_DESCRIPTION(TARGET)%허덕이고 있다…
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;REACT99, 항문섹스시킨다・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ａ성교系から/3=Ｖ성교봉사系から/4=Ｖ성교系から)
+;-------------------------------------------------
+;想定されるCOM…
+;애무系反応
+;	COM:부끄러워한다/싫어한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;성교系反応
+;	COM:허리를 흔든다
+;고통系反応
+;	COM:날뛴다
+;봉사系反応
+;	COM:거부한다/소극적으로 한다/적극적으로 한다/애정을 담아 한다/태연하게 한다
+;その他反応
+;	COM:가게해줘！
+;-------------------------------------------------
+;このコマンドは구상側で상사상애時の이벤트경과によって開放する仕様にしている
+;故にこの箇所で호감도系の分岐は不要
+;-------------------------------------------------
+@KOJO_REACT_K14_99
+;-------------------------------------------------
+;・地の文はREAC分類で分岐
+;・REACT분류が날뛴다/거부の場合は취소扱い
+;・ACTが취소となった場合はTEQUIP:성교봉사중もリセット
+;・その他のREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)の場合は受容扱いとなる
+;・죠교대상が동정でも동정상실にはならない
+;-------------------------------------------------
+;오토모드用処理
+[IF_DEBUG]
+	IF TCVAR:처녀상실 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTREACT(100)
+		CALL PRINT_RAINBOW2W("バックバージン喪失", 20)
+		CALL GAME_OVER_K14
+		FORCEWAIT
+		RETURN 1
+	ENDIF
+[ENDIF]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류が날뛴다/逃げる/거부
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("날뛴다/逃げる/거부") && FLAG:지문제어 == 2
+	CALL PRINT_ACTGR_10_REJECT_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;애태움開始
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 > 1 && IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+	CALL TEXTDISPLAY_CATEGORY_10_TEASE_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(55) && IS_NOWCOMNAME("쾌감을 참는다") && TCVAR:MASTER:참다
+	CALL TEXTDISPLAY_CATEGORY_10_COM14_K14
+	RETURN 1
+ENDIF
+
+;COM15,쾌감을 받아들인다/COM16,기분 좋다!等を想定。ACT103,역강간の場合、COM20,허리를 흔든다もREACT분류受け入れるになる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류, 受け入れる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("受け入れる") && FLAG:지문제어 == 2
+	;TCVAR:애태움도 == 1とそれ以外で分けるのもあり。ただ、地の文にそれほど差異はないのが現状
+	;TEQUIP:페니스밴드を参照するのもありだけど、これもまた面倒なんで忘れる事に
+	;=================================================
+	;죠교대상が가버려
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		CALL PRINT_ACTGR_10_ACCEPT_0_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が가버려
+	;=================================================
+	IF 구상記入チェック(100) && PALAM:쾌Ａ > 8500
+		CALL PRINT_ACTGR_10_ACCEPT_1_K14
+		RETURN 1
+	ENDIF
+	
+	;죠교대상/죠교자が가버려な場合以外を処理
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(70)
+		CALL PRINT_ACTGR_10_ACCEPT_2_K14
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;消極的に従った
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("소극적으로 한다/용서를 빌다")
+	;=================================================
+	;REACT부하2(無理を했다행동)
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+		;実は積極
+		IF COMCOR_POSI()
+			PRINTFORMW 「%RAND_SPLIT("읏/쿳/앗")%！ 의외로…, 하잖아.\@ TENSION(TARGET, 8) == "高い" ? 悪く、ないわよ # ちょっと건방짐 \@…」
+			PRINTFORMW 「이봐요, 좋아요.%RAND_SPLIT("좀 더격렬하게도/망가져 버릴 정도로, 격렬하게 시라고")%…」
+		;実は嫌
+		ELSE
+			PRINTFORMW 「…\@ IS_COMGRONAME("소극적으로 한다") ? 온전히 움직이는 일도 할 수 없다든가 # 허락해, 허락해라고 해도 으응 자갈 \@. 싫증%RAND_SPLIT("(이)야/저기")%,%CNAME(MASTER, TARGET)%…」
+			PRINTFORMW 「그러니까, 그렇지 않아서！ 아 이제…, 정말로%RAND_SPLIT("속상하다/안타깝다/안절부절 한다")%\@ TENSION(TARGET, 7) == "高い" ? のよっ！ # わね… \@」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;REACT파생1, 消極的なのが気に入らないの場合はCOMで処理
+	;=================================================
+	;COM41,소극적으로 한다「消極的だけどいいか」
+	;=================================================
+	IF 구상記入チェック(55) && IS_NOWCOMNAME("소극적으로 한다") && TFLAG:REACT파생 == 0
+		IF AFFECTION("상사상애")
+			PRINTFORMW 「이나…엉덩이의 입구……요등 없고……」
+			PRINTFORMW 「빠르게……안쪽까지 채워 주지 않으면, 나……！」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「응……초조하게 하지 마…좀 더 격렬하게 해…」
+			PRINTFORMW 「속상해서……안타까워서……나, 이제……」
+		ELSEIF AFFECTION("권애")
+			PRINTFORMW 「무슨 소극적이구나……안타까워요…」
+		ELSE
+			PRINTFORMW 「이봐요 , 좀 더 허리 거절하세요！」
+			PRINTFORMW 「사용할 수 없네요……」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;허리를 흔든다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("허리를 흔든다")
+	;=================================================
+	;互いに정욕
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("정욕") && T_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「은 , 팥고물！ 아……아…아, 아！！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응！ 도, 이제……정말로！ , 이상해져버리는！」
+		PRINTFORMDW 정욕에 고두 명은 서로 서로 미칠 듯하게 요구해 , 짐승과 같이 격렬하게 사귀고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が정욕
+	;=================================================
+	IF 구상記入チェック(100) && M_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「아,！ 개, 망가진다！ 엉덩이…부서져버리는！ 아…아″…！」
+		CALL QUAKE(4)
+		PRINTFORMW 「아, 후~！ (이)나…도 , 다멕！ 아, 아！」
+		PRINTFORMDW 정욕에 고%CALLNAME:MASTER%의 격렬한 찌르기 포함에, 앨리스는 머리카락을 흩뜨리면서 격렬하게 허덕이고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が정욕
+	;=================================================
+	IF 구상記入チェック(100) && T_COND("정욕") ;죠교자が정욕
+		CALL QUAKE(4)
+		PRINTFORMW 「！ (이)나, 나다……요…멈추지 않게 되어버리는！」
+		CALL QUAKE(4)
+		PRINTFORMW 「응,…하, 팥고물！ , 거기！ 아, 아…」
+		PRINTFORMDW 정욕에 고앨리스는 허리를 격렬하게 쳐 붙여 쾌락을 탐내고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他
+	;=================================================
+	IF PERCENT(70)
+		SELECTCASE RANDREACT(2, 2)
+			CASE 0
+				CALL QUAKE(4)
+				PRINTFORMW 「, 아！ 원, 나！ 엉덩이 찔려, 이렇게…！」
+				CALL QUAKE(4)
+				PRINTFORMW 「이나, 안 됨！ 개, 이런 건……견딜 수  없다！」
+			CASE 1
+				CALL QUAKE(4)
+				PRINTFORMW 「은 , 아！ 아！ 이제 , 이제！」
+				CALL QUAKE(4)
+				PRINTFORMW 「엉덩이, 범해져！ 이상해져버리는…！」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;REACT103, 역강간・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;-------------------------------------------------
+;想定されるCOM…
+;회화系反応
+;	COM:용서를 빌다
+;애무系反応
+;	COM:부끄러워한다/싫어한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:비명지른다/날뛴다/무서워한다
+;성교系反応
+;	COM:허리를 흔든다
+;봉사系反応
+;	COM:소극적으로 한다/적극적으로 한다/애정을 담아 한다/태연하게 한다
+;その他反応
+;	COM:가게해줘！
+;-------------------------------------------------
+@KOJO_REACT_K14_103
+;-------------------------------------------------
+;・地の文はREAC分類で分岐
+;・他の성교봉사系と異なり、죠교대상は拒絶できない
+;・COM20,허리를 흔든다はREACT분류:受け入れるにセットされる
+;・죠교대상が동정なら동정상실、죠교자が처녀なら처녀상실が起こる
+;・COM:싫어한다/날뛴다はREACT분류:날뛴다(即ち、暴れが通る状況)にはならない
+;-------------------------------------------------
+;오토모드用処理
+[IF_DEBUG]
+	IF TCVAR:처녀상실 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTREACT(100)
+		CALL PRINT_RAINBOW2W("처녀상실", 20)
+		CALL GAME_OVER_K14
+		FORCEWAIT
+		RETURN 1
+	ENDIF
+[ENDIF]
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;애태움開始		애태움中でも条件にヒットしない場合は下位へ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 > 1 && IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+	CALL TEXTDISPLAY_CATEGORY_10_TEASE_K14
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COMが쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(55) && IS_NOWCOMNAME("쾌감을 참는다") && TCVAR:MASTER:참다
+	CALL TEXTDISPLAY_CATEGORY_10_COM14_K14
+	RETURN 1
+ENDIF
+
+;COM15,쾌감을 받아들인다/COM16,기분 좋다!等を想定。ACT103,역강간の場合、COM20,허리를 흔든다はREACT분류受け入れるになるので弾く
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류, 受け入れる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("受け入れる") && !IS_NOWCOMNAME("허리를 흔든다")
+	;=================================================
+	;죠교대상が가버려		子宮입に届くほど深く云々…
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		CALL PRINT_ACTGR_10_ACCEPT_0_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が가버려
+	;=================================================
+	IF 구상記入チェック(100) && PALAM:쾌Ｖ > 8500
+		CALL PRINT_ACTGR_10_ACCEPT_1_K14
+		RETURN 1
+	ENDIF
+	
+	;죠교대상/죠교자が가버려な場合以外を処理
+	;=================================================
+	;その他
+	;=================================================
+	IF 구상記入チェック(70)
+		CALL PRINT_ACTGR_10_ACCEPT_2_K14
+		RETURN 1
+	ENDIF
+ENDIF
+
+;消極的反応をまとめる。ここだけ他の성교봉사系REACTと構造が異なる。汎用リアクションには流さずにここで完結시킨다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT분류が消極的に従った/용서를 빌다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_COMGRONAME("소극적으로 한다/용서를 빌다")
+	;最後まで一連の処理として扱う為、途中でRETURNしない
+	LOCALS = %RAND_SPLIT("あっ/んっ/ふぁ/んんッ/あぁっ/んぁ")%
+	;REACT분류が용서를 빌다			刻んでもいいのかも知れない
+	IF IS_COMGRONAME("용서를 빌다")
+		;REACT부하が(0=自然な행동/1=無理のない행동)
+		IF GROUPMATCH(GET_COM_RANK(), "自然な행동", "無理のない행동")
+			PRINTFORMW 「\@ GET_COM_RANK() == "무리가 없다행동" ? 저항 할 수 없다 # 싫어한다 \@%CNAME(MASTER, TARGET)%(을)를 범하는 것, 굉장히 흥분해버린다\@ T_COND("정욕") ? 읏！ # … \@」
+			PRINTFORMW 「이봐요！ 어떻게야？ 사실은 기분 좋지요？ 마음껏 밀어 올리고 싶겠지요？」
+			PRINTFORMW 「좋아요…%CNAME(MASTER, TARGET)%가 그러한 태도라면, 철저하게 범해 준다……」
+		;無理を했다행동
+		ELSE
+			;実は積極
+			IF COMCOR_POSI()
+				PRINTFORM 「%LOCALS%…
+				CALL AUTOHEARTCB_K14
+				PRINTFORMW  싫어한 버릇에…, 허리는 움직여버린다 것」
+				PRINTFORMW 「이봐요, 키모치 좋다？ 키모치 좋아？ 나에게 범해져 흥분해버린다 것이군요？」
+				PRINTFORMW 「솔직해질 수 없다면, 마음껏 요는 주기 때문에……」
+			;実は嫌
+			ELSE
+				PRINTFORMW 「좋은 표정이 아니다……그 분한 것 같은 얼굴, 조크조크 해버리는 원…」
+				PRINTFORMW 「 그렇지만 그런 얼굴 해도…, 신체는 반응해버린다 같지만. 응？」
+			ENDIF
+		ENDIF
+	;REACT분류が소극적으로 한다
+	ELSE
+		;REACT부하が(0=自然な행동/1=無理のない행동)
+		IF GROUPMATCH(GET_COM_RANK(), "自然な행동", "無理のない행동")
+			PRINTFORMW 「어때？ 억지로 범해지는 것은 분하다？ 그렇지만%CNAME(MASTER, TARGET)%…사실은 기분 좋아서 감등 없어？」
+			PRINTFORMW 「응, 고집을 부린다면 그것도 좋아요. 마음껏 범해 주기 때문에, 각오 해…」
+		;無理を했다행동
+		ELSE
+			;実は積極
+			IF COMCOR_POSI()
+				PRINTFORMW 「…응. 뭐야…싫어한 나누기에, 허리는 움직여 버린다 같지만」
+				PRINTFORMW 「사실은 키모치 좋겠지요？ 나에게 범해지는 것이 기뻐서 감등 없겠지요？」
+			;実は嫌
+			ELSE
+				PRINTFORMW 「…새빨간 얼굴 해 버려서. 그렇게 얼굴 좀 보여줄 수 있으면(자), 불필요하게 흥분해버린다…」
+				PRINTFORMDL %CALLNAME%(은)는 시선을 날뛰게 하려고 한다%CALLNAME:MASTER%의 얼굴을 양손으로 파악해
+				PRINTFORMDW 한숨이 걸리는 거리까지 얼굴을 대면서 속삭였다…
+				SIF !TEQUIP:눈가리개
+					PRINTFORMW 「이봐요, 눈을 떠, 분명하게 나를 봐. 거역해도, 이제 와서 어떻게도든지는 하지 않아요」
+				PRINTFORMW 「얌전하고, 있는 그대로를 받아들이세요…」
+			ENDIF
+		ENDIF
+	ENDIF
+	PRINTL
+	;죠교자が정욕、もしくはBASE:만족50%以上
+	IF T_COND("정욕") || TENSION(TARGET, 8) == "高い"
+		PRINTFORM 「%LOCALS%…
+		CALL AUTOHEARTCB_K14
+		PRINTFORMW  억지로 하는 것은……굉장히 흥분해…(이)라고…！」
+		CALL QUAKE(4)
+		PRINTFORM 「응, 구…아…
+		CALL AUTOHEARTCB_K14
+		PRINTFORM  %RAND_SPLIT("후/")%아,%RAND_SPLIT("ん/あ゛/")%아…
+		CALL PRINT_SYMBOL2_K14
+		CALL QUAKE(4)
+		PRINTFORMW 「%RAND_SPLIT("얏/싫다")%,%RAND_SPLIT("これ/コレ")%……멈추지 않고, 되어버리는…！」
+	;REACTが無理を했다행동
+	ELSEIF GET_COM_RANK() == "無理を했다행동"
+		;実は積極
+		IF COMCOR_POSI()
+			PRINTFORMW 「이봐요 이봐요！ 좀 더 하급자압력%RAND_SPLIT("라고 보는거야/")%없음 있어라…！」
+			PRINTFORMW 「이봐요, 좀 더 마음껏…！」
+		;実は嫌
+		ELSE
+			PRINTFORM 「%LOCALS%…
+			CALL AUTOHEARTCB_K14
+			PRINTFORMW  (이)나, 나다 이것！ %RAND_SPLIT("처/굉장하다")%구,\@ PALAM:쾌Ｖ > 4000 ? キモチいいっ！ # いい…… \@」
+			PRINTFORMW 「%RAND_SPLIT("오슬오슬/흥분")%하지만, 멈추지 않고……(이)라고！」
+		ENDIF
+	;その他
+	ELSE
+		PRINTFORMW 「이것, 굉장한 흥분해%RAND_SPLIT("/")%(이)라고……%RAND_SPLIT("もう、/")%%RAND_SPLIT("이상하고/이상하게")%될 것 같다…」
+		CALL QUAKE(4)
+		PRINTFORM 「아%RAND_SPLIT("응/아/")%, 아…
+		CALL AUTOHEARTCB_K14
+		PRINTFORM  %RAND_SPLIT("후/응/")%아…%RAND_SPLIT("あ/は/ん")%…
+		CALL PRINT_SYMBOL2_K14
+	ENDIF
+	;RETURNは終端でのみ行う
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COMが허리를 흔든다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("허리를 흔든다")
+	;==================================================
+	;가버려상태
+	;==================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		SELECTCASE TCVAR:MASTER:애태움도
+			CASE 1 ;애태움終了
+				IF AFFECTION("상사상애")
+					;RR 2
+					SELECTCASE RANDREACT(2,2)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 밀어 올리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORM 「이나 , 격렬해져！ 팥고물
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あっ、あぁっ！！」")
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「은！ 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！ こ、こんなの…ってッ！」")
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+				ELSE
+					;RR 3
+					SELECTCASE RANDREACT(2, 3)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「응！ , 바보！ 그렇게 격렬하게 밀어 올리면(자)！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나 , 격렬해져！ 아, 팥고물, 아！！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「은！ 아, 아！ 개, 이런 건…라는！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 망가진다！ 부서져버리는！」
+					ENDSELECT
+				ENDIF
+				PRINTFORMDW %CALLNAME:MASTER%의 격렬한 하급자압력에, 앨리스는%RAND_SPLIT("머리카락을 흩뜨려/미친 것처럼")%허덕여 번민이라고 있다…
+			CASEELSE ;애태움無し
+				IF AFFECTION("상사상애")
+					;RR 4
+					SELECTCASE RANDREACT(2, 4)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORM 「아！ , 안쪽에 해당되어！ 아, 아
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORM 「아, 아
+							CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+							PRINTFORM  팥고물, 후~！ 응응
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+							CALL QUAKE(4)
+							PRINTFORM 「개, 이런 건…！ , 견딜 수 있는 것……
+							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					ENDSELECT
+				ELSE
+					;RR 5
+					SELECTCASE RANDREACT(2, 5)
+						CASE 0
+							CALL QUAKE(4)
+							PRINTFORMW 「아！ , 안쪽에 해당되어！ 아, 아！」
+							CALL QUAKE(4)
+							PRINTFORMW 「이나, 거기！ 때굴때굴 되면(자)！」
+						CASE 1
+							CALL QUAKE(4)
+							PRINTFORMW 「아, 아！ 팥고물, 후~！ 응응！！」
+							CALL QUAKE(4)
+							PRINTFORMW 「개, 이런 건…！ , 견딜 수 있는 것……！」
+					ENDSELECT
+				ENDIF
+				;RR 6
+				SELECTCASE RANDREACT(2, 6)
+					CASE 0
+						PRINTFORMDW 자궁구를 도려내지는 감각에, 앨리스는 전신을 진동시키면서 허덕여 번민이라고 있다…
+					CASE 1
+						PRINTFORMDW %CALLNAME:MASTER%(은)는 앨리스의 치태에 흥분하면서, 열중해 허리를 밀어 올렸다…
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;==================================================
+	;特定条件から発生
+	;=================================================
+	IF 구상記入チェック(100) && GETBIT(KFLAG:TARGET:201, 1)
+		CALL QUAKE(4)
+		PRINTFORM 「팥고물
+		CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+		;半角スペース
+		PRINTFORM  ……, 이익！ 응응！ 아
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+		CALL QUAKE(4)
+		PRINTFORM 「이봐요 좀 더！ 좀 더！ 아, 아
+		;半角スペース
+		CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), " 奥まで…、キてるっ！」")
+		PRINTFORMDW 앨리스는 %CALLNAME:MASTER%(을)를 짜 덮어 게다가로 허리를 격렬하게 강탈이면서 쾌락을 탐내고 있다…
+		RETURN 1
+	ENDIF
+	
+	;==================================================
+	;죠교대상が정욕
+	;==================================================
+	IF 구상記入チェック(100) && M_COND("정욕")
+		CALL QUAKE(4)
+		PRINTFORMW 「아,！ 개, 이런 건…이제, 견딜 수 있고！ 아…아″…」
+		CALL QUAKE(4)
+		PRINTFORMW 「아, 후~！ (이)나…도 , 다멕！ 아, 아！」
+		PRINTFORMDW 정욕에 고%CALLNAME:MASTER%의 격렬한 하급자압력에, 앨리스는 등을 위로 돌리고 뒤로 젖힐 수 있는이면서 격렬하게 허덕이고 있다…
+		RETURN 1
+	ENDIF
+	
+	;==================================================
+	;その他
+	;==================================================
+	IF PERCENT(60)
+		IF AFFECTION("상사상애")
+			;RR 7
+			SELECTCASE RANDREACT(2, 7)
+				CASE 0
+					CALL QUAKE(4)
+					PRINTFORM 「아
+					CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+					PRINTFORM  아……아, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
+					PRINTFORMW 「이나, 나다 코레！ 굉장히, 흥분하면…(이)라고！」
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORM 「응…, 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　ふぅ…んんっ…！」")
+					PRINTFORM 「이나다, 나…이런 금년 비치는데……(은)는 , 아
+					CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"), "　あぁっ！！」")
+					CALL QUAKE(4)
+			ENDSELECT
+		ELSE ;その他
+			;RR 8
+			SELECTCASE RANDREACT(2, 8)
+				CASE 0
+					CALL QUAKE(4)
+					PRINTFORMW 「아……아……아, 아！」
+					PRINTFORMW 「이나, 나다 코레！ 사……굉장히, 흥분하면…(이)라고！」
+				CASE 1
+					CALL QUAKE(4)
+					PRINTFORMW 「응…, 아！ …응응…！」
+					PRINTFORMW 「이나다, 나…이런 금년 비치는데……(은)는 , 아, 아！！」
+					CALL QUAKE(4)
+			ENDSELECT
+		ENDIF
+		PRINTFORMDL %CALLNAME:MASTER%의 격렬한 하급자압력에,
+		PRINTFORMDW 앨리스는%PLEASURE_DESCRIPTION(TARGET)%허덕이고 있다…
+		RETURN 1
+	ENDIF
+ENDIF
+
+;***********************************************************
+;関数類
+;***********************************************************
+;汎用処理を関数化しここに纏める
+;-------------------------------------------------
+
+;-------------------------------------------------
+;애태움開始 AUTORAND(100)(101)
+;-------------------------------------------------
+@TEXTDISPLAY_CATEGORY_10_TEASE_K14
+IF IS_COMGRONAME("적극적으로 한다/태연하게 한다")
+	PRINTFORM 「%RAND_SPLIT("앗/읏/후아/응읏/아앗/응아")%…
+	CALL AUTOHEARTCB_K14
+	SELECTCASE AUTORAND(4, 100)
+		CASE 0
+			PRINTFORM  안타까운 것 같은\@ IS_NOWACTNAME("정상위시킨다/대면좌위시킨다/역강간") ? 얼굴 # 성출 \@해 버려서….\@ IS_NOWACTNAME("정상위시킨다/대면좌위시킨다/역강간") ? 좋은 경치 # 사랑스럽다 \@…
+			CALL PRINT_SYMBOL_K14
+			PRINTFORM 「이 오고 싶어？ 
+			;Ａ섹스以外
+			IF IS_NOWACTNAME("역강간/정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다")
+				PRINTFORM \@ PENIS(MASTER) ? 나의질내에 털어 놓고 싶다 # 가게해줘갖고 싶다 \@
+			;Ａ섹스
+			ELSE
+				PRINTFORM \@ PENIS(MASTER) ? 나의 엉덩이에 털어 놓고 싶다 # 가게해줘갖고 싶다 \@
+			ENDIF
+			PRINTFORMW 의군요？」
+			PRINTFORMW 「 그렇지만 나…, 이런 건 방해다 부족해. 좀 더,%RAND_SPLIT("부착합/완장")%라고 받기 때문에…」
+		CASE 1
+			PRINTFORMW  열중해 허리\@ IS_NOWACTNAME("역강간/배면좌위") ? 밀어올려도 #  털어도 \@안되어요……. 아직 이인가 다툴 생각, 없는 것…」
+			PRINTFORMW 「 그렇지만%CNAME(MASTER, TARGET)%, 나에게\@ PENIS(MASTER) ? 사정를관리 # 쾌감을 컨트롤 \@되는 것, 싫지 않을 것입니다？」
+			PRINTFORMW 「후후…그 한심하다\@ IS_NOWACTNAME("정상위시킨다/대면좌위시킨다/역강간") ? 얼굴 # 소리 \@, 조크조크 해버린다….\@ IS_NOWACTNAME("정상위시킨다/대면좌위시킨다/역강간") ? 키스했다쿠 # 견딜 수 없고 \@되어버리는 원…」
+			IF IS_NOWACTNAME("정상위시킨다/대면좌위시킨다/역강간")
+;OriginalString : 20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"　　　　　%KOJO_RAND_K14(("키스"), 1)%")
+				CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"     %KOJO_RAND_K14(("키스"), 1)%")
+				CLEARLINE 1
+				CALL SET_KISS
+			ENDIF
+		CASE 2
+			PRINTFORMW  그렇게 바보 같은 요진%RAND_SPLIT("끊어/라고도")%, 아직 이나 키%RAND_SPLIT("るつもりはないわよ/ないわよ、悪いけど")%」
+			PRINTFORMW 「내가 만족할 때까지, 아직 노력해 준다%RAND_SPLIT("와/로부터")%…」
+		CASE 3
+			PRINTFORMW  %CNAME(MASTER, TARGET)%, 이제 이크일 밖에 머리에 없구나. 나의\@ PENIS(MASTER) ? 질내에사정했다구라고 # 안으로 가고 싶어서 \@감등 없구나…」
+			PRINTFORMW 「…그렇지만 안되어요.%RAND_SPLIT("나쁘다/유감이다")%하지만, 또 이인가 다툴 생각, 없으니까…」
+	ENDSELECT
+ELSE
+	PRINTFORM 「%RAND_SPLIT("읏, 하앗/아읏, 아앗/응읏")%
+	CALL AUTOHEARTCB_K14
+	SELECTCASE AUTORAND(3, 101)
+		CASE 0
+			PRINTFORMW  구, 안 되요…간단하게는 이나 등 있고로부터…」
+		CASE 1
+			PRINTFORMW  아직, 안 되요…나, 아직 부족해요…」
+		CASE 2
+			PRINTFORMW  마음대로는 이나 등 있고 원이야……좀 더 노력해 주기 때문에……」
+	ENDSELECT
+ENDIF
+SIF PALAM:쾌Ｃ > 8500 || PALAM:쾌Ｖ > 8500
+	CALL FADEIN(13, @"（%RAND_SPLIT("그렇지만 나……, 조금 위험한, 일지도…/읏, 내가 먼저 가 버릴 것 같다……/라든가 말하면서, 나, 이제 안돼, 일지도…")%）")
+
+;-------------------------------------------------
+;COM:쾌감을 참는다 AUTORAND(102)
+;-------------------------------------------------
+@TEXTDISPLAY_CATEGORY_10_COM14_K14
+SELECTCASE AUTORAND(3, 102)
+	CASE 0
+		PRINTFORMW 「뭐야,%RAND_SPLIT("필사적으로참다해 버려/참다이라니 사랑스럽지 않아요")%……」
+		PRINTFORMW 「그러한 일 되면(자),%RAND_SPLIT("억지로/억지로")%\@ TEQUIP:페니스밴드 ? イかせ # 搾り取り \@싶어져…」
+	CASE 1
+		PRINTFORMW 「은%RAND_SPLIT("그래/해")%끊어 이 나무 그런 것은\@ TENSION(TARGET, 8) == "高い" ? バレバレよ？ # 判っているのよ… \@」
+		PRINTFORM 「\@ TEQUIP:페니스밴드 ? 이런 완구 너머에서도, 전해져 오는 것 # 나의 안으로, 이렇게 움찔움찔 시켜 비치는데 \@…
+		CALL PRINT_SYMBOL_K14
+	CASE 2
+		PRINTFORMW 「\@ ALI(0) ? 헤에 # 후후 \@, 재미있네요？ 좋아요…%CNAME(MASTER, TARGET)%가 언제까지%RAND_SPLIT("참다성과/참을 수 있다")%인가, 시험해 준다\@ ALI(0) ? ♪ # … \@」
+		CALL FADEIN(13, @"「…%RAND_SPLIT("정령들 노력하세요/뭐, 쓸데없다고 생각하지만. 후후…/정령들 노력하는 일이군요")%」")
+		WAIT
+ENDSELECT
+
+;-------------------------------------------------
+;拒絶処理（ACT103, 역강간は抵抗できないので含めない）AUTORAND(103)
+;-------------------------------------------------
+@PRINT_ACTGR_10_REJECT_K14
+;성교봉사중からの拒絶		TFLAG:ACT파생の枠内で処理しないと整合性がおかしくなる場合があるかな？
+IF (IS_NOWACTNAME("정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다") && V_SEX(MASTER)) || (IS_NOWACTNAME("항문섹스시킨다") && A_SEX(MASTER))
+	SELECTCASE V_SEX(MASTER) ? PALAM:쾌Ｖ # PALAM:쾌Ａ
+		;そりゃまぁ怒るだろうっていう
+		CASE IS >= 8500
+			PRINTFORMW 「, , 뭐야 그것\@ TENSION(TARGET, 8) == "高い" ? ！？ # ！ \@ 지금에서야 어떤 작정(생각)이야！」
+			CALL FADEIN(13, "「…허락하지 않는다」")
+			PRINTFORMW 「절\@ TENSION(TARGET, 8) == "高い" ? 읏 # \@대에 허락하지 않아요！ 그런 일！」
+		CASE IS >= 5000
+			PRINTFORMW 「조금%CNAME(MASTER, TARGET)%！ 도대체 어떤 작정(생각)？」
+			PRINTFORMW 「%RAND_SPLIT("지금에서야/이제 와서")%혐이라든지…, 있을 수 없어요！」
+		CASEELSE
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%…, 장난쳐？」
+			PRINTFORMW 「그렇게 제멋대로인 흉내내 허락할 생각은 없어요…」
+	ENDSELECT
+	;ACT103[역강간]
+	TCVAR:행동예약 = 103
+;ACT開始時の拒絶
+ELSE
+	SELECTCASE AUTORAND(2, 103)
+		CASE 0
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%…, 이 나에게 창피를 줄 생각？」
+			PRINTFORMW 「절대로 허락하지 않아요, 그런 일……」
+		CASE 1
+			PRINTFORMW 「에 , 그렇게…이 내가 말하는 것이 (들)물을 수 없다는 (뜻)이유」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%…, 각오는 되어있겠지요？」
+	ENDSELECT
+	;ACT60[스펭킹]	@ACT_SETが実装されると楽に色々できそう
+	TCVAR:행동예약 = 60
+ENDIF
+;상태변화[분노]
+TCVAR:상태변화 = 6
+
+;-------------------------------------------------
+;REACT분류"受け入れる"の汎用処理群(0) ～ (2)
+;-------------------------------------------------
+
+;*****************************
+;・0, TCVAR:MASTER:가버려用 AUTORAND(104)(105)
+;*****************************
+@PRINT_ACTGR_10_ACCEPT_0_K14
+;最初にQUAKE
+CALL QUAKE(4)
+;共用部分
+PRINTFORM 「%RAND_SPLIT("후아, 아앗/아웃/쿠, 앗/응앗/우아…앗/하웃, 아…아″/아…아″！ 야")%…
+;AH2
+CALL AUTOHEARTCB_K14
+;Ａ성교봉사以外			Ａ성교とその他で別ける
+IF IS_NOWACTNAME("역강간/정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다")
+	PRINTFORM  %RAND_SPLIT("그런, 안쪽…까지/아, 안쪽에…맞아/그렇게,당했다들…나, 나")%
+;Ａ성교봉사
+ELSE
+	PRINTFORM  %RAND_SPLIT("이상해져 버린닷！ 나…엉덩이 따위로/싫다…엉덩이, 너무 좋아/얏！ 어째서, 엉덩이…이렇게")%
+ENDIF
+;RAND_SPLIT挟んで
+PRINTFORM %RAND_SPLIT("읏/")%
+;PS2で括弧を閉じる
+CALL PRINT_SYMBOL2_K14
+CALL QUAKE(4)
+;죠교자の감각4以上		面倒되었다ので共通処理
+IF (IS_NOWACTNAME("역강간/정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다") && ABL:TARGET:Ｖ감각 > 4) || (IS_NOWACTNAME("항문섹스시킨다") && ABL:TARGET:Ａ감각 > 4)
+	SELECTCASE AUTORAND(2, 104)
+		CASE 0
+			PRINTFORM 「%RAND_SPLIT("응하/후/하/아")%！ 아！ %RAND_SPLIT("あ/ん")%…아
+		CASE 1
+			PRINTFORM 「%RAND_SPLIT("아/하/응")%！ 있고, 좋다！ 거기, 좀 더…좀 더
+	ENDSELECT
+;その他
+ELSE
+	SELECTCASE AUTORAND(2, 105)
+		CASE 0
+			PRINTFORM 「%RAND_SPLIT("아/응/야/하")%응! 응…%RAND_SPLIT("ん/く")%！ 구…, 아
+		CASE 1
+			PRINTFORM 「응응！ 하,%RAND_SPLIT("하/응/후/쿠")%！ 히…아
+	ENDSELECT
+ENDIF
+CALL PRINT_SYMBOL2_K14
+;地の文を処理
+PRINTFORMD %CALLNAME%(은)는 
+IF IS_NOWACTNAME("역강간/정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다")
+	PRINTFORMDL \@ ABL:TARGET:Ｖ감각 > 4 ? 개발하고 잘랐다 # 서투른 \@질오까지 찔린다\@ ABL:TARGET:Ｖ감각 > 4 ? 미칠 듯한까지의쾌락에 격렬하고%RAND_SPLIT("몸부림침/흩트려라")%(이)면서 # 감각에 당황하면서 \@、
+ELSE
+	PRINTFORMDL \@ ABL:TARGET:Ａ감각 > 4 ? 자포자기하고 잘랐다 # 아직도 친숙해 지지 않는다 \@%ANUS_DESCRIPTION(TARGET)%(을)를 최안쪽까지 관철해져
+	PRINTFORMD \@ ABL:TARGET:Ａ감각 > 4 ? 그%RAND_SPLIT("변태적열락/흠칫 한기를 수반하는 것 같은 쾌감")%에 # %RAND_SPLIT("沸きあが/湧きおこ")%기묘한 감각에 당황하면서 \@,
+ENDIF
+PRINTFORMDW %PLEASURE_DESCRIPTION(TARGET)%허덕이고 있다…
+
+;*****************************
+;・1, PALAM:快Ｘ > 8500用
+;*****************************
+@PRINT_ACTGR_10_ACCEPT_1_K14
+CALL QUAKE(4)
+PRINTFORM 「%RAND_SPLIT("아″/히앗/우…아")%…
+CALL AUTOHEARTCB_K14
+PRINTFORMW  %RAND_SPLIT("아, 안됏！ 이렇게,당했다랏！/머리안, 진흰색…에！/시, 싫닷！ 나, 이제(벌써)…읏！/야다코레！ 녹는다！ 녹아 버린다앗！")%」
+
+;*****************************
+;・2, 汎用
+;*****************************
+@PRINT_ACTGR_10_ACCEPT_2_K14
+;ACT共通部分
+PRINTFORM 「%RAND_SPLIT("하, 하아…/아…아아…읏/아, 아아…읏/쿳！ 아……응아앗/응읏……앙！ 아앗")%
+CALL AUTOHEARTCB_K14
+SELECTCASE GET_ACTNAME(TFLAG:ACT)
+	;ACT정상위시킨다
+	CASE "정상위시킨다"
+		;自然な/無理のない행동
+		IF GROUPMATCH(GET_COM_RANK(), "自然な행동", "無理のない행동")
+			PRINTFORMW  \@ GET_COM_RANK() == "자연스러운행동" ? 조, 좋아요！ 응 좀 더…, 좀 더！ # 겨, 격렬하다…, 원이군요… \@」
+		;無理を했다행동
+		ELSE
+			PRINTFORMW  좋아요…, 좀 더 격렬하게 시라고도……」
+		ENDIF
+	;ACT후배위시킨다
+	CASE "후배위시킨다"
+		PRINTFORMW  %RAND_SPLIT("뭐야, 이것…좀, 굉장한, 잇！/(이)나다 이것…굉장히……, 흥분해 버린닷！/야…그런……짐승, 같이！")%」
+	;ACT대면좌위시킨다
+	CASE "대면좌위시킨다"
+		;自然な/無理のない행동
+		IF GROUPMATCH(GET_COM_RANK(), "自然な행동", "無理のない행동")
+			PRINTFORMW  \@ TALENT:MASTER:작은체형 ? 사랑스럽네요…키스했다구 되어 버린다 # 이봐요, 여기를 향해 \@……」
+		;無理を했다행동
+		ELSE
+			PRINTFORMW  \@ AFFECTION("상사상애") ? 저기…키스, 해 # 이봐요, 나에게키스하세요 \@……」
+		ENDIF
+		;コンフィグでFADEがONかつ1/2の確率でフェードアウト
+		IF ANIME_CONFIG("FADE") && !RAND:2
+;OriginalString : 20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"　　　　　%KOJO_RAND_K14(("키스"), 1)%")
+			CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"     %KOJO_RAND_K14(("키스"), 1)%")
+			CLEARLINE 1
+		;漏れたらPRINT
+		ELSE
+			PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)%」
+		ENDIF
+	;ACT배면좌위시킨다
+	CASE "배면좌위시킨다"
+		IF 0
+		;負荷0, 自然な행동。確率で真
+		ELSEIF GET_COM_RANK() == "自然な행동" && PERCENT(60)
+			PRINTFORM  %RAND_SPLIT("아, 얕은 곳, 비비어지면…안타깝게 되어 버린다/그래, 거기！ 질척질척 되어…기분 좋아서")%
+			CALL PRINT_SYMBOL2_K14
+		;負荷1, 無理のない행동。確率で真
+		ELSEIF GET_COM_RANK() == "無理のない행동" && PERCENT(50)
+			PRINTFORMW  \@ AFFECTION("상사상애") ? 저기 # 이봐요 \@, 좀 더…, 나에게\@ AFFECTION("상사상애") ? 손대어 # 접해 \@……」
+		;漏れてきたらここで拾って完結
+		ELSE
+			;共用部分。TENSION派生へ続く
+			PRINTFORM  %RAND_SPLIT("뒤로부터/젖가슴")%%RAND_SPLIT("弄/触")%의…
+			;죠교자BASE:만족派生		@BASERATION嫌い。@TENSION好き
+			IF GROUPMATCH(TENSION(TARGET, 8), "高い", "一般")
+				;三項で一行に
+				PRINTFORM  \@ TENSION(TARGET, 8) == "高い" ? %RAND_SPLIT("좋아/흥분, 해 버린다/기분, 좋다")% # %RAND_SPLIT("感じ、ちゃう/凄く、いい")% \@
+				;PALAM:快Xが一定以上
+				IF PALAM:쾌Ｃ > 4000 || PALAM:쾌Ｖ > 4000 || PALAM:쾌Ｂ > 4000
+					PRINT …
+					CALL PRINT_SYMBOL2_K14
+				;その他
+				ELSE
+					PRINTW ……」
+				ENDIF
+			ELSE
+				PRINTFORMW %RAND_SPLIT("나쁘지 않다/조금 괜찮다/기분 좋다")%, 원이군요…」
+			ENDIF
+		ENDIF
+	;ACT항문섹스시킨다
+	CASE "항문섹스시킨다"
+		PRINTFORM  %RAND_SPLIT("겨, 격렬하다아…의/그, 그렇게…격렬해져, 쿠/(이)나다 이것！ 엉덩이, 이상하고")%
+		;PALAM:쾌Ａが一定以上ならPS2をCALLする
+		IF PALAM:쾌Ａ > 4000
+			PRINT …
+			CALL PRINT_SYMBOL2_K14
+		;その他なら普通に終わる
+		ELSE
+			PRINTW ……」
+		ENDIF
+	;ACT역강간
+	CASE "역강간"
+		;REACT부하派生			地の文派生に対応시킨다
+		SELECTCASE GET_COM_RANK()
+			CASE "自然な행동"
+				PRINTFORM  %RAND_SPLIT("읏！ 이것……, 안쪽까지, 닿아/(이)나다 나…, 허리, 멈추지 않게 되어 버린다/굉장히, 깊어서…좋은 곳에, 맞아")%
+			CASE "無理のない행동"
+				PRINTFORM  %RAND_SPLIT("이봐요, 좀 더！ 좀 더…, 아래로부터, 밀어올려/저기 기분 좋다？ 기분, 양 있어 실마리？ 아아/이봐요！ 어때？ 나에게 범해져…, 기분 좋은거야？ 응아")%
+			CASE "無理を했다행동"
+				PRINTFORM  %RAND_SPLIT("이봐요/자")%, 좀 더！ %CNAME(MASTER, TARGET)%의 %RAND_SPLIT("한심한/안쓰러운")%%RAND_SPLIT("소리…, 들려줘/얼굴…, 나에게 보이게 해 줘")%
+		ENDSELECT
+		;PALAM:쾌Ｖが一定以上ならPS2をCALLする
+		IF PALAM:쾌Ｖ > 4000
+			PRINT …
+			CALL PRINT_SYMBOL2_K14
+		;その他なら普通に終わる
+		ELSE
+			PRINTW ……」
+		ENDIF
+		;죠교자が정욕か몽롱、若しくは만족度50%以上かつ1/2の確率で真
+		IF GROUPMATCH(GET_CONDITION(TARGET), "정욕", "몽롱") > 0 || (TENSION(TARGET, 8) == "高い" && !RAND:2)
+			;コンフィグでFADEがONの場合1/2の確率で真
+			IF ANIME_CONFIG("FADE") && !RAND:2
+;OriginalString : 20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"　　　　　%KOJO_RAND_K14(("키스"), 1)%")
+				CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), @"     %KOJO_RAND_K14(("키스"), 1)%")
+				CLEARLINE 1
+			;漏れたらPRINT
+			ELSE
+				PRINTFORMW 「%KOJO_RAND_K14(("키스"), 1)%」
+			ENDIF
+			PRINTFORMW 「응…\@ TALENT:MASTER:작은체형 ? 사랑스러워요,%CNAME(MASTER, TARGET)% # 감등 없어요, 이것 \@……」
+			PRINTFORMDW %CALLNAME%(은)는 전가 되어,%CALLNAME:MASTER%의 입술을 탐내면서 허리를 격렬하게 거절해 세웠다…
+			;키스を捏造
+			CALL SET_KISS
+		;その他
+		ELSE
+			PRINTFORMD %CALLNAME%(은)는 
+			;역강간に派生を！という要望が却下당했다ので구상で捏造する。いずれ条件きめうちしてRANDは捨てたい感
+			SELECTCASE AUTORAND(3, 106)
+				CASE 0
+					PRINTFORMDW %CALLNAME:MASTER%의 가슴에 손을 다해 허리를 상하에 거절해 세우면서 쾌락을 탐내고 있다…
+				CASE 1
+					PRINTFORMDL 뒤로 위로 돌리고 젖혀지면서 허리를 그라인드시켜,
+					PRINTFORMDW %CALLNAME:MASTER%의 반응을 즐기면서도, 자신도 쾌락에 빠지고 있다…
+				CASE 2
+					PRINTFORMDL 허리를 요염하게 벌름거려, 때때로 골반에 클리토리스를 문질러 바르면서,
+					PRINTFORMDW %CALLNAME:MASTER%(을)를 범하는, 그 도착적인 즐거움에 열중하고 있다…
+			ENDSELECT
+		ENDIF
+ENDSELECT

@@ -1,0 +1,222 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	엘리스구상 휴식系アクション구상ファイル
+;
+;	휴식系アクション구상をまとめたファイル
+;
+;Version		Reason
+;1.71			@구상記入チェック仕様に。その他加筆、修正等
+;1.60			ACT분류単体ファイルとして独立。旧仕様のACTを削除
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;휴식系 ACT90～92
+;========================================================================
+;・TFLAG:ACT(90=휴식시킨다/91=영양제를 먹인다/92=치료한다)
+;・TFLAG:ACT분류 == 9に該当
+;・汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "휴식")で参照する事が可能
+;・ACT91, 영양제를 먹인다とACT92, 치료한다の発生には特定の素質が条件となる
+;-------------------------------------------------
+
+;────────────────────────────────────
+;ACT90, 휴식시킨다
+;────────────────────────────────────
+;・この時点では命令のみ
+;・안면승마系は解除される
+;・구속系TEQUIP(밧줄/눈가리개/볼개그/삼각목마)は解除される
+;・汚れはリセットされる
+;・죠교자、죠교대상の자위は中断
+;・リアクションが"자위를 시작한다"だった場合"勝손に자위をし始めた"に派生する
+;・지속系도구(바이브/항문바이브/항문비즈/관장그릇＋플러그/유두캡)장착時は
+;・도구のせいであまり休めなかったに派生する
+;-------------------------------------------------
+@KOJO_ACT_K14_90
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=普通に休んだ/1=도구のせいであまり休めなかった/2=勝손に자위をし始めた)
+;・ACT파생への代入は@ACTION_APPLY2_90で行われ、これを参照できるのはREACT以降(即ち、ACTでは参照はできない)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT90, 휴식시킨다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;RANDACTで振り分ける
+	SELECTCASE RANDACT(2, 0)
+		CASE 0
+			;죠교대상BASE:체력派生
+			;OriginalString : お互いにまだ余裕ありそうだけど # 私、ちょっと疲れたのよね \@」
+			;OriginalString : 私はまだまだ余裕なんだけど # そういえば、私もちょっと疲れたわね… \@」
+			SELECTCASE TENSION(MASTER, 0)
+				CASE "高い"
+					{
+					PRINTFORMW 「그런데, 조금 쉬어요.\@ TENSION(TARGET, 0) == "高い" 
+                               ? 서로 아직 여유 있을 것이지만 # 나, 조금 지쳤어요 \@」
+					}
+					PRINTFORMW 「뭐, 어쨌든…지금 쉬어 두면 좋아요」
+				CASE "一般"
+					PRINTFORMW 「조금 지치고 같기 때문에, 조금의 사이 휴게로 해요」
+					{
+					PRINTFORMW 「\@ TENSION(TARGET, 0) == "일반" 
+                               ? 나는 아직도 여유이지만 # 그렇게 말하면, 나도 조금 지쳤군요… \@」
+					}
+				CASE "低い"
+					PRINTFORMW 「상당히 여위어 버렸다 원이군요……. 그렇게 격렬하게 한 생각도 없지만. 라고…」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%에 있어 그렇지 않았다 같구나？」
+					PRINTFORMW 「아무튼 좋아요. 조금의 사이이지만, 천천히 쉬어 주세요」
+			ENDSELECT
+		CASE 1
+			IF 0
+			ELSEIF AFFECTION("상사상애") && PERCENT(80)
+				PRINTFORMW 「지친 원이군요. 조금 쉴까요…？」
+				PRINTFORM 「%CNAME(MASTER, TARGET)%에는, 아직 노력해 주지 않으면 안 되고…그런데…
+				CALL PRINT_SYMBOL_K14
+			ELSEIF AFFECTION("익애") && PERCENT(70)
+				PRINTFORMW 「조금 쉽시다」
+				PRINTFORM 「나중에 또 즐기게 해 주기 때문에…
+				CALL PRINT_SYMBOL_K14
+			ELSEIF AFFECTION("권애") && PERCENT(60)
+				PRINTFORMW 「조금 휴게로 합시다」
+				PRINTFORM 「끝나면(자) 또 즐기게 해 주세요…
+				CALL PRINT_SYMBOL_K14
+			ELSEIF TRUECHECK(AFFECTION("嫌悪"), T_COND("분노")) > 0
+				PRINTFORMW 「조금 쉬어요…. 어머나, 지금 일순간 안심한 원이군요…？」
+				PRINTFORMW 「유감이지만, 이것으로 마지막이 아니니까」
+				PRINTFORMW 「지금 회복해 둔 (분)편이, 몸이기 때문에…」
+			ELSE
+				PRINTFORMW 「조금 휴게%RAND_SPLIT("저기/로 해요")%」
+				PRINTFORMW 「말해 놓지만,%RAND_SPLIT("아직 끝이 아니어요…？/이것으로 끝이 아니니까")%」
+			ENDIF
+	ENDSELECT
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;ACT91, 영양제를 먹인다
+;────────────────────────────────────
+;・この時点では命令のみ
+;・죠교대상のリアクションが"거부한다"であった場合は"栄養剤を捨てた"に派生する
+;・その他の反応の場合は"栄養剤を飲んだ"扱いになる
+;・죠교자にTALENT:배합지식が無い場合は発生しない(배합지식自体はSHOPでの購入が可能)
+;・미약を使用することもある
+;・TEQUIP(볼개그/삼각목마)は解除される
+;・안면승마系、자위系は解除される
+;-------------------------------------------------
+@KOJO_ACT_K14_91
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=栄養剤を飲んだ/1=栄養剤を捨てた)
+;・ACT파생への代入は@ACTION_APPLY2_91で行われ、これを参照できるのはREACT以降(即ち、ACTでは参照はできない)
+;-------------------------------------------------
+;KFLAGをリセット
+KFLAG:TARGET:91 = 0
+KFLAG:TARGET:92 = 0
+
+IF 구상記入チェック(100) && !TEQUIP:눈가리개
+	;1/2
+	IF RAND:2
+		SELECTCASE RANDACT(3, 10)
+			CASE 0
+				PRINTFORMW 「샹하이, 예의 것을 가져와 주세요」
+				PRINTFORMDW %CALLNAME%(은)는 지만 그렇게 말하면(자),\@ GET_KFLAG_K14("상사상애") ? １몸의 인형 # 샹하이 \@하지만 나타나
+				CALL FPRINTL(@"「\@ AFFECTION("익애") ? ﾊﾔｸﾉﾒﾖ # ﾊﾞｶｼﾞｬﾈｰﾉ \@」", COLOR2_K14("上海"), "RIGHT")
+				PRINTFORMDW 이렇게 말하면서,%CALLNAME:MASTER%에 영양제를\@ AFFECTION("익애") ? 손도했다 # 내던졌다 \@…
+				;代入しREACTで参照する
+				KFLAG:TARGET:91 = 1
+			CASE 1
+				PRINTFORMW 「호라이, 아레를 가져오며」
+				PRINTFORMDW %CALLNAME%(은)는 지만 그렇게 말하면(자),\@ GET_KFLAG_K14("상사상애") ? １몸의 인형 # 호우라이 \@하지만 나타나
+				CALL FPRINTL(@"「\@ AFFECTION("익애") ? ｻｯｻﾄﾉﾒﾖ # ﾄﾞｰﾅｯﾃﾓｼﾗﾈｰｿﾞ \@」", COLOR2_K14("上海"), "RIGHT")
+				PRINTFORMDW 이렇게 말하면서,%CALLNAME:MASTER%에 영양제를\@ AFFECTION("익애") ? 손도했다 # 내던졌다 \@…
+				;代入しREACTで参照する
+				KFLAG:TARGET:91 = 2
+			;OriginalString : 大分お疲れみたいね…。蓬莱 \@、アレを持ってきてくれるかしら。そう、\@ GROUPMATCH(TENSION(MASTER, 0), "一般", "高い") 
+			;OriginalString : 普通のやつでいいわ # ちょっと強めのやつ \@」
+			CASE 2
+				{
+				PRINTFORMW 「\@ GROUPMATCH(TENSION(MASTER, 0), "일반", "高い") ? 조금 지친 것 같구나？ 샹하이 
+				# 상당히 지친 것 같구나…호우라이 \@, 저것을 가져와 줄까. 그래,\@ GROUPMATCH(TENSION(MASTER, 0), "일반", "高い") 
+				? 보통 녀석으로 좋아요 # 조금 강하게 하고의 녀석 \@」
+				}
+				CALL FPRINTL(@"「\@ GROUPMATCH(TENSION(MASTER, 0), "一般", "高い") ? ｼｬﾝﾊｰｲ # ﾎﾗｰｲ \@」", COLOR2_K14("上海"), "RIGHT")
+				PRINTFORMDW 대답의 소리와 함께 방의 안쪽으로부터１몸의 인형이 현상%CALLNAME:MASTER%의 발밑에 영양제를 두면(자), 무언으로 떠나 갔다…
+				;代入しREACTで参照する
+				KFLAG:TARGET:91 = 3
+				;栄養剤を飲むと数値が変動するので上海/蓬莱の判定にKFLAG:92を充てる
+				KFLAG:TARGET:92 = GROUPMATCH(TENSION(MASTER, 0), "一般", "高い") ? 1 # 2
+		ENDSELECT
+	;1/2
+	ELSE
+		IF 0
+		ELSEIF AFFECTION("상사상애") && !T_COND("분노")
+			SELECTCASE RANDACT(3, 0)
+				CASE 0
+					PRINTFORM 「이것은 나의 자신작이야！ 이제 맛이 없다니 말하게 하지 않기 때문에
+					CALL PRINT_SYMBOL_K14
+					PRINTFORMDW 앨리스는 득의에 찬 얼굴인 모습으로 %CALLNAME:MASTER%에 소병을 전했다…
+				CASE 1
+					PRINTFORM 「이번이야말로 괜찮아！ 반드시%CNAME(MASTER, TARGET)%(이)가 입맛에 맞을 것…？ , 마시고 마셔
+					CALL PRINT_SYMBOL_K14
+					PRINTFORMDW 앨리스는 자신만만한 모습으로 %CALLNAME:MASTER%에 소병을 전했다…
+				CASEELSE
+					PRINTFORM 「이것이야말로 나의 최고 걸작이야！ 절대 맛있을 것이니까, 기대해도 좋아요
+					CALL PRINT_SYMBOL_K14
+					PRINTFORMDW 앨리스는 열광적인 모습으로 %CALLNAME:MASTER%에 소병을 전했다…
+			ENDSELECT
+		ELSEIF AFFECTION("익애") && !T_COND("분노")
+			SELECTCASE RANDACT(3, 1)
+				CASE 0
+					PRINTFORM 「이것은 나의 수제 영양제야. 반드시 마음에 들 것이야. 걱정하지 않고 마셔 주세요
+				CASE 1
+					PRINTFORM 「조금 맛내기를 바꾸어 보았어. 반드시 마음에 들 것이야. , 마셔 주세요
+				CASE 2
+					PRINTFORM 「조금 배합을 바꾸어 보았어. 반드시 마음에 들 것이야. , 시험해 봐 주세요
+			ENDSELECT
+			CALL PRINT_SYMBOL_K14
+		ELSEIF AFFECTION("권애") && !T_COND("분노")
+			SELECTCASE RANDACT(3, 2)
+				CASE 0
+					PRINTFORMW 「이것 친구의 마녀로부터의 이익 분배야… 마셔 봐 주세요」
+				CASE 1
+					PRINTFORMW 「이것마을로 상당히 평판인것 같아요. 마셔 봐 주세요」
+				CASE 2
+					PRINTFORMW 「이것 고물상이 말하려면 , 밖의 세계로부터 온 것 같은거야. 시험해 봐 주세요」
+			ENDSELECT
+		ELSEIF TRUECHECK(AFFECTION("嫌悪"), T_COND("분노")) > 0
+			SELECTCASE RANDACT(3, 3)
+				CASE 0
+					PRINTFORML 「, 이것을 마시세요」 
+					PRINTFORMD 앨리스에게 건네진 소병을 보면(자) 「
+					CALL SKULL2C_K14(COLOR2_K14("pink"))
+					PRINTFORMDW 」의 마크가 쳐 있다…
+				CASE 1
+					PRINTFORML 「, 이것을 마시며」
+					PRINTFORMDW 앨리스에게 건네진 소병을 보면(자) 「독」이라고 써 있다…
+				CASE 2
+					PRINTFORML 「, 빨리 마시며」
+					PRINTFORMDW 앨리스에게 건네진 소병을 보면(자) 「극」이라고 써 있다…
+			 ENDSELECT
+		ELSE
+			PRINTFORMW 「네, 영양제야. 마셔 주세요」
+		ENDIF
+	ENDIF
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;ACT92, 치료한다
+;────────────────────────────────────
+;・죠교자が죠교대상を치료しようとする
+;・REACT분류が"날뛴다"であった場合は"暴れたため치료できなかった"に派生する
+;・その他の場合は"体の隅々まで撫で回して치료했다"という扱い
+;・죠교자にTALENT:치료がなければ発生しない
+;・미약を使用することもある
+;・TEQUIP:삼각목마は解除される
+;・안면승마系、자위系は解除される
+;-------------------------------------------------
+;@KOJO_ACT_K14_92
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=体の隅々まで撫で回して치료했다/1=暴れたため치료できなかった)
+;※ACT파생への代入は@ACTION_APPLY2_92で行われ、これを参照できるのはREACT以降(即ち、ACTでは参照はできない)
+;-------------------------------------------------
+;発生し得ないのでこのまま방치。TALENT:치료は後天素質として獲得できてもいいかも知れない
+;-------------------------------------------------
+;QUIT

@@ -1,0 +1,140 @@
+﻿@ASSI_ACT_APPLY, ARG
+SELECTCASE NOWASSIACTNAME(ARG)
+	;수음
+	CASE "손으로 애무"
+		SOURCE:MASTER:쾌Ｃ += 100 +ACT_FROM(ASSI, 1) * (2 + TALENT:ASSI:손가락기술) /2
+		TCVAR:MASTER:금회발기 += GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:손가락기술 * 50
+	;クンニ・펠라チオ
+	CASE "입으로 애무"
+		SOURCE:MASTER:쾌Ｃ += 150 +ACT_FROM(ASSI, 1) * (3 + TALENT:ASSI:혀기술 + TALENT:ASSI:161) / 3
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:혀기술 * 50 + TALENT:ASSI:거친혀 * 50)
+	;스마타・貝合わせ
+	CASE "스마타"
+		SOURCE:MASTER:쾌Ｃ += 100 +ACT_FROM(ASSI, 1) * (3 + TALENT:ASSI:젖기쉬움 - TALENT:ASSI:젖기어려움) / 3
+		TCVAR:MASTER:금회발기 += GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무")
+	;파이즈리
+	CASE "파이즈리한다"
+		SOURCE:MASTER:쾌Ｃ += 100 +ACT_FROM(ASSI, 1) * (4 + TALENT:ASSI:거유 - TALENT:ASSI:빈유) / 4
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:거유 * 50 - TALENT:ASSI:빈유 * 50 + TALENT:ASSI:음유 * 50)
+	;발コキ
+	CASE "풋잡하기"
+		SOURCE:MASTER:쾌Ｃ += 50 + ACT_FROM(TARGET, 1) * (3 + TALENT:ASSI:각선미) / 3
+		TCVAR:MASTER:금회발기 += GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + GET_ABL(MASTER, "마조끼")
+	;로터, 오나홀
+	CASE "Ｃ도구"
+		SOURCE:MASTER:쾌Ｃ += 300 + ITEM:9 * 100 + (TALENT:ASSI:도구능숙 + 3) *ACT_FROM(ASSI, 11) / 3
+		TCVAR:MASTER:금회발기 += GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "도구")
+		SIF TFLAG:조수ACT파생 == 1
+			TEQUIP:오나홀 = 1 + ITEM:9
+	;역강간
+	CASE "역강간"
+		SOURCE:MASTER:쾌Ｃ += 300 + 2 *ACT_FROM(TARGET, 7)
+		;--------EDIT 001 START--------
+		;삽입중플래그の中身をキャラ등록번호に変更
+		;------------------------------
+		TEQUIP:조수성교봉사중 = ARG
+		TFLAG:조수에삽입중 = ARG == ASSI:1 ? 1 # 2
+		TCVAR:MASTER:발기도 = 1500
+		;--------EDIT 001 END  --------
+	;항문애무
+	CASE "항문애무"
+		SOURCE:MASTER:쾌Ａ += 60 +ACT_FROM(ASSI, 3) * (2 + TALENT:ASSI:손가락기술) / 2
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "Ａ감각") * 10 + GET_ABL(MASTER, "마조끼") * GET_ABL(ASSI, "기교")) / 10
+	;항문펠라
+	CASE "항문펠라"
+		SOURCE:MASTER:쾌Ａ += 60 +ACT_FROM(ASSI, 3) * (3 + TALENT:ASSI:혀기술) / 3
+		TCVAR:MASTER:금회발기 += GET_ABL(MASTER, "Ａ감각")
+	;항문로터
+	CASE "항문로터"
+		SOURCE:MASTER:쾌Ａ += 100 + ITEM:9 * 100 + (TALENT:ASSI:도구능숙 + 3) *ACT_FROM(ASSI, 13) / 3
+		;남자はＡで전립선자극
+		SIF TALENT:MASTER:남자
+			TCVAR:MASTER:전립선자극 += 1
+		TCVAR:MASTER:금회발기 += GET_ABL(MASTER, "Ａ감각")
+	;항문바이브
+	CASE "항문바이브"
+		SOURCE:MASTER:쾌Ａ += 100 + ITEM:9 * 200 + (TALENT:ASSI:도구능숙 + 3) *ACT_FROM(ASSI, 13) / 3
+		;남자はＡで전립선자극
+		SIF TALENT:MASTER:남자
+			TCVAR:MASTER:전립선자극 += 1
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "Ａ감각") * 10 + GET_ABL(MASTER, "마조끼") * GET_ABL(ASSI, "기교")) / 10
+		TEQUIP:항문바이브 = 1 + ITEM:9
+	;가슴애무
+	CASE "가슴애무"
+		SOURCE:MASTER:쾌Ｂ += 75 +ACT_FROM(ASSI, 4) * (2 + TALENT:ASSI:손가락기술) / 3
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:손가락기술 * 50) / 2
+	;유두핥기
+	CASE "유두핥기"
+		SOURCE:MASTER:쾌Ｂ += 150 +ACT_FROM(ASSI, 4) * (3 + TALENT:ASSI:혀기술) / 3
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:혀기술 * 50) / 2
+	;유두로터
+	CASE "유두로터"
+		SOURCE:MASTER:쾌Ｂ += 100 + ITEM:9 * 100 + (TALENT:ASSI:도구능숙 + 3) *ACT_FROM(ASSI, 14) / 3
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:도구능숙 * 50)/ 2
+	;손가락삽입
+	CASE "손가락삽입"
+		SOURCE:MASTER:쾌Ｖ +=  100 +ACT_FROM(ASSI, 2) * (2 + TALENT:ASSI:손가락기술) / 2
+		;후타나리はＶで전립선자극
+		SIF TALENT:MASTER:후타나리
+			TCVAR:MASTER:전립선자극 += 1
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:손가락기술 * 50) / 2
+	;바이브
+	CASE "바이브"
+		SOURCE:MASTER:쾌Ｖ += 150 + ITEM:9 * 200 +ACT_FROM(ASSI, 2) * (TALENT:ASSI:도구능숙 + 3) / 3
+		;후타나리はＶで전립선자극
+		SIF TALENT:MASTER:후타나리
+			TCVAR:MASTER:전립선자극 += 1
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "Ｖ감각") + TALENT:ASSI:도구능숙 * 50 + GET_ABL(ASSI, "기교"))
+		TEQUIP:바이브 = 1 + ITEM:9
+	;성교
+	CASE "성교"
+		SOURCE:MASTER:쾌Ｖ +=  300 +ACT_FROM(ASSI, 5) * 3 / 2
+		;후타나리はＶで전립선자극
+		SIF TALENT:MASTER:후타나리
+			TCVAR:MASTER:전립선자극 += 1
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "성교")) / 2
+	;키스
+	CASE "키스"
+		TCVAR:MASTER:금회발기 += 50 + (GET_ABL(ASSI, "기교") + GET_ABL(ASSI, "애무") + TALENT:ASSI:혀기술 * 50 + TALENT:ASSI:거친혀 * 50) / 2
+	;안면승마
+	CASE "안면승마"
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "욕망") + GET_ABL(MASTER, "마조끼")) * 2
+	;발을핥게한다
+	CASE "발을핥게한다"
+		TCVAR:MASTER:금회발기 += (GET_ABL(ASSI, "가학") + GET_ABL(MASTER, "마조끼")) * 2
+	;자위를과시한다
+	CASE "자위를과시한다"
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "욕망") + GET_ABL(ASSI, "수치")) * 2
+	;매도
+	CASE "매도"
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "마조끼") + GET_ABL(MASTER, "노출증"))
+	;사진촬영
+	CASE "사진촬영"
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "마조끼") + GET_ABL(MASTER, "노출증"))
+	;조교자와키스
+	CASE "조교자와키스"
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "마조끼") + GET_ABL(MASTER, "욕망"))
+	;치태를응시
+	CASE "치태를응시"
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "마조끼") + GET_ABL(MASTER, "노출증"))
+	;머리를짓밟다
+	CASE "머리를짓밟다"
+		TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "마조끼") + TALENT:ASSI:새드 * 5) * 10
+	;-------------------------------------------------
+	;SPアクション
+	;-------------------------------------------------
+	CASE "신문 기사로 한다"
+		SOURCE:MASTER:노출 += 25 * (2 + ABL:ASSI:기교 * 2 + ABL:ASSI:이상) * (2 + ITEM:9)
+		SOURCE:MASTER:이탈 += 20 * SOURCE:MASTER:노출 / (3 + ABL:MASTER:순종 + ABL:MASTER:욕망 + ABL:MASTER:노출증 * 3 + ABL:MASTER:마조끼 * 2 + CFLAG:MASTER:죠교레벨 + EXP:MASTER:피사계경험 + EXP:MASTER:이상경험 / 2)
+		SOURCE:MASTER:트라우마 += (2 + TALENT:MASTER:수줍음 - TALENT:MASTER:수치없음) * (SOURCE:MASTER:이탈 + 1000) / (1000 + MARK:반항각인 * 100 - MARK:MASTER:트라우마 * 50 + EXP:MASTER:이상경험 * 10 + ABL:MASTER:노출증 * 250 + EXP:MASTER:피사계경험 * 100)
+		SOURCE:MASTER:중독충족 += SOURCE:MASTER:노출 * (CFLAG:MASTER:죠교레벨 + ABL:MASTER:노출증 + 1) * (ABL:MASTER:노출증 * 2 + 5) / (1000 + SOURCE:MASTER:트라우마)
+		IF TEQUIP:자위중 == 1 || TEQUIP:자위중 == 3
+			SOURCE:MASTER:노출 += 200 + SOURCE:MASTER:노출 / 5
+			TIMES SOURCE:MASTER:이탈 , 1.35
+			TIMES SOURCE:MASTER:중독충족 , 1.50
+			TIMES SOURCE:MASTER:달성 , 1.50
+		ENDIF
+		;今回の죠교で撮影했다횟수をカウント
+		TFLAG:51 += 1
+ENDSELECT
+

@@ -1,0 +1,24 @@
+﻿@PRESENT
+;OriginalString : 現在
+PRINT 현재
+SELECTCASE EQUIP:MASTER:노예목걸이
+	CASE 1
+		PRINTL 【노예의 목걸이】를 몸에 지니고 있습니다
+	CASEELSE
+		PRINTL 아무것도 몸에 익히고는 있지 않습니다
+ENDSELECT
+PRINTL [0] - 돌아온다
+SIF ITEM:노예목걸이
+	PRINTFORML [1] - 노예의 목걸이   \@ EQUIP:MASTER:노예목걸이 ? 装備中 # \@
+$INPUT_LOOP
+INPUT
+SELECTCASE RESULT
+	CASE 0
+		RETURN 0
+	CASE 1
+		EQUIP:MASTER:노예목걸이 ^= 1
+	CASEELSE
+		CLEARLINE 1
+		GOTO INPUT_LOOP
+ENDSELECT
+RESTART

@@ -1,0 +1,623 @@
+﻿;구상のために죠교자행동の派生を決定します
+
+;で。なんで派生条件コメントになってないんですか？これぶちきれていいよね？
+;っつうか수음の派生と同じ플래그を가버려とか연속실행とかに与えてるのは困ってしまいます
+;それ구상超書きにくいので、断固粛清させていただきます。
+
+;성교系の派生については別に悪くないんですが、ついでだし今のうちに粛清で
+
+@TRAIN_VARIATION
+
+;TFLAG:90ごとに関数分けしてしまいます
+;後々、派生データを各ACTのファイルで관리させてもいいからね
+;RRじみたダダ長いIFネスト嫌いなのもあり。どんどん刻むよ！
+
+;引数もあってもいいけど、うーん？
+TRYCCALLFORM TRAIN_VARIATION_ACT{TFLAG:90}
+CATCH
+	;COMBI派生系はなければ派生前を見に行く
+	TRYCALLFORM TRAIN_VARIATION_ACT{GET_COMBIACTNUM(TFLAG:ACT)}
+ENDCATCH
+
+
+;服を脱げと命じる（服を着ろと命じる）
+@TRAIN_VARIATION_ACT5
+;성교중ではない
+IF !GETINSERT()
+	;着ているものが2枚以下のとき、服を着ろになりうる
+	VARSET LOCAL
+	FOR LOCAL, 0, 10
+		SIF TEQUIP:MASTER:LOCAL
+			LOCAL:1 ++
+	NEXT
+	SIF LOCAL:1 <= MAX(0,RAND:5-2)
+		TFLAG:ACT파생 = 1
+;성교중、脱げる部位をつけていれば脱げに。つけていないなら着ろに。
+;코스프레はACTABLEで弾いているので考慮外
+ELSEIF !(TEQUIP:MASTER:상반신속옷 || TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷 || TEQUIP:MASTER:악세서리 || TEQUIP:MASTER:신발안)
+	TFLAG:ACT파생 = 1
+ENDIF
+
+;애무（指で애무）
+@TRAIN_VARIATION_ACT10
+;죠교대상に페니스があると、必ず수음になる
+SIF PENIS(MASTER)
+	TFLAG:ACT파생 = 1
+	;備考：페니스があると통상の애무は起こらない
+;죠교대상が페니스밴드장착中は、페니스밴드수음になる
+SIF TEQUIP:페니스밴드
+	TFLAG:ACT파생 = 2
+
+
+
+;가슴애무
+@TRAIN_VARIATION_ACT11
+;죠교대상が남자 //条件次第で乳首吸い。その他の場合は乳首責め。揉み合いには派生しない
+IF TALENT:MASTER:남자
+	;금일의방침が"귀여워해"の場合、服で妨害されなければ乳首吸い
+	IF IS_POLICY("금일", "귀여워해") && !BRACHECK(1, 1) && !GROUPMATCH(TEQUIP:성교봉사중, 3, 4)
+		TFLAG:ACT파생 = 1
+	;죠교자の호의が一定以上若しくは죠교자が혀기술持ちかつ服で妨害されない場合は2/3の確率で乳首吸い
+	ELSEIF !IS_POLICY("금일", "귀여워해") && (CFLAG:호의 >= 2000 || TALENT:혀기술) && !BRACHECK(1, 1) && !GROUPMATCH(TEQUIP:성교봉사중, 3, 4) && !RAND:3
+		TFLAG:ACT파생 = 1
+	;それ以外は乳首責め
+	ELSE
+		TFLAG:ACT파생 = 3
+	ENDIF
+	;////////////////////////////////////////////////////////////////////////////////////////////////////////
+	;남자の場合乳首責めしか発生しないのもアレなので、それなりに進展했다状況の場合は乳首吸いに派生するように
+	;////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	;必ず乳首責めになる
+	;備考：남자にはこれしか発生しないので、妨害性の상반신服を着ていると가슴애무自体行わない
+	;（ただし普通の겉옷は裾をまくって애무できる。원피스・도사복・브래지어は남자は装備しないので関係ないかも）
+	;乳首責め自体は여자にも発生するようにしておきます
+
+;죠교대상が여자
+ELSE
+	;금일의방침が"귀여워해"の場合、服で妨害されなければ乳首吸い
+	IF IS_POLICY("금일", "귀여워해") && !BRACHECK(1, 1) && !GROUPMATCH(TEQUIP:성교봉사중, 3, 4)
+		TFLAG:ACT파생 = 1
+	;전회が가슴애무なら乳首系
+	;（ただし벽통과がないと상반신服に妨害される）
+	ELSEIF !IS_POLICY("금일", "귀여워해") && IS_PREVACTNAME("가슴애무") && (TALENT:벽통과|| !BRACHECK(1, 1)) && !GROUPMATCH(TEQUIP:성교봉사중, 3, 4)
+		;죠교자に유치か혀기술があると3/4、なければ1/4で乳首吸い
+		IF TALENT:유치 || TALENT:혀기술 ? RAND:4 # !RAND:4
+			TFLAG:ACT파생 = 1
+		;それ以外は乳首責め
+		ELSE
+			TFLAG:ACT파생 = 3
+		ENDIF
+	;単独実行なら揉み系
+	ELSE
+		;죠교자の욕망+Ｂ감각３以上なら、1/2で가슴の揉み合い
+		SIF ABL:욕망 + ABL:Ｂ감각 > 2 && RAND:2
+			TFLAG:ACT파생 = 2
+		;揉み合いにならなければ가슴애무のまま
+	ENDIF
+ENDIF
+;역강간、대면좌위시킨다はACT_ABLEを抜けてくるのでACT파생1(乳首吸い)の箇所で規制する
+;体制的にちょっと無理があるので
+
+
+;クンニ（舌で애무）
+@TRAIN_VARIATION_ACT12
+;죠교대상に페니스があると、必ず펠라になる
+SIF PENIS(MASTER)
+	TFLAG:ACT파생 = 1
+	;備考：페니스があると통상のクンニは起こらない
+
+;페니스がなければクンニのまま
+
+
+
+;항문애무
+@TRAIN_VARIATION_ACT13
+;죠교대상が남자
+IF TALENT:MASTER:남자
+	;항문바이브装備中は、항문바이브出し入れ
+	IF TEQUIP:항문바이브
+		TFLAG:ACT파생 = 2
+	;하반신겉옷に妨害されず、하반신속옷がない
+	ELSEIF LOWERJACKET(1) < 2 && !LOWERUNDER(1)
+		;연속실행の場合、전립선자극
+		SIF IS_PREVACTNAME("항문애무")
+			TFLAG:ACT파생 = 1
+		;가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じて전립선자극
+		SIF (TCVAR:MASTER:가버려 || PALAM:MASTER:쾌Ｃ >= 5000) && PERCENT(ABL:애무*10)
+			TFLAG:ACT파생 = 1
+		;발기도が低い場合、죠교자の애무スキルに応じて전립선자극
+		SIF TCVAR:MASTER:발기도 < 1000 && PERCENT(ABL:애무*10)
+			TFLAG:ACT파생 = 1
+		;요강제발기の場合、전립선자극
+		SIF TCVAR:MASTER:요강제발기
+			TFLAG:ACT파생 = 1
+	ENDIF
+	;備考：후타나리の前立腺は尿道、つまり膣の上にあるとし、Ｇスポット刺激の項に移動
+	;精力0で페니스が萎えている필요があったが省く。実行されないっつのそんなもん！
+ENDIF
+
+
+
+;항문펠라
+@TRAIN_VARIATION_ACT14
+;전립선자극への分岐があったが、粛清する
+;そんなところまで舌が届くわけないじゃないかｗｗｗ
+
+
+
+;貝合わせ（성기を擦りあう）
+@TRAIN_VARIATION_ACT16
+;죠교대상に페니스があると、必ず스마타するになる
+SIF PENIS(MASTER)
+	TFLAG:ACT파생 = 1
+	;備考：페니스があると통상の貝合わせは起こらない
+;죠교대상が페니스밴드장착中は、페니스밴드스마타になる
+SIF TEQUIP:페니스밴드
+	TFLAG:ACT파생 = 2
+
+;페니스がなければ貝合わせのまま
+;また、죠교자に페니스があると実行できない（代わりに스마타強制になる）
+
+;손가락삽입한다
+@TRAIN_VARIATION_ACT19
+;죠교대상が처녀ではダメ
+IF !TALENT:MASTER:처녀
+	;바이브装備中は、바이브出し入れ
+	IF TEQUIP:바이브
+		TFLAG:ACT파생 = 2
+	ELSE
+		;연속실행の場合、Ｇスポット刺激
+		SIF IS_PREVACTNAME("손가락삽입한다")
+			TFLAG:ACT파생 = 1
+		;가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じてＧスポット刺激
+		SIF (TCVAR:MASTER:가버려 || PALAM:MASTER:쾌Ｃ >= 5000) && PERCENT(ABL:애무*10)
+			TFLAG:ACT파생 = 1
+		;후타나리限定
+		IF TALENT:MASTER:후타나리
+			;발기도が低い場合、죠교자の애무スキルに応じてＧスポット刺激
+			SIF TCVAR:MASTER:발기도 < 1000 && PERCENT(ABL:애무*10)
+				TFLAG:ACT파생 = 1
+			;요강제발기の場合、Ｇスポット刺激
+			SIF TCVAR:MASTER:요강제발기
+				TFLAG:ACT파생 = 1
+		ENDIF
+	ENDIF
+ENDIF
+
+
+;애무強制（指で애무를 강요）
+@TRAIN_VARIATION_ACT50
+;죠교자に페니스があると、必ず수음強制になる
+SIF PENIS(TARGET)
+	TFLAG:ACT파생 = 1
+	;備考：페니스があると통상の애무強制は起こらない
+;죠교자が페니스밴드장착中は、페니스밴드수음強制になる
+SIF TEQUIP:죠교자페니스밴드
+	TFLAG:ACT파생 = 2
+
+;페니스がなければ애무強制のまま
+
+
+
+;クンニ強制（입으로 애무를 강요）
+@TRAIN_VARIATION_ACT51
+;죠교자が남자だと、必ず펠라強制になる
+IF TALENT:남자
+	TFLAG:ACT파생 = 1
+
+;죠교자が후타나리だと、죠교대상が누움なら1/2で안면승마、そうでなければ펠라強制になる
+ELSEIF TALENT:후타나리
+	IF RAND:2 && TFLAG:누움
+		TFLAG:ACT파생 = 2
+	ELSE
+		TFLAG:ACT파생 = 1
+	ENDIF
+	;備考：페니스があると통상の애무強制は起こらない（후타나리でも펠라か안면승마になる）
+
+;죠교자に페니스がなく、죠교대상が누움なら안면승마になる
+ELSEIF TFLAG:누움
+	TFLAG:ACT파생 = 2
+;それ以外なら통상のクンニ
+ENDIF
+
+;안면승마が選ばれていたとき、안면승마항문に변화することがある
+SIF TFLAG:ACT파생 == 2 && RAND:(GET_ABL(TARGET, "Ａ감각") + 100) > RAND:200
+	TFLAG:ACT파생 = 3
+
+;스마타強制
+@TRAIN_VARIATION_ACT53
+;죠교자が페니스밴드장착中は、페니스밴드스마타になる
+SIF TEQUIP:죠교자페니스밴드
+	TFLAG:ACT파생 = 1
+
+;가슴애무강제
+@TRAIN_VARIATION_ACT57
+;볼개그がなければ、1/2の確率で입으로 애무になる
+;主人が애무継続中も자세に無理があるので弾くが、여자に対する손으로 애무だけは許可
+SIF (RAND:2 == 0 && !TEQUIP:볼개그 && (!TEQUIP:죠교대상Ｃ사용 || (TEQUIP:죠교대상Ｃ사용 == 1 && !PENIS(MASTER)))) || TEQUIP:밧줄
+	TFLAG:ACT파생 = 2
+
+;備考：밧줄で縛られていれば必ず입으로 애무になる。볼개그と両方着けていると実行されない
+;TFLAG:93 == 1は本来「ぱふぱふ」だったが、죠교자の행동として謎すぎるので粛清당했다
+
+
+
+
+;바이브
+@TRAIN_VARIATION_ACT21
+;既に装備している場合、바이브解除になる
+SIF TEQUIP:바이브
+	TFLAG:ACT파생 = 1
+
+
+
+;항문바이브
+@TRAIN_VARIATION_ACT22
+;既に装備している場合、항문바이브解除になる
+SIF TEQUIP:항문바이브
+	TFLAG:ACT파생 = 1
+
+
+;항문비즈
+@TRAIN_VARIATION_ACT23
+;玉が5つ入っている場合、항문비즈解除になる
+IF TEQUIP:항문비즈 > 4
+	TFLAG:ACT파생 = 1
+;既に装備している場合、항문비즈追加になる
+ELSEIF TEQUIP:항문비즈
+	TFLAG:ACT파생 = 2
+ENDIF
+
+
+
+;클리캡（Ｃ애무도구）
+@TRAIN_VARIATION_ACT24
+;죠교대상に페니스がある
+IF PENIS(MASTER)
+	;既に装備している場合、오나홀解除になる
+	IF TEQUIP:오나홀
+		TFLAG:ACT파생 = 3
+	;そうでない場合、오나홀になる
+	ELSE
+		TFLAG:ACT파생 = 2
+	ENDIF
+;죠교대상に페니스がない
+ELSE
+	;既に装備している場合、클리캡解除になる
+	SIF TEQUIP:클리캡
+		TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;유두캡
+@TRAIN_VARIATION_ACT25
+;既に装備している場合、유두캡解除になる
+SIF TEQUIP:유두캡
+	TFLAG:ACT파생 = 1
+
+;페니스밴드
+@TRAIN_VARIATION_ACT26
+;既に装備している場合、페니스밴드解除になる
+SIF TEQUIP:페니스밴드
+	TFLAG:ACT파생 = 1
+
+
+
+;밀어넘어짐
+@TRAIN_VARIATION_ACT27
+;既に밀어넘어짐ている場合、해방になる
+SIF TEQUIP:밀어넘어지는중
+	TFLAG:ACT파생 = 1
+
+
+
+;정상위
+@TRAIN_VARIATION_ACT30
+;他の体位で성교している場合、体位変更になる
+IF TEQUIP:성교중 != 1 && TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;逆삽입중だった場合、逆転になる
+ELSEIF TEQUIP:성교봉사중 != 6 && TEQUIP:성교봉사중 != 0 && TEQUIP:성교봉사중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교중 == 1
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;후배위
+@TRAIN_VARIATION_ACT31
+;他の体位で성교している場合、体位変更になる
+IF TEQUIP:성교중 != 2 && TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;逆성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교봉사중 != 6 && TEQUIP:성교봉사중 != 0 && TEQUIP:성교봉사중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교중 == 2
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;기승위
+@TRAIN_VARIATION_ACT32
+;他の体位で성교している場合、体位変更になる
+IF TEQUIP:성교중 != 3 && TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;逆성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교봉사중 != 6 && TEQUIP:성교봉사중 != 0 && TEQUIP:성교봉사중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교중 == 3
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;대면좌위
+@TRAIN_VARIATION_ACT33
+;他の体位で성교している場合、体位変更になる
+IF TEQUIP:성교중 != 4 && TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;逆성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교봉사중 != 6 && TEQUIP:성교봉사중 != 0 && TEQUIP:성교봉사중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교중 == 4
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;배면좌위
+@TRAIN_VARIATION_ACT34
+;他の体位で성교している場合、体位変更になる
+IF TEQUIP:성교중 != 5 && TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;逆성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교봉사중 != 6 && TEQUIP:성교봉사중 != 0 && TEQUIP:성교봉사중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교중 == 5
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+
+;항문섹스
+@TRAIN_VARIATION_ACT35
+;他の体位で성교している場合、体位変更（항문へ）になる
+IF TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 3
+;逆성교중だった場合、逆転（항문へ）になる
+ELSEIF TEQUIP:성교봉사중 != 6 && TEQUIP:성교봉사중 != 0 && TEQUIP:성교봉사중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;역강간
+@TRAIN_VARIATION_ACT103
+;他の体位で逆성교している場合、体位変更になる
+IF TEQUIP:성교봉사중 && TEQUIP:성교봉사중 != 3 && TEQUIP:성교봉사중 < 6
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교봉사중 == 3
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;수치플레이
+@TRAIN_VARIATION_ACT43
+;既に수치플레이中なら、수치플레이終了になる
+SIF TEQUIP:거울
+	TFLAG:ACT파생 = 1
+
+
+
+;야외플레이
+@TRAIN_VARIATION_ACT44
+;既に야외플레이中なら、야외플레이終了になる
+SIF TEQUIP:야외플레이
+	TFLAG:ACT파생 = 1
+
+
+;밧줄
+@TRAIN_VARIATION_ACT63
+;既に밧줄で구속中なら、밧줄解除になる
+SIF TEQUIP:밧줄
+	TFLAG:ACT파생 = 1
+
+
+
+;눈가리개
+@TRAIN_VARIATION_ACT64
+;既に装備していたら、눈가리개解除になる
+SIF TEQUIP:눈가리개
+	TFLAG:ACT파생 = 1
+
+
+
+;볼개그
+@TRAIN_VARIATION_ACT65
+;既に装備していたら、볼개그解除になる
+SIF TEQUIP:볼개그
+	TFLAG:ACT파생 = 1
+
+
+
+;삼각목마
+@TRAIN_VARIATION_ACT67
+;既に装備していたら、삼각목마解除になる
+SIF TEQUIP:삼각목마
+	TFLAG:ACT파생 = 1
+
+
+
+;관장세트
+@TRAIN_VARIATION_ACT68
+;관장液が5本入っている場合、관장プラグ解除になる
+IF TEQUIP:관장그릇＋플러그 > 4
+	TFLAG:ACT파생 = 1
+;既に装備している場合、관장液追加になる
+ELSEIF TEQUIP:관장그릇＋플러그
+	TFLAG:ACT파생 = 2
+ENDIF
+
+;페니스밴드장착
+@TRAIN_VARIATION_ACT75
+;既に装備している場合、解除
+SIF TEQUIP:죠교자페니스밴드
+	TFLAG:ACT파생 = 1
+
+
+;정상위시킨다
+@TRAIN_VARIATION_ACT95
+;他の体位で逆성교している場合、体位変更になる
+IF TEQUIP:성교봉사중 && TEQUIP:성교봉사중 != 1 && TEQUIP:성교봉사중 < 6
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교봉사중 == 1
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;후배위시킨다
+@TRAIN_VARIATION_ACT96
+;他の体位で逆성교している場合、体位変更になる
+IF TEQUIP:성교봉사중 && TEQUIP:성교봉사중 != 2 && TEQUIP:성교봉사중 < 6
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교봉사중 == 2
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;대면좌위시킨다
+@TRAIN_VARIATION_ACT97
+;他の体位で逆성교している場合、体位変更になる
+IF TEQUIP:성교봉사중 && TEQUIP:성교봉사중 != 4 && TEQUIP:성교봉사중 < 6
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교봉사중 == 4
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;배면좌위시킨다
+@TRAIN_VARIATION_ACT98
+;他の体位で逆성교している場合、体位変更になる
+IF TEQUIP:성교봉사중 && TEQUIP:성교봉사중 != 5 && TEQUIP:성교봉사중 < 6
+	TFLAG:ACT파생 = 2
+;항문섹스中の場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 3
+;성교중だった場合、逆転になる
+ELSEIF TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 4
+;항문逆성교중だった場合、体位変更（항문から）になる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 5
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교봉사중 == 5
+	TFLAG:ACT파생 = 1
+ENDIF
+
+
+
+;항문섹스시킨다
+@TRAIN_VARIATION_ACT99
+;他の体位で逆성교している場合、体位変更（항문へ）になる
+IF V_SEX(MASTER)
+	TFLAG:ACT파생 = 3
+;항문섹스中の場合、逆転（항문から）になる
+ELSEIF TEQUIP:성교중 == 6
+	TFLAG:ACT파생 = 2
+;성교중だった場合、逆転（항문へ）になる
+ELSEIF TEQUIP:성교중 < 6 && TEQUIP:성교중
+	TFLAG:ACT파생 = 4
+;연속실행の場合、腰を使うになる
+ELSEIF TEQUIP:성교봉사중 == 6
+	TFLAG:ACT파생 = 1
+ENDIF

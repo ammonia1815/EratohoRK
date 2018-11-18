@@ -1,0 +1,436 @@
+﻿
+;────────────────────────────────────
+;도구生成処理
+;────────────────────────────────────
+@MANAGE_MP
+#DIM LCOUNT
+#DIM 収入見込
+#DIM 平均
+#DIM 分配種数
+#DIM 最大値
+#DIM 処理種
+#DIMS 分配種
+#DIM 元REDRAW
+
+;마력が全く無ければ処理しない
+SIF CFLAG:마력 == 0
+	RETURN 0
+IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
+	SKIPDISP 1
+ENDIF
+;-------------------------------------------------------------------------
+;마력収入に関する処理
+;-------------------------------------------------------------------------
+;収入の기록を参照し、将来の収入を予測する
+
+;既に現在の마력はデータベースに記入済みであること前提
+収入見込 = CFLAG:6101 - CFLAG:6100
+FOR LCOUNT, 0, 20
+	SIF CFLAG:(6101 + LCOUNT) == 0
+		BREAK
+	収入見込 = (収入見込 * LCOUNT + CFLAG:(6102 + LCOUNT) - CFLAG:(6101 + LCOUNT)) / (LCOUNT + 1)
+NEXT
+;-------------------------------------------------------------------------
+;ランニングコストに関する処理
+;-------------------------------------------------------------------------
+;※現在は0で処理しているが、마력を収集する필요があるくらいだから
+;  自動的に소모してしかるべきなのでは？
+
+;-------------------------------------------------------------------------
+;마력分配に関する処理
+;-------------------------------------------------------------------------
+;마력の使用先には『죠교자追加、기교上昇、지식・技能취득、도구錬成』が存在する。
+;これらを現在の状況、素質、能力などによって判断し、우선度や消費限界마력を設定する。
+
+SIF FLAG:디버그
+	PRINTFORML 「마력 소비 처리」(가용 마력：{CFLAG:마력})
+
+分配種 = 人員追加/기교上昇/技能취득/도구錬成
+
+CALL SET_CRI_VAR, 分配種
+
+LOCALS = MANAGE_MP
+
+CALL CHA_CRI_VAR, "죠교자の素質"
+CALLFORM %LOCALS%_TALENT_T
+
+CALL CHA_CRI_VAR, "죠교대상の素質"
+CALLFORM %LOCALS%_TALENT_M
+
+CALL CHA_CRI_VAR, "죠교자が임신"
+CALLFORM %LOCALS%_MATERNITY_T
+
+CALL CHA_CRI_VAR, "죠교자の能力"
+CALLFORM %LOCALS%_ABL_T
+
+CALL CHA_CRI_VAR, "性別関係"
+CALLFORM %LOCALS%_SEX
+
+CALL CHA_CRI_VAR, "죠교자の체력"
+CALLFORM %LOCALS%_PHYSICAL_T
+
+CALL CHA_CRI_VAR, "죠교자の기력"
+CALLFORM %LOCALS%_MENTAL_T
+
+CALL CHA_CRI_VAR, "죠교자の흥미"
+CALLFORM %LOCALS%_INTEREST_T
+
+CALL CHA_CRI_VAR, "죠교자の초조함"
+CALLFORM %LOCALS%_IRRITATION_T
+
+CALL CHA_CRI_VAR, "죠교자の호감도"
+CALLFORM %LOCALS%_LIKE_T
+
+CALL CHA_CRI_VAR, "죠교대상の호감도"
+CALLFORM %LOCALS%_LIKE_M
+
+CALL CHA_CRI_VAR, "実行判定"
+CALLFORM %LOCALS%_ABLE
+
+;──────────────────────────────
+;最終判定
+;──────────────────────────────
+CALL DEF_CRI_VAR()
+CALL ANA_CRI_VAR()
+
+SIF FLAG:디버그
+;OriginalString : 
+	PRINTW 
+
+;分配種ごとの基準値취득
+SPLIT 分配種, "/", LOCALS
+分配種数 = RESULT
+CALLF GET_CRI_VAR("累計")
+;ついでに平均値をとる
+平均 = 0
+FOR LCOUNT, 0, 分配種数
+	LOCAL:LCOUNT = RESULT:LCOUNT
+	SIF LOCAL:LCOUNT > -99
+		平均 += LOCAL:LCOUNT
+NEXT
+平均 /= 分配種数
+WHILE 1
+	;最大値취득
+	最大値 = MAXARRAY(LOCAL, 0, 分配種数)
+	;最大値が-99を下回れば終了
+	SIF 最大値 <= -99
+		BREAK
+	;大きな値のものから順に処理
+	処理種 = FINDELEMENT(LOCAL, 最大値, 0, 分配種数)
+	;使用可能마력判定用数値代入
+	CALLF MANAGE_MP_PROP(1, LOCAL:処理種 - 平均, 収入見込)
+	;処理種が……
+	SELECTCASE LOCALS:処理種
+		CASE "人員追加"
+			;SIF FLAG:디버그
+			;	PRINTFORML 『人員追加』
+		CASE "기교上昇"
+			CALL RIZE_ABL_AI
+		CASE "技能취득"
+			CALL GAIN_TALENT_AI
+		CASE "도구錬成"
+			CALL MAKE_TOOLS
+	ENDSELECT
+	;現在の処理種に対して処理を終了する
+	LOCAL:処理種 = -99
+	IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
+		SKIPDISP 1
+	ENDIF
+WEND
+;-------------------------------------------------------------------------
+;죠교자の素質を参照
+;-------------------------------------------------------------------------
+@MANAGE_MP_TALENT_T
+
+;죠교자が겁쟁이
+SIF TALENT:겁쟁이
+	CALL ADD_CRI_VAR("人員追加", 3)
+
+;죠교자が프라이드높음/低い
+IF TALENT:프라이드높음
+	CALL ADD_CRI_VAR("기교上昇", 6)
+	CALL ADD_CRI_VAR("技能취득", 9)
+	CALL ADD_CRI_VAR("도구錬成", -6)
+ELSEIF TALENT:프라이드낮음
+	CALL ADD_CRI_VAR("기교上昇", -6)
+	CALL ADD_CRI_VAR("技能취득", -9)
+	CALL ADD_CRI_VAR("도구錬成", 6)
+ENDIF
+
+;죠교자が무관심/호기심
+IF TALENT:무관심
+	CALL ADD_CRI_VAR("기교上昇", -3)
+	CALL ADD_CRI_VAR("技能취득", -9)
+	CALL ADD_CRI_VAR("도구錬成", -9)
+ELSEIF TALENT:호기심
+	CALL ADD_CRI_VAR("기교上昇", 3)
+	CALL ADD_CRI_VAR("技能취득", 9)
+	CALL ADD_CRI_VAR("도구錬成", 9)
+ENDIF
+
+;죠교자が습득빠름/습득느림
+IF TALENT:습득빠름
+	CALL ADD_CRI_VAR("기교上昇", 6)
+	CALL ADD_CRI_VAR("技能취득", 6)
+ELSEIF TALENT:습득느림
+	CALL ADD_CRI_VAR("기교上昇", -6)
+	CALL ADD_CRI_VAR("技能취득", -6)
+ENDIF
+
+;죠교자が헌신적
+IF TALENT:헌신적
+	CALL ADD_CRI_VAR("기교上昇", 6)
+	CALL ADD_CRI_VAR("技能취득", 3)
+ENDIF
+
+;죠교자が수동적
+IF TALENT:수동적
+	CALL ADD_CRI_VAR("人員追加", 6)
+	CALL ADD_CRI_VAR("도구錬成", 3)
+ENDIF
+	
+;-------------------------------------------------------------------------
+;죠교대상の素質を参照
+;-------------------------------------------------------------------------
+@MANAGE_MP_TALENT_M
+
+;죠교대상が무관심/호기심
+IF TALENT:MASTER:무관심
+	CALL ADD_CRI_VAR("技能취득", -3)
+	CALL ADD_CRI_VAR("도구錬成", -3)
+ELSEIF TALENT:MASTER:호기심
+	CALL ADD_CRI_VAR("技能취득", 3)
+	CALL ADD_CRI_VAR("도구錬成", 3)
+ENDIF
+
+;-------------------------------------
+;죠교자が임신中
+;-------------------------------------
+@MANAGE_MP_MATERNITY_T
+
+;임신中
+IF TALENT:임신
+	CALL ADD_CRI_VAR("人員追加", 9)
+	CALL ADD_CRI_VAR("기교上昇", -9)
+	CALL ADD_CRI_VAR("技能취득", -9)
+	CALL ADD_CRI_VAR("도구錬成", 6)
+ENDIF
+
+;-------------------------------------------------------------------------
+;죠교자の能力を参照
+;-------------------------------------------------------------------------
+@MANAGE_MP_ABL_T
+
+;죠교자の봉사정신が[0→0, 5→5]を加算(0～5)
+CALL ADD_CRI_VAR("기교上昇", LINE_CALC(ABL:봉사정신, "0→0,5→5,LIMIT/0～5"))
+CALL ADD_CRI_VAR("技能취득", LINE_CALC(ABL:봉사정신, "0→0,5→5,LIMIT/0～5"))
+
+;-------------------------------------------------------------------------
+;性別関係
+;同性で対応の能力や素質がない場合は体の접촉を避けるように
+;-------------------------------------------------------------------------
+@MANAGE_MP_SEX
+
+;죠교자に바이が無く、남자同士
+IF TALENT:남자 && TALENT:MASTER:남자 && !TALENT:바이
+	;죠교자のＢＬ끼が[0→0, 4→4]を加算(0～4)
+	CALL ADD_CRI_VAR("人員追加", LINE_CALC(ABL:ＢＬ끼, "0→0,4→4,LIMIT/0～4"))
+	;죠교자のＢＬ끼が[0→0, 4→2]を加算(0～2)
+	CALL ADD_CRI_VAR("도구錬成", LINE_CALC(ABL:ＢＬ끼, "0→0,4→2,LIMIT/0～2"))
+	;죠교자のＢＬ끼が[0→-2, 4→0]を加算(-2～0)
+	CALL ADD_CRI_VAR("기교上昇", LINE_CALC(ABL:ＢＬ끼, "0→-2,4→0,LIMIT/-2～0"))
+	CALL ADD_CRI_VAR("技能취득", LINE_CALC(ABL:ＢＬ끼, "0→-2,4→0,LIMIT/-2～0"))
+ENDIF
+
+;죠교자に바이が無く、여자同士
+IF !TALENT:남자 && !TALENT:MASTER:남자 && !TALENT:바이
+	;죠교자の레즈끼が[0→0, 4→4]を加算(0～4)
+	CALL ADD_CRI_VAR("人員追加", LINE_CALC(ABL:레즈끼, "0→0,4→4,LIMIT/0～4"))
+	;죠교자の레즈끼が[0→0, 4→2]を加算(0～2)
+	CALL ADD_CRI_VAR("도구錬成", LINE_CALC(ABL:레즈끼, "0→0,4→2,LIMIT/0～2"))
+	;죠교자の레즈끼が[0→-2, 4→0]を加算(-2～0)
+	CALL ADD_CRI_VAR("기교上昇", LINE_CALC(ABL:레즈끼, "0→-2,4→0,LIMIT/-2～0"))
+	CALL ADD_CRI_VAR("技能취득", LINE_CALC(ABL:레즈끼, "0→-2,4→0,LIMIT/-2～0"))
+	
+	;죠교자の레즈중독が[0→0, 4→4]を加算(0～4)
+	CALL ADD_CRI_VAR("기교上昇", LINE_CALC(ABL:레즈중독, "0→0,4→4,LIMIT/0～4"))
+	CALL ADD_CRI_VAR("技能취득", LINE_CALC(ABL:레즈중독, "0→0,4→4,LIMIT/0～4"))
+ENDIF
+
+;죠교자が남성혐오かつ、죠교대상が남자
+IF TALENT:남성혐오 && TALENT:MASTER:남자
+	CALL ADD_CRI_VAR("人員追加", 2)
+	CALL ADD_CRI_VAR("도구錬成", 4)
+ENDIF
+
+;-------------------------------------
+;죠교자の체력
+;-------------------------------------
+@MANAGE_MP_PHYSICAL_T
+
+;죠교자の체력が[0→-4, 1500→2]を加算(-4～2)
+CALL ADD_CRI_VAR("기교上昇", LINE_CALC(BASE:체력, "0→-4,1500→2,LIMIT/-4～2"))
+CALL ADD_CRI_VAR("技能취득", LINE_CALC(BASE:체력, "0→-4,1500→2,LIMIT/-4～2"))
+;죠교자の체력が[0→-2, 500→0]を加算(-2～0)
+CALL ADD_CRI_VAR("도구錬成", LINE_CALC(BASE:체력, "0→-2,500→0,LIMIT/-2～0"))
+
+;-------------------------------------
+;죠교자の기력
+;-------------------------------------
+@MANAGE_MP_MENTAL_T
+
+;죠교자の기력が[0→-4, 1500→2]を加算(-4～2)
+CALL ADD_CRI_VAR("기교上昇", LINE_CALC(BASE:기력, "0→-4,1500→2,LIMIT/-4～2"))
+CALL ADD_CRI_VAR("技能취득", LINE_CALC(BASE:기력, "0→-4,1500→2,LIMIT/-4～2"))
+;죠교자の체력が[0→-2, 500→0]を加算(-2～0)
+CALL ADD_CRI_VAR("人員追加", LINE_CALC(BASE:기력, "0→-2,500→0,LIMIT/-2～0"))
+CALL ADD_CRI_VAR("도구錬成", LINE_CALC(BASE:기력, "0→-2,500→0,LIMIT/-2～0"))
+
+;-------------------------------------
+;죠교자の흥미
+;-------------------------------------
+@MANAGE_MP_INTEREST_T
+
+;죠교자の흥미が[0→-4, 1000→4]を加算(-4～4)
+CALL ADD_CRI_VAR("기교上昇", LINE_CALC(BASE:흥미, "0→-4,1000→4,LIMIT/-4～4"))
+CALL ADD_CRI_VAR("技能취득", LINE_CALC(BASE:흥미, "0→-4,1000→4,LIMIT/-4～4"))
+;죠교자の흥미が[0→2, 1000→-2]を加算(-2～2)
+CALL ADD_CRI_VAR("人員追加", LINE_CALC(BASE:흥미, "0→-2,1000→2,LIMIT/-2～2"))
+;죠교자の흥미が[0→4, 1000→-4]を加算(-4～4)
+CALL ADD_CRI_VAR("도구錬成", LINE_CALC(BASE:흥미, "0→-4,1000→4,LIMIT/-4～4"))
+
+;-------------------------------------
+;죠교자の초조함
+;-------------------------------------
+@MANAGE_MP_IRRITATION_T
+
+;죠교자の초조함が[0→0, 800→5]を加算(0～5)
+CALL ADD_CRI_VAR("도구錬成", LINE_CALC(BASE:초조함, "0→0,800→5,LIMIT/0～5"))
+
+;-------------------------------------
+;죠교자の호의
+;-------------------------------------
+@MANAGE_MP_LIKE_T
+
+;죠교자の호의が[-2000→3 2000→-3]を加算(-3～3)
+CALL ADD_CRI_VAR("人員追加", LINE_CALC(CFLAG:호의, "-2000→3,2000→-3,LIMIT/-3～3"))
+;죠교자の호의が[-2000→-3 2000→3]を加算(-3～3)
+CALL ADD_CRI_VAR("기교上昇", LINE_CALC(CFLAG:호의, "-2000→-3,2000→3,LIMIT/-3～3"))
+CALL ADD_CRI_VAR("技能취득", LINE_CALC(CFLAG:호의, "-2000→-3,2000→3,LIMIT/-3～3"))
+
+;-------------------------------------
+;죠교대상の호의
+;主人公から죠교자への호의は죠교자自身が保持しているのに注意
+;-------------------------------------
+@MANAGE_MP_LIKE_M
+
+;죠교자の호의が[-2000→3 2000→-3]を加算(-3～3)
+CALL ADD_CRI_VAR("人員追加", LINE_CALC(CFLAG:M호의, "-2000→3,2000→-3,LIMIT/-3～3"))
+
+;----------------------------------------------------------
+;実行判定
+;----------------------------------------------------------
+@MANAGE_MP_ABLE
+
+;オンになっていない設定に関しては実行不可
+SIF !(FLAG:AI자유도 & 1)
+	CALL DIM_CRI_VAR("人員追加", -999)
+SIF !(FLAG:AI자유도 & 2)
+	CALL DIM_CRI_VAR("기교上昇", -999)
+SIF !(FLAG:AI자유도 & 4)
+	CALL DIM_CRI_VAR("技能취득", -999)
+SIF !(FLAG:AI자유도 & 8)
+	CALL DIM_CRI_VAR("도구錬成", -999)
+
+;────────────────────────────────────
+;関連諸関数
+;────────────────────────────────────
+;-------------------------------------
+;마력消費性向
+;0を基準に大きいほど마력を消費했다がる
+;ARG:0 = 0:使用可能마력判定 1:数値代入
+;ARG:1 = 要求偏差(0を基準に大きいほどこの種別で마력を消費했다がる)
+;ARG:2 = 収入見込
+;-------------------------------------
+@MANAGE_MP_PROP(ARG = 0, ARG:1, ARG:2)
+#FUNCTION
+IF ARG
+	LOCAL:0 = ARG:1 / 5
+	LOCAL:1 = (ARG:2 * 2 / MAX(CFLAG:마력, 1)) - 2
+	RETURNF 0
+ENDIF
+RETURNF LOCAL + LOCAL:1 + TALENT:호기심 - TALENT:무관심 + TALENT:충동적 - TALENT:자제심 + TALENT:낙관적 - TALENT:비관적
+
+;────────────────────────────────────
+;기교上昇処理
+;※ARGは要求偏差(0を基準に大きいほどこの種別で마력を消費했다がる)
+;────────────────────────────────────
+@RIZE_ABL_AI
+#DIM 可用마력
+
+;使用可能마력判定
+可用마력 = RIZE_ABL_MP_ABLE()
+
+SIF FLAG:디버그
+	PRINTFORML 「기교 상승 처리」(가용 마력：{可用마력})
+
+SKIPDISP 0
+WHILE 1
+	;마력不발判定
+	IF 可用마력 < RIZE_ABL_V(0)
+		SIF FLAG:디버그
+			PRINTFORMW 가용 마력이 부족합니다(그리고{RIZE_ABL_V(0) - 可用마력})
+		RETURN 0
+	ENDIF
+	;기교上昇に挑戦
+	CALL RIZE_ABL
+	LOCAL = RESULT:1
+	SELECTCASE RESULT
+		;成功時
+		CASE 0
+			;地の文表示
+			PRINTFORMW %CALLNAME:TARGET%의 조교 기교는<{ABL:기교}>(이)가 되었습니다
+			;이벤트구상：죠교기교アップ
+			;CALL KOJO_EVENT(110, 1)
+			;CALL VOIDLINE_IF(RESULT)
+			
+			;마력・可用마력を消費
+			CFLAG:마력 -= LOCAL
+			可用마력 -= LOCAL
+			SIF FLAG:디버그
+				PRINTFORML (가용 마력：{可用마력})
+		;마력不발時
+		CASE 1
+			IF FLAG:디버그
+				PRINTFORML 마력이 부족합니다(그리고{RIZE_ABL_V(0) - CFLAG:마력})
+;OriginalString : 
+				PRINTW 
+			ENDIF
+			RETURN 0
+		;죠교레벨不발時
+		CASE 2
+			IF FLAG:디버그
+				PRINTFORML 조교 레벨이 부족합니다(그리고{RIZE_ABL_V(1) - CFLAG:죠교레벨})
+;OriginalString : 
+				PRINTW 
+			ENDIF
+			RETURN 0
+		;기교上限時
+		CASE 3
+			IF FLAG:디버그
+				PRINTFORML 더 이상 기교는 거론되지 않습니다(현재 기교：{ABL:기교})
+;OriginalString : 
+				PRINTW 
+			ENDIF
+			RETURN 0
+	ENDSELECT
+WEND
+
+;------------------------------------------
+;使用可能마력判定
+;------------------------------------------
+@RIZE_ABL_MP_ABLE()
+#FUNCTION
+;마력不발基準設定
+RETURNF LIMIT(CFLAG:마력 * (8 + MANAGE_MP_PROP() + TALENT:습득빠름 - TALENT:습득느림) * 10 / 100, 0, CFLAG:마력)
+

@@ -1,0 +1,250 @@
+﻿;==================================================
+;
+;죠교목적処理
+;
+;==================================================
+;────────────────────────────────────
+;죠교목적処理(관리)
+;ARGS 実行内容
+;────────────────────────────────────
+@OBJECTIVE(ARG, ARGS, ARGS:1 = "")
+;────────────────────────────────────
+;죠교목적処理(죠교대상/個別)
+;────────────────────────────────────
+[SKIPSTART]
+;脱走
+@OBJECTIVE_M_(ARGS)
+SELECTCASE ARGS
+	;목적解説文更新
+	CASE "CONF"
+		;죠교목적
+		STR:죠교목적 = 脱走
+		;목적解説文
+		STR:목적解説 = この状況から脱出するのが목적です
+		;목적詳細解説
+		STR:목적詳細 = 
+	;목적달성確認
+	CASE "ACHI"
+		;脱走成功
+		
+	;小목적指向処理
+	CASE "POIN"
+		;죠교대상にはなし
+ENDSELECT
+;────────────────────────────────────
+;죠교목적処理(죠교자/個別)
+;────────────────────────────────────
+;죠교자共通
+@OBJECTIVE_T_(ARGS)
+SELECTCASE ARGS
+	;목적解説文更新(ありません)
+	CASE "CONF"
+		;죠교목적
+		STR:죠교목적 = 
+		;목적解説文
+		STR:목적解説 = 
+		;목적詳細解説
+		STR:목적詳細 = 
+	;목적달성確認
+	CASE "ACHI"
+		;달성しません
+	;小목적指向処理
+	CASE "POIN"
+		;現状確認
+ENDSELECT
+
+;마력収集
+@OBJECTIVE_T_MAG(ARGS)
+SELECTCASE ARGS
+	;목적解説文更新
+	CASE "CONF"
+		;죠교목적
+		STR:죠교목적 = 마력収集
+		;목적解説文
+		STR:목적解説 = 마력を効率良く集めるのが목적です
+		;목적詳細解説
+		STR:목적詳細 = 
+	;목적달성確認
+	CASE "ACHI"
+		;달성しません
+	;小목적指向処理
+	CASE "POIN"
+		
+ENDSELECT
+;────────────────────────────────────
+;죠교목적処理(조수/個別)
+;────────────────────────────────────
+@OBJ_A
+[SKIPEND]
+
+;==================================================
+;
+;조교중목적処理
+;
+;==================================================
+[SKIPSTART]
+;체력・기력관리
+@OBJM_T_VIT(ARGS)
+#LOCALSIZE 1
+#DIMS 同一죠교判定
+#DIM L체력
+#DIM L기력
+#DIM 체력消費速度
+#DIM 기력消費速度
+#DIM 信頼度
+#DIM ターン
+#DIM 予測체력消費速度
+#DIM 予測기력消費速度
+#DIM 予測信頼度
+#DIM 휴식
+;同一죠교判定
+LOCALS = %SAME_TURN("죠교")%
+;同一죠교でなければ
+IF 同一죠교判定 != LOCALS
+	;変数初期化
+	同一죠교判定 = %LOCALS%
+	체력消費速度 = 0
+	기력消費速度 = 0
+	信頼度 = 0
+;휴식を挟んでいなければ
+ELSEIF (DATABASE_I_AM("휴식") - 휴식) == 0
+	;체력・기력消費量기록
+	IF L체력 != 0 && BASE:MASTER:체력 != 0
+		LOCAL = (L체력 - BASE:MASTER:체력) / (TFLAG:죠교시간 - ターン)
+		체력消費速度 = 信頼度 == 0 ? LOCAL # (체력消費速度 + LOCAL) / 2
+	ENDIF
+	IF L기력 != 0 && BASE:MASTER:기력 != 0
+		LOCAL = (L기력 - BASE:MASTER:기력) / (TFLAG:죠교시간 - ターン)
+		기력消費速度 = 信頼度 == 0 ? LOCAL # (기력消費速度 + LOCAL) / 2
+	ENDIF
+	信頼度 += TFLAG:죠교시간 - ターン
+ENDIF
+L체력 = BASE:MASTER:체력
+L기력 = BASE:MASTER:기력
+ターン = TFLAG:죠교시간
+휴식 = DATABASE_I_AM("휴식")
+
+NOSKIP
+;OriginalString : 체력消費速度
+PRINTVL 체력 소비 속도
+;OriginalString : 기력消費速度
+PRINTVL 기력 소비 속도
+;OriginalString : L체력
+PRINTVL L체력
+;OriginalString : L기력
+PRINTVL L기력
+ENDNOSKIP
+[SKIPEND]
+
+;==================================================
+;
+;죠교小목적処理
+;
+;==================================================
+;죠교자共通
+@OBJS_T(ARGS)
+;現状確認
+
+;마력回収
+@OBJS_T_MAG(ARGS)
+
+;==================================================
+;
+;基幹判断処理
+;
+;==================================================
+@ESTIMATE_T(ARGS)
+
+[SKIPSTART]
+
+;初期化
+CALLF EST_TO_ACTM("初期化")
+CALLF EST_TO_ACT("初期化")
+
+;기력・체력回復判断
+CALL EST_T_REC_VIT()
+[SKIPEND]
+
+;────────────────────────────────────
+;죠교継続判断
+;────────────────────────────────────
+@EST_T_TRA_END()
+
+;基幹処理呼び出し
+CALL ESTIMATE_T("TRA_END")
+
+LOCAL = 0
+
+;SANDBOX限定処理
+;체력が減少すると조교중断했다がる
+SIF FLAG:모드 == 1
+	LOCAL += LINE_CALC(BASE:MASTER:체력 * 100 / MAXBASE:MASTER:체력, "100→0,0→25,LIMIT/0～25")
+
+RETURN LOCAL
+
+
+;==================================================
+;
+;直接判断処理
+;
+;==================================================
+;기력・체력回復
+@EST_T_REC_VIT()
+;체력が1/5以下되었다ら
+IF BASE:MASTER:체력 < MAXBASE:MASTER:체력 / 5
+	;回復に向けて행동する
+	CALLF EST_TO_ACTM("加算", "휴식", 10)
+ENDIF
+
+;==================================================
+;
+;判断反映処理
+;
+;==================================================
+@EST_TO_ACTM(ARGS, ARGS:1, ARG)
+#FUNCTION
+#LOCALSIZE 20
+#DIM LTEMP
+[SKIPSTART]
+IF ARGS == "初期化"
+	VARSET LOCAL
+	RETURNF 0
+ENDIF
+LTEMP = GET_ACTNUM(ARGS:1)
+SIF LTEMP < 0
+	RETURNF 0
+IF ARGS == "加算"
+	LOCAL:GET_ACTNUM(ARGS:1) = ARG
+ELSEIF ARGS == "취득"
+	RETURNF LOCAL:GET_ACTNUM(ARGS:1)
+ENDIF
+[SKIPEND]
+
+@EST_TO_ACT(ARGS, ARGS:1, ARG)
+#FUNCTION
+#LOCALSIZE 200
+#DIM LTEMP
+[SKIPSTART]
+IF ARGS == "初期化"
+	VARSET LOCAL
+	RETURNF 0
+ENDIF
+LTEMP = MENUNUM(ARGS:1)
+SIF LTEMP < 0
+	RETURNF 0
+IF ARGS == "加算"
+	LOCAL:MENUNUM(ARGS:1) = ARG
+ELSEIF ARGS == "취득"
+	RETURNF LOCAL:MENUNUM(ARGS:1)
+ENDIF
+[SKIPEND]
+
+
+
+
+;────────────────────────────────────
+;죠교목적文字列変数処理
+;────────────────────────────────────
+@OBJECTIVE_V(ARG, ARGS)
+
+

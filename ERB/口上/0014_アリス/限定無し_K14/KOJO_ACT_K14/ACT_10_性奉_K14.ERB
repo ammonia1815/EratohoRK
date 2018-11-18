@@ -1,0 +1,1930 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	엘리스구상 성교봉사系アクション구상ファイル
+;
+;	성교봉사系アクション구상をまとめたファイル
+;
+;Version		Reason
+;1.71@0503		오토모드표시설정が간략표시の場合は오토모드系分岐で弾くように修正
+;1.71			@구상記入チェック仕様に
+;1.60			ACT분류単体ファイルとして独立。旧仕様のACTを削除
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;성교봉사系 ACT95～103
+;========================================================================
+;・TFLAG:ACT(95=정상위시킨다/96=후배위시킨다/97=대면좌위시킨다/98=배면좌위시킨다/99=항문섹스시킨다/103=역강간)
+;・TFLAG:ACT분류 == 10に該当
+;・汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "성봉")で参照する事が可能
+;・原則として죠교대상→죠교자の삽입となる
+;・体位の連携によってTFLAG:ACT파생で派生する
+;・各ACTに於ける主導権は@SEX_INITIATIVEにて定義される
+;-------------------------------------------------
+;・오토모드関連
+;    FLAG:오토모드(0=OFF/1～=指定ターンずつ오토進行)
+;        FLAG:오토모드표시설정(0=통상대로/1=간략표시)
+;            간략표시の際にINPUTがあるとEmeraが落ちるので弾いておく
+;-------------------------------------------------
+
+;────────────────────────────────────
+;ACT95, 정상위시킨다
+;────────────────────────────────────
+;・죠교자が죠교대상に정상위での삽입を命じる
+;・죠교대상に페니스、페니스밴드がない場合は発生しない
+;・죠교자が페니스밴드장착中の場合は発生しない
+;・죠교대상が누움、かつ성교봉사중でない場合は発生しない
+;・죠교대상の발기도が1000以下の場合は発生しない
+;・밀어넘어지는중には発生しない
+;・죠교자が남자の場合は発生しない
+;・죠교대상が오나홀사용중の場合には発生しない
+;・성교중からは派生しない
+;・배면좌위での성교봉사중からは派生しない
+;・Ａ성교봉사중からは派生しない
+;・主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+;-------------------------------------------------
+;・REACT분류が"날뛴다", "거부"であった場合は취소される
+;・죠교대상が동정なら동정상실が起こる
+;・죠교자が처녀なら처녀상실が起こる
+;・これらの処理は@ACTION_APPLY2_95にて行われる
+;-------------------------------------------------
+@KOJO_ACT_K14_95
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;※v1.010現在、ACT파생3/4/5はACT_ABLEで規制されているので機能しない
+;-------------------------------------------------
+;・地の文はACT파생によって分岐
+;・各派生内で애태움도、페니스밴드、가버려、죠교자の속옷の有無等で分岐する
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT95, 정상위시킨다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;=================================================
+	;오토모드用処理
+	;=================================================
+	[IF_DEBUG]
+		IF TALENT:처녀 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTACT(0)
+			CALL PRINT_RAINBOW2W("처녀상실", 20)
+			CALL GAME_OVER_K14
+			FORCEWAIT
+			RETURN 1
+		ENDIF
+	[ENDIF]
+	
+	;=================================================
+	;처녀・동정
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(TALENT:처녀, TALENT:MASTER:동정) > 0
+		;죠교자が처녀＆죠교대상が동정
+		IF TALENT:처녀 && TALENT:MASTER:동정
+;OriginalString : 「ねぇ、お互いに初めてってちょっと良いと思わない…？」
+			PRINTFORMW 「응, 서로 처음은 조금 좋다고 생각하지 않는다…？」
+;OriginalString : 「じゃ、よろしくお願いね♪」
+			PRINTFORMW 「그러면, 아무쪼록 부탁이군요♪」
+		;죠교자が처녀
+		ELSEIF TALENT:처녀
+;OriginalString : 「私の初めて、%CNAME(MASTER, TARGET)%に捧げるわ…」
+			PRINTFORMW 「 나의 처음으로,%CNAME(MASTER, TARGET)%에 바쳐요…」
+;OriginalString : 「まだちょっと怖いけど… お願い…優しくして頂戴……」
+			PRINTFORMW 「 아직 조금 무서운데… 부탁…상냥하게 해 주세요……」
+		;죠교대상が동정
+		ELSE
+;OriginalString : 「緊張しないで。私にまかせて頂戴…♪」
+			PRINTFORMW 「긴장하지 말아줘. 나에게 맡겨 주세요…♪」
+;OriginalString : 「大丈夫よ…優しくリードしてあげるから…」
+			PRINTFORMW 「괜찮아요…상냥하게 리드 해 주기 때문에…」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;TFLAG:전회질싸(1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)/5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정))
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:안빼고
+		;-------------------------------------------------
+		;전회질싸
+		;-------------------------------------------------
+		;特に理由はないが、漠然と했다不安を感じたのでPENIS(MASTER)を条件として加えておく
+		IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 4) && PENIS(MASTER)
+			IF TFLAG:전회질싸 == 2
+				;방침：애만들기は만족보너스で선택했다場合のみなのでPOLICY単体で参照可能ではある
+				;まぁ仕様を明示했다いとか色々な思惑でTCVAR:금일만족보너스も絡めておく
+				IF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+					SELECTCASE RANDACT(2, 1)
+						CASE 0
+;OriginalString : 「사정했다ってのに全然衰えないのね？」
+							PRINTFORMW 「사정해도 것에 전혀 쇠약해지지 않구나？」
+;OriginalString : 「自分から私を임신해って言い出했다だけの事はある、ってとこかしら。후후…」
+							PRINTFORMW 「자신으로부터 나를 잉세대라고 말하기 시작했을 뿐의 일은 있는, 이라는 곳일까. 후후…」
+;OriginalString : 「ほら、いいわよ。もっと私の질내に注ぎ込んで…」
+							PRINTFORMW 「이봐요, 좋아요. 좀 더 나의 질내에 쏟아…」
+						CASE 1
+;OriginalString : 「ねぇ、あまり掻き回されると…さっき사정당했다のが溢れてきちゃうわ」
+							PRINTFORMW 「응, 너무 휘저어지면(자)…조금 전 사정되었던 것이 흘러넘쳐 와버리는 원」
+;OriginalString : 「まだまだいけるって言うなら、別にいいんだけど」
+							PRINTFORMW 「아직도 안된다 라고 한다면, 별로 좋지만」
+;OriginalString : 「私だってその気になってるんだから、ちゃんと責任取りなさいよね……」
+							PRINTFORMW 「 나라도 그럴 기분이 들고 있기 때문에, 분명하게 책임 취하세요……」
+					ENDSELECT
+				ELSE
+					SELECTCASE RANDACT(2, 2)
+						CASE 0
+;OriginalString : 「さっき사정당했다のがヌルヌルして、私のと混ざり合って……」
+							PRINTFORMW 「조금 전 사정되었던 것이 누르눌 해, 나의 것과 서로 섞여……」
+;OriginalString : 「凄くイヤラシイ音がしちゃってる…」
+							PRINTFORMW 「굉장히 이야라시이 소리가 나 버린다…」
+						CASE 1
+;OriginalString : 「あれだけ사정했다割には、まだガチガチじゃない」
+							PRINTFORMW 「그토록 사정한 것에 비해서는, 아직 가치가치가 아니다」
+;OriginalString : 「ほら、早くきなさいよ。搾り取ってあげるから…」
+							PRINTFORMW 「이봐요, 빨리 오세요. 짜 취해 주기 때문에…」
+					ENDSELECT
+				ENDIF
+			ELSE
+;OriginalString : 「空っぽになっても、まだこんだけ硬いんだから…」
+				PRINTFORMW 「텅 비게 되어도, 아직 감색만 딱딱하기 때문에…」
+;OriginalString : 「%CNAME(MASTER, TARGET)%…、まだまだいけるんでしょう？」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%…, 아직도 안되겠지요？」
+;OriginalString : 「ほら、ぼやっとしてないで。早くきなさいよ……」
+				PRINTFORMW 「이봐요, 겨우 하지 않고. 빨리 오세요……」
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+;OriginalString : 「ああっんっ、あぁぁぁっ！ んぁぁっ、はっ、あ…ッ
+		PRINTFORM 「아 응, 아！ 응, 하, 아…
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 「すごっ……凄いっ！ 奥まで突かれてぇ…ッ」
+		PRINTFORMW 「……굉장하다！ 안쪽까지 찔려…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生１：연속
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 「ふふっ、夢中で動いちゃって…そんなにイきたいのかしら？」
+				PRINTFORMW 「후후, 열중해 움직여 버려서…그렇게 이 오고 싶은 것일까？」
+;OriginalString : 「でもダメよ。もう少し頑張って貰うから…
+				PRINTFORM 「 그렇지만 안되어요. 좀 더 노력해 받기 때문에…
+				CALL PRINT_SYMBOL_K14
+			;애태움終了
+			CASE 1
+				IF POLICY("금일") == "애만들기"
+;OriginalString : 「この私を임신해っていうなら、それなりに頑張って貰わないとね？」
+					PRINTFORMW 「이 나를 잉세대라고 한다면, 그 나름대로 노력해 받지 않으면？」
+;OriginalString : 「でも、%CNAME(MASTER, TARGET)%は気付いてるのかしら」
+					PRINTFORMW 「 그렇지만,%CNAME(MASTER, TARGET)%(은)는 깨닫고 있는 거나」
+;OriginalString : 「私も期待して、ちょっとドキドキしてるのよ…」
+					PRINTFORMW 「 나도 기대해, 조금 두근두근 해…」
+				ELSEIF TEQUIP:페니스밴드
+;OriginalString : 「さて、そろそろ가게해줘あげてもいいかしらね」
+					PRINTFORMW 「그런데, 이제 이나 키라고 주어도 괜찮을까」
+;OriginalString : 엘리스は%CALLNAME:MASTER%を抱き寄せ耳元で囁いた…
+					PRINTFORMDW 앨리스는 %CALLNAME:MASTER%(을)를 껴안고 귓전으로 속삭였다…
+;OriginalString : 「いいわよ、私の中で가게해줘あげる……」
+					PRINTFORMW 「좋아요, 나중에서 이나 키라고 준다……」
+				ELSEIF AFFECTION("상사상애") && PENIS(MASTER)
+;OriginalString : 「あっ、中で大きくなって……もう限界みたいね」
+					PRINTFORMW 「아, 안으로 커져……이제 한계같구나」
+;OriginalString : 엘리스は%CALLNAME:MASTER%を抱き寄せ耳元で囁いた…
+					PRINTFORMDW 앨리스는 %CALLNAME:MASTER%(을)를 껴안고 귓전으로 속삭였다…
+;OriginalString : 「いいわよ、出して……、子宮の中まで犯して……」
+					PRINTFORMW 「좋아요, 내……, 자궁안까지 범해……」
+				ELSEIF PENIS(MASTER)
+;OriginalString : 「ほら、イきたかったんでしょう？ このまま中に出していいわよ」
+					PRINTFORMW 「이봐요, 이 오고 싶었었지요？ 이대로 안에 내도 좋아요」
+;OriginalString : 「思いっきり搾り取ってあげるわ♪」
+					PRINTFORMW 「마음껏 짜 취해 주어요♪」
+				ENDIF
+			;통상の연속실행
+			CASEELSE
+				SELECTCASE RANDACT(2, 3)
+					CASE 0
+;OriginalString : 「んっ、くっ！ あっ……あっ、あぁっ…
+						PRINTFORM 「응, 구！ 아……아, 아…
+						CALL PRINT_SYMBOL_K14
+;OriginalString : 「奥っ！ 奥にっ、当たっ……てぇっ
+						PRINTFORM 「안쪽！ 안쪽에 , 당……(이)라고
+						CALL PRINT_SYMBOL2_K14
+					CASE 1
+;OriginalString : 「あんっ！ くっ、あ……あっ…あぁっ…
+						PRINTFORM 「팥고물！ 구, 아……아…아…
+						CALL PRINT_SYMBOL2_K14
+;OriginalString : %CALLNAME:MASTER%が突きこむ度に엘리스は甘い嬌声をあげている…
+						PRINTFORMDW %CALLNAME:MASTER%(은)는 지만 찔러 넣을 때에 앨리스는 단 교성을 주고 있다…
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生２：体位変更(Ｖ성교봉사から)
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+;OriginalString : 「んんっ…あぁっ……ああぅっ…」
+		PRINTFORMW 「응응…아……아…」
+;OriginalString : 「お願いっ…\@ !TEQUIP:눈가리개 ? 目を…私の目を見ながら # もっと、もっと \@……突いて…ッ」
+		PRINTFORMW 「부탁…\@ !TEQUIP:눈가리개 ? 눈을…나의 눈을 보면서 # 좀 더, 좀 더 \@……찔러…」
+		RETURN 1
+	ENDIF
+
+	;v1.010現在、ACT_ABLEで弾かれている
+	;=================================================
+	;Ａ성교から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 3
+;OriginalString : 「今度は%CNAME(MASTER, TARGET)%の番よ」
+		PRINTFORMW 「이번은%CNAME(MASTER, TARGET)%의 차례야」
+;OriginalString : 「ねぇ、前でシてもらえるかしら？ 疼いちゃって辛いのよ……」
+		PRINTFORMW 「응, 전으로 시라고 받을 수 있는 것일까？ 쑤셔 버려서 괴로워……」
+		RETURN 1
+	ENDIF
+	
+	;v1.010現在、ACT_ABLEで弾かれている
+	;=================================================
+	;Ｖ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 4
+;OriginalString : 「攻守交替ってとこかしら」
+		PRINTFORMW 「공수 교체라는 곳일까」
+;OriginalString : 「さぁ、来て。壊れるくらい突いて頂戴…」
+		PRINTFORMW 「, 와. 망가질 정도로 찔러 주세요…」
+		RETURN 1
+	ENDIF
+	
+	;v1.010現在、ACT_ABLEで弾かれている
+	;=================================================
+	;Ａ성교봉사から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 5
+;OriginalString : 「はっ、はぁ……」
+		PRINTFORMW 「하, 후~……」
+;OriginalString : 「ねぇ、前が寂しいわ。今度はこっちに頂戴……」
+		PRINTFORMW 「응, 전이 외로워요. 이번은 여기에 주세요……」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;가버려
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		IF POLICY("금일") == "애만들기"
+;OriginalString : 「私を임신해って言ったんだから、入れる前に暴発なんて事はやめてよね？」
+			PRINTFORMW 「 나를 잉세대라고 말했으니까, 넣기 전에 폭발은 일은 그만두어요？」
+;OriginalString : 「ま、その様子じゃ…入れてもすぐにイっちゃいそうだけど、ね
+			PRINTFORM 「뭐, 그 모습이다…넣어도 곧바로 이있을 것 같지만, 이군요
+			CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+		ELSEIF AFFECTION("상사상애") && PENIS(MASTER)
+;OriginalString : 「ふふっ、今にも暴発しそう。でもやっぱり最後は私の中がいいわよね？」
+			PRINTFORMW 「후후, 당장 폭발할 것 같다. 그렇지만 역시 최후는 나중이 좋아요？」
+;OriginalString : 「…って、そんなに力いっぱい頷かれても困るのだけど」
+			PRINTFORMW 「…라고, 그렇게 힘껏 수긍해져도 곤란하다지만」
+		ELSE
+;OriginalString : 「なんか入れた瞬間にイっちゃいそうね？」
+			PRINTFORMW 「무슨 넣은 순간에 이있을 것 같구나？」
+;OriginalString : 「『入れる前にイク』なんて最悪なのだけは勘弁して貰いたいけど、ね」
+			PRINTFORMW 「 「넣기 전에 이크」는 최악의가 만일 수 있는은 용서해 받고 싶지만, 이군요」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	IF 0
+	ELSEIF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+		SELECTCASE RANDACT(2, 10)
+			CASE 0
+;OriginalString : 「ほら、何もたもたしてんのよ。早くきなさいよっ！」
+				PRINTFORMW 「이봐요, 굳이 도 더하고 있어. 빨리 오세요！」
+;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 손を取り引き寄せた…
+				PRINTFORMDW %CALLNAME%(은)는 %CALLNAME:MASTER%의 손을 거래 대었다…
+;OriginalString : 「『
+				PRINTFORM 「 「
+				CALL PRINTFONTSTYLE(COLOR_K14("white"), "임신해", 1)
+;OriginalString : 』って言い出했다のは%CNAME(MASTER, TARGET)%なんだから…」
+				PRINTFORMW 」(이)라고 말하기 시작한 것은%CNAME(MASTER, TARGET)%(이)니까…」
+;OriginalString : 「ちゃんと…、責任取りなさいよね」
+				PRINTFORMW 「분명하게…, 책임 취하세요」
+			CASE 1
+;OriginalString : 「ねぇ、발を持ち上げてくれない？ その方が深く삽입できるわ」
+				PRINTFORMW 「응, 다리를 들어 올려 주지 않는다？ 그 쪽이 깊게 삽입할 수 있어요」
+;OriginalString : 「애만들기なら、子宮に近いとこで사정して貰った方がいいしね？ それに…」
+				PRINTFORMW 「아이 만들기라면, 자궁에 가까우면 개로 사정해 받는 것이 좋기도 하고？ 거기에…」
+;OriginalString : 「奥まで掻き回されてぐりぐり당했다方が、私もその、キモチ良いし……」
+				PRINTFORMW 「안쪽까지 휘저어져 때굴때굴 된 (분)편이, 나도 그, 키모치 좋고……」
+		ENDSELECT
+	ELSEIF AFFECTION("상사상애")
+;OriginalString : 「ねぇ早く来て……、もう待ちきれないの」
+		PRINTFORMW 「응 빨리 와……, 이제 기다릴 수  없는거야」
+;OriginalString : 엘리스は瞳を潤ませながら両발を大きく広げ、ねだるように言ってきた…
+		PRINTFORMDW 앨리스는 눈동자를 물기를 띠게 한이면서 양 다리를 크게 넓혀 조르도록(듯이) 말해 왔다…
+;OriginalString : 「私の事なら心配いらないから……壊すつもりで思い切り突いて……」
+		PRINTFORMW 「 나의 일이라면 걱정 필요없으니까……부술 생각으로 마음껏 찔러……」
+	ELSE
+;OriginalString : 「顔が見えると安心するわね」
+		PRINTFORMW 「얼굴이 보이면(자) 안심해요」
+;OriginalString : 「후후……さぁ、来て。私を愉しませて……」
+		PRINTFORMW 「후후……, 와. 나를 즐기게 해……」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT96,후배위시킨다
+;────────────────────────────────────
+;・죠교자が죠교대상に후배위での삽입を命じる
+;・죠교대상に페니스、페니스밴드がない場合は発生しない
+;・죠교자が페니스밴드장착中の場合は発生しない
+;・죠교대상が누움、かつ성교봉사중でない場合は発生しない
+;・죠교대상の발기도が1000以下の場合は発生しない
+;・밀어넘어지는중には発生しない
+;・죠교자が남자の場合は発生しない
+;・죠교대상が오나홀사용중の場合には発生しない
+;・성교중からは派生しない
+;・대면좌위での성교봉사중からは派生しない
+;・Ａ성교봉사중からは派生しない
+;・主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+;-------------------------------------------------
+;・REACT분류が"날뛴다", "거부"であった場合は취소される
+;・죠교대상が동정なら동정상실が起こる
+;・죠교자が처녀なら처녀상실が起こる
+;・これらの処理は@ACTION_APPLY2_96にて行われる
+;-------------------------------------------------
+@KOJO_ACT_K14_96
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;※v1.010現在、ACT파생3/4/5はACT_ABLEで規制されているので機能しない
+;-------------------------------------------------
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT96,후배위시킨다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;=================================================
+	;오토모드用処理
+	;=================================================
+	[IF_DEBUG]
+		IF TALENT:처녀 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTACT(0)
+			CALL PRINT_RAINBOW2W("처녀상실", 20)
+			CALL GAME_OVER_K14
+			FORCEWAIT
+			RETURN 1
+		ENDIF
+	[ENDIF]
+
+	;=================================================
+	;처녀・동정
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(TALENT:처녀, TALENT:MASTER:동정) > 0
+		;죠교자が처녀＆죠교대상が동정
+		IF TALENT:처녀 && TALENT:MASTER:동정
+;OriginalString : 「ねぇ、お互いに初めてってちょっと良いと思わない…？」
+			PRINTFORMW 「응, 서로 처음은 조금 좋다고 생각하지 않는다…？」
+;OriginalString : 「じゃ、よろしくお願いね♪」
+			PRINTFORMW 「그러면, 아무쪼록 부탁이군요♪」
+		;죠교자が처녀
+		ELSEIF TALENT:처녀
+;OriginalString : 「私の初めて、%CNAME(MASTER, TARGET)%に捧げるわ…」
+			PRINTFORMW 「 나의 처음으로,%CNAME(MASTER, TARGET)%에 바쳐요…」
+;OriginalString : 「初めてが後ろからなんて、ちょっと怖いけど…」
+			PRINTFORMW 「처음이 뒤로부터는, 조금 무서운데…」
+;OriginalString : 「お願い、優しくして……」
+			PRINTFORMW 「부탁해요, 상냥하게 해……」
+		;죠교대상が동정
+		ELSE
+;OriginalString : 「緊張しないで。私にまかせて頂戴…♪」
+			PRINTFORMW 「긴장하지 말아줘. 나에게 맡겨 주세요…♪」
+;OriginalString : 「大丈夫よ、優しくリードしてあげるから…」
+			PRINTFORMW 「괜찮아요, 상냥하게 리드 해 주기 때문에…」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:안빼고
+		;-------------------------------------------------
+		;전회질싸
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 4) && PENIS(MASTER)
+			IF TFLAG:전회질싸 == 2
+				IF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+					SELECTCASE RANDACT(3, 1)
+						CASE 0
+;OriginalString : 「사정했다ばかりなのに、随分硬いのね…」
+							PRINTFORMW 「사정했던 바로 직후인데, 상당히 딱딱하구나…」
+;OriginalString : 「%CNAME(MASTER, TARGET)%、そんなに私を임신해のかしら？」
+							PRINTFORMW 「%CNAME(MASTER, TARGET)%, 그렇게 나를 잉세대의 까？」
+							IF !RAND:3
+;OriginalString : 「単純に、私を後ろから犯す事に興奮してるだけかも知れないけど」
+								PRINTFORMW 「단순하게, 나를 뒤로부터 범하는 일에 흥분하고 있을 뿐일지도 모르는데」
+;OriginalString : 「ま、別にそれでも構わないわ。今はそう思えるのよね……」
+								PRINTFORMW 「뭐,별로 그런데도 상관없어요. 지금은 그렇게 생각할 수 있어……」
+							ENDIF
+						CASE 1
+;OriginalString : 「あれだけ사정했다くせに、随分元気なのね…」
+							PRINTFORMW 「그토록 사정하고 싶게 키에, 상당히 건강한…」
+;OriginalString : 「まぁでも、私を孕ませるなんて言うからには…このくらいじゃないと、ね」
+							PRINTFORMW 「아무튼에서도, 나를 잉다툰다고 말하는 이상에는…이 정도가 아니면」
+						CASE 2
+;OriginalString : 「私の질내、ドロドロで凄い事になっちゃってるわね…イヤラシイ音もしちゃってるし」
+							PRINTFORMW 「 나의 질내, 드로드로로 굉장한 일이 되어 버려…이야라시이 소리도 나 버린다 해」
+;OriginalString : 「애만들기だってのに、こんな格好なのもアレだけど…」
+							PRINTFORMW 「아이 구조도의에, 이런 적당한의도 아레이지만…」
+							SIF !RAND:3
+;OriginalString : 「後ろから激しくされるの、嫌いじゃないのよね」
+								PRINTFORMW 「뒤로부터 격렬하게 여겨지는 것, 싫지 않아군요」
+					ENDSELECT
+				ELSE
+					SELECTCASE RANDACT(3, 2)
+						CASE 0
+;OriginalString : 「見えないけど、さっき사정당했다のが垂れてきてるのが判るわ……」
+							PRINTFORMW 「안보이지만, 조금 전 사정되었던 것이 늘어져 오고 있는 것이 알아요……」
+;OriginalString : 「私の질내もヌルヌルしちゃって…。犬みたいな格好なのに、凄くエッチな気分になっちゃうわ…」
+							PRINTFORMW 「 나의 질내도 누르눌 해 버려서…. 개같은 적당한의에, 굉장히 음란한 기분이 되어 버려요…」
+						CASE 1
+;OriginalString : 「まだ硬いのね…、あれだけ私の中に注ぎ込んだ癖に……」
+							PRINTFORMW 「 아직 딱딱하구나…, 그토록 나중에 쏟은 버릇에……」
+;OriginalString : 「って%CNAME(MASTER, TARGET)%…、こんな格好でいつまで待たせるつもりよ」
+							PRINTFORMW 「은%CNAME(MASTER, TARGET)%…, 이런 모습으로 언제까지 기다리게 할 생각이야」
+						CASE 2
+;OriginalString : 「後ろからだと삽입が深くって、奥まで、届いちゃうのよね」
+							PRINTFORMW 「뒤로부터라면 삽입이 깊어서, 안쪽까지, 닿아버린다 것이군요」
+;OriginalString : 「%CNAME(MASTER, TARGET)%のが、全部私の中に入ってるのが良くわかるわ……」
+							PRINTFORMW 「%CNAME(MASTER, TARGET)%의가, 전부 나중에 들어오고 있는 것을 자주(잘) 알아요……」
+					ENDSELECT
+				ENDIF
+			ELSE
+;OriginalString : 「もう一滴も出ない癖に、随分元気そうじゃない…」
+				PRINTFORMW 「 이제 한 방울도 나오지 않는 버릇에, 상당히 건강하지 않다…」
+;OriginalString : 「ま、それはいいから…早くき\@ GET_KFLAG_K14("상사상애") ? てよ # なさいよ \@。こんな格好で待たせないで」
+				PRINTFORMW 「뭐, 그것은 좋으니까…빨리 나무\@ GET_KFLAG_K14("상사상애") ? 라고 # 없음 있어라 \@. 이런 모습으로 기다리게 한 없고」
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+;OriginalString : 「ああっんっ、あぁぁぁっ！ んぁぁっ、はっ…あ…ッ
+		PRINTFORM 「아 응, 아！ 응, 하…아…
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 「いいわっ！ もっと、獣みたいに……激しくッ！」
+		PRINTFORMW 「좋아요！ 좀 더, 짐승같이……격렬하고！」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生１：연속
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 「自分だけさっさといこうったって、そうはさせないわよ？」
+				PRINTFORMW 「자신만큼 빨리 가려 하더라도, 그렇게는 시키지 않아요？」
+;OriginalString : 「イけそうでイけないもどかしさ、たっぷり味わわせてあげるわ♪」
+				PRINTFORMW 「이 지우자로 이없는 것도 치워 , 충분히 맛보게 해 주어요♪」
+			;애태움終了
+			CASE 1
+				IF POLICY("금일") == "애만들기"
+;OriginalString : 「この格好で種付けされるのって、ちょっとどうかと思うけど…」
+					PRINTFORMW 「이 모습으로 교배되는 것은, 조금 어떨까라고 생각하는데…」
+;OriginalString : 「%CNAME(MASTER, TARGET)%、後ろからが大好きですものね？」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%, 뒤로부터를 아주 좋아하는 것이군요？」
+;OriginalString : 「ま、本音を言えば…私も嫌いじゃないんだけど、ね
+					PRINTFORM 「뭐, 본심을 말하면…나도 싫지 않지만, 이군요
+					CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+				ELSEIF TEQUIP:페니스밴드
+;OriginalString : 「いいわよ、そのままイきなさい」
+					PRINTFORMW 「좋아요, 그대로이 오세요」
+;OriginalString : 「思いっきりシていいから……」
+					PRINTFORMW 「마음껏 시라고 좋으니까……」
+				ELSEIF AFFECTION("상사상애") && PENIS(MASTER)
+;OriginalString : 「いいわよ、私の中に出して…」
+					PRINTFORMW 「좋아요, 나중에 내…」
+;OriginalString : 「溢れちゃうくらい%CNAME(MASTER, TARGET)%の정액、注ぎこんで…」
+					PRINTFORMW 「흘러넘쳐버릴 정도%CNAME(MASTER, TARGET)%의 정액, 부어 넣어…」
+				ELSEIF PENIS(MASTER)
+;OriginalString : 「さぁいいわよ、そろそろ가게해줘あげる…」
+					PRINTFORMW 「좋아요, 이제 이나 키라고 준다…」
+;OriginalString : 「一滴残らず搾り取ってあげるわ」
+					PRINTFORMW 「한 방울 남김없이 짜 취해 주어요」
+				ENDIF
+			;애태움無し
+			CASEELSE
+				SELECTCASE RANDACT(2, 3)
+					CASE 0
+;OriginalString : 「んっ、くっ！ うあっ……あっ、あぁっ…
+						PRINTFORM 「응, 구！ 아……아, 아…
+						CALL PRINT_SYMBOL2_K14
+;OriginalString : 「いいわっ！ もっと……天井の方、擦って…ッ！」
+						PRINTFORMW 「좋아요！ 좀 더……천정의 (분)편, 켜…！」
+					CASE 1
+;OriginalString : 「あぁっ、ああんッ！ あぁぁっ…
+						PRINTFORM 「아, 아 응！ 아…
+						CALL PRINT_SYMBOL2_K14
+;OriginalString : 背後から突かれる度、엘리스は髪を振り乱し嬌声をあげている…
+						PRINTFORMDW 배후로부터 찔릴 때, 앨리스는 머리카락을 흩뜨려 교성을 주고 있다…
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生２：体位変更(Ｖ성교봉사から)
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+;OriginalString : 「…っ、あっ
+		PRINTFORM 「…, 아
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　レイプされてるみたいで、興奮しちゃう…！」
+		PRINTFORMW  강간되고 있는 것 같아, 흥분해버린다…！」
+;OriginalString : 「うぁっ、んんっ
+		PRINTFORM 「, 응응
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　もっと激しくっ！ 壊れるくらい…ッ！」
+		PRINTFORMW  좀 더 격렬하고！ 망가질 정도…！」
+;OriginalString : 陵辱されているかの様な감각に、엘리스は半ば狂ったように悶えている… 
+		PRINTFORMDW 능욕되고 있을까의 같은 감각에, 앨리스는 반 미친 것처럼 번민이라고 있다… 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生３：Ａ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 3
+;OriginalString : 「…今度は%CNAME(MASTER, TARGET)%の番よ」
+		PRINTFORMW 「…이번은%CNAME(MASTER, TARGET)%의 차례야」
+;OriginalString : 「ねぇ、後ろから突いて頂戴…」
+		PRINTFORMW 「응, 뒤로부터 찔러 주세요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生４：Ｖ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 4
+;OriginalString : 「攻守交替ってとこかしら」
+		PRINTFORMW 「공수 교체라는 곳일까」
+;OriginalString : 「さぁ、来て。後ろから壊れるくらい突いて頂戴…」
+		PRINTFORMW 「, 와. 뒤로부터 망가질 정도로 찔러 주세요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生５：Ｖ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 5
+;OriginalString : 「はっ…はぁ……」
+		PRINTFORMW 「하…후~……」
+;OriginalString : 「ねぇ、前が切ないわ…　今度はこっちに頂戴……」
+		PRINTFORMW 「응, 전이 안타까워요… 이번은 여기에 주세요……」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が가버려
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		IF POLICY("금일") == "애만들기"
+;OriginalString : 「この私を임신해って言っといて、入り입で暴発とか勘弁してよね」
+			PRINTFORMW 「이 나를 잉세대는 말해 놓아, 입구에서 폭발이라든지 좀 봐줘」
+;OriginalString : 「こう見えても私、期待してるんだから…」
+			PRINTFORMW 「이렇게 보여도 나, 기대하고 있기 때문에…」
+		ELSEIF AFFECTION("상사상애")
+;OriginalString : 「ほら、最後はこの格好でさせてあげるわ」
+			PRINTFORMW 「이봐요, 최후는 이 모습으로 시켜 주어요」
+;OriginalString : 「%CNAME(MASTER, TARGET)%、私をバックで犯すの大好きですものね？」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%, 나를 가방으로 범하는 것 정말 좋아합니다 것이군요？」
+;OriginalString : 「でもその様子じゃ、入れた瞬間にイっちゃいそうだけど、ね…
+			PRINTFORM 「 그렇지만 그 모습은, 넣은 순간에 이있을 것 같지만, 이군요…
+			CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+		ELSE
+;OriginalString : 「ほら、もう가버려なんでしょう？」
+			PRINTFORMW 「이봐요, 이제 이 나무 그런 것이겠죠？」
+;OriginalString : 「最後は私の中で가게해줘あげるから、慌てないでゆっくり、ね」
+			PRINTFORMW 「최후는 나중에서 이나 키라고 주기 때문에, 당황하지 말고 천천히, 군요」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	IF 0
+	ELSEIF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+;OriginalString : 「いつまでも、こんな格好でまたせないで欲しいわね」
+		PRINTFORMW 「언제까지나, 이런 모습으로 또 등 있고로 갖고 싶네요」
+		SELECTCASE RANDACT(2, 10)
+			CASE 0
+;OriginalString : 「大体、私を임신해って言い出했다のは%CNAME(MASTER, TARGET)%なんだから…」
+				PRINTFORMW 「대개, 나를 잉세대라고 말하기 시작한 것은%CNAME(MASTER, TARGET)%(이)니까…」
+			CASE 1
+;OriginalString : 「こう見えたって、私もその気になってるのよ。そのくらい察しなさいよ、%RAND_SPLIT("ばか/バカ/馬鹿")%……」
+				PRINTFORMW 「이렇게 보여도, 나도 그럴 기분이 들어. 그 정도 헤아려 주세요,%RAND_SPLIT("바보/바보/바보")%……」
+		ENDSELECT
+	ELSEIF AFFECTION("상사상애")
+;OriginalString : 「ねぇ、\@ !TEQUIP:눈가리개 ? 見て # \@……下の입が寂しくて切ないの……」
+		PRINTFORMW 「응,\@ !TEQUIP:눈가리개 ? 봐 # \@……아래의 입이 외롭고 안타까운거야……」
+;OriginalString : 엘리스は瞳を潤ませながら尻を高く上げ、ねだるように言ってきた…
+		PRINTFORMDW 앨리스는 눈동자를 물기를 띠게 한이면서 엉덩이를 높게 올려 조르도록(듯이) 말해 왔다…
+;OriginalString : 「私は大丈夫だから……後ろから思いっきり犯して。獣のように突きまくって…」
+		PRINTFORMW 「 나는 괜찮기 때문에……뒤로부터 마음껏 범해. 짐승과 같이 마구 와 같이 찔러…」
+	ELSE
+;OriginalString : 「ふふ、後ろからされるのってゾクゾクしちゃう」
+		PRINTFORMW 「후후, 뒤로부터 되는 것이라는 조크조크 해버린다」
+;OriginalString : 「さぁ、来て。私を犯して…」
+		PRINTFORMW 「, 와. 나를 범해…」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT97, 대면좌위시킨다
+;────────────────────────────────────
+;・죠교자が죠교대상に대면좌위での삽입を命じる
+;・죠교대상に페니스、페니스밴드がない場合は発生しない
+;・죠교자が페니스밴드장착中の場合は発生しない
+;・죠교대상が누움、かつ성교봉사중でない場合は発生しない
+;・죠교대상の발기도が1000以下の場合は発生しない
+;・밀어넘어지는중には発生しない
+;・죠교자が남자の場合は発生しない
+;・죠교대상が오나홀사용중の場合には発生しない
+;・성교중からは派生しない
+;・배면좌위での성교봉사중からは派生しない
+;・Ａ성교봉사중からは派生しない
+;・主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+;-------------------------------------------------
+;・REACT분류が"날뛴다", "거부"であった場合は취소される
+;・죠교대상が동정なら동정상실が起こる
+;・죠교자が처녀なら처녀상실が起こる
+;・これらの処理は@ACTION_APPLY2_97にて行われる
+;-------------------------------------------------
+@KOJO_ACT_K14_97
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;※v1.010現在、ACT파생3/4/5はACT_ABLEで規制されているので機能しない
+;-------------------------------------------------
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT97, 대면좌위시킨다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;=================================================
+	;오토모드用処理
+	;=================================================
+	[IF_DEBUG]
+		IF 구상記入チェック(100) && TALENT:처녀 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTACT(0)
+			CALL PRINT_RAINBOW2W("처녀상실", 20)
+			CALL GAME_OVER_K14
+			FORCEWAIT
+			RETURN 1
+		ENDIF
+	[ENDIF]
+
+	;=================================================
+	;처녀・동정
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(TALENT:처녀, TALENT:MASTER:동정) > 0
+		;죠교자が처녀＆죠교대상が동정
+		IF TALENT:처녀 && TALENT:MASTER:동정
+;OriginalString : 「ねぇ、お互いに初めてってちょっと良いと思わない…？」
+			PRINTFORMW 「응, 서로 처음은 조금 좋다고 생각하지 않는다…？」
+;OriginalString : 「じゃ、よろしくお願いね♪」
+			PRINTFORMW 「그러면, 아무쪼록 부탁이군요♪」
+		;죠교자が처녀
+		ELSEIF TALENT:처녀
+;OriginalString : 「私の初めて、%CNAME(MASTER, TARGET)%に捧げるわ…」
+			PRINTFORMW 「 나의 처음으로,%CNAME(MASTER, TARGET)%에 바쳐요…」
+;OriginalString : 「まだちょっと怖いけど…　お願い…　優しくして……」
+			PRINTFORMW 「 아직 조금 무서운데… 부탁… 상냥하게 해……」
+		;죠교대상が동정
+		ELSE
+;OriginalString : 「緊張しないで。私にまかせて頂戴…♪」
+			PRINTFORMW 「긴장하지 말아줘. 나에게 맡겨 주세요…♪」
+;OriginalString : 「大丈夫よ…　優しくリードしてあげるから…」
+			PRINTFORMW 「괜찮아요… 상냥하게 리드 해 주기 때문에…」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:안빼고
+		;-------------------------------------------------
+		;전회질싸
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 4) && PENIS(MASTER)
+			IF TFLAG:전회질싸 == 2
+				IF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+					SELECTCASE RANDACT(4, 1)
+						CASE 0
+;OriginalString : 「…ん。出했다ばっかりなのに、全然衰えないのね？」
+							PRINTFORMW 「…응. 낸지 얼마 안됨인데, 전혀 쇠약해지지 않구나？」
+;OriginalString : 「まぁでも…ふふ。私を임신해って言うなら、このくらいじゃないと。ね
+							PRINTFORM 「아무튼에서도…후후. 나를 잉세대라고 말한다면, 이 정도가 아니면. 그런데
+							CALL PRINT_SYMBOL_K14
+						CASE 1
+;OriginalString : 「あまり動くと、さっきのが出てきちゃうわね……」
+							PRINTFORMW 「너무 움직이면(자), 조금 전의가 나와버리는 원이군요……」
+;OriginalString : 「その分%CNAME(MASTER, TARGET)%がまた注ぎ込んでくれればいい話なんだけど」
+							PRINTFORMW 「그 만큼%CNAME(MASTER, TARGET)%가 또 쏟아 준다면 좋은 이야기이지만」
+;OriginalString : 「だってほら、私をママにしてくれるんでしょう？ 孕ませてくれるんでしょう？」
+							PRINTFORMW 「이래 이봐요, 나를 마마로 해 주겠지요？ 잉키라고 주겠지요？」
+;OriginalString : 「私だって、早く%CNAME(MASTER, TARGET)%の赤ちゃんが欲しいわ……」
+							PRINTFORMW 「 나도, 빨리%CNAME(MASTER, TARGET)%의 아기를 갖고 싶어요……」
+						CASE 2
+;OriginalString : 「あれだけ사정してまだ硬いとか…。%CNAME(MASTER, TARGET)%、どれだけ私を임신해訳？」
+							PRINTFORMW 「그토록 사정해 아직 딱딱하다든가….%CNAME(MASTER, TARGET)%, 얼마나 나를 잉세대(뜻)이유？」
+;OriginalString : 「でもそうね…、%CNAME(MASTER, TARGET)%にそう思われるのは嫌じゃない。むしろ嬉しいって思ってるのよ…」
+							PRINTFORMW 「 그렇지만 그렇구나…,%CNAME(MASTER, TARGET)%에 그렇게 생각되는 것은 싫지 않다. 오히려 기쁘다고 생각해…」
+						CASE 3
+;OriginalString : 「%RAND_SPLIT("ん/あ")%…
+							PRINTFORM 「%RAND_SPLIT("응/아")%…
+							CALL AUTOHEARTCB_K14
+;OriginalString : 　ねぇほら…、奥に当たってるの判る？」
+							PRINTFORMW  응 이봐요…, 안쪽에 해당되어 안다？」
+;OriginalString : 「子宮が降りてきて、私の身体…準備ができちゃってるみたいなの」
+							PRINTFORMW 「자궁이 내려 와, 나의 신체…준비를 할 수 있어 버린다 같아」
+;OriginalString : 「奥まで突かれるとちょっと痛いけど、今なら참다できるから……」
+							PRINTFORMW 「안쪽까지 찔리면(자) 조금 아프지만, 지금이라면 참을 수 있기 때문에……」
+					ENDSELECT
+				ELSE
+					SELECTCASE RANDACT(2, 2)
+						CASE 0
+;OriginalString : 「さっき사정당했다のが溢れてきて……、凄くイヤラシイ眺めね、これ」
+							PRINTFORMW 「조금 전 사정되었던 것이 흘러넘쳐 와……, 굉장히 이야라시이 경치군요, 이것」
+;OriginalString : 「って%CNAME(MASTER, TARGET)%…。ぼんやりしてないで、早く続きをしてくれない？」
+							PRINTFORMW 「은%CNAME(MASTER, TARGET)%…. 멍하니 하지 않고, 빨리 계속을 해 주지 않는다？」
+;OriginalString : 「私…、まだ만족してないんだから……」
+							PRINTFORMW 「 나…, 아직 만족하고 있지 않기 때문에……」
+						CASE 1
+;OriginalString : 「사정했다ばっかりなのに、ちょっと元気すぎじゃない？」
+							PRINTFORMW 「사정한지 얼마 안됨인데, 너무 조금 건강하지 않은다？」
+;OriginalString : 「ふふ、これ…안빼고の何とかってやつよね…
+							PRINTFORM 「후후, 이것…뽑지 않고의 어떻게든은 녀석이군요…
+							CALL PRINT_SYMBOL_K14
+					ENDSELECT
+				ENDIF
+			ELSE
+;OriginalString : 「もう사정すらできないってのに、まだしっかり硬いのね…」
+				PRINTFORMW 「이제 사정조차 할 수 없다고 것에, 아직 확실히 딱딱하구나…」
+;OriginalString : 「ほら、まだまだいけるんでしょう？ こんなにカチカチにして、駄目とは言わせないわよ…
+				PRINTFORM 「이봐요, 아직도 안되겠지요？ 이렇게 카치카치로 해, 안된다고는 말하게 하지 않아요…
+				CALL PRINT_SYMBOL_K14
+;OriginalString : %CALLNAME%は%CALLNAME:MASTER%%RAND_SPLIT("に키스を하면서/の首に손を回하면서")%、挑発するかのように腰を妖しくくねらせている…
+				PRINTFORMDW %CALLNAME%(은)는 %CALLNAME:MASTER%%RAND_SPLIT("에키스를하면서/의 목에손를 회하면서")%, 도발하는것 같이 허리를 요염하게 구군요들 키라고 있다…
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+;OriginalString : 「ああっんっ
+		PRINTFORM 「아 응
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　あぁぁぁっ
+		PRINTFORM  아
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　んぁぁっ！ はっ、あ…ッ！」
+		PRINTFORMW  응！ 하, 아…！」
+;OriginalString : 「いいわっ！ もっと、ギュってして…」
+		PRINTFORMW 「좋아요！ 좀 더, 규는 해…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生１：연속
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+		SELECTCASE TCVAR:MASTER:애태움도
+			CASE IS > 1
+;OriginalString : 「あら、ちょっと気が早いんじゃない？ 私はまだ만족してないわよ」
+				PRINTFORMW 「어머나, 조금 성질이 급하지 않아？ 나는 아직 만족하고 있지 않아요」
+;OriginalString : 「%CNAME(MASTER, TARGET)%が泣きそうになる位嬲ってあげるから、覚悟して…」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%가 울 것 같게 되는 위요는 주기 때문에, 각오 해…」
+			CASE 1
+				IF POLICY("금일") == "애만들기"
+;OriginalString : 「ねぇ判るかしら？ 孕ませられると思って、私もちょっとドキドキしてるの」
+					PRINTFORMW 「응 아는 것일까？ 잉다투어진다고 생각해, 나도 조금 두근두근 해」
+;OriginalString : 「いいわよ、思いっきり注ぎ込んで。%CNAME(MASTER, TARGET)%の子供を孕ませて…」
+					PRINTFORMW 「좋아요, 마음껏 쏟아.%CNAME(MASTER, TARGET)%의 아이를 잉키라고…」
+				ELSEIF TEQUIP:페니스밴드
+;OriginalString : 「ほら、このまま가게해줘あげるわ。だから…」
+					PRINTFORMW 「이봐요, 이대로 이나 키라고 주어요. 그러니까…」
+;OriginalString : 「思いっきり突き上げて……」
+					PRINTFORMW 「마음껏 밀어 올려……」
+				ELSEIF AFFECTION("상사상애") && PENIS(MASTER)
+;OriginalString : 「んッ！ ほら、いいわよ……、このまま中に出して」
+					PRINTFORMW 「응！ 이봐요, 좋아요……, 이대로 안에 내며」
+;OriginalString : 「私の中を%CNAME(MASTER, TARGET)%でいっぱいにして…ちゅっ
+					PRINTFORM 「 나중을%CNAME(MASTER, TARGET)%그리고 가득 해…
+						CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+				ELSEIF PENIS(MASTER)
+;OriginalString : 「流石にもう限界みたいね？ ふふっ」
+					PRINTFORMW 「유석에 이제 한계같구나？ 후후」
+;OriginalString : 엘리스は%CALLNAME:MASTER%의 耳元に입を寄せ、囁いた…
+					PRINTFORMDW 앨리스는 %CALLNAME:MASTER%의 귓전에 입을 대어 속삭였다…
+;OriginalString : 「いいわよ……私の中に出して……」
+					PRINTFORMW 「좋아요……나중에 내……」
+				ENDIF
+			CASEELSE
+				SELECTCASE RANDACT(2, 0)
+					CASE 0
+;OriginalString : 「いいわっ…　もっと、ギュってして…」
+						PRINTFORMW 「좋아요… 좀 더, 규는 해…」
+;OriginalString : 「んんっ……もっと、もっと抱きしめて…ッ」
+						PRINTFORMW 「응응……좀 더, 좀 더 꼭 껴안아…」
+					CASE 1
+;OriginalString : 「やっ……やぁっ……あんッ……あぁぅっ……あん…ッ」
+						PRINTFORMW 「이나……(이)나……팥고물……아……팥고물…」
+;OriginalString : 二人はしっかり抱き合い互いの唇を貪りながら、腰を激しくぶつけ合った…
+						PRINTFORMDW 두 명은 확실히 얼싸안아 서로의 입술을 탐내면서, 허리를 서로 격렬하게 부딪쳤다…
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生２：体位変更(Ｖ성교봉사から)
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+;OriginalString : 「あんっ、あぁっ
+		PRINTFORM 「팥고물, 아
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　この格好大好きっ…
+		PRINTFORM  이 모습 너무 좋아…
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 「ねぇ、키스して……もっと強く抱いて…ッ！」
+		PRINTFORMW 「응, 키스 해……좀 더 강하게 안아…！」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生３：Ａ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 3
+;OriginalString : 「……今度は%CNAME(MASTER, TARGET)%の番よ」
+		PRINTFORMW 「……이번은%CNAME(MASTER, TARGET)%의 차례야」
+;OriginalString : 「そう、正面から抱き合って……」
+		PRINTFORMW 「그렇게, 정면에서 얼싸안아……」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生４：Ｖ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 4
+;OriginalString : 「攻守交替ってとこかしら」
+		PRINTFORMW 「공수 교체라는 곳일까」
+;OriginalString : 「さぁ、来て。思いっきり突き上げていいわよ…」
+		PRINTFORMW 「, 와. 마음껏 밀어 올려도 좋아요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生５：Ａ성교봉사系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 5
+;OriginalString : 「はっ、はぁ……」
+		PRINTFORMW 「하, 후~……」
+;OriginalString : 「ねぇ、前が寂しいわ……今度はこっちに頂戴」
+		PRINTFORMW 「응, 전이 외로워요……이번은 여기에 주세요」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が가버려
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		IF POLICY("금일") == "애만들기"
+;OriginalString : 「금일は애만들기するって言ったんだから、ちゃんと私の中でイってよね」
+			PRINTFORMW 「오늘은 아이 만들어 한다 라고 했으니까, 분명하게 나중에서 이는이군요」
+;OriginalString : 「ほら、暴発しないように…ゆっくり入れるから…」
+			PRINTFORMW 「이봐요, 폭발하지 않게…천천히 들어갈 수 있기 때문에…」
+		ELSEIF AFFECTION("상사상애") && PENIS(MASTER)
+;OriginalString : 「ほら、入れるわよ。もう少し참다してよね」
+			PRINTFORMW 「이봐요, 넣어요. 좀 더 참아요」
+;OriginalString : 「んんっ！ 入ったけど……もう爆発しそう…でも、すぐにイったら…」
+			PRINTFORMW 「응응！ 들어갔지만……이제 폭발할 것 같다…그렇지만, 곧바로 이도 참…」
+;OriginalString : 엘리스は笑みを浮かべながら%CALLNAME:MASTER%의 耳元で囁いた…
+			PRINTFORMDW 앨리스는 미소를 띄우면서 %CALLNAME:MASTER%의 귓전으로 속삭였다…
+;OriginalString : 「징계・するから……覚悟して
+			PRINTFORM 「징계나무 하기 때문에……각오 해
+			CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+		ELSE
+;OriginalString : 「んんっ！ 全部入ったけど、すぐにイっちゃいそうね…」
+			PRINTFORMW 「응응！ 전부 들어갔지만, 곧바로 이있을 것 같구나…」
+;OriginalString : 「あまり失望させないで欲しいけど…少しは期待していいのかしら？」
+			PRINTFORMW 「그다지 실망시키지 않으면 좋은데…조금은 기대해도 좋은 것일까？」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	IF 0
+	ELSEIF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+;OriginalString : 「ねぇ、私の鼓動……、伝わるかしら？」
+		PRINTFORMW 「응, 나의 고동……, 전해지는 것일까？」
+;OriginalString : 「%CNAME(MASTER, TARGET)%のせいよ。%CNAME(MASTER, TARGET)%が、その…임신해なんていうから。わたし…」
+		PRINTFORMW 「%CNAME(MASTER, TARGET)%태우고 있어라.%CNAME(MASTER, TARGET)%가, 그…잉세대라고 하기 때문에. 나…」
+;OriginalString : 「お願い、強く抱いて。%CNAME(MASTER, TARGET)%の鼓動も、息づかいも、全部感じたいの」
+		PRINTFORMW 「부탁해요, 강하게 안아.%CNAME(MASTER, TARGET)%의 고동도, 숨결도, 전부 느끼고 싶은거야」
+;OriginalString : 「%CNAME(MASTER, TARGET)%さえいれば、他に何もいらないわ……」
+		PRINTFORMW 「%CNAME(MASTER, TARGET)%조차 있으면, 그 밖에 굳이 필요없어요……」
+	ELSEIF GET_KFLAG_K14("상사상애")
+		IF FIRSTACT(10)
+;OriginalString : 「これ、だいしゅきホールドって言うらしいわ……」
+			PRINTFORMW 「이것, 매우 수기 hold라고 말하는 것 같아요……」
+;OriginalString : 「ま、そんな事はどうでもいいから……
+			PRINTFORM 「뭐, 그런 일은 아무래도 좋으니까……
+		ELSE
+;OriginalString : 「ほら…
+			PRINTFORM 「이봐요…
+		ENDIF
+;OriginalString : 早く、%CNAME(MASTER, TARGET)%の腕の中で可愛がって…」
+		PRINTFORMW 빨리,%CNAME(MASTER, TARGET)%의 팔 중(안)에서 귀여워해…」
+;OriginalString : 엘리스は瞳を潤ませながら%CALLNAME:MASTER%의 体に손발を絡め、ねだるように言ってきた…
+		PRINTFORMDW 앨리스는 눈동자를 물기를 띠게 한이면서 %CALLNAME:MASTER%의 몸에 손발을 걸어 조르도록(듯이) 말해 왔다…
+;OriginalString : 「ねぇ、키스して……強く抱いて……、何も考えられなくなるくらい、격렬하게…ッ」
+		PRINTFORMW 「응, 키스 해……강하게 안아……, 아무것도 생각할 수 없게 될 정도로, 격렬하게 해…」
+	ELSE
+;OriginalString : 「さぁ、抱き合いながらしましょう」
+		PRINTFORMW 「, 얼싸안으면서 합시다」
+;OriginalString : 「愉しませて頂戴。期待してるわ…♪」
+		PRINTFORMW 「즐기게 해 주세요. 기대하고 있는 원…♪」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT98,배면좌위시킨다
+;────────────────────────────────────
+;・죠교자が죠교대상に배면좌위での삽입を命じる
+;・죠교대상に페니스、페니스밴드がない場合は発生しない
+;・죠교자が페니스밴드장착中の場合は発生しない
+;・죠교대상が누움、かつ성교봉사중でない場合は発生しない
+;・죠교대상の발기도が1000以下の場合は発生しない
+;・밀어넘어지는중には発生しない
+;・죠교자が남자の場合は発生しない
+;・죠교대상が오나홀사용중の場合には発生しない
+;・성교중からは派生しない
+;・정상위、대면좌위での성교봉사중からは派生しない
+;・Ａ성교봉사중からは派生しない
+;・主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+;-------------------------------------------------
+;・REACT분류が"날뛴다", "거부"であった場合は취소される
+;・죠교대상が동정なら동정상실が起こる
+;・죠교자が처녀なら처녀상실が起こる
+;・これらの処理は@ACTION_APPLY2_98にて行われる
+;-------------------------------------------------
+@KOJO_ACT_K14_98
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;※v1.010現在、ACT파생3/4/5はACT_ABLEで規制されているので機能しない
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT98,배면좌위시킨다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;=================================================
+	;오토모드用処理
+	;=================================================
+	[IF_DEBUG]
+		IF TALENT:처녀 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTACT(0)
+			CALL PRINT_RAINBOW2W("처녀상실", 20)
+			CALL GAME_OVER_K14
+			FORCEWAIT
+			RETURN 1
+		ENDIF
+	[ENDIF]
+
+	;=================================================
+	;처녀・동정
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(TALENT:처녀, TALENT:MASTER:동정) > 0
+		;죠교자が처녀＆죠교대상が동정
+		IF TALENT:처녀 && TALENT:MASTER:동정
+;OriginalString : 「ねぇ、お互いに初めてってちょっと良いと思わない…？」
+			PRINTFORMW 「응, 서로 처음은 조금 좋다고 생각하지 않는다…？」
+;OriginalString : 「じゃ、よろしくお願いね♪」
+			PRINTFORMW 「그러면, 아무쪼록 부탁이군요♪」
+		;죠교자が처녀
+		ELSEIF TALENT:처녀
+;OriginalString : 「私の初めて、%CNAME(MASTER, TARGET)%に捧げるわ…」
+			PRINTFORMW 「 나의 처음으로,%CNAME(MASTER, TARGET)%에 바쳐요…」
+;OriginalString : 「後ろ向きだとちょっと怖いけど…　お願い…　優しくして……」
+			PRINTFORMW 「등돌리기라면 조금 무서운데… 부탁… 상냥하게 해……」
+		;죠교대상が동정
+		ELSE
+;OriginalString : 「緊張しないで。私にまかせて頂戴…♪」
+			PRINTFORMW 「긴장하지 말아줘. 나에게 맡겨 주세요…♪」
+;OriginalString : 「大丈夫よ…　優しくリードしてあげるから…」
+			PRINTFORMW 「괜찮아요… 상냥하게 리드 해 주기 때문에…」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;派生１と２を食う可能性がある箇所。まぁ個別にやるのは面倒過ぎるのでそれで良しと考える
+	;ただアレだ。@TRAIN_MESSAGEを손入れすべきな気はする
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:안빼고
+		;-------------------------------------------------
+		;전회질싸
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 4) && PENIS(MASTER)
+			IF TFLAG:전회질싸 == 2
+				IF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+					SELECTCASE RANDACT(2, 1)
+						CASE 0
+;OriginalString : 「あまり動くと、사정당했다のが漏れてきちゃうわね…」
+							PRINTFORMW 「너무 움직이면(자), 사정되었던 것이 새어 와버리는 원이군요…」
+;OriginalString : 「でも%CNAME(MASTER, TARGET)%もまだ元気そうだし、気にしなくていいのかも」
+							PRINTFORMW 「 그렇지만%CNAME(MASTER, TARGET)%도 아직 건강한 것 같다 해, 신경쓰지 않아도 되는 것인지도」
+;OriginalString : 「ほら、きなさいよ。本気で私を孕ませるつもりなら、もっと頑張って貰わないと。ね…
+							PRINTFORM 「이봐요, 오세요. 진심으로 나를 잉다툴 생각이라면, 좀 더 노력해 받지 않으면. 그런데…
+							CALL PRINT_SYMBOL_K14
+						CASE 1
+;OriginalString : 「사정했다癖に%CNAME(MASTER, TARGET)%、全然萎えないのね…」
+							PRINTFORMW 「사정한 버릇에%CNAME(MASTER, TARGET)%, 전혀 쇠약해지지 않구나…」
+;OriginalString : 「私を임신해とか、言い出했다だけの事はあるってとこかしら？」
+							PRINTFORMW 「 나를 잉세대라든지, 말하기 시작했을 뿐의 일은 있다 라는 곳일까？」
+;OriginalString : 「ま、そういう事なら…。最後の一滴まで、私の中に注ぎ込んでもらおうじゃない。ふふ」
+							PRINTFORMW 「뭐, 그러한 일이라면…. 마지막 한 방울까지, 나중에 쏟아 주자가 아니다. 후후」
+					ENDSELECT
+				ELSE
+					SELECTCASE RANDACT(2, 2)
+						CASE 0
+;OriginalString : 「%CNAME(MASTER, TARGET)%の정액と私のが混ざり合って…、私の中、凄いことになっちゃってるわ」
+							PRINTFORMW 「%CNAME(MASTER, TARGET)%의 정액과 나의 것이 서로 섞여…, 나중, 굉장하게 되어 버린다 원」
+;OriginalString : 「ほら、まだいけるんでしょう？ きなさいよ。搾り取ってあげるから…」
+							PRINTFORMW 「이봐요, 아직 안되겠지요？ 오세요. 짜 취해 주기 때문에…」
+						CASE 1
+;OriginalString : 「あれだけ사정했다のに、随分元気なのね…」
+							PRINTFORMW 「그토록 사정했는데, 상당히 건강한…」
+;OriginalString : 「ねぇ、まだ私の中に出し발りない？」
+							PRINTFORMW 「응, 아직 나중에 내 부족하다？」
+					ENDSELECT
+				ENDIF
+			ELSE
+;OriginalString : 「何も出ない癖にまだしっかり硬いじゃない。%CNAME(MASTER, TARGET)%、まだいけそうね…」
+				PRINTFORMW 「굳이 나오지 않는 버릇에 아직 확실히 딱딱하지 않다.%CNAME(MASTER, TARGET)%, 아직 안될 것 같구나…」
+;OriginalString : 「ほら、きなさいよ。本当に打ち止めなのか試してあげる。ふふ」
+				PRINTFORMW 「이봐요, 오세요. 정말로 최후인가 시험해 준다. 후후」
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+;OriginalString : 「ああっんっ、あぁぁぁっ
+		PRINTFORM 「아 응, 아
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　んぁぁっ！ はっ、あ…ッ
+		PRINTFORM  응！ 하, 아…
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 「가슴も、もっと弄って……もっと、격렬하게…ッ！」
+		PRINTFORMW 「가슴도, 좀 더 만지작거려……좀 더, 격렬하게 해…！」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生１：연속
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 「ふふっ、ダメよ。勝손にはイかせないから
+				PRINTFORM 「후후, 안되어요. 마음대로는 이나 등 있고로부터
+				CALL PRINT_SYMBOL_K14
+;OriginalString : 「限界までたっぷりと嬲ってあげるわ…」
+				PRINTFORMW 「한계까지 충분히요는 주어요…」
+			;애태움終了
+			CASE 1
+				IF POLICY("금일") == "애만들기"
+;OriginalString : 「こんな格好で애만들기って、ちょっとどうなのって気はするわね」
+					PRINTFORMW 「이런 모습으로 아이 만들기는, 조금 어떻게인 것은 생각은 들어요」
+;OriginalString : 「まぁでも……ちゃんと孕ませてくれるなら、私は構わないけど、ね
+					PRINTFORM 「아무튼에서도……분명하게 잉키라고 준다면, 나는 상관없지만, 이군요
+						CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+				ELSEIF TEQUIP:페니스밴드
+;OriginalString : 「さて、そろそろ가게해줘あげてもいいかしらね」
+					PRINTFORMW 「그런데, 이제 이나 키라고 주어도 괜찮을까」
+;OriginalString : 엘리스は振りかえりながら%CALLNAME:MASTER%を抱き寄せ耳元で囁いた…
+					PRINTFORMDW 앨리스는 모습이나 옷깃이면서 %CALLNAME:MASTER%(을)를 껴안고 귓전으로 속삭였다…
+;OriginalString : 「いいわよ、私の中で가게해줘あげる……」
+					PRINTFORMW 「좋아요, 나중에서 이나 키라고 준다……」
+				;ELSEIF AFFECTION("상사상애")
+				;	PRINTFORMW
+				ELSEIF PENIS(MASTER)
+;OriginalString : 「んんっ！ 凄く熱くなってる…もう限界なのね」
+					PRINTFORMW 「응응！ 굉장히 뜨거워지고 있다…이제 한계인 것」
+;OriginalString : 엘리스は振り返ると%CALLNAME:MASTER%に囁いた…
+					PRINTFORMDW 앨리스는 되돌아 보면(자)%CALLNAME:MASTER%에 속삭였다…
+;OriginalString : 「いいわよ、가게해줘あげる…私の中に出して…」
+					PRINTFORMW 「좋아요, 이나 키라고 준다…나중에 내…」
+				ENDIF
+			;애태움無し
+			CASEELSE
+				SELECTCASE RANDACT(3, 3)
+					CASE 0
+;OriginalString : 「いいわっ！ もっと、ギュってして…」
+						PRINTFORMW 「좋아요！ 좀 더, 규는 해…」
+;OriginalString : 「はんっ
+						PRINTFORM 「은
+						CALL AUTOHEARTCB_K14
+;OriginalString : 　ねぇ、키스して……もっと後ろから抱きしめて…ッ！」
+						PRINTFORMW  응, 키스 해……좀 더 뒤로부터 꼭 껴안아…！」
+					CASE 1
+;OriginalString : 「あッ！ あんっ、やっ
+						PRINTFORM 「아！ 팥고물, 나
+						CALL AUTOHEARTCB_K14
+;OriginalString : 　激しいぃっ、ダメェ……
+						PRINTFORM  격렬한 , 다메……
+						CALL PRINT_SYMBOL2_K14
+;OriginalString : %CALLNAME:MASTER%は엘리스の腕を掴み乱暴に突きまくった…
+						PRINTFORMDW %CALLNAME:MASTER%(은)는 앨리스의 팔을 잡아 난폭하게 마구 찔렀다…
+					CASE 2
+;OriginalString : 「やあぁっ！ ああんッ、あぁっ…
+						PRINTFORM 「야！ 아 응, 아…
+						CALL PRINT_SYMBOL2_K14
+;OriginalString : 엘리스は%CALLNAME:MASTER%に突かれる度に可愛らしい嬌声をあげている…
+						PRINTFORMDW 앨리스는 %CALLNAME:MASTER%에 찔릴 때에 사랑스러운 교성을 주고 있다…
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生２：体位変更(Ｖ성교봉사から)
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+;OriginalString : 「あんっ
+		PRINTFORM 「팥고물
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　んあぁっ！ 後ろから……乱暴に突かれるのっ、いいッ
+		PRINTFORM  응아！ 뒤로부터……난폭하게 찔리는 것 , 좋은
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 「もっと、おっぱい強く揉んでっ！ 千切れちゃうくらいぃっ……！！」
+		PRINTFORMW 「 좀 더, 젖가슴 강하게 비비어！ 끊어져버릴 정도……！！」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生３：Ａ성교から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 3
+;OriginalString : 「……今度は%CNAME(MASTER, TARGET)%の番よ」
+		PRINTFORMW 「……이번은%CNAME(MASTER, TARGET)%의 차례야」
+;OriginalString : 「そう、後ろからして頂戴……」
+		PRINTFORMW 「그렇게, 뒤로부터 해 주세요……」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生４：Ｖ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 4
+;OriginalString : 「攻守交替ってとこかしら」
+		PRINTFORMW 「공수 교체라는 곳일까」
+;OriginalString : 「さぁ、来て。後ろから思いっきりシていいわよ…」
+		PRINTFORMW 「, 와. 뒤로부터 마음껏 시라고 좋아요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生５：Ａ성교봉사系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 5
+;OriginalString : 「はっ…はぁ……」
+		PRINTFORMW 「하…후~……」
+;OriginalString : 「ねぇ、前が切ないの…　今度はこっちに頂戴……」
+		PRINTFORMW 「응, 전이 안타까운거야… 이번은 여기에 주세요……」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が가버려
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		IF POLICY("금일") == "애만들기"
+;OriginalString : 「애만들기の日なんだから、ちゃんと中に出して貰わないとね？」
+			PRINTFORMW 「아이 만들기의 날이니까, 분명하게 안에 내 받지 않으면？」
+;OriginalString : 「ほら、入れるわよ。もう少しだけ、참다して…」
+			PRINTFORMW 「이봐요, 넣어요. 좀 더만, 참아…」
+		ELSE
+;OriginalString : 「ほら、慌てないで。入れた瞬間にイクなんてやめてよね？」
+			PRINTFORMW 「이봐요, 당황하지 마. 넣은 순간에 이크는 그만두어요？」
+;OriginalString : 「少しずつ私の中に入れてあげるから…」
+			PRINTFORMW 「조금씩 나중에 넣어 주기 때문에…」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	IF 0
+	ELSEIF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+;OriginalString : 「\@ ONCEACT(10) ? さて、 # \@私を임신해ってのがどこまで本気なのか、見せてもらおうじゃない」
+		PRINTFORMW 「\@ ONCEACT(10) ? 그런데, # \@나를 잉세대는의가 어디까지 진심인가, 보자가 아니다」
+		SELECTCASE RANDACT(2, 10)
+			CASE 0
+;OriginalString : 「言い出했다のは%CNAME(MASTER, TARGET)%なんだから…、責任、取りなさいよね」
+				PRINTFORMW 「말하기 시작한 것은%CNAME(MASTER, TARGET)%(이)니까…, 책임, 지세요」
+			CASE 1
+;OriginalString : 「%CNAME(MASTER, TARGET)%に言われてその気になってるんだから…。私に、恥をかかせないで\@ GET_KFLAG_K14("상사상애") ? よ # 頂戴 \@…」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%에 말해져 그럴 기분이 들고 있기 때문에…. 나에게, 창피를 주지 마\@ GET_KFLAG_K14("상사상애") ?  # 줘 \@…」
+		ENDSELECT
+	ELSEIF AFFECTION("상사상애")
+;OriginalString : 「ねぇ、早く来て……もう待ちきれないの」
+		PRINTFORMW 「응, 빨리 와……이제 기다릴 수  없는거야」
+;OriginalString : 엘리스は瞳を潤ませながら%CALLNAME:MASTER%に寄りかかり、ねだるように言ってきた…
+		PRINTFORMDW 앨리스는 눈동자를 물기를 띠게 한이면서 %CALLNAME:MASTER%에 의지해, 조르도록(듯이) 말해 왔다…
+;OriginalString : 「ねぇ、키스して……가슴もアソコも、いっぱい可愛がって…」
+		PRINTFORMW 「응, 키스 해……가슴도 아소코도, 가득 귀여워해…」
+	ELSE
+;OriginalString : 「この格好だと好きなように弄れるでしょ？」
+		PRINTFORMW 「이 모습이라면 좋아하는 대로 만지작거릴 수 있겠죠？」
+;OriginalString : 「さぁ、来て。愉しませて頂戴…」
+		PRINTFORMW 「, 와. 즐기게 해 주세요…」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT99, 항문섹스시킨다
+;────────────────────────────────────
+;・죠교자が죠교대상に엉덩이への삽입を命じる
+;・죠교대상に페니스、페니스밴드がない場合は発生しない
+;・죠교자が페니스밴드장착中の場合は発生しない
+;・죠교대상が누움、かつ성교봉사중でない場合は発生しない
+;・죠교대상の발기도が1000以下の場合は発生しない
+;・턴방침が"소프트"でＡ성교봉사중でない場合は発生しない
+;・밀어넘어지는중には発生しない
+;・죠교자が남자の場合は発生しない
+;・죠교대상が오나홀사용중の場合には発生しない
+;・성교중からは派生しない
+;・Ｖ성교봉사중からは派生しない
+;・죠교자のＡ감각が2以下の場合は発生しない
+;・主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+;-------------------------------------------------
+;・REACT분류が"날뛴다", "거부"であった場合は취소される
+;-------------------------------------------------
+@KOJO_ACT_K14_99
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ａ성교系から/3=Ｖ성교봉사系から/4=Ｖ성교系から)
+;※v1.010現在、ACT파생2から4はACT_ABLEで規制されているので機能していない
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT99, 항문섹스시킨다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;=================================================
+	;오토모드用処理
+	;=================================================
+	[IF_DEBUG]
+		IF 구상記入チェック(100) && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTACT(2000)
+			CALL PRINT_RAINBOW2W("バックバージン喪失", 20)
+			CALL GAME_OVER_K14
+			FORCEWAIT
+			RETURN 1
+		ENDIF
+	[ENDIF]
+
+	;상사상애時に처녀でなければコマンド해방
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(1)
+;OriginalString : 「ねぇ、その……」
+		PRINTFORMW 「응, 그……」
+;OriginalString : 엘리스は言い難そうに%CALLNAME:MASTER%に話しかけてきた…
+		PRINTFORMDW 앨리스는 말하기 어려운 듯이%CALLNAME:MASTER%에 말을 건네 왔다…
+;OriginalString : 「ちょっと後ろでシてみない？ %CNAME(MASTER, TARGET)%だって흥미あるでしょう？」
+		PRINTFORMW 「조금 뒤로 시라고 보지 않는다？ %CNAME(MASTER, TARGET)%왜냐하면 흥미 있겠지요？」
+;OriginalString : 「べ、別に！ 私だって特にシたいって訳じゃないんだけど、%CNAME(MASTER, TARGET)%相손ならいいかな、って…」
+		PRINTFORMW 「, 별로！ 나도 특히 시 싶다는 (뜻)이유가 아니지만,%CNAME(MASTER, TARGET)%상대라면 좋을까, 는…」
+;OriginalString : 「ま、そんな訳でよろしくお願いね
+		PRINTFORM 「뭐, 그런 (뜻)이유로 아무쪼록 부탁이군요
+			CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+;OriginalString : 「でも初めてなんだから、痛く했다らオシオキするから…」
+		PRINTFORMW 「 그렇지만 처음이니까, 아프게 하면(자) 오시오키 하기 때문에…」
+		RETURN 1
+	ENDIF
+	
+	;TFLAG:전회질싸(1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)/5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정))
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:안빼고
+		;-------------------------------------------------
+		;전회질싸
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 6, 8) && PENIS(MASTER)
+			IF TFLAG:전회질싸 == 6
+				IF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+					SELECTCASE RANDACT(3, 1)
+						CASE 0
+;OriginalString : 「んっ！ これ、動きすぎると、さっき사정당했다のが溢れてきちゃう…」
+							PRINTFORMW 「응！ 이것, 너무 움직이면(자) , 조금 전 사정되었던 것이 흘러넘쳐 와버린다…」
+;OriginalString : 「금일は애만들기のはずだったけど…おしり良すぎて、どうでもよくなってきちゃったわ」
+							PRINTFORMW 「오늘은 아이 만들기일 것이었지만…엉덩이 너무 좋아, 아무래도 좋아져 버렸다 원」
+						CASE 1
+;OriginalString : 「私を임신해とか言いながら、自重もせずにおしりの中に注ぎ込んでくれちゃって…」
+							PRINTFORMW 「 나를 잉세대라든가 말하면서, 자중도 하지 않고 엉덩이안에 쏟아 주어 버려서…」
+;OriginalString : 「何か色々間違ってる気がするけど…、私も今はおしりでシたい気分なのよね」
+							PRINTFORMW 「무엇인가 여러가지 잘못되어있는 생각이 드는데…, 나도 지금은 엉덩이로 시 싶은 기분이야」
+						CASE 2
+;OriginalString : 「%CNAME(MASTER, TARGET)%がイっちゃった後に言うのもなんだけど、금일は애만들기のはずだったわよね？」
+							PRINTFORMW 「%CNAME(MASTER, TARGET)%가 이후에 말하는 것도이지만, 오늘은 아이 만들기일 것이었어？」
+;OriginalString : 「まったく、なんでこうなったのかしら。って、私が言えた義理じゃないんだけど」
+							PRINTFORMW 「완전히, 어째서 이렇게 되었는지 해들. 라고, 내가 말할 수 있던 의리가 아니지만」
+;OriginalString : 「ま、その場のノリで流されちゃうって事。あるわよね……」
+							PRINTFORMW 「뭐, 그 자리의 김으로 흐르게 되어버린다라는 일. 있네요……」
+					ENDSELECT
+				ELSE
+					SELECTCASE RANDACT(3, 2)
+						CASE 0
+;OriginalString : 「私のおしりの中に사정しときながら、まだこんなに元気なのね…」
+							PRINTFORMW 「 나의 엉덩이안에 사정 해 두면서, 아직 이렇게 건강한…」
+;OriginalString : 「もしかして%CNAME(MASTER, TARGET)%…、こういうのが好きな訳？」
+							PRINTFORMW 「혹시%CNAME(MASTER, TARGET)%…, 이런 것이 좋아하는 (뜻)이유？」
+						CASE 1
+;OriginalString : 「おしりの中、ヌルヌルしちゃって凄いわ…」
+							PRINTFORMW 「엉덩이안, 누르눌 해 버려서 굉장해요…」
+;OriginalString : 「%CNAME(MASTER, TARGET)%が動く度に、ゾクッとしちゃう……」
+							PRINTFORMW 「%CNAME(MASTER, TARGET)%가 움직일 때에, 조쿡으로 해버린다……」
+						CASE 2
+;OriginalString : 「なによこれ。あんなに出했다癖に……全然衰えないじゃない」
+							PRINTFORMW 「뭐야 이것. 그렇게 낸 버릇에……전혀 쇠약해지지 않지 않다」
+;OriginalString : 「私がおしりで感じてる\@ !TEQUIP:눈가리개 ? のを見 # 声を聞い \@て、興奮しちゃったとか？」
+							PRINTFORMW 「내가 엉덩이로 느끼고 있다\@ !TEQUIP:눈가리개 ? 의를 보고 # 소리를 문 있고 \@(이)라고, 흥분해 버렸다라든지？」
+					ENDSELECT
+				ENDIF
+			ELSE
+;OriginalString : 「もう打ち止めの癖に萎えないとか…、一体どうなってるのかしら」
+				PRINTFORMW 「이제 최후의 버릇에 쇠약해지지 않는다든가…, 도대체 어떻게 되고 있는 거나」
+;OriginalString : 「でもこうしてると、私もまた欲しくなっちゃうのよね……」
+				PRINTFORMW 「 그렇지만 이렇게 하고 있으면, 나도 또 갖고 싶어져버린다 것이군요……」
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+;OriginalString : 「んっくっ！ あぁぁぁっ
+		PRINTFORM 「응구！ 아
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　んぁぁっ！ はっ、あ…ッ
+		PRINTFORM  응！ 하, 아…
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 「ど、どうしてっ！ お尻、こんなに……気持ち、い…いい…ッ
+		PRINTFORM 「, 어째서！ 엉덩이, 이렇게……기분, 있고…좋다…
+		CALL PRINT_SYMBOL2_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生１：연속
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+;OriginalString : 「んんっ、あぁっ
+		PRINTFORM 「응응, 아
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　そ、そんなに……突かれたらッ…！」
+		PRINTFORMW  , 그렇게……찔리면(자)…！」
+;OriginalString : 「ああっ、あんッ
+		PRINTFORM 「아 , 팥고물
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　あぁぅっ…
+		PRINTFORM  아…
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 엘리스はさらなる快感を求め、自ら腰を振っている…
+		PRINTFORMDW 앨리스는 새로운 쾌감을 추구해 스스로 허리를 털고 있다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生２：Ａ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+;OriginalString : 「攻守交替ってとこかしら」
+		PRINTFORMW 「공수 교체라는 곳일까」
+;OriginalString : 「さぁ、来て。壊れるくらい突いて頂戴…」
+		PRINTFORMW 「, 와. 망가질 정도로 찔러 주세요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生３：Ｖ성교봉사系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 3
+;OriginalString : 「%RANDTEXT_K14("はっ…はぁ", "ハァ、ハァ")%……」
+		PRINTFORMW 「%RANDTEXT_K14("はっ…はぁ", "ハァ、ハァ")%……」
+;OriginalString : 「ねぇ、お尻の穴が疼くの……こっちに頂戴…」
+		PRINTFORMW 「응, 엉덩이의 구멍이 쑤셔……여기에 주세요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生４：Ｖ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 4
+;OriginalString : 「今度は%CNAME(MASTER, TARGET)%の番よ」
+		PRINTFORMW 「이번은%CNAME(MASTER, TARGET)%의 차례야」
+;OriginalString : 「遠慮はいらないから、思いっきりシて頂戴…」
+		PRINTFORMW 「사양은 필요없기 때문에, 마음껏 시라고 주세요…」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が가버려
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		IF POLICY("금일") == "애만들기"
+;OriginalString : 「すぐにでもイっちゃいそうね……って、금일は애만들기のはずだったけど」
+			PRINTFORMW 「당장이라도 이있을 것 같구나……라고, 오늘은 아이 만들기일 것이었지만」
+;OriginalString : 「なぜか今はおしりに欲しくて仕方ないのよね…」
+			PRINTFORMW 「왠지 지금은 엉덩이에 갖고 싶어 어쩔 수 없어…」
+		ELSEIF TEQUIP:페니스밴드
+;OriginalString : 「ふふ、もう가버려なのね」
+			PRINTFORMW 「후후, 이제 이 나무 그런」
+;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 %DHARNESS_DESCRIPTION(MASTER)%に손を這わせながら言った…
+			PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 %DHARNESS_DESCRIPTION(MASTER)%에 손을 기게 한이면서 말했다…
+;OriginalString : 「ま、そうね……折角こんなの付けてるんだから…」
+			PRINTFORMW 「뭐, 그렇구나……모처럼 이런 건 붙이고 있기 때문에…」
+;OriginalString : 「最後は私の中で가게해줘あげるわ」
+			PRINTFORMW 「최후는 나중에서 이나 키라고 주어요」
+		ELSE
+;OriginalString : 「今にも暴発しそうね？ ふふ」
+			PRINTFORMW 「당장 폭발할 것 같구나？ 후후」
+;OriginalString : 「入れた瞬間にイっちゃうなんて、한심한事だけはやめてよね」
+			PRINTFORMW 「넣은 순간에 이는, 한심한 것만은 그만두어요」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	IF AFFECTION("상사상애")
+;OriginalString : 「ねぇ、早く来て……お尻の穴が切なくて、もう待ちきれないの」
+		PRINTFORMW 「응, 빨리 와……엉덩이의 구멍이 안타까워서, 이제 기다릴 수  없는거야」
+;OriginalString : 엘리스は瞳を潤ませながら%RANDTEXT_K14("形の良い", "見事な造形の")%尻を突き出し、ねだるように言ってきた…
+		PRINTFORMDW 앨리스는 눈동자를 물기를 띠게 한이면서%RANDTEXT_K14("形の良い", "見事な造形の")%엉덩이를 쑥 내밀어, 조르도록(듯이) 말해 왔다…
+;OriginalString : 「私の事なら心配いらないから……壊すつもりで、思い切り突いて」
+		PRINTFORMW 「 나의 일이라면 걱정 필요없으니까……부술 생각으로, 마음껏 찌르며」
+	ELSE
+;OriginalString : 「ふふ、顔が見えると安心するわね」
+		PRINTFORMW 「후후, 얼굴이 보이면(자) 안심해요」
+;OriginalString : 「さぁ、来て。 私のお尻を犯して…」
+		PRINTFORMW 「, 와. 나의 엉덩이를 범해…」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT103, 역강간
+;────────────────────────────────────
+;・죠교자が기승위で強引に성교渉に及ぶ
+;・죠교대상に페니스、페니스밴드がない場合は発生しない
+;・죠교자が페니스밴드장착中の場合は発生しない
+;・죠교대상の발기도が1000以下の場合は発生しない
+;・죠교자が남자の場合は発生しない
+;・죠교대상が오나홀사용중の場合には発生しない
+;・성교중からは派生しない
+;・Ａ성교봉사중からは派生しない
+;・主導権は죠교대상"SEX_INITIATIVE(TARGET)"
+;-------------------------------------------------
+;・他の성교봉사系と異なり、죠교대상は抵抗できない
+;・죠교대상が동정なら동정상실が起こる
+;・죠교자が처녀なら처녀상실が起こる
+;・これらの処理は@ACTION_APPLY2_103にて行われる
+;-------------------------------------------------
+@KOJO_ACT_K14_103
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+;・v1.010現在、ACT파생3/4/5はACT_ABLEで規制されているので機能しない
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT103, 역강간
+;━━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100)
+	;=================================================
+	;오토모드用処理
+	;=================================================
+	[IF_DEBUG]
+		IF TALENT:처녀 && FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTACT(0)
+			CALL PRINT_RAINBOW2W("처녀상실", 20)
+			CALL GAME_OVER_K14
+			FORCEWAIT
+			RETURN 1
+		ENDIF
+	[ENDIF]
+
+	;=================================================
+	;처녀・동정
+	;=================================================
+	IF 구상記入チェック(100) && TRUECHECK(TALENT:처녀, TALENT:MASTER:동정) > 0
+		;죠교자が처녀＆죠교대상が동정
+		IF TALENT:처녀 && TALENT:MASTER:동정
+;OriginalString : 「お互いの初めてが역강간なんて……」
+			PRINTFORMW 「서로의 처음이 역강간은……」
+;OriginalString : 「후후후……　ゾクゾクしちゃう……」
+			PRINTFORMW 「후후후…… 조크조크 해버린다……」
+		;죠교자が처녀
+		ELSEIF TALENT:처녀
+;OriginalString : 「どうせ自分の처녀に拘りはないし、%CNAME(MASTER, TARGET)%も煮え切らないから…」
+			PRINTFORMW 「어차피 자신의 처녀에게 구애됨은 없고,%CNAME(MASTER, TARGET)%도 애매하니까…」
+;OriginalString : 「%CNAME(MASTER, TARGET)%を無理やり犯す事に決めたわ！」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%(을)를 억지로 범하는 일로 결정했어요！」
+;OriginalString : 「さぁ、私の처녀穴…愉しんで……」
+			PRINTFORMW 「, 나의 처녀구멍…즐겨……」
+		;죠교대상が동정
+		ELSE
+;OriginalString : 「最初はね、同意の上で%CNAME(MASTER, TARGET)%の동정を貰うつもりだったけど…」
+			PRINTFORMW 「최초는요, 동의 위에서%CNAME(MASTER, TARGET)%의 동정을 받을 생각이었지만…」
+;OriginalString : 「ごめんなさい。私、참다の限界なの…」
+			PRINTFORMW 「미안해요. 나, 인내의 한계야…」
+;OriginalString : 「無理やり奪ってあげるわ……　후후후……」
+			PRINTFORMW 「억지로 빼앗아 주어요…… 후후후……」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;TFLAG:전회질싸(1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)/5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정))
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:안빼고
+		;;성교봉사で中出し時조루、かつ一定条件を満たすと엘리스様がぶちきれて역강간で搾り取られるという
+		;-------------------------------------------------
+		;전회사정が조루
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && KFLAG:TARGET:200 > 1 && GETBIT(KFLAG:TARGET:201, 0) && IS_PREVACTNAME("정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다/역강간/항문섹스시킨다") && PENIS(MASTER)
+;OriginalString : 「駄目よ、ダメ……、そんなのじゃ駄目よ。ほらっ！ もっと腰を突き上げなさいよ！」
+			PRINTFORMW 「안되어요, 안 됨……, 그런 것은 안되어요. 이봐요！ 좀 더 허리를 밀어 올리세요！」
+;OriginalString : 「私の中を汚했다いんでしょう？ぶちまけたいんでしょう？」
+			PRINTFORMW 「 나중을 더럽히고 싶겠지요？털어 놓고 싶겠지요？」
+			SELECTCASE RANDACT(2, 2)
+				CASE 0
+;OriginalString : 「お望み通り、徹底的に搾り取ってあげる……」
+					PRINTFORMW 「소망 대로, 철저하게 짜 취해 준다……」
+				CASE 1
+;OriginalString : 「フフ、その한심한顔……ゾクゾクしちゃう」
+					PRINTFORMW 「후후, 그 한심한 얼굴……조크조크 해버린다」
+;OriginalString : 「私が만족するまで続けるから、精々頑張って頂戴…」
+					PRINTFORMW 「내가 만족할 때까지 계속하기 때문에, 정령들 노력해 주세요…」
+			ENDSELECT
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;전회질싸
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 4) && PENIS(MASTER)
+			IF TFLAG:전회질싸 == 2
+				IF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+					SELECTCASE RANDACT(3, 3)
+						CASE 0
+;OriginalString : 「사정했다ばっかりなのに元気ね。次の準備はOKって訳？ ふふ」
+							PRINTFORMW 「사정한지 얼마 안됨인데 건강하구나. 다음의 준비는OK라는 (뜻)이유？ 후후」
+;OriginalString : 「私もほら…。子宮が降りてきて、準備できちゃったみたいよ」
+							PRINTFORMW 「 나도 이봐요…. 자궁이 내려 와, 준비할 수 있어 버렸다 같아요」
+;OriginalString : 「中が浅くなって、んっ！ ほら、奥に当たるの…、判るでしょう？」
+							PRINTFORMW 「안이 얕아져, 응！ 이봐요, 안쪽에 해당되어…, 알겠지요？」
+						CASE 1
+;OriginalString : 「あまり動くと사정당했다のが溢れてきちゃうわね…」
+							PRINTFORMW 「너무 움직이면(자) 사정되었던 것이 흘러넘쳐 와버리는 원이군요…」
+;OriginalString : 「まぁ、%CNAME(MASTER, TARGET)%はまだ元気みたいだし…問題はなさそうだけど」
+							PRINTFORMW 「아무튼,%CNAME(MASTER, TARGET)%(은)는 아직 건강같고…문제는 없을 것 같지만」
+;OriginalString : 「この格好…んっ！ 奥まで、届くから…。애만들기にはいいのかしら」
+							PRINTFORMW 「이 모습…응！ 안쪽까지, 닿기 때문에…. 아이 만들기에는 좋은 것일까」
+						CASE 2
+;OriginalString : 「사정했다のにこんなに硬くて…、まだいけそうね？ ふふ」
+							PRINTFORMW 「사정했는데 이렇게 딱딱해서…, 아직 안될 것 같구나？ 후후」
+;OriginalString : 「私の子宮も降りてきて、%CNAME(MASTER, TARGET)%の정액、もっと欲しがってるわ」
+							PRINTFORMW 「 나의 자궁도 내려 와,%CNAME(MASTER, TARGET)%의 정액, 좀 더 갖고 싶어하고 있는 원」
+;OriginalString : 「『
+							PRINTFORM 「 「
+							CALL PRINTFONTSTYLE(COLOR2_K14("ALICE"), "私", 1)
+;OriginalString : 』じゃなくて『
+							PRINTFORM 」(이)가 아니고 「
+							CALL PRINTFONTSTYLE(COLOR2_K14("ALICE"), "子宮", 1)
+;OriginalString : 』がね。そこんとこ、勘違いしないで頂戴…」
+							PRINTFORMW 」(이)가. 거기응과 개, 착각 하지 않고 주세요…」
+					ENDSELECT
+				ELSE
+					SELECTCASE RANDACT(4, 4)
+						CASE 0
+;OriginalString : 「사정했다ってのに全然衰えないわね？ むしろ普段より硬くて、熱くて…」
+							PRINTFORMW 「사정해도 것에 전혀 쇠약해지지 않네요？ 오히려 평상시보다 딱딱하고, 뜨거워서…」
+;OriginalString : 「もっと搾り取って欲しいって無言のアピールか何かな訳？」
+							PRINTFORMW 「 좀 더 짜 취했으면 좋다는 무언의 어필이나 무엇이지(뜻)이유？」
+						CASE 1
+;OriginalString : 「さんざん私の中にぶちまけておいて、まだこれだけ硬いとか…」
+							PRINTFORMW 「실컷 나중에 털어 놓아 두어, 아직 이만큼 딱딱하다든가…」
+;OriginalString : 「もっと搾り取ってやる필요がありそうね…」
+							PRINTFORMW 「 좀 더 짜 취해 줄 필요가 있을 듯 하구나…」
+						CASE 2
+;OriginalString : 「なによ。사정했다癖にやたら元気じゃない」
+							PRINTFORMW 「뭐야. 사정한 버릇에 쓸데없이 건강하지 않다」
+;OriginalString : 「しかも、私の中でビクビクさせてくれちゃって…」
+							PRINTFORMW 「게다가, 나중에서 벌벌 시켜 주어 버려서…」
+;OriginalString : 「こういう事されると私、スイッチ入っちゃうかも知れないわよ？」
+							PRINTFORMW 「이런 일 되면(자) 나, 스윗치 들어가버릴까도 몰라요？」
+						CASE 3
+;OriginalString : 「さっき사정당했다のが垂れてくるわ。私のと混ざり合って、凄くイヤラシイ匂いがする…」
+							PRINTFORMW 「조금 전 사정되었던 것이 늘어져 유곽. 나의 것과 서로 섞여 , 굉장히 이야라시이 냄새가 난다…」
+;OriginalString : 「ほら、まだいけるでしょう？ %CNAME(MASTER, TARGET)%の意思がどうあれ、こっちの方はやる気十分みたいだけど」
+							PRINTFORMW 「이봐요, 아직 안되겠지요？ %CNAME(MASTER, TARGET)%의 의사가 어떻게 저것, 여기는 의지 충분히 같지만」
+					ENDSELECT
+					IF !TEQUIP:눈가리개
+;OriginalString : 
+						PRINTL
+;OriginalString : %CALLNAME%は互いの体液に塗れた結合部を見せ付けながら、挑発するかのように腰をくねらせ、
+						PRINTFORMDL %CALLNAME%(은)는 서로의 체액 투성이가 된 결합부를 과시하면서, 도발하는것 같이 허리를 구군요들 키,
+;OriginalString : 淫蕩な笑みをうかべつつ、%CALLNAME:MASTER%を見下ろしている…
+						PRINTFORMDW 음탕한 미소를 띄우면서,%CALLNAME:MASTER%(을)를 내려다 보고 있다…
+					ENDIF
+				ENDIF
+			ELSE
+;OriginalString : 「空撃ちだった癖に%CNAME(MASTER, TARGET)%…、こっちはまだ元気ねぇ？」
+				PRINTFORMW 「공격였던 버릇에%CNAME(MASTER, TARGET)%…, 여기는 아직 건강하구나？」
+;OriginalString : 「ふふ、これなら…、もう少しは愉しめそうね」
+				PRINTFORMW 「후후, 이것이라면…, 좀 더는 즐거운 하구나」
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+;OriginalString : 「ああっんっ
+		PRINTFORM 「아 응
+		CALL AUTOHEARTCB_K14
+;OriginalString : 　あぁぁぁっ！ んぁぁっ、はっ…あッ
+		PRINTFORM  아！ 응, 하…아
+		CALL PRINT_SYMBOL2_K14
+;OriginalString : 「無理やりしちゃうのって……こんなにっ！ 興奮し、てッ！ あぁぁっ…
+		PRINTFORM 「억지로 해버린다 올라……이렇게！ 흥분해, 라고！ 아…
+		CALL PRINT_SYMBOL2_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生１：연속
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 「ふふっ、夢中で突き上げちゃって…そんなにイきたいのかしら？」
+				PRINTFORMW 「후후, 열중해 밀어 올려 버려서…그렇게 이 오고 싶은 것일까？」
+;OriginalString : 「でもダメよ。もう少し頑張って貰うから
+				PRINTFORM 「 그렇지만 안되어요. 좀 더 노력해 받기 때문에
+				CALL PRINT_SYMBOL_K14
+			;애태움終了
+			CASE 1
+				IF POLICY("금일") == "애만들기"
+;OriginalString : 「역강간で애만들기っておかしいわよね」
+					PRINTFORMW 「역강간으로 아이 만들기는 이상해요」
+;OriginalString : 「でも、ある意味私達らしいかしら。ねぇ、そう思わない？」
+					PRINTFORMW 「 그렇지만, 어느 의미 저희들다울까. 응, 그렇게 생각하지 않는다？」
+;OriginalString : 「…って。%CNAME(MASTER, TARGET)%は気持ちよければどうでもいいって顔してるわね…」
+					PRINTFORMW 「…라고.%CNAME(MASTER, TARGET)%(은)는 기분 좋으면 아무래도 좋다는 얼굴 해…」
+;OriginalString : 「ま、今まではそれでもいいけど…私を孕ませるんなら、ちょっとは考えて貰わないと、ね？」
+					PRINTFORMW 「뭐, 지금까지는 그런데도 좋은데…나를 잉다툰다면, 조금은 생각해 받지 않으면？」
+				ELSEIF TEQUIP:페니스밴드
+;OriginalString : 「ほら、このまま가게해줘あげるわ。だから…」
+					PRINTFORMW 「이봐요, 이대로 이나 키라고 주어요. 그러니까…」
+;OriginalString : 「思いっきり突き上げて……」
+					PRINTFORMW 「마음껏 밀어 올려……」
+				ELSEIF AFFECTION("상사상애") && PENIS(MASTER)
+;OriginalString : 「あんっ
+					PRINTFORM 「팥고물
+						CALL HEARTCB(COLOR2_K14("pink"), 1, "ＭＳ Ｐゴシック")
+;OriginalString : 　中でビクビクしてる……もう限界なのね」
+					PRINTFORMW  안으로 벌벌 하고 있다……이제 한계인 것」
+;OriginalString : 「いいわよ、가게해줘あげる。%CNAME(MASTER, TARGET)%の한심한声、聞かせて頂戴
+					PRINTFORM 「좋아요, 이나 키라고 준다.%CNAME(MASTER, TARGET)%의 한심한 소리, 들려주어 주세요
+						CALL PRINT_HEARTCBW_K14(COLOR_K14("pink"), , , COLOR2_K14("ALICE"))
+				ELSEIF PENIS(MASTER)
+;OriginalString : 「ふふっ、もうすぐにでもイっちゃいそうね」
+					PRINTFORMW 「후후, 이제 곧이라도 이있을 것 같구나」
+;OriginalString : 「お望み通り가게해줘あげるわ。一適残らず搾り取ってあげる♪」
+					PRINTFORMW 「소망 대로이나 키라고 주어요. 일적 남김없이 짜 취해 준다♪」
+				ENDIF
+			CASEELSE
+				SELECTCASE RANDACT(3, 6)
+					CASE 0
+;OriginalString : 「んっ、くっ！ あ
+						PRINTFORM 「응, 구！ 아
+						CALL AUTOHEARTCB_K14
+;OriginalString : 　あッ、あぁっ…
+						PRINTFORM  아, 아…
+						CALL PRINT_SYMBOL2_K14
+;OriginalString : 「奥にっ！ コツコツ……当たっ、てぇ…っ
+						PRINTFORM 「안쪽에！ 부지런히……당, 라고…
+						CALL PRINT_SYMBOL2_K14
+					CASE 1
+;OriginalString : 「あッ、あんっ
+						PRINTFORM 「아, 팥고물
+						CALL AUTOHEARTCB_K14
+;OriginalString : 　腰の動きが、激しくなって…！」
+						PRINTFORMW  허리의 움직임이, 격렬해져…！」
+;OriginalString : 「ふふ、가버려なのね？ 犯されてるのに気持ち良いのね？　キャ…！」
+						PRINTFORMW 「후후, 이 나무 그런？ 범해져 기분 좋구나？ 캬…！」
+;OriginalString : %CALLNAME:MASTER%は엘리스を黙らせようと、より激しく腰を突き上げ始めた…
+						PRINTFORMDW %CALLNAME:MASTER%(은)는 앨리스를 입다물게 하려고, 보다 격렬하게 허리를 밀어 올리기 시작했다…
+					CASE 2
+;OriginalString : 「ああっ、んっ！ あぁぁぁっ
+						PRINTFORM 「아, 응！ 아
+						CALL AUTOHEARTCB_K14
+;OriginalString : 　んぁぁっ！ はっ、あ…ッ
+						PRINTFORM  응！ 하, 아…
+						CALL PRINT_SYMBOL2_K14
+;OriginalString : 엘리스は%CALLNAME:MASTER%を組み伏せつつ激しく腰を上下させ、쾌락を貪っている…
+						PRINTFORMDW 앨리스는 %CALLNAME:MASTER%(을)를 짜 덮으면서 격렬하게 허리를 상하시켜, 쾌락을 탐내고 있다…
+				ENDSELECT
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生２：体位変更(他のＶ성교봉사系から)
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+;OriginalString : 「さぁ、私から犯してあげるわ」
+		PRINTFORMW 「, 나부터 범해 주어요」
+;OriginalString : 「%CNAME(MASTER, TARGET)%は無理やりされちゃう方が興奮するんじゃない？ 후후……」
+		PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 억지로 되어버리는 (분)편이 흥분하지 않는다？ 후후……」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生３：Ａ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 3
+;OriginalString : 「……お尻はもう十分かしら。それにこっちが寂しそうね？」
+		PRINTFORMW 「……엉덩이는 이제 충분할까. 거기에 여기가 외로운 것 같구나？」
+;OriginalString : 「今度は%CNAME(MASTER, TARGET)%の\@ TEQUIP:페니스밴드 ? 紛い物の # \@おちんちんを犯す事にするわ…
+		PRINTFORM 「이번은%CNAME(MASTER, TARGET)%의\@ TEQUIP:페니스밴드 ? 유사품의 # \@자지를 범하는 일로 해요…
+		CALL PRINT_SYMBOL_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生４：Ｖ성교系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 4
+;OriginalString : 「ふふ、もう\@ TEQUIP:페니스밴드 ? 가버려 # 破裂しそう\@になってるわよ…？」
+		PRINTFORMW 「후후, 이제\@ TEQUIP:페니스밴드 ? 가버려 # 파열할 것 같다\@(이)가 되어있는 원이야…？」
+;OriginalString : 「可哀想だから私が食べてあげる…
+		PRINTFORM 「불쌍하기 때문에 내가 먹어 준다…
+		CALL PRINT_SYMBOL_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生５：Ａ성교봉사系から
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 5
+;OriginalString : 「今度は私がシてあげるわ」
+		PRINTFORMW 「이번은 내가 시라고 주어요」
+;OriginalString : 「思いっきりいやらしい허리기술で、犯してあげる…
+		PRINTFORM 「마음껏 불쾌한 허리 값어치, 범해 준다…
+		CALL PRINT_SYMBOL_K14
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がイキそう
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		IF POLICY("금일") == "애만들기"
+;OriginalString : 「금일は私を孕ませるって言ったわよね？ 何さっさと가버려になってるのよ」
+			PRINTFORMW 「오늘은 나를 잉다툰다 라고 했어요？ 무엇 빨리 이 기초가 되어」
+;OriginalString : 「ほら、ゆっくり入れてあげるから、もうちょっと참다して…」
+			PRINTFORMW 「이봐요, 천천히 들어갈 수 있어 주기 때문에, 좀 더 참아…」
+		ELSEIF TEQUIP:페니스밴드
+;OriginalString : 「そんな紛い物ぶら下げて가버려になってるのはちょっと気の毒ね？ ふふ」
+			PRINTFORMW 「그런 유사품 매달아 이 기초가 되고 있는 것은 조금 안되구나？ 후후」
+;OriginalString : 「どうせなら私の질내で가게해줘あげるわ。そうすれば一緒に愉しめるし、ね
+			PRINTFORM 「어차피라면 나의 질내에서 이나 키라고 주어요. 그러면 함께 즐길 수 있고, 군요
+			CALL PRINT_SYMBOL_K14
+		ELSE
+			SELECTCASE RANDACT(7, 9)
+				CASE 0
+;OriginalString : 「ふふっ、こんなにビクビクさせちゃって」
+					PRINTFORMW 「후후, 이렇게 벌벌 시켜 버려서」
+;OriginalString : 「どうせなら私の中で가게해줘あげるから、もう少し참다して…」
+					PRINTFORMW 「어차피라면 나중에서 이나 키라고 주기 때문에, 좀 더 참아…」
+				CASE 1
+;OriginalString : 「ほら、暴発しないようにゆっくり入れてあげるわ」
+					PRINTFORMW 「이봐요, 폭발하지 않게 천천히 들어갈 수 있어 주어요」
+;OriginalString : 「んっ！ さて、少しは愉しませてくれるのかしら、ねぇ？ ふふっ」
+					PRINTFORMW 「응！ 그런데, 조금은 즐기게 해 줄까, 응？ 후후」
+				CASE 2
+;OriginalString : 「今にも出ちゃいそうだけど、勝손に사정했다ら許さないわよ…」
+					PRINTFORMW 「당장 나와버릴 것 같지만, 마음대로 사정하면(자) 허락하지 않아요…」
+;OriginalString : 「私がいいと言うまで、ちゃんと…、참다するのよ」
+					PRINTFORMW 「내가 좋다고 말할 때까지, 분명하게…, 참아」
+				CASE 3
+;OriginalString : 「ビクビクさせちゃって…こうして握ってるだけで사정しちゃいそうね？」
+					PRINTFORMW 「벌벌 시켜 버려서…이렇게 해 잡고 있을 뿐으로 사정해버릴 것 같구나？」
+;OriginalString : 「でもこれ…、根元を思いっきり締め付けると、ちょっと大人しくなるのよね。ふふ」
+					PRINTFORMW 「 그렇지만 이것…, 근원을 마음껏 단단히 조이면(자), 조금 얌전해져. 후후」
+				CASE 4
+;OriginalString : 「今にも가버려だけど…、삽입れた瞬間に出すなんて事、しないわよねぇ？」
+					PRINTFORMW 「당장 이 나무 그렇지만…, 삽입순간에 내다는 일, 하지 않아요？」
+;OriginalString : 「私を만족하게됬다ら사정させてあげるから…、それまでは참다するのよ」
+					PRINTFORMW 「 나를 만족 당하면(자) 사정시켜 주기 때문에…, 그것까지는 참아」
+				CASE 5
+;OriginalString : 「ガマン汁でヌルヌルさせちゃってまぁ…もう사정する事しか頭にないのかしら」
+					PRINTFORMW 「자제국물로 누르눌 시켜 버려서 아무튼…이제 사정하는 일 밖에 머릿속에 없는 것일까」
+;OriginalString : 「持ち主によく似た…、スケベで、浅ましくて、恥知らずな、本当にどうしよもないチンポ…」
+					PRINTFORMW 「소유자에게 자주(잘) 닮았다…, 음란해, 야비해서, 철면피인, 정말로 끼리야도 없는 자지…」
+;OriginalString : 「ほら、言ってみなさいよ。『엘리스様の中で가게해줘くださいお願いします』って」
+					PRINTFORMW 「이봐요, 말해 보세요. 「앨리스님중에서 이나 키라고 주세요 부탁합니다」는」
+;OriginalString : 「ちゃんと言えたなら、私の中で%RAND_SPLIT("イか/사정さ")%せてあげるわ……」
+					PRINTFORMW 「제대로 말할 수 있었다면, 나중에서%RAND_SPLIT("이인가/사정")%키라고 주어요……」
+				CASE 6
+;OriginalString : 「ほらどう？ もう出ちゃう？ このまま삽입れる前にぶちまけてみる？ ふふふ」
+					PRINTFORMW 「이봐요 어때？ 이제 나와버린다？ 이대로 삽입전에 털어 놓아 본다？ 후후후」
+;OriginalString : 「ま、それもいいけど…どうせなら私も愉しまないと。ねぇ？」
+					PRINTFORMW 「뭐, 그것도 좋은데…어차피라면 나도 즐기지 않으면. 응？」
+;OriginalString : %CALLNAME%は사정への渇望に脈打つ%CALLNAME:MASTER%의 페니스를 膣입でひとしきり嬲ったあと、
+					PRINTFORMDL %CALLNAME%(은)는 사정에의 갈망에 맥박친다%CALLNAME:MASTER%의 페니스를 질구로 한 바탕요그리고,
+;OriginalString : %CALLNAME:MASTER%의 反応を窺いながら、ゆっくりと自らの질내に収めていった…
+					PRINTFORMDW %CALLNAME:MASTER%의 반응을 엿보면서, 천천히 스스로의 질내에 넣어 갔다…
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	IF 0
+	ELSEIF IS_POLICY("금일", "애만들기") && TCVAR:금일만족보너스 == 7
+		SELECTCASE RANDACT(3, 10)
+			CASE 0
+;OriginalString : 「ぼんやりして、私にされるがままになっちゃって…。実に嘆かわしい光景ね」
+				PRINTFORMW 「멍하니 해, 나로 되는 대로 되어 버려서…. 실로 한심스러운 광경이군요」
+;OriginalString : 「私を임신해とか言い出했다のは%CNAME(MASTER, TARGET)%なのよ？ だから…」
+				PRINTFORMW 「 나를 잉세대라든지 말하기 시작한 것은%CNAME(MASTER, TARGET)%(이)야？ 그러니까…」
+;OriginalString : 「ちゃんと責任とりなさいよね……」
+				PRINTFORMW 「분명하게 책임지세요……」
+			CASE 1
+;OriginalString : 「\@ ONCEACT(10) ? さて、 # \@私を임신해って言葉がどこまで本気なのか、みせてもらおうじゃない」
+				PRINTFORMW 「\@ ONCEACT(10) ? 그런데, # \@나를 잉세대는 말이 어디까지 진심인가, 보여 주자가 아니다」
+;OriginalString : 「正直、ちょっと癪だけど…私もその気になっちゃってるんだから…」
+				PRINTFORMW 「정직, 조금 적이지만…나도 그럴 기분이 들어 버린다 이니까…」
+;OriginalString : 「私に恥をかかせないでよね？」
+				PRINTFORMW 「 나에게 창피를 주지 말아？」
+			CASE 2
+;OriginalString : 「こう見えたって、%CNAME(MASTER, TARGET)%に임신해とか言われて마이い上がっちゃってるの。判る？」
+				PRINTFORMW 「이렇게 보여도,%CNAME(MASTER, TARGET)%에 잉세대라든지 말해져 들떠 버린다의. 안다？」
+;OriginalString : 「あんな一言でその気にさせられちゃう、自分の浅はかさに呆れちゃうけど…」
+				PRINTFORMW 「저런 한마디로 그 기분으로 몰려버린다, 자신의 경박함에 기가 막혀버린다지만…」
+;OriginalString : 「今は%CNAME(MASTER, TARGET)%が…欲しくて、欲しくて堪らないのよ……」
+				PRINTFORMW 「지금은%CNAME(MASTER, TARGET)%가…갖고 싶고, 갖고 싶어서 감등 없어……」
+		ENDSELECT
+	ELSEIF AFFECTION("상사상애")
+;OriginalString : 「\@ !TEQUIP:눈가리개 ? ほら、見て # ねぇ…… \@。ヒクヒクしちゃって欲しがってるの、判るかしら？」
+		PRINTFORMW 「\@ !TEQUIP:눈가리개 ? 이봐요, 봐 # 저기…… \@. 히크히크 해 버려서 갖고 싶어해, 아는 것일까？」
+;OriginalString : 엘리스は%RANDTEXT_K14("妖艶", "蠱惑的")%な笑みを湛えつつ、舌なめずりを하면서 %CALLNAME:MASTER%に跨ってきた…
+		PRINTFORMDW 앨리스는%RANDTEXT_K14("妖艶", "蠱惑的")%웃음을 띠면서, 혀인 째를 하면서 %CALLNAME:MASTER%에 걸쳐 왔다…
+;OriginalString : 「さぁ、思いっきり愉しませてもらうわ\@ TENSION(TARGET, 8) == "高い" ? ！　 # \@후후…」
+		PRINTFORMW 「, 마음껏 즐기게 해 주어요\@ TENSION(TARGET, 8) == "高い" ? ！  # \@후후…」
+	ELSE
+;OriginalString : 「これから%CNAME(MASTER, TARGET)%を%RAND_SPLIT("レイプする/犯してあげる")%わ」
+		PRINTFORMW 「지금부터%CNAME(MASTER, TARGET)%(을)를%RAND_SPLIT("강간한다/범해 준다")%원」
+;OriginalString : 엘리스は唐突に言い放ち、%CALLNAME:MASTER%に跨ってきた…
+		PRINTFORMDW 앨리스는 당돌하게 단언해,%CALLNAME:MASTER%에 걸쳐 왔다…
+	ENDIF
+	RETURN 1
+ENDIF

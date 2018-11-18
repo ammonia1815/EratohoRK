@@ -1,0 +1,83 @@
+﻿;────────────────────────────────────
+;020,허리를 흔든다（쾌ＣＶＡ보정、열락、달성）
+;────────────────────────────────────
+@COM20
+;自分が責める側の場合（성교봉사、기승위等で腰を使って感じ시킨다）
+IF SEX_INITIATIVE(MASTER)
+	;COM分類
+	CALL SET_COMGRO("적극적으로 한다")
+	;달성SOURCE増加
+	SOURCE:MASTER:달성 += (CFLAG:MASTER:죠교레벨 + 5) * (GET_ABL(MASTER, "봉사정신") + 50) + (GET_ABL(MASTER, "기교") + 50) * 20 / 100
+	;의존도변화
+	CALL ADD_DEPEND(+5, +3)
+;自分が責められる側の場合（역강간、성교系等で迎え腰を使って快感をむさぼる、파이즈리や스마타で快感を求める）
+ELSE
+	;COM分類
+	CALL SET_COMGRO("受け入れる")
+	;열락SOURCE増加
+	SOURCE:MASTER:열락 += 250 + SOURCE:MASTER:쾌Ｃ / 3 + SOURCE:MASTER:쾌Ｖ / 3 + SOURCE:MASTER:쾌Ａ / 3 + (CFLAG:MASTER:죠교레벨 + 1) * (GET_ABL(MASTER, "기교") + 10) * 1
+	;의존도변화
+	CALL ADD_DEPEND(+4, +8)
+ENDIF
+;COM印象
+CALL SET_COMIMP("好印象大")
+;참다플래그解消
+TCVAR:MASTER:참다 = 0
+RETURN 1
+
+;────────────────────────────────────
+;021,안에 내!（달성、열락、적극적으로 한다）
+;────────────────────────────────────
+@COM21
+LOCAL = (CFLAG:M호의 - 500) / 20
+LOCAL = LIMIT(LOCAL, 1, 200)
+;달성SOURCE増加
+SOURCE:MASTER:달성 += 100 + LOCAL * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ) / 1000
+;열락SOURCE増加
+IF TEQUIP:성교중 == 6
+	SOURCE:MASTER:열락 += 100 + SOURCE:MASTER:쾌Ａ / 4 + SOURCE:쾌Ｃ / 3 + (CFLAG:MASTER:죠교레벨 + 1) * (GET_ABL(MASTER, "기교") + 10) * CFLAG:M호의 / 1500
+ELSE
+	SOURCE:MASTER:열락 += 250 + SOURCE:MASTER:쾌Ｖ / 2 + SOURCE:쾌Ｃ / 3 + (CFLAG:MASTER:죠교레벨 + 1) * (GET_ABL(MASTER, "기교") + 10) * CFLAG:M호의 / 1000
+ENDIF
+;죠교대상が남자もしくはＡ성교중
+IF TALENT:MASTER:남자 || TEQUIP:성교중 == 6
+	;派生：Ａに出して
+	TFLAG:REACT파생 = 1
+ELSE
+	;派生：Ｖに出して
+	TFLAG:REACT파생 = 0
+ENDIF
+;COM分類
+CALL SET_COMGRO("受け入れる")
+;COM印象
+CALL SET_COMIMP("好印象大")
+;참다플래그解消
+TCVAR:MASTER:참다 = 0
+;의존도변화
+CALL ADD_DEPEND(+10, +10)
+RETURN 1
+
+;────────────────────────────────────
+;022,안에 내면 안돼!（반항、공포、애원、징계・포인트）
+;────────────────────────────────────
+@COM22
+;반항、공포SOURCE増加
+SOURCE:MASTER:반항 += 300 + (MARK:반항각인 + 5) * 50
+SOURCE:MASTER:공포 += (100 + SOURCE:MASTER:쾌Ｖ / 2 + SOURCE:MASTER:쾌Ａ / 10) * (MARK:MASTER:트라우마 + 10) / 10
+;願いを聞き入れるかのチェック。かなりアバウト
+IF BASE:만족 / 100 + CFLAG:아라이멘도 / 10 + (CFLAG:M호의 - 500) / 100 > BASE:초조함 / 100 + RAND:5
+	;COM分類
+	CALL SET_COMGRO("용서를 빌다")
+	;派生：中に出さない
+	TFLAG:REACT파생 = 0
+ELSE
+	;징계・포인트加算
+	TFLAG:징계・포인트 += 1 + RAND:3 + BASE:초조함 / 200
+	;派生：中に出す
+	TFLAG:REACT파생 = 1
+ENDIF
+;COM印象
+CALL SET_COMIMP("悪印象小")
+;의존도변화
+CALL ADD_DEPEND(0, -10)
+RETURN 1

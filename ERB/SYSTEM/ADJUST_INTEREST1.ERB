@@ -1,0 +1,1058 @@
+﻿
+;eratohoR#私家改変 0004.6.1 用　흥미보정パッチ より改変後導入
+
+;죠교자の選んだコマンドに対して、노예のコマンドで흥미が増えたり減ったり
+;使用플래그 … CFLAG:400 ～ CFLAG:520 くらい(CFLAG:(400 + TFLAG:ACT)
+;ARG = 0:書き込み 1:読み出し(初期化)
+@KYOMI_ADD(ARG)
+#LOCALSIZE 200
+#DIM LCOUNT
+#DIM LTEMP
+
+IF ARG == 1
+	;ACT長期보정値に加算
+	FOR LCOUNT, 0, 200
+		RESULT:LCOUNT += ABSQSI(LOCAL:LCOUNT)
+	NEXT
+	;LOCAL初期化
+	VARSET LOCAL
+	;RESULT保持
+	RETURN RESULT
+ENDIF
+
+;ACT範囲外(ACT非実行時に呼ばれた等)の場合脱出
+SIF GET_NORMALACTNUM(TFLAG:ACT) < 0 || VARSIZE("LOCAL") <= GET_NORMALACTNUM(TFLAG:ACT)
+	RETURN 0
+
+;最終的に加算する흥미値
+LTEMP = 0
+
+;날뛴다なら常に흥미-2
+SIF IS_COMGRONAME("날뛴다/逃げる/거부")
+	LTEMP -= CFLAG:MASTER:죠교레벨 < 10 ? 2 # 4
+
+;싫어한다なら常に흥미-1 // 날뛴다扱いの時は弾くように
+SIF IS_NOWCOMNAME("싫어한다") && IS_COMGRONAME("소극적으로 한다")
+	LTEMP -= CFLAG:MASTER:죠교레벨 < 10 ? 1 # 2
+
+;죠교자のプライドが高い場合、애무/성교系で貶されるとムキになる
+{
+SIF TALENT:프라이드높음 && IS_NOWCOMNAME("서투르다고 모욕한다") 
+&& (MENUMATCH(TFLAG:ACT, "애무") || MENUMATCH(TFLAG:ACT, "성교"))
+}
+	LTEMP += 2
+
+;特定状況での効果up
+{
+SIF IS_NOWCOMNAME("애정을 담아 한다") && 
+(MENUMATCH(TFLAG:ACT, "봉사") || MENUMATCH(TFLAG:ACT, "성봉") || IS_NOWACTNAME("기승위"))
+}
+	LTEMP += 3
+
+;새드は노예の悲鳴を喜ぶ
+SIF TALENT:새드 && IS_NOWCOMNAME("비명지른다")
+	LTEMP += 2
+
+
+;///////////
+;ACT毎の보정
+;///////////
+SELECTCASE GET_ACTNAME(TFLAG:ACT)
+	;ACT분류/회화系
+	;==============
+	CASE "지금 기분을 묻다"
+		SELECTCASE TFLAG:ACT파생
+			CASE 0 ;                                       歯切れ悪く質問に答えた
+				LTEMP -= 1
+			CASE 1 ;                               派生が勇気を出して強く当たった
+				LTEMP -= 2
+			CASE 2 ;                             皮肉「今の気分は、と聞かれても」
+				LTEMP -= 1
+			CASE 3 ;                                 はっきりと今の気持ちを告げた
+				LTEMP += 3
+			CASE 4 ;                                           まあまあ悪くはない
+				LTEMP += 1
+			CASE 5 ;                                         気持ち良いこと했다い
+				LTEMP += 2
+		ENDSELECT
+	CASE "자신에게의 마음을 묻다"
+		SELECTCASE TFLAG:ACT파생
+			CASE 0 ;                                 嫌いじゃない…かも知れない…
+				LTEMP += 1
+			CASE 1 ;                                     そんなことあるわけない！
+				LTEMP -= 2
+			CASE 2 ;               皮肉「困るねぇ…好きじゃないといったら怒る？」
+				LTEMP -= 1
+			CASE 3 ;       もう酷いことしなければ、もっと好きになれるかもしれない
+				LTEMP += 1
+			CASE 4 ;                                       はっきりと好きと告げた
+			 	LTEMP += 3
+			CASE 5 ;           もっとすごいことしてくれば、もっと好きになれるかも
+				LTEMP += 2
+		ENDSELECT
+	CASE "성에 관한 이야기를 하다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 2
+			CASE "적극적으로 한다"
+				LTEMP += 3
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "용서를 빌다"
+				LTEMP -= 1
+		ENDSELECT
+	CASE "상냥하게 위로한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 2
+			CASE "적극적으로 한다"
+				LTEMP += 3
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "용서를 빌다"
+				LTEMP -= 1
+		ENDSELECT
+	CASE "엄하게 위협한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP += 2
+			CASE "태연하게 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다"
+				LTEMP -= 2
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "용서를 빌다"
+				LTEMP += 3
+		ENDSELECT
+	CASE "의상 변경을 요구한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다", "受け入れる"
+				LTEMP += 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASEELSE
+				LTEMP -= PALAM:MASTER:치정 > PALAM:MASTER:반항 ? 1 # 2
+		ENDSELECT
+	CASE "합의를 요구한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다" ;                              小さい声で了承
+				LTEMP += 1
+			CASE "태연하게 한다" ;                            好きにすればいい
+				LTEMP += 1
+			CASE "적극적으로 한다" ;                        初めてを捧げてもいい
+				LTEMP += 3
+			CASE "受け入れる" ;気持ちよくしてくれるなら初めてをあげてもいい
+				LTEMP += 2
+			CASEELSE          ;                                  합의しない
+				LTEMP -= 2
+		ENDSELECT
+	CASE "징계한다고 위협한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP += 2
+			CASE "태연하게 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다"
+				LTEMP -= 2
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "용서를 빌다"
+				LTEMP += 3
+		ENDSELECT
+	CASE "고함치다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP += 2
+			CASE "태연하게 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다"
+				LTEMP -= 2
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "용서를 빌다"
+				LTEMP += 3
+		ENDSELECT
+	CASE "기분나쁘게 웃다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP += 2
+			CASE "태연하게 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다"
+				LTEMP -= 2
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "용서를 빌다"
+				LTEMP += 3
+		ENDSELECT
+
+	;ACT분류/애무系
+	;==============
+	CASE "손으로 애무"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "가슴애무"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "입으로 애무"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "항문애무"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "항문펠라"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "키스"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 3
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다"
+				LTEMP -= 3
+		ENDSELECT
+	CASE "성기마찰한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "파이즈리한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "풋잡하기"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				IF TALENT:새드 || TALENT:심술궂음
+					LTEMP += 2
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "손가락삽입한다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+
+	;ACT분류/도구系
+	;==============
+	CASE "로터"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "바이브"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "항문바이브"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "항문비즈"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "Ｃ애무도구"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "유두캡"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+	CASE "페니스밴드"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 2
+		ENDSELECT
+
+	;ACT분류/애무系
+	;==============
+	CASE "밀어 넘어트린다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"                  ;      顔を背け黙り込んだ
+				LTEMP -= 1
+			CASE "적극적으로 한다", "태연하게 한다"    ;      抵抗せず身を任せた
+				LTEMP += 2
+			CASE "受け入れる"                  ;          抵抗しなかった
+				LTEMP += 1
+			CASE "용서를 빌다"                  ;押さえつけられ怯えている
+				LTEMP -= 2
+		ENDSELECT
+
+	;ACT분류/성교系
+	;==============
+	CASE "정상위"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				SIF IS_NOWCOMNAME("허리를 흔든다")
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("안에 내!")
+					LTEMP += 3
+				SIF IS_NOWCOMNAME("안에 내면 안돼!")
+					LTEMP += 1
+				;最低限+2は加算される
+				LTEMP += 1
+			CASE "용서를 빌다"
+				IF TALENT:새드
+					LTEMP += 3
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "후배위"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				SIF IS_NOWCOMNAME("허리를 흔든다")
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("안에 내!")
+					LTEMP += 3
+				SIF IS_NOWCOMNAME("안에 내면 안돼!")
+					LTEMP += 1
+				;最低限+2は保証
+				LTEMP += 1
+			CASE "용서를 빌다"
+				IF TALENT:새드
+					LTEMP += 4
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "기승위"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "受け入れる"
+				SIF IS_NOWCOMNAME("안에 내!")
+					LTEMP += 3
+				SIF IS_NOWCOMNAME("안에 내면 안돼!")
+					LTEMP += 1
+				;最低限+2は加算される
+				LTEMP += 1
+			CASE "용서를 빌다"
+				IF TALENT:새드
+					LTEMP += 3
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "대면좌위"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				SIF IS_NOWCOMNAME("허리를 흔든다")
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("안에 내!")
+					LTEMP += 3
+				SIF IS_NOWCOMNAME("안에 내면 안돼!")
+					LTEMP += 1
+				;最低限+2は加算される
+				LTEMP += 1
+			CASE "용서를 빌다"
+				IF TALENT:새드
+					LTEMP += 3
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "배면좌위"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				SIF IS_NOWCOMNAME("허리를 흔든다")
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("안에 내!")
+					LTEMP += 3
+				SIF IS_NOWCOMNAME("안에 내면 안돼!")
+					LTEMP += 1
+				;最低限+2は加算される
+				LTEMP += 1
+			CASE "용서를 빌다"
+				IF TALENT:새드
+					LTEMP += 3
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "항문섹스"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += TALENT:변태적 ? 2 # 1
+			CASE "受け入れる"
+				SIF IS_NOWCOMNAME("허리를 흔든다")
+					LTEMP += TALENT:변태적 ? 3 # 2
+				SIF IS_NOWCOMNAME("안에 내!")
+					LTEMP += TALENT:변태적 ? 4 # 3
+				SIF IS_NOWCOMNAME("안에 내면 안돼!")
+					LTEMP += TALENT:변태적 ? 2 # 1
+				;最低限+2は加算される
+				LTEMP += 1
+			CASE "용서를 빌다"
+				IF TALENT:새드
+					LTEMP += 3
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+
+	;ACT분류/수치系
+	;==============
+	CASE "자위"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "受け入れる"
+				LTEMP += 2
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "소극적으로 한다"
+				SIF IS_NOWCOMNAME("부끄러워한다")
+					LTEMP += 3
+				LTEMP -= 1
+			;リアクションが拒絶
+			CASEELSE
+				IF TALENT:심술궂음
+					LTEMP += 1
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "비패개장"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "소극적으로 한다"
+				SIF IS_NOWCOMNAME("부끄러워한다")
+					LTEMP += 3
+				LTEMP -= 1
+			CASE "용서를 빌다"
+				IF TALENT:심술궂음
+					LTEMP += 1
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "자위과시"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる", "적극적으로 한다"
+				LTEMP += 2
+			CASE "태연하게 한다"
+				LTEMP += 1
+			CASE "소극적으로 한다"
+				SIF IS_NOWCOMNAME("부끄러워한다")
+					LTEMP += 3
+				LTEMP -= 1
+			CASE "용서를 빌다"
+				IF TALENT:심술궂음
+					LTEMP += 1
+				ELSE
+					LTEMP -= 2
+				ENDIF
+		ENDSELECT
+	CASE "수치플레이"
+		SIF IS_NOWCOMNAME("부끄러워한다")
+			LTEMP += 2
+	CASE "야외플레이"
+		SIF IS_NOWCOMNAME("부끄러워한다")
+			LTEMP += 2
+	CASE "방뇨"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 1
+			CASE "태연하게 한다", "적극적으로 한다"
+				LTEMP += 2
+			CASE "소극적으로 한다"
+				SIF IS_NOWCOMNAME("부끄러워한다")
+					LTEMP += 3
+				LTEMP -= 1
+			;リアクションが拒絶
+			CASEELSE
+				LTEMP -= 2
+		ENDSELECT
+
+	;ACT분류/봉사系
+	;==============
+	CASE "손으로 애무를 강요"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "용서를 빌다"
+				LTEMP -= 2
+			CASE "소극적으로 한다"
+				LTEMP -= 1
+			CASE "날뛴다", "거부", "逃げる"
+				LTEMP -= IS_COMIMPNAME("悪印象大") ? 3 # 1
+		ENDSELECT
+	CASE "입으로 애무를 강요"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP += 1
+			CASE "날뛴다", "거부", "逃げる"
+				LTEMP -= IS_COMIMPNAME("悪印象大") ? 3 # 1
+		ENDSELECT
+	CASE "파이즈리"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP += 1
+			CASE "날뛴다", "거부", "逃げる"
+				LTEMP -= IS_COMIMPNAME("悪印象大") ? 3 # 1
+		ENDSELECT
+	CASE "스마타"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP += 1
+			CASE "날뛴다", "거부", "逃げる"
+				LTEMP -= IS_COMIMPNAME("悪印象大") ? 3 # 1
+		ENDSELECT
+	CASE "발핥기강제"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				;죠교자が새드/프라이드높음の場合は+1
+				SIF TALENT:새드 || TALENT:프라이드높음
+					LTEMP += 1
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP -= 1
+			CASE "날뛴다", "거부", "逃げる"
+				LTEMP -= IS_COMIMPNAME("悪印象大") ? 3 # 1
+		ENDSELECT
+	CASE "이라마치오"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP += TALENT:새드 ? 2 # 1
+			CASE "受け入れる"
+				LTEMP += 1
+		ENDSELECT
+	CASE "가슴애무강제"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP += 1
+			CASE "날뛴다", "거부", "逃げる"
+				LTEMP -= 2
+		ENDSELECT
+
+	;ACT분류/가학系
+	;==============
+	CASE "스펭킹"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("비명지른다") || (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+	CASE "채찍"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("비명지른다") || (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+	CASE "바늘"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("비명지른다") || (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+	CASE "밧줄"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				{
+				SIF IS_NOWCOMNAME("부끄러워한다") || IS_NOWCOMNAME("비명지른다") 
+				|| (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+				}
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+	CASE "눈가리개"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				{
+				SIF IS_NOWCOMNAME("부끄러워한다") || IS_NOWCOMNAME("비명지른다") 
+				|| (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+				}
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+	CASE "볼개그"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				{
+				SIF IS_NOWCOMNAME("부끄러워한다") || IS_NOWCOMNAME("비명지른다") 
+				|| (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+				}
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+	CASE "매도"
+		SIF IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+			LTEMP += 1
+		SIF IS_COMGRONAME("용서를 빌다/소극적으로 한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("침묵한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("무서워한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("비명지른다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("용서를 빌다")
+			LTEMP += TALENT:새드 || TALENT:심술궂음 ? 2 # 0
+	CASE "삼각목마"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("비명지른다") || (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+	CASE "관장세트"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "용서를 빌다", "소극적으로 한다"
+				SIF TALENT:새드
+					LTEMP += 2
+				SIF IS_NOWCOMNAME("비명지른다") || (IS_NOWCOMNAME("고통을 참는다") && TFLAG:REACT파생)
+					LTEMP += 1
+				LTEMP -= 1
+		ENDSELECT
+
+	;ACT분류/이상系
+	;==============
+	CASE "피스트퍽"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP -= 1
+		ENDSELECT
+	CASE "애널피스트"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP -= 1
+		ENDSELECT
+	CASE "양쪽피스트"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 1
+			CASE "용서를 빌다", "소극적으로 한다"
+				LTEMP -= 1
+		ENDSELECT
+	CASE "방치플레이"
+		SIF IS_NOWCOMNAME("침묵한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("마음 약하게 응답한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("무뚝뚝하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("상냥하게 응답한다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("강하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("더 하드하게 해")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("용서를 빌다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("기분좋게 해")
+			LTEMP += 1
+		SIF IS_NOWCOMNAME("비명지른다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("무서워한다")
+			LTEMP -= 2
+	CASE "공중육변기플레이"
+		IF TFLAG:ACT파생 == 1
+			LTEMP -= 2
+		ELSE
+			IF !TFLAG:ACT파생
+				LTEMP += 1
+			ELSE
+				LTEMP += TFLAG:ACT파생 == 2 ? 1 # 2
+			ENDIF
+		ENDIF
+	CASE "페니스밴드장착"
+		SIF IS_NOWCOMNAME("더 하드하게 해")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("용서를 빌다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("기분좋게 해")
+			LTEMP += 1
+		SIF IS_NOWCOMNAME("비명지른다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("무서워한다")
+			LTEMP -= 2
+
+	;ACT분류/휴식系
+	;==============
+	CASE "휴식시킨다"
+		SIF IS_NOWCOMNAME("침묵한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("마음 약하게 응답한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("무뚝뚝하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("상냥하게 응답한다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("강하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("더 하드하게 해")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("용서를 빌다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("기분좋게 해")
+			LTEMP += 1
+		SIF IS_NOWCOMNAME("비명지른다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("무서워한다")
+			LTEMP -= 2
+	CASE "영양제를 먹인다"
+		SIF IS_NOWCOMNAME("침묵한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("마음 약하게 응답한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("무뚝뚝하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("상냥하게 응답한다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("강하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("더 하드하게 해")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("용서를 빌다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("기분좋게 해")
+			LTEMP += 1
+		SIF IS_NOWCOMNAME("비명지른다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("무서워한다")
+			LTEMP -= 2
+	CASE "치료한다"
+		SIF IS_NOWCOMNAME("침묵한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("마음 약하게 응답한다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("무뚝뚝하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("상냥하게 응답한다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("강하게 응답한다")
+			LTEMP -= 2
+		SIF IS_NOWCOMNAME("더 하드하게 해")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("용서를 빌다")
+			LTEMP -= 1
+		SIF IS_NOWCOMNAME("기분좋게 해")
+			LTEMP += 1
+		SIF IS_NOWCOMNAME("비명지른다")
+			LTEMP += 2
+		SIF IS_NOWCOMNAME("무서워한다")
+			LTEMP -= 2
+
+	;ACT분류/성교봉사系
+	;==================
+	CASE "정상위시킨다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 1
+			CASE "소극적으로 한다"
+				LTEMP += 1
+		ENDSELECT
+	CASE "후배위시킨다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 1
+			CASE "소극적으로 한다"
+				LTEMP += 1
+		ENDSELECT
+	CASE "대면좌위시킨다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 1
+			CASE "소극적으로 한다"
+				LTEMP += 1
+		ENDSELECT
+	CASE "배면좌위시킨다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 1
+			CASE "소극적으로 한다"
+				LTEMP += 1
+		ENDSELECT
+	CASE "항문섹스시킨다"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 2
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 3
+			CASE "용서를 빌다"
+				LTEMP -= 1
+			CASE "소극적으로 한다"
+				LTEMP += 1
+		ENDSELECT
+	CASE "역강간"
+		SELECTCASE COMGRONAME(TFLAG:REACT분류)
+			CASE "受け入れる"
+				LTEMP += 3
+			CASE "적극적으로 한다", "태연하게 한다"
+				LTEMP += 2
+			CASE "용서를 빌다"
+				LTEMP -= 1
+			CASE "소극적으로 한다"
+				LTEMP += 1
+		ENDSELECT
+ENDSELECT
+
+;흥미の加算
+LOCAL:GET_NORMALACTNUM(TFLAG:ACT) += LTEMP

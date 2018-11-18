@@ -1,0 +1,101 @@
+﻿;────────────────────────────────────
+;040,거부한다（반항、징계・포인트）
+;────────────────────────────────────
+@COM40
+;반항SOURCE増加
+IF CFLAG:MASTER:죠교레벨 < 10
+	SOURCE:MASTER:반항 += 250 + MARK:굴복각인 * (10 - CFLAG:MASTER:죠교레벨) * 20
+ELSE
+	SOURCE:MASTER:반항 += 200
+ENDIF
+;징계・포인트加算
+TFLAG:징계・포인트 += BASE:초조함 / 100 + MARK:반항각인 + 1
+;COM分類
+CALL SET_COMGRO("거부")
+;COM印象
+CALL SET_COMIMP("悪印象大")
+;의존도변화
+CALL ADD_DEPEND(-2, -4)
+RETURN 1
+
+
+;────────────────────────────────────
+;041,소극적으로 한다（굴종、소극적으로 한다、징계・포인트）
+;────────────────────────────────────
+@COM41
+;굴종SOURCE増加
+SOURCE:MASTER:굴종 += 100 + CFLAG:MASTER:죠교레벨 * (50 + GET_ABL(MASTER, "순종")) * (50 + GET_ABL(MASTER, "봉사정신") * 2) * MARK:굴복각인 / 100
+;消極判定
+LOCAL = (BASE:초조함 / 150 + BASE:흥미 / 150 - CFLAG:아라이멘도 / 10) * (11 - MARK:굴복각인) / 10 + RAND:3
+IF LOCAL > 0
+	;징계・포인트加算
+	TFLAG:징계・포인트 += LOCAL
+	;派生：消極的なのが気に入らない
+	TFLAG:REACT파생 = 1
+	;COM印象
+	CALL SET_COMIMP("悪印象小")
+	;의존도변화
+	CALL ADD_DEPEND(-5, 0)
+ELSE
+	;派生：消極的だけどいいか
+	TFLAG:REACT파생 = 0
+	;COM印象
+	CALL SET_COMIMP("好印象小")
+	;의존도변화
+	CALL ADD_DEPEND(-3, +2)
+ENDIF
+;COM分類
+CALL SET_COMGRO("소극적으로 한다")
+RETURN 1
+
+
+;────────────────────────────────────
+;042,적극적으로 한다（달성、적극적으로 한다）
+;────────────────────────────────────
+@COM42
+;달성SOURCE増加
+SOURCE:MASTER:달성 += (CFLAG:MASTER:죠교레벨 + 5) * (GET_ABL(MASTER, "봉사정신") + 50) + (GET_ABL(MASTER, "기교") + 50) * 20 / 100
+;COM分類
+CALL SET_COMGRO("적극적으로 한다")
+;COM印象
+CALL SET_COMIMP("好印象大")
+;참다플래그解消
+TCVAR:MASTER:참다 = 0
+;의존도변화
+CALL ADD_DEPEND(+4, +2)
+RETURN 1
+
+
+;────────────────────────────────────
+;043,애정을 담아 한다（달성、열락、적극적으로 한다）
+;────────────────────────────────────
+@COM43
+;달성、열락SOURCE増加
+SOURCE:MASTER:달성 += (CFLAG:M호의 + 500) * (GET_ABL(MASTER, "봉사정신") + 10) * (GET_ABL(MASTER, "기교") + 10) / 10000
+SOURCE:MASTER:열락 += (CFLAG:M호의 + 100) * (GET_TRAINLV(TARGET) + 10) / 50
+;COM分類
+CALL SET_COMGRO("적극적으로 한다")
+;COM印象
+CALL SET_COMIMP("好印象大")
+;참다플래그解消
+TCVAR:MASTER:참다 = 0
+;의존도변화
+CALL ADD_DEPEND(+6, +10)
+RETURN 1
+
+
+;────────────────────────────────────
+;044,태연하게 한다（달성、태연하게 한다）
+;────────────────────────────────────
+@COM44
+;달성SOURCE増加
+SOURCE:MASTER:달성 += (CFLAG:MASTER:죠교레벨 + 5) * (GET_ABL(MASTER, "봉사정신") + 50) + (GET_ABL(MASTER, "기교") + 50) * 20 / 120
+;COM分類
+CALL SET_COMGRO("태연하게 한다")
+;COM印象
+CALL SET_COMIMP("好印象小")
+;참다플래그解消
+TCVAR:MASTER:참다 = 0
+;의존도변화
+CALL ADD_DEPEND(+2, -2)
+RETURN 1

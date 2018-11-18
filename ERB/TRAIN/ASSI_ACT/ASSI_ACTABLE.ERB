@@ -1,0 +1,361 @@
+﻿@ASSI_ACTABLE, ARGS, ARG
+#FUNCTION
+SELECTCASE ARGS
+	;---------------------------------
+	;Ｃ애무
+	;---------------------------------
+	CASE "Ｃ애무"
+		SIF TFLAG:Ｐ사용중
+			RETURNF 0
+		SIF TFLAG:Ｐ삽입중
+			RETURNF 0
+		SIF TFLAG:조수에삽입중
+			RETURNF 0
+		SIF TEQUIP:성교봉사중
+			RETURNF 0
+		SIF TEQUIP:오나홀
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF TEQUIP:삼각목마
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+		;地の文・구상の矛盾を回避するため
+		SIF TCVAR:MASTER:가버려
+			RETURNF 0
+	CASE "입으로 애무"
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF TEQUIP:바이브
+			RETURNF 0
+		SIF CLOTHESTYPE(1, 1) == 2 && !TALENT:ARG:벽통과
+			RETURNF 0
+	CASE "스마타"
+		SIF TALENT:ARG:남자
+			RETURNF 0
+		SIF TEQUIP:바이브
+			RETURNF 0
+		SIF TALENT:ARG:다리없음
+			RETURNF 0
+		SIF !TFLAG:누움
+			RETURNF 0
+		SIF CLOTHESTYPE(1, 1) == 2 && !TALENT:ARG:벽통과
+			RETURNF 0
+		;面倒なので弾く
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 75
+			RETURNF 0
+	CASE "파이즈리한다"
+		SIF !PENIS(MASTER)
+			RETURNF 0
+		SIF TALENT:ARG:남자
+			RETURNF 0
+		SIF CLOTHESTYPE(1, 1) == 2 && !TALENT:ARG:벽통과
+			RETURNF 0
+		SIF !PENIS(MASTER)
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 75
+			RETURNF 0
+	CASE "풋잡하기"
+		SIF TALENT:ARG:다리없음
+			RETURNF 0
+		SIF !PENIS(MASTER)
+			RETURNF 0
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 75
+			RETURNF 0
+	CASE "Ｃ도구"
+		SIF CLOTHESTYPE(1, 1) == 2
+			RETURNF 0
+		SIF TEQUIP:클리캡
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+			SIF ITEM:오나홀 == 0
+				RETURNF 0
+		ENDIF
+		IF !PENIS(MASTER)
+			SIF ITEM:로터 == 0
+				RETURNF 0
+		ENDIF
+	CASE "역강간"
+		SIF TCVAR:MASTER:발기도 < 1000
+			RETURNF 0
+		SIF ABL:ARG:Ｖ감각 < 3
+			RETURNF 0
+		SIF ABL:ARG:성교 < 3
+			RETURNF 0
+		SIF TEQUIP:바이브
+			RETURNF 0
+		;コンビネーションのことを考えるとなんらかの성교がはいってるときは蹴っといたほうが無難
+		SIF TEQUIP:성교중
+			RETURNF 0
+		SIF TEQUIP:성교봉사중
+			RETURNF 0
+		SIF TEQUIP:조수성교중
+			RETURNF 0
+		SIF TEQUIP:조수성교봉사중
+			RETURNF 0
+		SIF !TFLAG:누움
+			RETURNF 0
+		SIF TALENT:ARG:남자
+			RETURNF 0
+		SIF CLOTHESTYPE(1, 1) == 2 && !TALENT:ARG:벽통과
+			RETURNF 0
+		SIF !PENIS(MASTER)
+			RETURNF 0
+	CASE "손으로 애무"
+		RETURNF 1
+	;---------------------------------------------------------------
+	;Ａ애무
+	;---------------------------------------------------------------
+	CASE "Ａ애무"
+		SIF TFLAG:Ａ사용중
+			RETURNF 0
+		SIF TEQUIP:항문바이브
+			RETURNF 0
+		SIF TEQUIP:항문비즈
+			RETURNF 0
+		SIF TEQUIP:관장그릇＋플러그
+			RETURNF 0
+		SIF RANGE(TEQUIP:성교중, 3, 5)
+			RETURNF 0
+		SIF TEQUIP:성교봉사중 == 6
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		;하반신겉옷に妨害
+		SIF CLOTHESTYPE(1, 1) == 2 && !TALENT:ARG:벽통과
+			RETURNF 0
+	CASE "항문애무"
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 500
+			RETURNF 0
+		;A경험が不十分
+		SIF EXP:MASTER:Ａ경험 < 11
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "항문펠라"
+		SIF !TFLAG:누움
+			RETURNF 0
+		SIF TEQUIP:성교중 || TEQUIP:성교봉사중
+			RETURNF 0
+		IF !TALENT:ARG:벽통과
+			;죠교대상の하반신속옷で強く妨害される
+			SIF CLOTHESTYPE(1, 0)
+				RETURNF 0
+		ENDIF
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "항문로터"
+		SIF !ITEM:로터
+			RETURNF 0
+		;죠교대상の하반신겉옷で妨害される
+		SIF CLOTHESTYPE(1, 1) == 2
+			RETURNF 0
+		SIF ABL:MASTER:Ａ감각 < 2
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "항문바이브"
+		SIF !ITEM:항문바이브
+			RETURNF 0
+		;죠교대상の하반신겉옷で妨害される
+		SIF CLOTHESTYPE(1, 1) == 2
+			RETURNF 0
+		;죠교대상の하반신속옷で妨害される
+		SIF CLOTHESTYPE(1, 0) == 2
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 600
+			RETURNF 0
+		;A경험が不十分
+		SIF EXP:MASTER:Ａ경험 < 11
+			RETURNF 0
+	;---------------------------------------------------------------
+	;Ｂ애무
+	;---------------------------------------------------------------
+	CASE "Ｂ애무"
+		SIF TFLAG:가슴사용중
+			RETURNF 0
+		SIF TEQUIP:유두캡
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "가슴애무"
+		;죠교자に벽통과がなく、죠교대상が남자
+		IF !TALENT:ARG:벽통과 && TALENT:MASTER:남자
+			;죠교대상の상반신겉옷で妨害される
+			SIF CLOTHESTYPE(1, 3) == 2
+				RETURNF 0
+			;죠교대상の상반신속옷で妨害される
+			SIF CLOTHESTYPE(1, 2) == 2
+				RETURNF 0
+		ENDIF
+	CASE "유두핥기"
+		IF !TALENT:ARG:벽통과
+			SIF TEQUIP:성교중 == 4 || RANGE(TEQUIP:성교봉사중, 4, 5)
+				RETURNF 0
+			;죠교대상の상반신겉옷で強く妨害される
+			SIF CLOTHESTYPE(1, 3)
+				RETURNF 0
+			;죠교대상の상반신속옷で強く妨害される
+			SIF CLOTHESTYPE(1, 2)
+				RETURNF 0
+		ENDIF
+	CASE "유두로터"
+		SIF !ITEM:로터
+			RETURNF 0
+		IF !TALENT:MASTER:남자
+			;죠교대상の상반신겉옷で妨害される
+			SIF CLOTHESTYPE(1, 3) == 2
+				RETURNF 0
+			;죠교대상の상반신속옷で妨害される
+			SIF CLOTHESTYPE(1, 2) == 2
+				RETURNF 0
+		ENDIF
+	;---------------------------------------------------------------
+	;∨애무
+	;---------------------------------------------------------------
+	CASE "Ｖ애무"
+		SIF TALENT:MASTER:처녀
+			RETURNF 0
+		SIF TFLAG:Ｖ사용중
+			RETURNF 0
+		SIF TEQUIP:바이브
+			RETURNF 0
+		SIF RANGE(TEQUIP:성교중, 1, 5)
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF TEQUIP:조수성교중
+			RETURNF 0
+		SIF TALENT:MASTER:남자
+			RETURNF 0
+		;하반신겉옷に妨害
+		SIF CLOTHESTYPE(1, 1) == 2 && !TALENT:ARG:벽통과
+			RETURNF 0
+	CASE "손가락삽입"
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 400
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		;경험が不十分
+		SIF EXP:MASTER:Ｖ경험 < 6
+			RETURNF 0
+		SIF TALENT:MASTER:남자
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "바이브"
+		;죠교대상の상반신겉옷で妨害される
+		SIF CLOTHESTYPE(1, 3) == 2
+			RETURNF 0
+		;죠교대상の상반신속옷で強く妨害される
+		SIF CLOTHESTYPE(1, 2)
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF !ITEM:바이브
+			RETURNF 0
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 500
+			RETURNF 0
+		SIF TALENT:MASTER:남자
+			RETURNF 0
+		;경험が不十分
+		SIF EXP:MASTER:Ｖ경험 < 6
+			RETURNF 0
+	CASE "성교"
+		;コンビネーションのことを考えるとなんらかの성교がはいってるときは蹴っといたほうが無難
+		SIF TEQUIP:성교봉사중
+			RETURNF 0
+		SIF TEQUIP:조수성교봉사중
+			RETURNF 0
+		SIF TEQUIP:페니스밴드
+			RETURNF 0
+		SIF !PENIS(ASSI)
+			RETURNF 0
+		;윤활が不十分
+		SIF PALAM:MASTER:윤활 < 500
+			RETURNF 0
+		SIF TALENT:MASTER:남자
+			RETURNF 0
+		;경험が不十分
+		SIF EXP:MASTER:Ｖ경험 < 11 && EXP:MASTER:성교경험 < 9
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+		SIF TEQUIP:자위중
+			RETURNF 0
+	;---------------------------------------------------------------
+	;Ｍ애무
+	;---------------------------------------------------------------
+	CASE "Ｍ애무"
+		SIF TFLAG:입사용중 >= 2
+			RETURNF 0
+		SIF TEQUIP:볼개그
+			RETURNF 0
+	CASE "키스"
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "안면승마"
+		SIF TFLAG:입사용중
+			RETURNF 0
+		SIF !TFLAG:누움
+			RETURNF 0
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "발을핥게한다"
+		SIF TFLAG:입사용중
+			RETURNF 0
+		SIF TALENT:ARG:다리없음
+			RETURNF 0
+	;---------------------------------------------------------------
+	;수치
+	;---------------------------------------------------------------
+	CASE "자위를과시한다"
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "매도"
+	CASE "사진촬영"
+	SIF !TALENT:ARG:촬영기능
+		RETURNF 0
+	CASE "조교자와키스"
+		SIF TFLAG:징계・플래그
+			RETURNF 0
+	CASE "치태를응시"
+	
+	;---------------------------------------------------------------
+	;가학
+	;---------------------------------------------------------------
+	CASE "머리를짓밟다"
+		SIF TALENT:ARG:다리없음
+			RETURNF 0
+		SIF !TFLAG:누움
+			RETURNF 0
+	;---------------------------------------------------------------
+	;その他
+	;---------------------------------------------------------------
+	CASE "탈의"
+	CASE "약품"
+	CASE "대기"
+ENDSELECT
+RETURNF 1

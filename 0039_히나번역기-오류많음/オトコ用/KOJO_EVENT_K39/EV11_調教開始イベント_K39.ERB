@@ -1,0 +1,523 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+;	히나구상　죠교開始이벤트구상ファイル
+
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+
+;EV11, 죠교開始구상
+;##################
+@KOJO_MALE_EVENT_K39_11(ARG) ;引数内訳…ARG=(0, 통상/1, 죠교자の疲労による中止/2, 죠교대상の疲労による中止)
+#LOCALSIZE  10
+#LOCALSSIZE 10
+VARSET LOCAL
+VARSET LOCALS
+
+{
+LOCALS:0 '= RAND:3 
+;OriginalString : HTML_HEART(, COLOR2_K39("PINK")) 
+? HTML_HEART(, COLOR2_K39("PINK")) 
+;OriginalString : HTML_EIGHTHNOTE()
+# HTML_EIGHTHNOTE()
+}
+
+[SKIPSTART]
+	一部の이벤트はOPを経由してKFLAG:(FLAG:주인님):50に代入が行われた場合にのみ表示
+	基本的に노멀모드以外でのEDを含む이벤트は殺す방침
+	CFLAG:죠교횟수はCFLAG:죠교횟수に置換
+
+	今見直すと全体的にもう少し書いてもよさそうな気もする
+	ただ個人的には이벤트書くのは精神的に소모するのであまり気は進まない
+
+	厄神とは神としても女としても穢れた存在という独自の解釈が基盤となっている
+	一連の이벤트で히나の穢れてはいるけどあくまで純粋で、健気で、人間思いな部分を描きたかった
+	果たして上손くいったかどうか？
+[SKIPEND]
+
+
+;죠교初回
+;========
+IF CFLAG:죠교횟수 == 1
+	;GameBase判定処理
+	;================
+	CALL CHK_GAMEBASE_K39
+
+	;히나が主人でありOPを経由している場合
+	;==================================
+	IF !FLAG:모드 && TALENT:TARGET:주인님 && KFLAG:(FLAG:주인님):50 == 1
+		;デフォルトカラーで表示する
+		PRINTFORMDL 한마디로 액을 불라고 해도 몇이나 방법이 있다
+		PRINTFORMDW 그 중에서도 제일 즉효성이 있는 것이, 이른바 성적인 접촉――
+		PRINTL
+		PRINTFORMDL 자신이 왜 인간의, 게다가 여자를 본뜬 모습을 하고 있는 것인가
+		PRINTFORMDW 일찌기 여러 번인가 의문으로 생각한 일도 있었다――
+		PRINTL
+		PRINTFORMDL 사람의 액을 이 몸에 모은다고 하는 의미에 있어서, 아무래도 이 모습이 형편이 좋은 것 같다
+		PRINTFORMDW 이 꺼려야 할 액신의 몸은 어쩔 수 없고 추잡해, 용이하게 쾌락에 흐르게 되어 버린다
+		PRINTL
+		PRINTFORMDW 그것은 자신의 심정과는 관계없이, 그 일이 때에는 괴롭기도 해, 한심하기도 했다
+		PRINTFORMDW 다만, 그것이 액신으로서의 당신이 의무라고 한다면, 완수하는으로 해 구는 없다――
+		PRINTL
+		PRINTFORMDL 나는 인간을 좋아한다
+		PRINTFORMDW 그것은 자신의 존재가, 사람의 손이야는 형태 만들어진 종이 인형에 유래하는 것이기 때문인지도 모르다
+		PRINTL
+		PRINTFORMDL 사람들의 행복한 모습을 보는 것은, 나의 얼마 안되는 즐거움의 1개
+		PRINTFORMDW 다만, 액신이라고 하는 존재는 행을 주는 일은 할 수 없다
+		PRINTFORMDL (이)라면, 적어도 사람들의 불행을 이 몸에 다 맡아 , 나는 다만, 멀리서 지켜볼 수 있으면 된다
+		PRINTFORMDW 머지않아 헛되이 죽어 사라지는 그 날까지――
+		PRINTL
+		PRINTFORMDW 그런데도, 이 눈앞의 인물만은 시급하게 액을 불필요가 있다
+		PRINTFORMDL 한사람의 인간이 이것정도의 액을 떠맡고 있는 것은 본 일이 없다
+		PRINTFORMDW 방치하면 머지않아 큰 재액을, 자신과 그 회전에 뿌릴 일을 간파할 수 있었다
+		PRINTL
+		PRINTFORMDL 액신등 결국 전능의 존재에는 먼 사람, 그 힘에는 스스로 한계가 있다
+		PRINTFORMDW 자신의 그릇을 넘는 액을 받으면, 이 몸은 찢어져 소멸하게 된다――
+		PRINTL
+		PRINTFORMDW 자신이 완수할 수 있을까？ 불안이 없다고 말하면 거짓말이 될 것이다
+		PRINTFORMDL 그런데도 나는 인간의 아군, 어느 의미인에 봉사하는 신
+		PRINTFORMDW 당신이 사명에 순직하는 일이 되어도, 그것은 숙원이었다――
+		PRINTL
+		PRINTFORMDW 자학적이라고 하는 것은 아니다. 액신의 상태와는 이러한 것이다
+		PRINTFORMDW 액을 모은다고 하는, 단지 그것만을 위해 형태 만들어져 구현화한 존재
+		PRINTFORMDW 머지않아다른 부하에 다 참아 수 있지 않게 되어, 몰래 조용하게 사라져 가는 존재
+		PRINTFORMDW 다만 이것만의 일이며, 고의로 괴로워할 필요도 없다――
+		PRINTW
+		;引数はフェード速度(ms)、最初の文字色、次の文字色(背景色)、表示する文字列の順
+		{
+		CALL FADE_TO_CLEARLINE2(
+		30, 
+		COLOR2_K39("white"), 
+		GETBGCOLOR(), 
+;OriginalString : そう、思っていた……その時迄は……")
+		"그래, 생각하고 있었다……그 때까지는……")
+		}
+		CALL TWAIT3_K39
+		;これは設定했다文字色で出力する
+		PRINTFORML 「지금부터 실시하는 일은, 모두%CNAME(MASTER, TARGET)%의 액을 불때문」
+		PRINTFORMW 「아무것도 걱정하지 않고, 나에게 맡겨 주세요」
+		PRINTL
+		;開幕지금 기분을 묻다にしてFIRSTACTを消化시킨다
+		TCVAR:행동예약 = 0
+		RETURN 1
+	ENDIF
+
+	;히나が主人でない場合もしくは노멀모드でない場合 //初回にCNAME代入のみ行う
+	;==================================================
+	IF FLAG:모드 != 0 || !TALENT:TARGET:주인님
+		;플레이ヤーが名前を入力済みである場合
+		IF NO:MASTER == 0 && CALLNAME:MASTER != "당신"
+			IF 0
+			ELSEIF TALENT:MASTER:남자    ;//名前入力済みかつ남자
+				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴方/%CSTR:(TARGET):호칭목록%
+			ELSEIF TALENT:MASTER:후타나리  ;//名前入力済みかつ후타나리
+				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+			ELSE                           ;//名前入力済みかつそれ以外（女）
+				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+			ENDIF
+		;죠교대상が남자の場合
+		ELSEIF TALENT:MASTER:남자
+			CSTR:(TARGET):호칭목록 = 당신_貴方/%CSTR:(TARGET):호칭목록%
+		;죠교대상が후타나리の場合
+		ELSEIF TALENT:MASTER:후타나리
+			CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+		;それ以外（女）
+		ELSE
+			CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+		ENDIF
+		;RESULT値は0
+		RETURN 0
+	ENDIF
+ENDIF
+
+
+;죠교１０回目記念
+;================
+;조교중止の場合(ARGが0でない場合)は弾く
+IF CFLAG:TARGET:죠교횟수 == 10 && KFLAG:(FLAG:주인님):50 == 1 && !ARG
+	;히나が主人の時のみ表示
+	IF TALENT:TARGET:주인님
+		;↓良く考えると順調でない可能性もあるな
+		PRINTFORMDL 이것까지의 곳, 모두는 순조롭도록 생각되었다
+		PRINTFORMDW 이 인물의 액은 서서히이지만, 확실히 감소하고 있다
+		PRINTFORMDW 그 한편, 평상시 그대로의 액모음도 때를 가늠해, 날마다 가고 있었다――
+		PRINTL
+		PRINTFORMDL 부담이 큰 것은 확실했지만, 당신이 해야 할 일을 하는데, 불평은 말하고 있을 수 없다
+		PRINTFORMDW 이 땅의 사람들을 액재로부터 지켜, 멀리할 수가 있는 것은, 이 나 밖에 없는 것이니까――
+		PRINTL
+		PRINTFORMDL 그런데도 궁금한 점이 있었다
+		PRINTFORMDW 그것은 이 인물이 가지는 인과의 크기, 거기에 기인한다고 생각되는 방대한 액의 양――
+		PRINTL
+		PRINTFORMDL 도대체 어떻게 하면, 보통 사람 사이가 이것정도의 인과의 실을 묶을 수가 있는 것일까
+		PRINTFORMDW 아직도 마음을 닫고 있는 이 인물이 대부분을 말하지 않기 때문에, 지금은 다만 추측하는 일 밖에 할 수 없다
+		PRINTFORMDW 만났을 때의 복장으로부터, 아마 밖의 세계로부터 헤매었을 것이다라고 하는 일 정도 밖에 현재 상태로서는 몰랐다
+		PRINTL
+		PRINTFORMDL 환상시골에 밖의 세계의 사람이 헤매는 것은, 특별 드문 일도 아니다
+		PRINTFORMDW 결계의 얇은 장소에서 이쪽으로 온 사람은 이것까지도 많이 있었다
+		PRINTFORMDW 대체로의 경우, 결계의 얇은 무연총으로부터 오는 것이 상이지만, 이 인물은 이것에 들어맞지 않는다
+		PRINTL
+		PRINTFORMDW 요괴의 산에 가까운 장소에 넘어져 있던 일로부터 추측하는에, 어떠한 힘에 의해 결계를 억지로 찢어진 것처럼 생각되었다
+		PRINTFORMDW 아마 그 행위가 인과율을 크게 비뚤어지게 해 이 인물에게 다수의 인과의 실이 얽히는 원인이 된 것은 아닐것인가 라고 하는 생각이 든다
+		PRINTL
+		PRINTFORMDW 궁금한 점은 그 밖에도 있었다
+		PRINTFORMDL 이 인물로부터 액을 불도에, 나에게 어떠한 힘이 흘러드는 것 같고, 이것에 의해 새로운 능력이 갖춰지고 있다
+		PRINTFORMDW 이 힘을 충분히 확보 할 수 있으면, 언제의 날인가 이 인물을 원의 세계에 돌아가 주는 일도 가능할지도 모르다
+		PRINTL
+		PRINTFORMDW 다만, 그것들 모두는 나의 추측에 지나지 않는 것으로 있어, 확실한 일은 아무것도 없다고 하는 것이 현상이었다
+		PRINTFORMDW 서투르게 입을 미끄러지게 해 희미한 희망을 품게 하는 것은 피해야 한다
+		PRINTL
+		PRINTFORMDW 희망은 용이하게 절망으로 바뀐다
+		PRINTFORMDW 다수의 인과의 실에 관련되고 놓친 이 인물이 절망했을 때에 만들어지는 액은 방대한 것이 될 것이다
+		PRINTFORMDW 그렇게 말한 사태는 어떻게 해서든지 피하지 않으면 안 된다
+		PRINTL
+		PRINTFORMDW 어쨌든, 지금은 그러한 일은 마음에 은밀한, 정령들 추잡한으로 호색인 여자를 연기해 보이자
+		PRINTW
+		{
+		CALL FADE_TO_CLEARLINE2(
+		30, 
+		COLOR2_K39("white"), 
+		GETBGCOLOR(), 
+;OriginalString : 厄神である自分に、今、出来る事はそれだけなのだから――")
+		"액신인 자신에게, 지금, 할 수 있는 일은 그 만큼이기 때문에――")
+		}
+		CALL TWAIT3_K39
+		PRINTFORMW 「컨디션은 어떻습니까？ 괜찮습니까？」
+		PRINTFORMW 「에서는, 오늘도 잘 부탁드려요」
+		PRINTL
+		RETURN 1
+	ELSE
+		RETURN 0
+	ENDIF
+ENDIF
+
+
+;조교중止 ARG:1 ARG:2
+;====================
+;CFLAG:소모 > 5もしくはCFLAG:MASTER:소모 > 5を条件として呼び出される箇所
+;この条件から漏れた場合は통상の죠교開始구상が呼ばれる
+IF INRANGE(ARG, 1, 2)
+	;疲れているのは히나
+	IF ARG == 1
+		PRINTFORMDW %CALLNAME:TARGET%(은)는 컨디션이 뛰어나지 않기 때문에, 이번은 중지로 하는 일로 한 것 같다…
+	;疲れているのは죠교대상
+	ELSE
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「지쳐 무리하는 일은 없어？」
+			PRINTFORMW 「오늘은 천천히 쉬며」
+		ELSE
+			PRINTFORMW 「상당히 피로가 모이고 있는 것 같네요？」
+			PRINTFORMW 「좋아요, 오늘은 그만둡시다」
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+
+;//////////////////////////////////
+;//以下、죠교の進展度合いによる派生
+;//////////////////////////////////
+
+;상사상애(호의、호감도3000以上)
+;==============================
+;FIRSTEVENT(0)(1) RANDEVENT(0)(1)
+IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
+	;初回//히나が主人でありOPを経由している場合
+	;========================================
+	IF KFLAG:(FLAG:주인님):50 == 1 && FIRSTEVENT(0)
+		PRINTFORMDW 얼마나 생각해도 용서되지 않는다
+		PRINTFORMDW 옆에 있는 일마저도 용서되지 않는다
+		PRINTFORMDW 중요하기 때문에야말로, 나는 바라는 일도 할 수 있지 않다――
+		CALL BGM_CUTIN("nonexistence", 1)
+		PRINTL
+		PRINTFORMDW 저희들의 관계는 그렇게 말한 것이었다
+		PRINTFORMDW 액신이라고 하는 존재가 한사람의 인간에게 집착 하는 등 있어서는 안된다 일
+		PRINTFORMDW 액을 불은 상, 나의 옆에 계속 있으면 , 이 사람은 불행하게 될 뿐――
+		PRINTL
+		PRINTFORMDW 액신과는 신이라고 해도 여자로서도 예존재
+		PRINTFORMDW 자그마한 행복함 바라는 일은 용서되지 않다――
+		PRINTL
+		PRINTFORMDW 너무 충분할 정도 알고 있던, 알고 있었을 것이었다
+		PRINTFORMDW 그런데도 상, 나는 미칠 듯한까지 이 사람을 요구해 버린다
+		PRINTFORMDW 피부를 거듭하고 있는 동안, 나의 하늘의 그릇은 채워져 그 행복감에 마음은 떨렸다
+		PRINTL
+		PRINTFORMDW 그 감미로운 감각은 마음을 깊게 침식해, 나는 거기에 빠져 의존하게 되어 버렸다
+		PRINTFORMDW 최조, 한 때의 자신의 모습마저 생각해 내는 일은 할 수 없다
+		PRINTL
+		PRINTFORMDW 모르면 좋았다, 만나지 않으면 좋았다――
+		PRINTL
+
+		;中央で表示
+		ALIGNMENT CENTER
+		LOCAL:0 = CURRENTREDRAW()
+		REDRAW 0
+		;強制表示x1
+		CALLF ANIME_CONFIG("TIMES", 1)
+		;全画面カットイン2
+		CALL FULLCUTIN2(0, 17, "그렇지만……")
+		REDRAW LOCAL:0
+		;左寄せに戻す
+		ALIGNMENT LEFT
+
+		PRINTL
+		PRINTFORMDW 이제, 돌아올 수 없는, 돌아오는 일등으로 기내
+		PRINTFORMDW 이제 와서 없었던 일에는 할 수 없다――
+		PRINTL
+		PRINTFORMDW 흘러넘치고 내는 기분을 눌러 둘 수가 없다
+		PRINTFORMDW 여기에 있는 것은 최조신이라고조차 부를 수 없는, 고독을 무서워해 사랑에 굶은 한사람의 여자――
+		PRINTL
+		PRINTFORMDW 나를 봐！ 나를 사랑해！ 그렇지만……
+		PRINTFORMDW 액 투성이가 된 나를 보지 마……
+		PRINTW
+		PRINTFORMW 「 나의 일, 액신이라고 부르는 것은 이제 그만두며」
+		PRINTFORMW 「지금부터는 %CALLNAME:TARGET%(이)라고 불러 주세요. 좋네요？ 약속이에요♪」
+		PRINTL
+		CALL BGM_CUTIN("神々の祈り", 1)
+		PRINTFORMDW 그 때 나는 행복했다. 이제야말로 항쇄로부터 풀어 발해져 앞을 향해 갈 수 있을 생각이 들었다
+		PRINTL
+		CALL FADE_TO_CLEARLINE(30, "そう、無邪気に思っていた――")
+		;상사상애判定
+		KFLAG:(FLAG:주인님):100 = 1
+		CALL TWAIT3_K39
+		RETURN 1
+	ENDIF
+
+
+	;EVENT_001
+	;=========
+	IF GET_KFLAG_K39("상사상애") && FLAG:오토모드표시설정 < 1 && FIRSTEVENT(10) ;//간략표시なら弾く
+		PRINTFORMW 「응, 조금%CNAME(MASTER, TARGET)%에 듣고 싶지만…」
+		PRINTFORMDW %CALLNAME:TARGET%(은)는 말하기 어려운 듯이  잘랐다
+		PRINTL
+		PRINTFORMW 「역시 원의 세계에 돌아가고 싶다고 생각한다？ 그렇지 않으면, 여기서 나와 이대로…」
+		PRINTFORMW 「미안해요, 이상한 일 (들)물어 버려서. 원의 세계에 돌아가고 싶은으로 정해져있는 원이군요…」
+		PRINTFORMDL %CALLNAME:TARGET%(은)는 웃는 얼굴을 손질한다고 했지만, 그 모습은 심하고 쓸쓸한 듯하게 보였다
+		PRINTFORMDW 그것을 보았다%CALLNAME:MASTER%(은)는 …
+		PRINTL
+		;ツールチップ楽しい
+		CALL HTMLPRINTDL(@"%HTMLBUTTON("[0]", "0", "ルートＡ")% 원래의 세계에는 미련이 있다…")
+		CALL HTMLPRINTDL(@"%HTMLBUTTON("[1]", "1", "ルートＢ")% 할 수 있는 일이라면, 이 토지에서 이대로…")
+
+		;@INPUTINTD
+		;==========
+		;구상内に於けるINPUTINTは入力했다数値が구상色で表示されてしまうが、INPUTINTDはデフォルトカラーで出力する
+		;Revの場合、구상が呼び出される段階で구상指定色でSETCOLORされているので、デフォ色での出力を望む場合はやりくりが필요
+		;些細な問題だけど、気になる人は状況に応じて使い分けてくれたら、とかいうアレ
+		CALL INPUTINTD(0, 1)
+
+		;오토모드ならここで止める。主に디버그時の都合
+		SIF FLAG:오토모드 > 0
+			FORCEWAIT
+		SELECTCASE RESULT
+			;선택肢0 ルートＡ
+			CASE 0
+				PRINTFORMW 「…알았어요. 어떻게든 해 본다」
+				PRINTFORMDW %CALLNAME:TARGET%(은)는 결의를 숨긴 표정으로 말했다
+				PRINTFORMW 「금방에는 무리이지만, 언젠가 반드시.%CNAME(MASTER, TARGET)%(을)를 위해도…」
+				;エンディング用플래그に代入
+				KFLAG:(FLAG:주인님):0 = 1
+			;선택肢1 ルートＢ
+			CASE 1
+				PRINTFORMW 「어, 정말로？ %CNAME(MASTER, TARGET)%(은)는 그것으로 좋은거야？」
+				PRINTFORMDW %CALLNAME:TARGET%(은)는 일순간 웃는 얼굴이 되었지만, 곧바로 그 표정은 흐려 버렸다…
+				PRINTFORMW 「그것은 확실히……나는 기쁘지만. 그렇지만 역시 좋지 않다」
+				PRINTFORMW 「원의 세계에 돌아가야 한다고 생각해…%CNAME(MASTER, TARGET)%(을)를 위해도…」
+				;エンディング用플래그に代入
+				KFLAG:(FLAG:주인님):1 = 1
+		ENDSELECT
+		PRINTL
+		PRINTFORMW 「…라고, 오늘의 나, 조금 이상해요」
+		PRINTFORMW 「대개,%CNAME(MASTER, TARGET)%의 액불제도 아직 끝나지 않았는데…」
+		PRINTFORMW 「 그렇지만 조금 전 말한 일은 지금의 나의 진정한 기분」
+		PRINTFORMW 「저희들은 언제까지나 함께는 있어지고 않다. 언젠가는 헤어져야 하는 것이야」
+		PRINTFORMW 「 그렇지만……그 때가 올 때까지는…」
+		PRINTFORMDW %CALLNAME:TARGET%(은)는 희미하게 떨리면서 %CALLNAME:MASTER%에 추다하면서 말했다
+		PRINTFORMW 「이대로 있게 해……좀 더만, 부탁…」
+		PRINTFORMDW 그 눈에는 빛나는 것이 있도록(듯이),%CALLNAME:MASTER%에는 보였다…
+		CALL TWAIT3_K39
+		RETURN 1
+	ENDIF
+
+	[SKIPSTART]
+	工事中
+	;EVENT_002
+	;---------
+	IF DAY < 30 && (KFLAG:(FLAG:주인님):0 == 1 || KFLAG:(FLAG:주인님):1 == 1) && FIRSTEVENT(12)
+		IF KFLAG:(FLAG:주인님)1 == 1
+			PRINTFORMDW 최초부터 알고 있었다. 알고 있을 것이었다
+			PRINTFORMDW 머지않아 오는 이별의 날의 일을
+			PRINTL
+			PRINTFORMDW 그것은 결코 피해 통과하는 일을 할 수 없는 규정
+			PRINTFORMDW 회전에 불행을 뿌려 버리는 이 주나 있고 액신에는 사람보통의 행복등 허락해지고
+		ENDIF
+		RETURN 1
+	ENDIF
+	[SKIPEND]
+
+	;特定の이벤트以外を処理
+	;========================
+	IF GET_KFLAG_K39("상사상애")
+		SELECTCASE RANDEVENT(2, 0)
+			CASE 0
+				CALL HTMLPRINTL(@"「もうっ、そんなに焦らないで%LOCALS:0%」")
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(와)과라면 나는 언제라도ＯＫ？ 킥킥」
+			CASEELSE
+				PRINTFORML 「우대신, 이제 기다릴 수  없지요？」
+				CALL HTMLPRINTW(@"「괜찮아요, 나도 같은 기분이니까%LOCALS:0%」")
+		ENDSELECT
+	ENDIF
+	;エンディングを경과했다ら弾く
+	SIF KFLAG:(FLAG:주인님):150 != 1
+		{
+		PRINTFORMDW %CALLNAME%(은)는 \@ 
+		RAND:2 
+;OriginalString : 溢れんばかりの笑顔で、%CALLNAME:MASTER%의 손をとった 
+		? 흘러넘칠듯한 웃는 얼굴로,%CALLNAME:MASTER%의 손를 취했다 
+;OriginalString : 笑顔を崩さないが、その表情には微かな翳りがみえた \@…
+		# 웃는 얼굴을 무너뜨리지 않지만, 그 표정에는 희미한 그늘이 보였다 \@…
+		}
+	RETURN 1
+ENDIF
+
+
+;익애(호감도2000以上) FIRSTEVENT(20)
+;==================================
+;心の변화に戸惑う厄神様
+IF AFFECTION("익애")
+	;初回（히나が主人の時のみ表示）
+	;===========================
+	IF TALENT:TARGET:주인님 && KFLAG:(FLAG:주인님):50 == 1 && FIRSTEVENT(20)
+		PRINTFORMDW 액신과 말하는 존재는, 요컨데 액을 거두기 때문에(위해)의 그릇에 지나지 않는다
+		PRINTFORMDW 그릇인 이상은 불필요한 것은 극력 없는 것이 바람직하다――
+		PRINTL
+		PRINTFORMDW (와)과는 운네, 이런 나라도 기쁨이나 슬픔을 모르는 것은 아니다
+		PRINTFORMDW 다만, 그러한 감정은 어디까지나 억제가 효과가 있던 것이어, 필요이상으로 무언가에 집착 하는 일은 없다
+		PRINTFORMDW 이것까지도 그렇게 해서 왔고, 그래서 좋다고 생각하고 있었다
+		PRINTL
+		{
+		CALL FADE_TO_CLEARLINE2(
+		30, 
+		COLOR2_K39("white"), 
+		GETBGCOLOR(), 
+;OriginalString : そう思っていた、はずだったのに……")
+		"그렇게 생각하고 있던, 은 두였는데……")
+		}
+		PRINTL
+		PRINTFORMDW 자신중에서 무엇인가가 바뀌기 시작하고 있었다
+		PRINTFORMDW 자신이 이것까지 몰랐던 감정이 싹트고 있었다
+		PRINTFORMDW 이것은 액신으로서는 용서되고 바구니의, 결코 안아선 안 되는 것――
+		PRINTW
+		PRINTFORMDW 액신이 한사람의 인간에게 애정을 안아, 집착 하는 일 등 있어서는 안된다……
+		PRINTL
+		PRINTFORMDW 인간의 아군이 (들)물어 기가 막힌다. 개별의 인간에게 애정을 안는 액신 등 무료의 해악
+		PRINTFORMDW 그 같은 사람의 존재는, 용서되어야 할 것은 아니다――
+		PRINTL
+		PRINTFORMDW 무엇보다도 구제할 길 없는 것은, 자신이 이 감정을 사랑 아깝다고 생각해, 받아들이고 있는 일이다
+		PRINTFORMDW 그리고 날마다, 이 감정에 항일이 어려워지고 있다
+		PRINTL
+		PRINTFORMDW 나의 세계는 바뀌어 버렸다
+		PRINTFORMDW 일찌기 회색이었던 경치는 선명한 색채를 띠어 모두가 빛나 보였다
+		PRINTFORMDW 나는 마치 젊은이 있고 딸(아가씨)와 같이, 들뜨고 그리고 순진하게는 사의로 있었다――
+		PRINTL
+		PRINTFORMDW 나는 고독을 알아 버렸다
+		PRINTFORMDW 나는 그 진정한 의미를 몰랐지만, 지금이라면 분명히 안다
+		PRINTFORMDW 거기에는 고독을 고독이라고도 생각하지 않았는지 연줄의 자신은, 최조존재하지 않았다
+		PRINTL
+		PRINTFORMDW 그런데도, 이 감정에 빠져 버리는 일은 할 수 없다
+		PRINTFORMDW 바래선 안 되는, 사랑해선 안 되는, 이 기분은 죽이지 않으면 안 된다――
+		PRINTL
+		PRINTFORMDW 스스로의 정해 를 거역하기에는  가지 않는다
+		PRINTFORMDW 나는 모든 사람들을 위해야말로 있지 않으면 안 된다――
+		PRINTW
+		;OPを回収
+		{
+		CALL FADEOUT(
+		40, 
+;OriginalString : ――この気持ちに気付かなければ", 
+		"――이 기분을 알아차리지 않으면", 
+;OriginalString : 　", 
+		" ", 
+;OriginalString : 　", 
+		" ", 
+;OriginalString : 　　　　　　こんなに苦しまずにいられたのに")
+		"      이렇게 괴로워하지 않고 있을 수 있었는데")
+		}
+		CALL FADE_CLINE(1)
+		CALL TWAIT3_K39
+		RETURN 1
+	ENDIF
+
+	;条件無し
+	SELECTCASE RANDEVENT(2, 20)
+		CASE 0
+			PRINTFORML 「에서는 시작합시다」
+			CALL HTMLPRINTW(@"「이렇게 보여도 나, 기대하고 있던 것이에요%LOCALS:0%」")
+		CASE 1
+			PRINTFORMW 「오늘은 어떤 일 할까요？」
+			CALL HTMLPRINTW(@"「우훗, 기다려지네요%LOCALS:0%」")
+	ENDSELECT
+	{
+	PRINTFORMW %CALLNAME:TARGET%(은)는 웃는 얼굴%RAND_SPLIT(
+;OriginalString : で당신の손をとった/" + 
+	"그래서당신노손를 취했다/" + 
+;OriginalString : ではあったが、そこはかとない寂しさを漂わせていた/" + 
+	"(이었)였지만, 왠지 모를 외로움을 감돌게 하고 있었다/" + 
+;OriginalString : を装っているが、その姿はどこか悲しげに見えた")%…
+	"를 가장하고 있지만, 그 모습은 어딘가 슬픈 듯하게 보였다")%…
+	}
+	RETURN 1
+ENDIF
+
+;序盤（条件なし）히나が主人の時のみ表示
+;====================================
+IF TALENT:TARGET:주인님
+	;初回//죠교初回ではない。죠교初回は最上層で消化済み
+	;====
+	IF KFLAG:(FLAG:주인님):50 == 1 && FIRSTEVENT(90)
+		PRINTFORMDW 아마 사태를 삼킬 수 있지 않겠지
+		PRINTFORMDW 이 인물은 마음을 단단하게 닫아, 아직도 나의 말에 귀를 기울일려고도 하지 않는다
+		PRINTL
+		PRINTFORMDW 하지만, 이것도 당연한 일
+		PRINTFORMDL 이것정도액 투성이가 된 인물을 방치 할 수 없었다고는 운네, 반감금된 것 같은 현재의 상황은
+		PRINTFORMDW 이 인물에 있어서도 불쾌해, 납득 할 수 있는 것은 아닐 것이다――
+		PRINTL
+		PRINTFORMDW 나로서도 이러한 형태는 본의가 아닌 것은 않았지만, 이 인물이 감기는 재난들주위액을 불때문에는
+		PRINTFORMDW 수단을 선택하고 있을 수 없다고 하는 것이, 정직한 곳이었다
+		PRINTL
+		PRINTFORMDW 원망받아도 괜찮은, 미워해져도 괜찮다
+		PRINTFORMDW 그것이 슬프고 없으면 말하면 거짓말이 되지만, 받아들일 각오는 있다
+		PRINTL
+		PRINTFORMDW (와)과는 운네, 모든 것은 시작되었던 바로 직후…
+		PRINTL
+		{
+		CALL FADE_TO_CLEARLINE2(
+		30, 
+		COLOR2_K39("white"), 
+		GETBGCOLOR(), 
+;OriginalString : いずれ理解し、受け入れてくれるものと信じている――")
+		"머지않아 이해해, 받아들여 주는 것이라고 믿고 있다――")
+		}
+		PRINTL
+		CALL TWAIT3_K39
+		RETURN 1
+	ENDIF
+
+	;汎用処理
+	;========
+	{
+	PRINTFORMW 「%RAND_SPLIT(
+;OriginalString : そんなに緊張しなくていいのですよ/" + 
+	"그렇게 긴장하지 않아도 괜찮은 것이에요/" + 
+;OriginalString : 心配する事はありませんよ/" + 
+	"걱정하는 일은 없어요/" + 
+;OriginalString : もっと気を楽にしてください")%」
+	"좀 더 기분을 편하게 해 주세요")%」
+	}
+	{
+	PRINTFORMW 「%RAND_SPLIT(
+;OriginalString : 全ては、%CNAME(MASTER, TARGET)%の厄を祓う為なのですから/" + 
+	@"모두는,%CNAME(MASTER, TARGET)%의 액을 쫓기 때문에(위해)인 것이니까/" + 
+;OriginalString : これは%CNAME(MASTER, TARGET)%の為でもあるのですから/" +
+	@"이것은%CNAME(MASTER, TARGET)%(위해)때문이라도 있으니까/" +
+;OriginalString : 悪いようにはしませんから")%」
+	"나쁘게는 하지 않기 때문에")%」
+	}
+	RETURN 1
+ENDIF

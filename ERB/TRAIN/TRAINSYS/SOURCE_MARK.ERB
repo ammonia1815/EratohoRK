@@ -1,0 +1,369 @@
+﻿
+;────────────────────────────────────
+;각인취득のチェック、そして각인による素質変動（条件設定はかなり適当…調整が필요と思うなら連絡してください）
+;────────────────────────────────────
+@MARK_CHECK_SOURCE
+#DIM LTEMP, 5
+
+;각인は一回に一段階まであがる仕様です
+VARSET LOCAL
+VARSET LTEMP
+
+;각인:고통각인
+;고통が規定量を突破すると각인취득
+SIF CUP:MASTER:고통 > (400 * (MARK:MASTER:고통각인 + 1))
+	LOCAL++
+;10LVが上限
+SIF LOCAL && (MARK:MASTER:고통각인 < 10)
+	LTEMP:0 = ++MARK:MASTER:고통각인
+
+;LOCAL:0 初期化
+LOCAL = 0
+
+;각인:쾌락각인 今の仕様では쾌락각인がもりもり上がるので調整　要検討
+;굴복각인より先には上がらない(굴복각인以下のレベルになる)
+;快感が規定量を突破すると각인취득
+SIF (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ) > (800 * (MARK:MASTER:쾌락각인 + 1))
+	LOCAL ++
+;굴복각인LVを越えない。また10LVが上限
+SIF LOCAL && (MARK:MASTER:쾌락각인 < MARK:굴복각인) && (MARK:MASTER:쾌락각인 < 10)
+	LTEMP:1 = ++MARK:MASTER:쾌락각인
+
+;굴복각인취득
+CALL MARK_CHECK_SOURCE_SURRENDER
+LTEMP:2 = RESULT
+
+;각인:반항각인
+;(今回죠교대상の反応が순종であれば判定しない)
+IF !IS_COMGRONAME("소극적으로 한다") && !IS_COMGRONAME("태연하게 한다/적극적으로 한다/受け入れる")
+	LOCAL = CUP:MASTER:반항 > (MARK:반항각인 + 1) * 400
+	;죠교자の平時아라이멘도が十分高ければ(Sツン)각인취득を中断
+	SIF MARK:반항각인 > 10 - MARK:5
+		LOCAL = 0
+	;10-굴복+고통/2を超えない
+	SIF LOCAL && (MARK:반항각인 < 10-((MARK:굴복각인+MARK:MASTER:고통각인)/2))
+		LTEMP:3 = ++MARK:반항각인
+ENDIF
+
+;각인:트라우마
+LOCAL = CUP:MASTER:공포 > (MARK:MASTER:트라우마 + 1) * 400
+;10LVが上限
+IF LOCAL && (MARK:MASTER:트라우마 < 10)
+	LTEMP:4 = ++MARK:MASTER:트라우마
+	;今回の죠교자행동を트라우마の元として上書き記憶
+	CFLAG:MASTER:트라우마 = TFLAG:ACT
+ENDIF
+
+CALL MARK_CHECK_SOURCE_MESSAGE(LTEMP:0, LTEMP:1, LTEMP:2, LTEMP:3, LTEMP:4)
+
+;────────────────────────────────────
+;각인취득구상と表示
+;────────────────────────────────────
+@MARK_CHECK_SOURCE_MESSAGE(ARG:0, ARG:1, ARG:2, ARG:3, ARG:4)
+;각인취득時改行
+SIF ARG:0 || ARG:1 || ARG:2 || ARG:3 || ARG:4
+;OriginalString : 
+	PRINTL
+;각인未취득時でも각인취득時구상は呼ぶ
+RESULT = 0
+CALL KOJO_MARK(ARG:0, ARG:1, ARG:2, ARG:3, ARG:4)
+
+FOR LOCAL, 0, 5
+	;각인취득を個別に確認
+	IF ARG:LOCAL
+		;각인취득表示
+;OriginalString : %MARKNAME:LOCAL%は{ARG:LOCAL}되었다
+		PRINTFORML %MARKNAME:LOCAL%하{ARG:LOCAL}(이)가 되었다
+		;굴복각인취득時、굴복P2が굴복각인の二乗に応じて上昇
+		SIF LOCAL == 2
+			CFLAG:MASTER:굴복P2 += POWER(LOCAL:LOCAL, 2) - POWER(LOCAL:LOCAL - 1, 2)
+		;고통각인Lv9취득時、굳셈を失う
+		IF LOCAL == 0 && ARG:0 == 9 && TALENT:MASTER:굳셈
+			TALENT:MASTER:굳셈 = 0
+;OriginalString : そして%CALLNAME:MASTER%は[굳셈]を失った
+			PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [기장](을)를 잃었다
+		;쾌락각인Lv5취득時、쾌감을부정を失う
+		ELSEIF LOCAL == 1 && ARG:1 == 5 && TALENT:MASTER:쾌감을부정
+			TALENT:MASTER:쾌감을부정 = 0
+;OriginalString : そして%CALLNAME:MASTER%は[쾌감을부정]を失った
+			PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [쾌감의 부정](을)를 잃었다
+		;쾌락각인Lv7취득時、억압を失う
+		ELSEIF LOCAL == 1 && ARG:1 == 7 && TALENT:MASTER:억압
+			TALENT:MASTER:억압 = 0
+;OriginalString : そして%CALLNAME:MASTER%は[억압]を失った
+			PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [억압](을)를 잃었다
+		;쾌락각인Lv10취득時、쾌감에솔직を得る
+		ELSEIF LOCAL == 1 && ARG:1 == 10 && !TALENT:MASTER:쾌감에솔직
+			TALENT:MASTER:쾌감에솔직 = 1
+;OriginalString : そして%CALLNAME:MASTER%は[쾌감에솔직]を得た
+			PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [쾌감에 순수](을)를 얻었다
+		;굴복각인Lv7취득時、반항적を失う
+		ELSEIF LOCAL == 2 && ARG:2 == 7 && TALENT:MASTER:반항적
+			TALENT:MASTER:반항적 = 0
+;OriginalString : そして%CALLNAME:MASTER%は[반항적]を失った
+			PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [반항적](을)를 잃었다
+		;굴복각인Lv10취득時、프라이드높음を失い、エンディング用플래그が立つ
+		ELSEIF LOCAL == 2 && ARG:2 == 10
+			FLAG:굴복Lv10 += 1
+			IF TALENT:MASTER:프라이드높음
+				TALENT:MASTER:프라이드높음 = 0
+;OriginalString : そして%CALLNAME:MASTER%は[프라이드높음]を失った
+				PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [프라이드 높다](을)를 잃었다
+			ENDIF
+		;트라우마Lv10취득時、겁쟁이、유치を得、
+		;元々유치を持っているか1/3の確率で광기を得る
+		ELSEIF LOCAL == 4 && ARG:4 == 10
+			IF !TALENT:MASTER:겁쟁이
+				TALENT:MASTER:겁쟁이 = 1
+;OriginalString : そして%CALLNAME:MASTER%は[겁쟁이]を得た
+				PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [겁장이](을)를 얻었다
+			ELSEIF !TALENT:MASTER:광기 && (TALENT:MASTER:유치 || !RAND:3)
+				TALENT:MASTER:광기 = 1
+;OriginalString : そして%CALLNAME:MASTER%は[광기]を得た
+				PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 [광기](을)를 얻었다
+			ELSEIF !TALENT:MASTER:유치
+				TALENT:MASTER:유치 = 1
+;OriginalString : そして%CALLNAME:MASTER%は幼児退行했다
+				PRINTFORMW 그리고 %CALLNAME:MASTER%(은)는 유아 퇴행 했다
+			ENDIF
+		ENDIF
+	ENDIF
+NEXT
+
+;반항각인Lv上限の処理
+;반항각인は10-(고통각인+굴복각인)/2を超えない
+IF MARK:반항각인 > 10-((MARK:굴복각인+MARK:MASTER:고통각인)/2)
+	MARK:반항각인 = 10-((MARK:굴복각인+MARK:MASTER:고통각인)/2)
+	;구상呼び出し
+	CALL KOJO_EVENT(29)
+;OriginalString : %CALLNAME:TARGET%의 与える쾌락\@ MARK:MASTER:고통각인 ? と고통 # \@が%CALLNAME:MASTER%から반항の기력を奪っていく…
+	PRINTFORML %CALLNAME:TARGET%(이)가 주는 쾌락\@ MARK:MASTER:고통각인 ? と고통 # \@하지만%CALLNAME:MASTER%(으)로부터 반항의 기력을 빼앗아 간다…
+;OriginalString : 반항각인は{MARK:반항각인}되었다
+	PRINTFORMW 반항 각인은{MARK:반항각인}(이)가 되었다
+ENDIF
+
+;────────────────────────────────────
+;각인:굴복각인
+;────────────────────────────────────
+;뽑지않고두발と뽑지않고세발はSOURCE_1.ERBに移動。決断的に新仕様へ大工事＋α@revkoishi(14/05/28)
+;뽑지않고두발と뽑지않고세발の処理を差し戻し。SOURCE_1の処理を改めたのでここで良いということで@/L(2014/06/05)
+@MARK_CHECK_SOURCE_SURRENDER
+#DIM LCOUNT
+
+;-------------------------------------------------
+;協力的죠교대상행동による굴복
+;-------------------------------------------------
+SIF IS_COMGRONAME("적극적으로 한다/受け入れる/태연하게 한다") && !IS_NOWCOMNAME("이루는대로") && !IS_COMIMPNAME("悪印象大")
+	CALL MARK_CHECK_GET("호의적반응")	;【굴복:0】호의적반응(죠교대상が적극적으로 한다系を선택)
+;발핥기강제/이라마치오が他のACT분류から派生했다場合でもMENUMATCHなら拾うことが可能@/L
+SIF MENUMATCH(TFLAG:ACT, "봉사") && IS_COMGRONAME("적극적으로 한다")
+	CALL MARK_CHECK_GET("적극봉사")		;【굴복:29】적극봉사(ACT분류が봉사系中に적극적으로従う)
+SIF ((SEX_INITIATIVE(MASTER) && IS_COMGRONAME("적극적으로 한다")) || (SEX_INITIATIVE(TARGET) && IS_COMGRONAME("受け入れる"))) ;&& !IS_NOWCOMNAME("이루는대로")
+	CALL MARK_CHECK_GET("허리흔듦")		;【굴복:31】허리흔듦(성교중적극적으로従う)
+SIF IS_NOWCOMNAME("가게해줘！")
+	CALL MARK_CHECK_GET("가게해줘")		;【굴복:49】가게해줘！
+
+;-------------------------------------------------
+;죠교대상快感による굴복
+;-------------------------------------------------
+SIF TCVAR:MASTER:발기도 >= 1000
+	CALL MARK_CHECK_GET("발기")			;【굴복:2】발기시켰다(발기도1000突破)
+FOR LCOUNT, 0, 4
+	SIF PALAM:MASTER:LCOUNT >= 1000
+		CALL MARK_CHECK_GET(TOSTR(3 + LCOUNT))	;【굴복:3】【굴복:4】【굴복:5】【굴복:6】快Ｘを1000以上与えた
+NEXT
+SIF IS_CONDITION(MASTER, "정욕")
+	CALL MARK_CHECK_GET("정욕")			;【굴복:32】정욕(죠교대상の상태が정욕)
+SIF TCVAR:MASTER:애태움도 > 1
+	CALL MARK_CHECK_GET("애태움")		;【굴복:33】애태움플레이
+SIF PALAM:MASTER:윤활 >= 1000 && !TALENT:MASTER:남자
+	CALL MARK_CHECK_GET("젖음")		;【굴복:62】젖음(윤활1000突破)
+
+;-------------------------------------------------
+;절정による굴복
+;-------------------------------------------------
+FOR LCOUNT, 0, 4
+	SIF NOWEX:MASTER:LCOUNT
+		CALL MARK_CHECK_GET(TOSTR(12 + LCOUNT))	;【굴복:12】【굴복:13】【굴복:14】【굴복:15】Ｘ절정
+NEXT
+SIF (NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정) && GETBIT(TEQUIP:자위중, 0)
+	CALL MARK_CHECK_GET("자위절정")		;【굴복:26】자위절정
+SIF (NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정) && TEQUIP:밧줄
+	CALL MARK_CHECK_GET("구속절정")		;【굴복:34】구속절정
+SIF ((NOWEX:MASTER:Ｃ절정 != 0) + (NOWEX:MASTER:Ｖ절정 != 0) + (NOWEX:MASTER:Ａ절정 != 0) + (NOWEX:MASTER:Ｂ절정 != 0)) > 1
+	CALL MARK_CHECK_GET("다중절정")		;【굴복:37】다중절정(複数箇所동시절정)
+SIF (NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정) && (NOWEX:Ｃ절정 || NOWEX:Ｖ절정 || NOWEX:Ａ절정 || NOWEX:Ｂ절정)
+	CALL MARK_CHECK_GET("동시절정")		;【굴복:38】동시절정(죠교대상、죠교자동시절정)
+SIF ((TEQUIP:성교중 && (NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정) && (NOWEX:사정 || NOWEX:Ｃ절정)) || (TEQUIP:성교봉사중 && (NOWEX:MASTER:사정 || NOWEX:MASTER:Ｃ절정) && (NOWEX:Ｖ절정 || NOWEX:Ａ절정)))
+	CALL MARK_CHECK_GET("성교동시절정")	;【굴복:39】성교동시절정(성교중、삽입者사정時に被삽입者がA/V절정)
+SIF TFLAG:전회질싸 == 1 && NOWEX:MASTER:Ｖ절정
+	CALL MARK_CHECK_GET("역질내Ｖ절정")	;【굴복:60】질내사정Ｖ절정(죠교자に질내사정당했다と同時に죠교대상がＶ절정)
+SIF NOWEX:MASTER:Ｃ절정 && NOWEX:MASTER:Ｖ절정 && NOWEX:MASTER:Ａ절정 && NOWEX:MASTER:Ｂ절정
+	CALL MARK_CHECK_GET("사중절정")		;【굴복:61】사중절정
+
+;-------------------------------------------------
+;사정による굴복
+;-------------------------------------------------
+;뽑지않고두발/뽑지않고세발の調整@revkoishi(14/06/07)
+SIF NOWEX:MASTER:사정 > 1
+	CALL MARK_CHECK_GET("사정")			;【굴복:19】사정
+SIF NOWEX:MASTER:사정 == 3
+	CALL MARK_CHECK_GET("대량사정")		;【굴복:20】대량사정
+SIF NOWEX:MASTER:사정 == 4
+	CALL MARK_CHECK_GET("조루사정")		;【굴복:21】사정(조루)
+SIF TFLAG:전회질싸 == 1
+	CALL MARK_CHECK_GET("역질내사정")	;【굴복:22】질내사정당했다
+SIF TFLAG:전회질싸 == 2
+	CALL MARK_CHECK_GET("질내사정")		;【굴복:25】질내사정
+;드라이사정は弾く。一見分かり難いので@PENISを+@/L
+SIF PENIS(TARGET) && IS_NOWACTNAME("입으로 애무를 강요/이라마치오") && NOWEX:사정 > 1
+	CALL MARK_CHECK_GET("역구강사정")	;【굴복:27】구강사정당했다(펠라/イラマ中に죠교자が사정)
+;드라이사정は弾く。一見分かり難いので@PENISを+@/L
+SIF PENIS(MASTER) && (IS_NOWACTNAME("입으로 애무") || TEQUIP:죠교대상Ｃ사용 == 2) && NOWEX:MASTER:사정 > 1
+	CALL MARK_CHECK_GET("구강사정")		;【굴복:28】구강사정(죠교자펠라中に사정)
+SIF TFLAG:전회질싸 == 6
+	CALL MARK_CHECK_GET("항내사정")		;【굴복:41】항문へ사정
+SIF TFLAG:전회질싸 == 5
+	CALL MARK_CHECK_GET("역항내사정")	;【굴복:42】항문に사정される
+;드라이사정での안빼고はとりあえず認めるものとする@/L
+SIF IS_UNEXTRACTION(MASTER) && GROUPMATCH(TFLAG:전회질싸, 2, 4, 6, 8) > 0
+	CALL MARK_CHECK_GET("뽑지않고두발")	;【굴복:43】뽑지않고두발(사정後삽입を中断せず사정)
+SIF NOWEX:MASTER:사정 == 1
+	CALL MARK_CHECK_GET("드라이사정")		;【굴복:44】드라이사정
+SIF NOWEX:MASTER:사정 == 5
+	CALL MARK_CHECK_GET("전립선사정")	;【굴복:45】전립선사정
+SIF IS_UNEXTRACTION(MASTER) > 1 && GROUPMATCH(TFLAG:전회질싸, 2, 4, 6, 8) > 0
+	CALL MARK_CHECK_GET("뽑지않고세발")	;【굴복:55】뽑지않고세발(뽑지않고두발後삽입を中断せず사정)
+
+;-------------------------------------------------
+;죠교대상치정による굴복
+;-------------------------------------------------
+SIF !(TEQUIP:MASTER:코스프레 || TEQUIP:MASTER:하반신속옷 || TEQUIP:MASTER:상반신속옷 || TEQUIP:MASTER:하반신겉옷 || TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷)
+	CALL MARK_CHECK_GET("전라")			;【굴복:1】전라로 벗겼다(MASTERの衣服がなくなる)(※신발안等は着衣に数えない)
+SIF CUP:MASTER:쾌Ａ
+	CALL MARK_CHECK_GET("Ａ죠교")		;【굴복:9】항문죠교(快A発生)
+SIF TEQUIP:야외플레이
+	CALL MARK_CHECK_GET("야외")			;【굴복:16】야외플레이
+SIF TEQUIP:거울
+	CALL MARK_CHECK_GET("거울")			;【굴복:17】수치플레이
+;リアクションが受容である場合に限定する。방뇨の場合、용서를 빌다は거부扱い@/L
+SIF IS_NOWACTNAME("방뇨") && IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる")
+	CALL MARK_CHECK_GET("방뇨")			;【굴복:18】방뇨시켰다(죠교대상が従う系を선택)L
+SIF TEQUIP:관장그릇＋플러그
+	CALL MARK_CHECK_GET("관장")			;【굴복:35】관장
+SIF TFLAG:실금
+	CALL MARK_CHECK_GET("실금")			;【굴복:36】실금
+SIF IS_NOWACTNAME("관장세트") && TFLAG:ACT파생 == 1
+	CALL MARK_CHECK_GET("배설")			;【굴복:50】배설(관장그릇＋플러그解除時)
+
+;-------------------------------------------------
+;죠교대상고통による굴복
+;-------------------------------------------------
+SIF CUP:MASTER:공포 || CUP:MASTER:고통
+	CALL MARK_CHECK_GET("위압")			;【굴복:7】고통、공포(が発生)
+SIF IS_NOWACTNAME("채찍")
+	CALL MARK_CHECK_GET("채찍")			;【굴복:8】ムチで叩いた
+SIF TEQUIP:밧줄
+	CALL MARK_CHECK_GET("구속")			;【굴복:10】구속했다
+SIF TFLAG:징계・플래그 && (CUP:MASTER:공포 || CUP:MASTER:고통)
+	CALL MARK_CHECK_GET("징계・")		;【굴복:48】징계・(징계・時、공포/고통が発生)
+SIF TEQUIP:삼각목마
+	CALL MARK_CHECK_GET("삼각목마")		;【굴복:52】삼각목마
+
+;-------------------------------------------------
+;決定的状況による굴복
+;-------------------------------------------------
+;リアクションが受容である場合に限定@/L
+SIF IS_NOWACTNAME("키스") && IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる/용서를 빌다")
+	CALL MARK_CHECK_GET("키스")			;【굴복:11】키스
+SIF TEQUIP:바이브
+	CALL MARK_CHECK_GET("바이브")		;【굴복:23】바이브
+SIF TEQUIP:항문바이브 || TEQUIP:항문비즈
+	CALL MARK_CHECK_GET("Ａ도구")		;【굴복:24】항문바이브、비즈
+SIF TEQUIP:성교중 || TEQUIP:성교봉사중
+	CALL MARK_CHECK_GET("성교")			;【굴복:30】성교
+SIF NOWEX:MASTER:분유
+	CALL MARK_CHECK_GET("분유")			;【굴복:40】분유
+SIF TEQUIP:성교중 == 6
+	CALL MARK_CHECK_GET("Ａ성교・수")	;【굴복:46】항문섹스(受け)
+SIF TEQUIP:성교봉사중 == 6
+	CALL MARK_CHECK_GET("Ａ성교・공")	;【굴복:47】항문섹스(攻め)
+SIF IS_NOWACTNAME("공중육변기플레이") && GROUPMATCH(TFLAG:ACT파생, 2, 3)
+	CALL MARK_CHECK_GET("공중변소")		;【굴복:51】공중변소(공중육변기플레이受容時)
+SIF IS_NOWACTNAME("피스트퍽/양쪽피스트")
+	CALL MARK_CHECK_GET("Ｖ확장")		;【굴복:53】Ｖ확장(フィスト/양쪽피스트時)
+SIF IS_NOWACTNAME("애널피스트/양쪽피스트")
+	CALL MARK_CHECK_GET("Ａ확장")		;【굴복:54】Ａ확장(Aフィスト/양쪽피스트時)
+SIF NOWEX:MASTER:시오후키
+	CALL MARK_CHECK_GET("시오후키")		;【굴복:59】시오후키
+
+;-------------------------------------------------
+;구상独自の굴복
+;-------------------------------------------------
+;구상독자실적用リザーブX
+;【굴복:112】【굴복:113】【굴복:114】【굴복:115】【굴복:116】【굴복:117】【굴복:118】【굴복:119】
+;【굴복:120】【굴복:121】【굴복:122】【굴복:123】【굴복:124】【굴복:125】【굴복:126】【굴복:127】
+TRYCALLFORM KOJO_CHECK_SURRENDER_K{NO:TARGET}
+
+;굴복각인취득確認
+CALL MARK_CHECK_SOURCE_SURRENDER_CHECK
+RETURN RESULT
+
+;その他굴복条件は【굴복:\d*】で検索可能
+;
+;56실신はEVENTCOMENDで
+;57,58처녀、동정상실はEXPCHECKで
+;他にもあるかも、ですって？ あったら困ります(レイプ目)
+
+
+@MARK_CHECK_SOURCE_SURRENDER_CHECK
+;각인をMASTER側に適用
+;CFLAG:MASTER:각인にMASTERの受けたすべての각인
+;CFLAG:TARGET:각인にTARGETの与えたすべての각인
+;が入ることになります
+CFLAG:MASTER:각인 |= CFLAG:각인
+CFLAG:MASTER:각인2 |= CFLAG:TARGET:각인2	;どこで使うか知らないけど一応追加@revkoishi(14/05/26)
+
+;LOCAL:1に굴복ポイント総計を入れ보정する
+LOCAL:1 = CFLAG:굴복P1
+SIF TALENT:MASTER:남자
+	TIMES LOCAL:1, 1.10
+;후타나리でも男でもない(つまり女)
+SIF TALENT:MASTER:후타나리 !| TALENT:MASTER:남자
+	TIMES LOCAL:1, 1.20
+SIF TALENT:MASTER:겁쟁이
+	TIMES LOCAL:1, 1.05
+SIF TALENT:MASTER:굳셈
+	TIMES LOCAL:1, 0.95
+SIF TALENT:MASTER:반항적
+	TIMES LOCAL:1, 0.95
+SIF TALENT:MASTER:프라이드높음
+	TIMES LOCAL:1, 1.05
+SIF TALENT:MASTER:프라이드낮음
+	TIMES LOCAL:1, 0.95
+SIF TALENT:위압감
+	TIMES LOCAL:1, 1.50
+
+;보정値を元に굴복각인条件を超過しているか算出
+LOCAL = LOCAL:1 > (MARK:굴복각인 * 5 + MARK:굴복각인 * MARK:굴복각인 / 2)
+;10LVが上限
+SIF LOCAL && (MARK:굴복각인 < 10)
+	RETURN ++MARK:굴복각인
+
+RETURN 0
+
+;────────────────────────────────────
+;굴복각인취득関数 이벤트制です。特定の条件でターンエンドすると굴복ポイントが貯まりだんだんと篭絡されていきます
+;ARGS:0 굴복実績名 または 文字列形式の굴복実績번호(0～127)
+;決断的に新仕様へ大工事(14/05/26)。性別で有効判定するようにガード@revkoishi(14/06/01)
+;────────────────────────────────────
+@MARK_CHECK_GET(ARGS:0)
+LOCAL:1 = RESULT
+LOCAL:0 = ISNUMERIC(ARGS:0) ? TOINT(ARGS:0) # GET_SURRENDER_NUM(ARGS:0)
+IF IS_SURRENDER_ENABLE(LOCAL:0) && !(LOCAL:0 > 63 ? GETBIT(CFLAG:TARGET:각인2, LOCAL:0 - 64) # GETBIT(CFLAG:TARGET:각인, LOCAL:0))
+;OriginalString : 【%GET_SURRENDER_STR_M(LOCAL:0)%】굴복ポイント+{GET_SURRENDER_POINT(LOCAL:0)}
+	PRINTFORML 【%GET_SURRENDER_STR_M(LOCAL:0)%】굴복 포인트+{GET_SURRENDER_POINT(LOCAL:0)}
+	CFLAG:TARGET:굴복P1 += GET_SURRENDER_POINT(LOCAL:0)
+	SETBIT CFLAG:TARGET:\@ LOCAL:0 > 63 ? 각인2 # 각인 \@, LOCAL:0 > 63 ? LOCAL:0 - 64 # LOCAL:0
+ENDIF
+RETURN LOCAL:1

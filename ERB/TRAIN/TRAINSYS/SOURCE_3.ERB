@@ -1,0 +1,159 @@
+﻿;────────────────────────────────────
+;노출のソース（욕정、치정、불쾌、억울、기력、흥미）
+;────────────────────────────────────
+@CALC_SOURCE20
+
+;수줍음と수치없음はここで処理
+SIF TALENT:MASTER:수줍음
+	TIMES SOURCE:MASTER:노출 , 1.50
+SIF TALENT:MASTER:수치없음
+	TIMES SOURCE:MASTER:노출 , 0.75
+
+;성지식不발、もしくは유치なら裸になる意味とかよくわからないから
+SIF EXP:성지식 < 10 || TALENT:MASTER:유치
+	TIMES SOURCE:MASTER:노출 , 0.80
+
+;욕정、노출증と죠교度合いを見る
+CUP:MASTER:욕정 += SOURCE:MASTER:노출 * (10 + GET_ABL(MASTER, "노출증") * 2 + CFLAG:MASTER:죠교레벨 * 10) / 250
+
+;치정、PALAM:MASTER:치정をみる
+CUP:MASTER:치정 += SOURCE:MASTER:노출 * LINE_CALC(PALAM:MASTER:치정, "0→100,10000→0") / 100
+
+;성격を判定、強気なら불쾌、弱気なら억울が上がります
+LOCAL = TALENT:MASTER:굳셈 * 2 - TALENT:MASTER:겁쟁이 * 2 + TALENT:MASTER:건방짐 - TALENT:MASTER:얌전한 + TALENT:MASTER:프라이드높음 * 2 - TALENT:MASTER:프라이드낮음 * 2 + TALENT:MASTER:광기 * 3 - TALENT:MASTER:도Ｍ * 3
+
+;リアクションによって보정
+;기분좋게 해
+SIF IS_NOWCOMNAME("기분좋게 해")
+	TIMES LOCAL , 0.20
+;쾌감을 참는다
+SIF IS_NOWCOMNAME("쾌감을 참는다")
+	TIMES LOCAL , 0.30
+;적극적으로 한다
+SIF IS_NOWCOMNAME("적극적으로 한다")
+	TIMES LOCAL , 0.40
+;애정을 담아 한다
+SIF IS_NOWCOMNAME("애정을 담아 한다")
+	TIMES LOCAL , 0.10
+;자위를 시작한다
+SIF IS_NOWCOMNAME("자위를 시작한다")
+	TIMES LOCAL , 0.25
+
+;순종と노출증を見る
+IF LOCAL > 0
+	CUP:MASTER:불쾌 += SOURCE:MASTER:노출 * (400 - GET_ABL(MASTER, "순종") * 4) * (200 - GET_ABL(MASTER, "노출증") * 2) / 20000
+ELSE
+	CUP:MASTER:억울 += SOURCE:MASTER:노출 * (200 - GET_ABL(MASTER, "순종") * 2) * (400 - GET_ABL(MASTER, "노출증") * 4) / 20000
+ENDIF
+
+;노출SOURCEから보정値を作る
+LOCAL = LINE_CALC(SOURCE:MASTER:노출, "0→0,2500→50,LIMIT/0～50")
+
+;기력
+DOWNBASE:MASTER:기력 += LOCAL * 2
+
+;흥미
+BASE:흥미 += LOCAL * (3 + TALENT:호기심 - TALENT:무관심) / 2
+
+;────────────────────────────────────
+;불결のソース（불쾌、억울、기력）
+;────────────────────────────────────
+@CALC_SOURCE21
+
+;関連素質の処理
+SIF TALENT:MASTER:더러움무시
+	TIMES SOURCE:MASTER:불결 , 0.30
+SIF TALENT:MASTER:냄새둔감
+	TIMES SOURCE:MASTER:불결 , 0.60
+SIF TALENT:MASTER:냄새민감
+	TIMES SOURCE:MASTER:불결 , 1.35
+
+;성격を判定、強気なら불쾌が多く、弱気なら억울も上がります
+LOCAL = TALENT:MASTER:굳셈 * 2 - TALENT:MASTER:겁쟁이 * 2 + TALENT:MASTER:건방짐 - TALENT:MASTER:얌전한 + TALENT:MASTER:프라이드높음 * 2 - TALENT:MASTER:프라이드낮음 * 2 + TALENT:MASTER:광기 * 3 - TALENT:MASTER:도Ｍ * 3
+
+;순종と죠교度合いを見る
+IF LOCAL > 0 && CFLAG:MASTER:죠교레벨 < 30
+	CUP:MASTER:불쾌 += SOURCE:MASTER:노출 * (400 - GET_ABL(MASTER, "순종") * 4) * (30 - CFLAG:MASTER:죠교레벨) / 6000
+ELSE
+	CUP:MASTER:불쾌 += SOURCE:MASTER:노출 * (400 - GET_ABL(MASTER, "순종") * 4) * (30 - CFLAG:MASTER:죠교레벨) / 12000
+	CUP:MASTER:억울 += SOURCE:MASTER:노출 * (200 - GET_ABL(MASTER, "순종") * 2) * (60 - CFLAG:MASTER:죠교레벨 * 2) / 6000
+ENDIF
+
+;기력
+DOWNBASE:MASTER:기력 += SOURCE:MASTER:불결 / 20
+
+;────────────────────────────────────
+;이탈のソース（반항ソース、공포ソース、기력、흥미）
+;────────────────────────────────────
+@CALC_SOURCE22
+
+;호기심と정서적はここで処理
+SIF TALENT:MASTER:호기심
+	TIMES SOURCE:MASTER:이탈 , 0.50
+SIF TALENT:MASTER:정서적
+	TIMES SOURCE:MASTER:이탈 , 1.75
+
+;순종、욕정と죠교度合いを見る
+SIF CFLAG:MASTER:죠교레벨 < 30
+	LOCAL = SOURCE:MASTER:이탈 * (400 - GET_ABL(MASTER, "순종") * 4) * (30 - CFLAG:MASTER:죠교레벨) / 10000 + EXP:MASTER:이상경험 * 10
+;날뛴다系対応ではなかった場合、보정値軽減
+SIF TFLAG:REACT분류 < 6
+	TIMES LOCAL , 0.60
+;반항SOURCE増加
+SIF LOCAL > 0
+	SOURCE:MASTER:반항 += LOCAL
+
+;죠교대상죠교레벨が低い場合、공포SOURCE増加
+SIF CFLAG:MASTER:죠교레벨 < 30
+	SOURCE:MASTER:공포 += SOURCE:MASTER:이탈 * (400 - GET_ABL(MASTER, "욕망") * 4) * (30 - CFLAG:MASTER:죠교레벨) / 10000 + EXP:MASTER:이상경험 * 10
+
+;기력
+DOWNBASE:MASTER:기력 += SOURCE:MASTER:이탈 / 30
+
+;흥미
+BASE:흥미 += SOURCE:MASTER:이탈 / 50 + 1
+
+;────────────────────────────────────
+;중독충족のソース（욕정、공순、이성、호감도）
+;────────────────────────────────────
+@CALC_SOURCE23
+
+;욕정をみる
+CUP:MASTER:욕정 += SOURCE:MASTER:중독충족 * (10 + GET_ABL(MASTER, "욕망")) / 60
+CUP:MASTER:공순 += SOURCE:MASTER:중독충족 * (10 + GET_ABL(MASTER, "욕망")) / 60
+
+;이성
+DOWNBASE:MASTER:이성 += SOURCE:MASTER:중독충족 / 50 + 1
+
+;호감도変動
+TFLAG:호감도업 += LINE_CALC(SOURCE:MASTER:중독충족, "0→0,5000→25,LIMIT/0～25")
+
+;────────────────────────────────────
+;트라우마のソース（반항ソース、공포ソース、굴복、불쾌、억울、기력、호감도）
+;────────────────────────────────────
+@CALC_SOURCE24
+
+;트라우마각인、순종と죠교度合いを見る
+SIF MARK:MASTER:트라우마 < 10
+	SOURCE:MASTER:반항 += SOURCE:MASTER:트라우마 * (400 - GET_ABL(MASTER, "순종") * 4) * (10 - MARK:MASTER:고통각인) / 10000
+
+;죠교대상죠교레벨が低い場合、공포SOURCE増加
+SIF CFLAG:MASTER:죠교레벨 < 30
+	SOURCE:MASTER:공포 += SOURCE:MASTER:트라우마 * (400 - GET_ABL(MASTER, "순종") * 4) * (30 - CFLAG:MASTER:죠교레벨) / 10000
+
+;굴복、겁쟁이と굳셈を見る
+CUP:MASTER:굴복 += SOURCE:MASTER:트라우마 * (2 + TALENT:MASTER:겁쟁이 - TALENT:MASTER:반항적) / 3
+
+;성격を判定、強気なら불쾌、弱気なら억울が上がります
+LOCAL = TALENT:MASTER:굳셈 * 2 - TALENT:MASTER:겁쟁이 * 2 + TALENT:MASTER:건방짐 - TALENT:MASTER:얌전한 + TALENT:MASTER:프라이드높음 * 2 - TALENT:MASTER:프라이드낮음 * 2 + TALENT:MASTER:광기 * 3 - TALENT:MASTER:도Ｍ * 3
+;순종と마조끼を見る
+IF LOCAL > 0
+	CUP:MASTER:불쾌 += SOURCE:MASTER:트라우마 * (400 - GET_ABL(MASTER, "순종") * 4) * (200 - GET_ABL(MASTER, "마조끼") * 2) / 20000
+ELSE
+	CUP:MASTER:억울 += SOURCE:MASTER:트라우마 * (200 - GET_ABL(MASTER, "순종") * 2) * (400 - GET_ABL(MASTER, "마조끼") * 4) / 20000
+ENDIF
+
+;기력、호감도変動
+DOWNBASE:MASTER:기력 += LINE_CALC(SOURCE:MASTER:트라우마, "0→0,5000→150,LIMIT/0～300")
+TFLAG:호감도업 -= LINE_CALC(SOURCE:MASTER:트라우마, "0→0,5000→25,LIMIT/0～25")
+

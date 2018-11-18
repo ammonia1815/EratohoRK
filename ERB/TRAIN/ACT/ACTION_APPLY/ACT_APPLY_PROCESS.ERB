@@ -1,0 +1,1149 @@
+﻿;------------------------------------------------------------------------
+;EDIT	001		KOremi		2011/11/10		地の文をACT_MESSAGE_OTHERS.ERBに分離
+;											탈의実行処理をここに移動
+;------------------------------------------------------------------------
+
+;────────────────────────────────────
+;拒絶処理(リアクションによって죠교が취소される)
+;────────────────────────────────────
+
+;────────────────────────────────────
+;성교の취소（쾌Ｃ、쾌Ｖ、쾌Ａ、접촉、애정、성행위、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@CANCEL_INSERT_TO_M
+;항문섹스선택時、항문섹스상태であれば
+IF IS_NOWACTNAME("항문섹스") || TEQUIP:성교중 == 6
+	;쾌Ａ/쾌ＣSOURCE減衰
+	SOURCE:MASTER:쾌Ａ /= 3
+	SOURCE:쾌Ｃ /= 5
+;항문섹스以外선택時、항문섹스以外の성교상태であれば
+ELSEIF TEQUIP:성교중 < 6
+	;쾌Ｖ/쾌ＣSOURCE減衰
+	SOURCE:MASTER:쾌Ｖ /= 3
+	SOURCE:쾌Ｃ /= 5
+ENDIF
+;접촉、성행위、고통、이탈、트라우마SOURCEは減衰
+;애정SOURCEは減算、중독충족SOURCEは抹消
+SOURCE:MASTER:접촉 /= 3
+SOURCE:MASTER:애정 -= 500
+SOURCE:MASTER:성행위 /= 3
+SOURCE:MASTER:고통 /= 3
+SOURCE:MASTER:이탈 /= 3
+SOURCE:MASTER:중독충족 = 0
+SOURCE:MASTER:트라우마 /= 3
+;죠교자、죠교대상相互の삽입を解除
+TEQUIP:성교중     = 0
+TEQUIP:성교봉사중 = 0
+TFLAG:안빼고      = 0
+;────────────────────────────────────
+;성교봉사の취소（쾌Ｃ、쾌Ｖ、쾌Ａ、접촉、애정、성행위、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@CANCEL_INSERT_TO_T
+;항문섹스상태であれば
+IF TEQUIP:성교봉사중 == 6
+	;쾌Ｃ/쾌ＡSOURCE減衰
+	SOURCE:MASTER:쾌Ｃ /= 3
+	SOURCE:쾌Ａ /= 5
+;항문섹스以外の성교상태であれば
+ELSE
+	;쾌Ｃ/쾌ＶSOURCE減衰
+	SOURCE:MASTER:쾌Ｃ /= 3
+	SOURCE:쾌Ｖ /= 5
+ENDIF
+;접촉、성행위、고통、이탈、트라우마SOURCEは減衰
+;애정SOURCEは減算、중독충족SOURCEは抹消
+SOURCE:MASTER:접촉 /= 3
+SOURCE:MASTER:애정 -= 500
+SOURCE:MASTER:성행위 /= 3
+SOURCE:MASTER:고통 /= 3
+SOURCE:MASTER:이탈 /= 3
+SOURCE:MASTER:중독충족 = 0
+SOURCE:MASTER:트라우마 /= 3
+;죠교자、죠교대상相互の삽입を解除
+TEQUIP:성교중     = 0
+TEQUIP:성교봉사중 = 0
+TFLAG:안빼고      = 0
+;────────────────────────────────────
+;가학、노출플레이の취소（고통、구속、노출、이탈）
+;────────────────────────────────────
+;구속취소
+@CANCEL_TEQUIP_RESTRAINT
+;発生カウント
+CALLF CANCEL_TEQUIP_COUNT("구속", "発生")
+;구속SOURCE減衰
+SOURCE:MASTER:구속 /= 3
+;밧줄、눈가리개、볼개그解除
+TEQUIP:밧줄 = 0
+TEQUIP:눈가리개 = 0
+TEQUIP:볼개그 = 0
+
+;삼각목마취소
+@CANCEL_TEQUIP_W_HORSE
+;発生カウント
+CALLF CANCEL_TEQUIP_COUNT("삼각목마", "発生")
+;고통、구속SOURCE減衰
+SOURCE:MASTER:고통 /= 2
+SOURCE:MASTER:구속 /= 3
+;삼각목마中断
+TEQUIP:삼각목마 = 0
+
+;야외플레이취소
+@CANCEL_TEQUIP_OUTDOOR
+;発生カウント
+CALLF CANCEL_TEQUIP_COUNT("야외플레이", "発生")
+;노출、이탈SOURCE減衰
+SOURCE:MASTER:노출 /= 2
+SOURCE:MASTER:이탈 /= 3
+;야외플레이中断
+TEQUIP:야외플레이 = 0
+
+;거울취소
+@CANCEL_TEQUIP_MIRROR
+;発生カウント
+CALLF CANCEL_TEQUIP_COUNT("거울", "発生")
+;노출SOURCE減衰
+SOURCE:MASTER:노출 /= 3
+;거울をしまう
+TEQUIP:거울 = 0
+
+;코스프레취소
+@CANCEL_TEQUIP_COSPLAY
+;発生カウント
+CALLF CANCEL_TEQUIP_COUNT("코스프레", "発生")
+;노출、이탈SOURCE減衰
+SOURCE:MASTER:노출 /= 3
+SOURCE:MASTER:이탈 /= 3
+;코스프레を脱ぐ
+TEQUIP:MASTER:코스프레 = 0
+;デフォルトの服装に돌아가기
+TEQUIP:MASTER:악세서리 = EQUIP:MASTER:악세서리
+TEQUIP:MASTER:신발안 = EQUIP:MASTER:신발안
+TEQUIP:MASTER:하반신속옷 = EQUIP:MASTER:하반신속옷
+TEQUIP:MASTER:상반신속옷 = EQUIP:MASTER:상반신속옷
+;욕정が高い상태なら겉옷を着ない
+IF PALAM:MASTER:욕정 < 5000
+	TEQUIP:MASTER:하반신겉옷 = EQUIP:MASTER:하반신겉옷
+	TEQUIP:MASTER:상반신겉옷 = EQUIP:MASTER:상반신겉옷
+	TEQUIP:MASTER:전신겉옷 = EQUIP:MASTER:전신겉옷
+ENDIF
+
+;취소履歴관리
+@CANCEL_TEQUIP_COUNT(ARGS = "", ARGS:1 = "")
+#FUNCTION
+IF ARGS != ""
+	IF ARGS:1 == "発生"
+		IF CFLAG:@"%ARGS%취소보정" <= 33
+			CFLAG:@"%ARGS%취소보정" = 100
+		ELSE
+			CFLAG:@"%ARGS%취소보정" *= 3
+		ENDIF
+	ELSE
+		RETURNF CFLAG:@"%ARGS%취소보정"
+	ENDIF
+ELSE
+	SPLIT "구속/삼각목마/야외플레이/거울/코스프레", "/", LOCALS
+	FOR LOCAL, 0, RESULT
+		CFLAG:@"%LOCALS:LOCAL%취소보정" -= 5 + CFLAG:@"%LOCALS:LOCAL%취소보정" / 100
+	NEXT
+ENDIF
+RETURNF 0
+
+;────────────────────────────────────
+;使用検討処理(죠교자が도구や소모品の使用不使用を決定する)
+;────────────────────────────────────
+
+;────────────────────────────────────
+;미약と로션の使用（윤활、소변）
+;
+;呼び出されると現在の状況を勘案し、
+;필요だと判断されれば미약/로션が使われる
+;────────────────────────────────────
+;実は미약の使用も거부당했다り抵抗당했다りのが普通と思うが、処理が面倒なので使ったら絶対成功ようにしま했다
+@LOVEPOTION_USE
+
+VARSET LOCAL
+
+;今の薬力残量をチェック
+SELECTCASE TEQUIP:미약
+	CASE IS < 1
+		LOCAL += 20
+	CASE IS < 3
+		LOCAL += 10
+	CASE IS < 5
+		LOCAL += 5
+	CASE IS < 7
+		LOCAL += 1
+	CASE IS < 9
+		LOCAL -= 5
+	CASE IS < 11
+		LOCAL -= 10
+	CASEELSE
+		LOCAL -= 15
+ENDSELECT
+;욕정がすでに高まってる상태なら使わなくてよし
+SELECTCASE PALAM:MASTER:욕정
+	CASE IS > 6999
+		LOCAL -= 15
+	CASE IS > 5199
+		LOCAL -= 8
+	CASE IS > 3799
+		LOCAL -= 2
+	CASE IS > 2599
+		LOCAL += 1
+	CASE IS > 1599
+		LOCAL += 3
+	CASE IS > 699
+		LOCAL += 6
+	CASE IS > 299
+		LOCAL += 10
+	CASEELSE
+		LOCAL += 15
+ENDSELECT
+;ヒート値を差し引きます。ヒート値とは計算の概念で実際は薬の残量だと認知してください
+;(연속使用を抑制する)
+LOCAL -= FLAG:미약히트
+
+;使用する場合
+IF LOCAL > 0
+	;薬効追加
+	;죠교자배합지식素質に応じて薬効増大
+	TEQUIP:미약 += 5 + TALENT:배합지식 * 4 + (1 + RAND:4) * (TALENT:배합지식 + 2)
+	;조수が손伝った場合、조수배합지식、기교によって薬効増大
+	TEQUIP:미약 += TFLAG:조수ACT == 71 ? 3 + (TALENT:ASSI:배합지식 * 2 + RAND:3) * (ABL:ASSI:기교 + RAND:2) # 0
+	;ヒート値に加算
+	;죠교자배합지식素質、죠교레벨、기교、금단의지식素質によって軽減
+	LOCAL:1 = 40 - (TALENT:배합지식 * 5 + GET_TRAINLV(TARGET) + 1) * (4 + ABL:기교 + TALENT:금단의지식 * 2) / 8
+	;조수が손伝った場合、조수배합지식、기교によって軽減
+	LOCAL:1 -= TFLAG:조수ACT == 71 ? LOCAL:1 / (4 - TALENT:ASSI:배합지식) + (TALENT:ASSI:배합지식 * 3 + RAND:2) * (ABL:ASSI:기교 + 1 + RAND:3) # 0
+	;現在미약히트が正であれば、乱数で2-4を追加
+	LOCAL:1 += FLAG:미약히트 > 0 ? 2 + RAND:3 # 0
+	;미약히트に加算、このとき0以下であれば乱数で1-3を加算
+	FLAG:미약히트 += LOCAL:1 < 1 ? 1 + RAND:3 # LOCAL:1
+	;乱数に応じて소변追加
+	BASE:MASTER:소변 += 100 + RAND:5 * 50
+	;플래그セット
+	TFLAG:미약등사용 |= 2
+	TFLAG:미약등사용구상 |= 2
+	TFLAG:미약등사용지문스킵 |= 2
+ENDIF
+
+
+@LOTION_USE
+
+VARSET LOCAL
+
+;今の薬力残量をチェック
+SELECTCASE TEQUIP:로션
+	CASE IS < 1
+		LOCAL += 20
+	CASE IS < 3
+		LOCAL += 10
+	CASE IS < 5
+		LOCAL += 5
+	CASE IS < 7
+		LOCAL -= 1
+	CASE IS < 9
+		LOCAL -= 5
+	CASE IS < 11
+		LOCAL -= 10
+	CASEELSE
+		LOCAL -= 15
+ENDSELECT
+;윤활がすでに高まってる상태なら使わなくてよし
+SELECTCASE PALAM:MASTER:윤활
+	CASE IS > 5999
+		LOCAL -= 15
+	CASE IS > 4799
+		LOCAL -= 8
+	CASE IS > 3799
+		LOCAL -= 2
+	CASE IS > 2499
+		LOCAL += 1
+	CASE IS > 1199
+		LOCAL += 3
+	CASE IS > 499
+		LOCAL += 6
+	CASE IS > 299
+		LOCAL += 10
+	CASEELSE
+		LOCAL += 15
+ENDSELECT
+;ヒート値を差し引きます
+;(연속使用を抑制する)
+LOCAL -= FLAG:로션히트
+
+;겉옷がまだ残っている(かつ강제탈의の設定や밧줄장착がない)なら강제탈의を呼び出し
+IF (TEQUIP:MASTER:하반신겉옷 || TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷) && !TFLAG:강제탈의 && !TEQUIP:밧줄
+	;半々の確率で上＋下겉옷、악세서리－まで강제탈의
+	TFLAG:강제탈의 = 3 + (RAND:2 * 4)
+	;강제탈의最適化
+	CALL KYOUSEI_DATUI
+ENDIF
+;それでも겉옷がまだ残っている場合は로션使用を断念
+SIF TEQUIP:MASTER:하반신겉옷 || TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷
+	LOCAL = 0
+
+;使用する場合
+IF LOCAL > 0
+	;薬効追加
+	;죠교자배합지식素質に応じて薬効増大
+	TEQUIP:로션 += 5 + TALENT:배합지식 * 4 + (1 + RAND:4) * (TALENT:배합지식 + 2)
+	;조수が손伝った場合、조수배합지식、기교によって薬効増大
+	TEQUIP:로션 += TFLAG:조수ACT == 71 ? 3 + (TALENT:ASSI:배합지식 * 2 + RAND:3) * (ABL:ASSI:기교 + RAND:2) # 0
+	;ヒート値に加算
+	;죠교자배합지식素質、죠교레벨、기교、금단의지식素質によって軽減
+	LOCAL:1 = 40 - (TALENT:배합지식 * 5 + GET_TRAINLV(TARGET) + 1) * (4 + ABL:기교 + TALENT:금단의지식 * 2) / 8
+	;조수が손伝った場合、조수배합지식、기교によって軽減
+	LOCAL:1 -= TFLAG:조수ACT == 71 ? LOCAL:1 / (4 - TALENT:ASSI:배합지식) + (TALENT:ASSI:배합지식 * 3 + RAND:2) * (ABL:ASSI:기교 + 1 + RAND:3) # 0
+	;現在로션ヒートが正であれば、乱数で2-4を追加
+	LOCAL:1 += FLAG:로션히트 > 0 ? 2 + RAND:3 # 0
+	;로션ヒートに加算、このとき0以下であれば乱数で1-3を加算
+	FLAG:로션히트 += LOCAL:1 < 1 ? 1 + RAND:3 # LOCAL:1
+	;윤활追加
+	PALAM:MASTER:윤활 += 200
+	;플래그セット
+	TFLAG:미약등사용 |= 1
+	TFLAG:미약등사용구상 |= 1
+	TFLAG:미약등사용지문스킵 |= 1
+ENDIF
+
+;────────────────────────────────────
+;効果計算処理(죠교効果の計算を行う)
+;────────────────────────────────────
+
+;────────────────────────────────────
+;윤활不발時計算処理
+;────────────────────────────────────
+;引数には『/』区切りで文字列を代入
+;第0ブロック：十分윤활値
+;	윤활不발を取られなくなるPALAM:MASTER:윤활を指定
+;第1ブロック以降：『,』区切りで文字列を代入
+;	第0ブロック：보정SOURCE
+;		보정を行うSOURCEを指定
+;	第1ブロック：보정法
+;		보정計算の方法を指定
+;	第2ブロック：指定値
+;		보정法によって扱いは異なる
+;
+;指定例："500/M쾌Ａ,T,50/M고통,A,500"
+;　　　　"2000/M쾌Ｖ,T,80/M쾌Ａ,T,80/M고통,A,600"
+@SHORTAGE_LUBRICATION(ARGS)
+#LOCALSSIZE 100
+;COUNT変数
+#DIM LCOUNT
+;十分윤활値：PALAM:MASTER:윤활がこの値に達すると보정が無くなる
+#DIM LMAX
+;指定値：計算方法によって扱いは異なる
+#DIM LSPEC
+;대상者：SOURCE指定대상者
+#DIM LCHA
+;汎用文字列変数
+#DIMS LTEMPS, 3
+
+;LOCALS,LCOUNTの初期化
+VARSET LOCALS
+VARSET LCOUNT
+
+;ARGSを刻んでLOCALSへ代入
+SPLIT ARGS, "/", LOCALS
+
+;十分윤활値を設定
+LMAX = TOINT(LOCALS)
+
+DO
+	;LTEMPS初期化
+	VARSET LTEMPS
+	;LOCALSを刻んでLTEMPSへ代入
+	SPLIT LOCALS:(LCOUNT + 1), ",", LTEMPS
+	;보정SOURCE指定からSOURCE대상者を抜き出す(M=MASTER,T=TARGET)
+	SELECTCASE SUBSTRINGU(LTEMPS, 0, 1)
+		CASE "M"
+			LCHA = MASTER
+		CASE "T"
+			LCHA = TARGET
+		CASEELSE
+			CALLF PRINT_ERRORMESSAGE(@"@SHORTAGE_LUBRICATION に無効なSOURCE대상者(%SUBSTRINGU(LTEMPS, 0, 1)%)が渡されま했다")
+			LCHA = MASTER
+	ENDSELECT
+	LTEMPS = %SUBSTRINGU(LTEMPS, 1)%
+	;指定値を設定
+	LSPEC = TOINT(LTEMPS:2)
+	;Times보정法を採用
+	IF LTEMPS:1 == "T"
+		;Times보정法
+		;대상に1以下の値をかけて減少시킨다。
+		;値は『指定値%』から始まる(0超過、100未満の値を指定する。特に0以下は指定禁止)
+		;PALAM:MASTER:윤활の上昇に応じて1に近づいていくが、近づく速度は遅くなっていく
+		;
+		;보정結果一覧(대상に[X%]をかける)
+		;
+		;指定値  十分윤활値を100%と했다時のPALAM:MASTER:윤활
+		;           0%  20%  40%  60%  80% 100%
+		;
+		;40     [  40%  66%  77%  86%  93% 100%]
+		;50     [  50%  72%  81%  88%  94% 100%]
+		;60     [  60%  77%  85%  90%  95% 100%]
+		;70     [  70%  83%  88%  93%  96% 100%]
+		;80     [  80%  88%  92%  95%  97% 100%]
+		;
+		LOCAL = LSPEC + GET_REVISION_SQRT(PALAM:MASTER:윤활, LMAX, 100 - LSPEC)
+		SOURCE:LCHA:LTEMPS = SOURCE:LCHA:LTEMPS * LIMIT(LOCAL, 0, 100) / 100
+	;Add보정法を採用
+	ELSEIF LTEMPS:1 == "A"
+		;Add보정法
+		;대상に0以上の値を加算する
+		;値は『指定値』から始まる(0超過の値を指定する)
+		;PALAM:MASTER:윤활の上昇に応じて0に近づいていくが、近づく速度は遅くなっていく
+		;
+		;보정結果一覧(대상に[X]を발す)
+		;
+		;指定値  十分윤활値を100%と했다時のPALAM:MASTER:윤활
+		;           0%  20%  40%  60%  80% 100%
+		;
+		; 250   [ 250  140   92   57   27    0 ]
+		; 500   [ 500  280  185  115   55    0 ]
+		; 750   [ 750  420  277  172   82    0 ]
+		;1000   [1000  560  370  230  110    0 ]
+		;1500   [1500  840  555  345  165    0 ]
+		;3000   [3000 1680 1110  690  330    0 ]
+		;
+		LOCAL = LSPEC - GET_REVISION_SQRT(PALAM:MASTER:윤활, LMAX, LSPEC)
+		SOURCE:LCHA:LTEMPS += LIMIT(LOCAL, 0, LSPEC)
+	ENDIF
+	;カウント加算
+	LCOUNT++
+;処理するものが無くなれば脱出
+LOOP LOCALS:(LCOUNT + 1) != ""
+
+;────────────────────────────────────
+;자위関連処理
+;────────────────────────────────────
+
+;────────────────────────────────────
+;자위の実行関数
+;────────────────────────────────────
+@ONANIE_APPLY
+;部位보정値
+#DIM L_C
+#DIM L_V
+#DIM L_A
+#DIM L_B
+;노출(Exposure)보정値
+#DIM L_E
+
+;죠교대상욕망、기교、죠교레벨、손가락기술素質に応じてC、B部位보정値上昇
+;その他보정値は0に初期化
+L_C = 20 + GET_ABL(MASTER, "욕망") * (GET_ABL(MASTER, "기교") + 10) * CFLAG:MASTER:죠교레벨 / 50 + GET_ABL(MASTER, "기교") * 25 * (TALENT:MASTER:손가락기술 + 1) / 10
+L_V = 0
+L_A = 0
+L_B = L_C
+L_E = 0
+
+;바이브使用
+IF TEQUIP:바이브
+	;죠교대상욕망、죠교레벨、도구능숙素質、기교、도구強化に応じてV部位보정値上昇
+	L_V = 50 + GET_ABL(MASTER, "욕망") * (CFLAG:MASTER:죠교레벨 + 1) / 2 + (TALENT:MASTER:도구능숙 + 1) * GET_ABL(MASTER, "기교") * (ITEM:9 + 1) * 3
+	;C部位보정値は減少
+	TIMES L_C, 0.80
+ENDIF
+
+;항문바이브使用
+IF TEQUIP:항문바이브 && ABL:MASTER:Ａ감각 > 1
+	;죠교대상욕망、죠교레벨、도구능숙素質、기교、도구強化に応じてA部位보정値上昇
+	L_A = (GET_ABL(MASTER, "욕망") + 10) * (CFLAG:MASTER:죠교레벨 + 1) * 6 + (TALENT:MASTER:도구능숙 + 1) * GET_ABL(MASTER, "기교") * (ITEM:9 + 1) * 25 / 10
+	;B部位보정値は大きく減少
+	TIMES L_B, 0.60
+ENDIF
+
+;적극적으로 한다なら部位보정値にボーナス
+IF IS_COMGRONAME("적극적으로 한다")
+	TIMES L_C, 1.20
+	TIMES L_V, 1.10
+	TIMES L_A, 1.10
+	TIMES L_B, 1.20
+ENDIF
+
+;部位보정値に応じて快Ｘ発生
+;(남자であれば쾌Ｂは発生しない)
+SOURCE:MASTER:쾌Ｃ += L_C * 2
+SOURCE:MASTER:쾌Ｖ += L_V
+SOURCE:MASTER:쾌Ａ += L_A
+SOURCE:MASTER:쾌Ｂ += TALENT:MASTER:남자 ? 0 # L_B * 2
+
+;죠교대상기교、죠교레벨、바이브、항문바이브장착に応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 += 50 + GET_ABL(MASTER, "기교") * 2 + CFLAG:MASTER:죠교레벨 * 10 + TEQUIP:바이브 * 50 + TEQUIP:항문바이브 * 50
+;죠교자죠교레벨、야외플레이中、거울사용중、部位보정値に応じて노출보정値上昇
+L_E = 150 + GET_TRAINLV(TARGET) * 10 + TEQUIP:야외플레이 * 200 + TEQUIP:거울 * 150 + L_C / 2 + L_V / 3 + L_A / 3 + L_B / 2
+;노출보정値に応じて노출SOURCE増加
+SOURCE:MASTER:노출 += L_E
+;노출보정値に応じて増加し、노출증、죠교대상죠교레벨に応じて減少する値が正であれば이탈SOURCEに加算
+LOCAL = L_E / 2 - GET_ABL(MASTER, "노출증") * 2 - CFLAG:MASTER:죠교레벨 * 10
+SOURCE:MASTER:이탈 += LOCAL > 0 ? LOCAL # 0
+;보정値総計、자위중독に応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 += (L_C + L_V + L_A + L_B + L_E) * (50 + GET_ABL(MASTER, "자위중독")) / 500
+
+;죠교대상자위중をセット
+TEQUIP:자위중 |= 1
+;────────────────────────────────────
+;자위절정処理
+;────────────────────────────────────
+@ONANIE_EX
+;자위の実行関数呼び出し
+CALL ONANIE_APPLY
+
+;────────────────────────────────────
+;탈의関連処理
+;────────────────────────────────────
+
+;────────────────────────────────────
+;자주탈의/강제탈의最適化(탈의대상が存在しない場合、탈의指定を変更する)
+;ARG	탈의대상
+;────────────────────────────────────
+;旧名での呼び出しを処理
+@KYOUSEI_DATUI
+CALL DATUI_OPTIMIZE(MASTER)
+
+@JISHU_DATUI
+CALL DATUI_OPTIMIZE(TARGET)
+
+;処理本体
+@DATUI_OPTIMIZE(ARG)
+
+;탈의대상がMASTERであれば강제탈의、それ以外なら자주탈의
+;(現在この二つ以外は処理できません)
+LOCAL = (ARG == MASTER ? 102 # 103)
+
+;現在の服装による플래그変動（たとえば상반신겉옷を剥ぐように指定했다がすでに脱がれた場合、브래지어を剥ぐように）
+;상반신겉옷탈의時、상반신겉옷と전신겉옷が存在しない
+IF TFLAG:LOCAL == 1 && !TEQUIP:ARG:상반신겉옷 && !TEQUIP:ARG:전신겉옷
+	;상반신속옷が存在すれば상반신全部탈의、それ以外は탈의しない
+	TFLAG:LOCAL = TEQUIP:ARG:상반신속옷 ? 4 # 0
+;하반신겉옷탈의時、하반신겉옷と전신겉옷が存在しない
+ELSEIF TFLAG:LOCAL == 2 && !TEQUIP:ARG:하반신겉옷 && !TEQUIP:ARG:전신겉옷
+	;하반신속옷が存在すれば하반신全部탈의、それ以外は탈의しない
+	TFLAG:LOCAL = TEQUIP:ARG:하반신속옷 ? 5 # 0
+;上＋下겉옷탈의時、하반신겉옷と상반신겉옷、전신겉옷が存在しない
+ELSEIF TFLAG:LOCAL == 3 && !TEQUIP:ARG:하반신겉옷 && !TEQUIP:ARG:상반신겉옷 && !TEQUIP:ARG:전신겉옷
+	;상반신속옷/하반신속옷が存在すれば악세서리－まで탈의、それ以外は탈의しない
+	TFLAG:LOCAL = TEQUIP:ARG:상반신속옷 || TEQUIP:ARG:하반신속옷 ? 7 # 0
+;상반신全部탈의時、상반신속옷と상반신겉옷、전신겉옷が存在しない
+ELSEIF TFLAG:LOCAL == 4 && !TEQUIP:ARG:상반신속옷 && !TEQUIP:ARG:상반신겉옷 && !TEQUIP:ARG:전신겉옷
+	;탈의しない
+	TFLAG:LOCAL = 0
+;하반신全部탈의時、하반신속옷と하반신겉옷、전신겉옷が存在しない
+ELSEIF TFLAG:LOCAL == 5 && !TEQUIP:ARG:하반신속옷 && !TEQUIP:ARG:하반신겉옷 && !TEQUIP:ARG:전신겉옷
+	;탈의しない
+	TFLAG:LOCAL = 0
+;악세서리ー탈의時、악세서리と신발안が存在しない
+ELSEIF TFLAG:LOCAL == 6 && !TEQUIP:ARG:악세서리 && !TEQUIP:ARG:신발안
+	;탈의しない
+	TFLAG:LOCAL = 0
+;악세서리－まで탈의時
+ELSEIF TFLAG:LOCAL == 7
+	;악세서리と신발안が存在しない場合、전라まで탈의
+	SIF !TEQUIP:ARG:악세서리 && !TEQUIP:ARG:신발안
+		TFLAG:LOCAL = 8
+	;하반신속옷と상반신속옷、하반신겉옷、상반신겉옷、전신겉옷が存在しない場合、탈의しない
+	SIF !TEQUIP:ARG:하반신속옷 && !TEQUIP:ARG:상반신속옷 && !TEQUIP:ARG:하반신겉옷 && !TEQUIP:ARG:상반신겉옷 && !TEQUIP:ARG:전신겉옷
+		TFLAG:LOCAL = 0
+;전라まで탈의時、하반신속옷と상반신속옷、하반신겉옷、상반신겉옷、전신겉옷が存在しない
+ELSEIF TFLAG:LOCAL == 8 && !TEQUIP:ARG:하반신속옷 && !TEQUIP:ARG:상반신속옷 && !TEQUIP:ARG:하반신겉옷 && !TEQUIP:ARG:상반신겉옷 && !TEQUIP:ARG:전신겉옷
+	;악세서리と신발안が存在する場合악세서리ー탈의、それ以外は탈의しない
+	TFLAG:LOCAL = TEQUIP:ARG:악세서리 || TEQUIP:ARG:신발안 ? 6 # 0
+;속옷だけ탈의時、하반신속옷と상반신속옷が存在しない
+ELSEIF TFLAG:LOCAL == 9 && !TEQUIP:ARG:하반신속옷 && !TEQUIP:ARG:상반신속옷
+	;탈의しない
+	TFLAG:LOCAL = 0
+ENDIF
+
+;────────────────────────────────────
+;강제탈의成否判定
+;────────────────────────────────────
+@KYOUSEI_DATUI_CHECK
+
+;강제탈의が行われない場合、判定を行わない
+SIF TFLAG:강제탈의 <= 0
+	RETURN 0
+
+;탈의成功するかの判定
+;LOCALが高いほど失敗しやすくなります
+
+;素質等による보정
+
+;죠교대상체력、기력、반항강도、반항각인、굴복각인、반항、굴복、공순に応じて増減
+LOCAL = BASE:MASTER:체력 / 500 + BASE:MASTER:기력 / 200 + CFLAG:MASTER:반항강도 + MARK:반항각인 - MARK:굴복각인 + PALAM:MASTER:반항 / 1000 - PALAM:MASTER:굴복 / 1200 - PALAM:MASTER:공순 / 1200
+;죠교대상굳셈、겁쟁이、반항적、솔직、건방짐、얌전한、장신、작은체형素質に応じて増減
+LOCAL += TALENT:MASTER:굳셈 * 2 - TALENT:MASTER:겁쟁이 * 2 + TALENT:MASTER:반항적 * 5 - TALENT:MASTER:솔직 * 5 + TALENT:MASTER:건방짐 * 3 - TALENT:MASTER:얌전한 * 3 + TALENT:MASTER:장신 * 4 - TALENT:MASTER:작은체형 * 4
+;죠교자죠교레벨、기교、장신、작은체형素質、체력、기력に応じて増減
+LOCAL -= GET_TRAINLV(TARGET) + ABL:기교 + TALENT:장신 * 3 - TALENT:작은체형 * 3 + BASE:체력 / 600 + BASE:기력 / 300
+;今回죠교種別の죠교자기교に応じて減少
+LOCAL -= ABL:(TFLAG:ACT분류 + 20) * 3 / 2
+
+;目標パーツによる보정
+
+;상반신겉옷강제탈의(+0～+1)
+IF TFLAG:강제탈의 == 1
+	LOCAL += RAND:2
+;하반신겉옷강제탈의(+0～)
+ELSEIF TFLAG:강제탈의 == 2
+	;하반신겉옷を見て、脱がしにくいものほど大きく加算(+0～)
+	LOCAL += TEQUIP:MASTER:하반신겉옷
+	;전신겉옷は一律+2
+	SIF TEQUIP:MASTER:전신겉옷
+		LOCAL += 2
+;上＋下겉옷강제탈의(+1～)
+ELSEIF TFLAG:강제탈의 == 3
+	;하반신겉옷を見て、脱がしにくいものほど大きく加算(+1～)
+	LOCAL += 1 + TEQUIP:MASTER:하반신겉옷
+	;전신겉옷は一律+3
+	SIF TEQUIP:MASTER:전신겉옷
+		LOCAL += 3
+;상반신全部강제탈의(-2～+2)
+ELSEIF TFLAG:강제탈의 == 4
+	;2を減算
+	LOCAL -= 2
+	;상반신겉옷か전신겉옷が存在すれば一律+4
+	SIF TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷
+		LOCAL += 4
+;하반신全部강제탈의(-2～)
+ELSEIF TFLAG:강제탈의 == 5
+	;2を減算
+	LOCAL -= 2
+	;하반신겉옷が存在すれば脱がしにくいものほど大きく加算(+4～)
+	SIF TEQUIP:MASTER:하반신겉옷
+		LOCAL += 4 + TEQUIP:MASTER:하반신겉옷
+	;전신겉옷が存在すれば一律+5
+	SIF TEQUIP:MASTER:전신겉옷
+		LOCAL += 5
+;악세서리ー강제탈의(-3)
+ELSEIF TFLAG:강제탈의 == 6
+	LOCAL -= 3
+;악세서리－まで/전라まで강제탈의(+2～)
+ELSEIF TFLAG:강제탈의 == 7 || TFLAG:강제탈의 == 8
+	;하반신겉옷を見て、脱がしにくいものほど大きく加算(+2～)
+	LOCAL += 2 + TEQUIP:MASTER:하반신겉옷
+	;상반신겉옷が存在すれば一律+2
+	SIF TEQUIP:MASTER:상반신겉옷
+		LOCAL += 2
+	;전신겉옷が存在すれば一律+4
+	SIF TEQUIP:MASTER:전신겉옷
+		LOCAL += 4
+;속옷だけ강제탈의(-2～)
+ELSEIF TFLAG:강제탈의 == 9
+	;하반신겉옷を見て、脱がしにくいものほど大きく加算(-2～)
+	LOCAL += TEQUIP:MASTER:하반신겉옷 - 2
+	;전신겉옷が存在すれば一律+1
+	SIF TEQUIP:MASTER:전신겉옷
+		LOCAL += 1
+ENDIF
+
+;その他の보정
+
+;눈가리개장착時は2を減算
+SIF TEQUIP:눈가리개
+	LOCAL -= 2
+;ちょっとずるしてるけどこの処理がないといろいろ大変
+;밧줄구속時、가학、이상、사역系죠교時はLOCALを0に
+SIF TEQUIP:밧줄 || TFLAG:ACT분류 == 6 || TFLAG:ACT분류 == 7 || TFLAG:ACT분류 == 8
+	LOCAL = 0
+
+;成否判定
+;(実行失敗時はTFLAG:강제탈의を-1に、実行不可能時は0にする)
+
+;木馬による実行不可能判定
+IF TEQUIP:삼각목마
+	TFLAG:강제탈의 = 0
+;조수の손伝うで必ず成功に、반항の程度によって구속のソース若干入ります
+ELSEIF (ASSI:1 >= 0 && TCVAR:(ASSI:1):조수ACT == GET_ASSIACTNUM("탈의")) || (ASSI:2 >= 0 && TCVAR:(ASSI:2):조수ACT == GET_ASSIACTNUM("탈의"))
+	SIF LOCAL > 0
+		SOURCE:MASTER:구속 += (LOCAL + RAND:3) * 20
+;밧줄による実行不可能判定(例外として악세서리ー、속옷だけ탈의は可能)
+ELSEIF TEQUIP:밧줄 && TFLAG:강제탈의 != 6 && TFLAG:강제탈의 != 9
+	TFLAG:강제탈의 = 0
+;乱数で成否判定(4以上で絶対失敗、0以下で絶対成功)
+ELSEIF LOCAL > RAND:4
+	;보정値、죠교대상반항강도、반항적、솔직素質、죠교레벨、순종に応じて반항SOURCE増減
+	SOURCE:MASTER:반항 += 80 * (2 + LOCAL) * (4 + CFLAG:MASTER:반항강도 + TALENT:MASTER:반항적 * 3 - TALENT:MASTER:솔직 * 3) / (5 + CFLAG:MASTER:죠교레벨 + ABL:MASTER:순종)
+	;죠교자초조함に応じて징계・포인트増加
+	TFLAG:징계・포인트 += 2 + RAND:5 + BASE:초조함 / 150
+	;강제탈의失敗
+	TFLAG:강제탈의 = -1
+ENDIF
+
+;강제탈의成功時
+IF TFLAG:강제탈의 > 0
+	;야외플레이、거울使用時、강제탈의内容、죠교대상수줍음、수치없음素質、죠교레벨に応じて노출SOURCE増減
+	SOURCE:MASTER:노출 += 100 * (3 + TEQUIP:야외플레이 * 3 + TEQUIP:거울 * 2) * (3 + TFLAG:강제탈의 + TALENT:MASTER:수줍음 * 2 - TALENT:MASTER:수치없음 * 2) / (5 + CFLAG:MASTER:죠교레벨)
+	;강제탈의内容、죠교대상트라우마(각인)、죠교레벨、순종に応じて트라우마SOURCE増減
+	SOURCE:MASTER:트라우마 += 50 * (TFLAG:강제탈의 + 5) * (5 + MARK:MASTER:트라우마) / (10 + CFLAG:MASTER:죠교레벨 + ABL:MASTER:순종 * 2)
+	;악세서리ー/속옷だけ강제탈의時は노출、트라우마SOURCE軽減
+	IF TFLAG:강제탈의 == 6
+		TIMES SOURCE:MASTER:노출 , 0.10
+		TIMES SOURCE:MASTER:트라우마 , 0.25
+	ELSEIF TFLAG:강제탈의 == 9
+		TIMES SOURCE:MASTER:노출 , 0.75
+	ENDIF
+	;조수が손伝った場合노출SOURCE増加
+	SIF TFLAG:조수ACT == 70
+		TIMES SOURCE:MASTER:노출 , 1.20
+ENDIF
+
+;-----------EDIT 001 START--------------
+;地の文分離の一環として独立시킨다
+;内部処理をビット演算に変更
+;将来的に강제탈의、자주탈의をビットで扱えるように
+;---------------------------------------
+;────────────────────────────────────
+;강제탈의、자주탈의時の탈의処理
+;────────────────────────────────────
+;※前提として자주탈의/강제탈의最適化、강제탈의成否判定が行われている필요がある
+@DATUI_PROCESS
+
+;LOCAL初期化
+VARSET LOCAL
+
+;죠교대상、죠교자탈의部位確認
+FOR LOCAL, 1, 3
+	;강제탈의、자주탈의によって分岐
+	SELECTCASE TFLAG:(101 + LOCAL)
+		;상반신겉옷
+		CASE 1
+			;상반신겉옷/전신겉옷
+			SETBIT LOCAL:LOCAL, 5
+			SETBIT LOCAL:LOCAL, 6
+		;하반신겉옷
+		CASE 2
+			;하반신겉옷/전신겉옷
+			SETBIT LOCAL:LOCAL, 4
+			SETBIT LOCAL:LOCAL, 6
+		;上＋下겉옷
+		CASE 3
+			;하반신겉옷/상반신겉옷/전신겉옷
+			SETBIT LOCAL:LOCAL, 4
+			SETBIT LOCAL:LOCAL, 5
+			SETBIT LOCAL:LOCAL, 6
+		;상반신全部
+		CASE 4
+			;상반신속옷/상반신겉옷/전신겉옷
+			SETBIT LOCAL:LOCAL, 3
+			SETBIT LOCAL:LOCAL, 5
+			SETBIT LOCAL:LOCAL, 6
+		;하반신全部
+		CASE 5
+			;하반신속옷/하반신겉옷/전신겉옷
+			SETBIT LOCAL:LOCAL, 2
+			SETBIT LOCAL:LOCAL, 4
+			SETBIT LOCAL:LOCAL, 6
+		;악세서리ー
+		CASE 6
+			;악세서리/신발안
+			SETBIT LOCAL:LOCAL, 0
+			SETBIT LOCAL:LOCAL, 1
+		;악세서리－まで
+		CASE 7
+			;하반신속옷/상반신속옷/하반신겉옷/상반신겉옷/전신겉옷
+			SETBIT LOCAL:LOCAL, 2
+			SETBIT LOCAL:LOCAL, 3
+			SETBIT LOCAL:LOCAL, 4
+			SETBIT LOCAL:LOCAL, 5
+			SETBIT LOCAL:LOCAL, 6
+		;전라まで
+		CASE 8
+			;악세서리/신발안/하반신속옷/상반신속옷/하반신겉옷/상반신겉옷/전신겉옷
+			SETBIT LOCAL:LOCAL, 0
+			SETBIT LOCAL:LOCAL, 1
+			SETBIT LOCAL:LOCAL, 2
+			SETBIT LOCAL:LOCAL, 3
+			SETBIT LOCAL:LOCAL, 4
+			SETBIT LOCAL:LOCAL, 5
+			SETBIT LOCAL:LOCAL, 6
+		;속옷だけ
+		CASE 9
+			;하반신속옷/상반신속옷
+			SETBIT LOCAL:LOCAL, 2
+			SETBIT LOCAL:LOCAL, 3
+	ENDSELECT
+NEXT
+
+;탈의대상最適化処理(탈의指定箇所に着衣が存在しなければ指定を解除)
+FOR LOCAL, 0, 7
+	SIF GETBIT(LOCAL:1, LOCAL) && !TEQUIP:MASTER:LOCAL
+		CLEARBIT LOCAL:1, LOCAL
+	SIF GETBIT(LOCAL:2, LOCAL) && !TEQUIP:TARGET:LOCAL
+		CLEARBIT LOCAL:2, LOCAL
+NEXT
+
+;탈의寸前での地の文/구상表示
+CALL DATUI_MESSAGE(LOCAL:1, LOCAL:2)
+
+;탈의処理(実際の탈의はここで行われる)
+FOR LOCAL, 0, 7
+	SIF GETBIT(LOCAL:1, LOCAL)
+		TEQUIP:MASTER:LOCAL = 0
+	SIF GETBIT(LOCAL:2, LOCAL)
+		TEQUIP:TARGET:LOCAL = 0
+NEXT
+
+;착의노출解消
+IF TFLAG:강제탈의 > 0
+	;죠교대상하반신속옷が無ければ성기착의노출解消
+	SIF TEQUIP:MASTER:하반신속옷 == 0
+		TEQUIP:착의노출 &= ~4
+	;죠교대상상반신속옷、상반신겉옷、전신겉옷が無ければ가슴착의노출解消
+	SIF TEQUIP:MASTER:상반신속옷 == 0 && TEQUIP:MASTER:상반신겉옷 == 0 && TEQUIP:MASTER:전신겉옷 == 0
+		TEQUIP:착의노출 &= ~8
+ENDIF
+IF TFLAG:자주탈의 > 0
+	;죠교자하반신속옷が無ければ성기착의노출解消
+	SIF TEQUIP:하반신속옷 == 0
+		TEQUIP:착의노출 &= ~1
+	;죠교자상반신속옷、상반신겉옷、전신겉옷が無ければ가슴착의노출解消
+	SIF TEQUIP:상반신속옷 == 0 && TEQUIP:상반신겉옷 == 0 &&  TEQUIP:전신겉옷 == 0
+		TEQUIP:착의노출 &= ~2
+ENDIF
+
+;탈의直後での地の文/구상表示
+CALL DATUI_MESSAGE2(LOCAL:1, LOCAL:2)
+
+RETURN RESULT
+;-----------EDIT 001 END  --------------
+
+[SKIPSTART]
+;────────────────────────────────────
+;보정値代入処理(元々の値を使うと増加が直線的で使いにくい場合に利用)
+;※全てGET_ABL, GET_TRAINLV, ACT_FROM, ACT_TOに置き換えたはず！
+;　なので以下はすべて旧記述となります@これみ
+;────────────────────────────────────
+;@ABL_REVISION
+#DIM LCOUNT
+
+kapnaluqa氏による解析をこれみが修正。修正個所は『』内
+
+・ABLによる보정係数を決定する関数
+『A:1-29　TARGETのABL:1-29の係数
+　B:1-29　MASTERのABL:1-29の係数
+　C:1-29  ASSIのABL:1-29の係数』
+
+ABL:1-29は100 - 500/(ABL + 5)で보정値が定義される
+すなわち
+Lv0   0		Lv6　55
+Lv1  17		Lv7　59
+Lv2　29		Lv8　62
+Lv3　38		Lv9　65
+Lv4　45		Lv10 67
+Lv5　50
+
+まぁつまり、レベルがあがるごとに보정値の伸びが悪くなるタイプの式です
+
+A:30、C:30はABLではなく、죠교레벨による보정です
+こちらは 50 - 2000(죠교레벨+40)で定義されます
+
+『なお、순종の보정値はB(MASTER)のみ存在し、B:30に格納されます
+　本来B:0に格納されるべきものがそのままB:30に入っていると考えてください』
+
+実際にこの係数を使っている箇所は
+20,회화　21,애무　22,도구　23,성교　24,수치
+25,봉사　26,가학　27,이상　28,사역
+
+これらのABLの보정値の1/5がメニュー決定の際に基礎値に加算されます（성봉は성교の보정を用いる）
+Lv0のとき0除算しそうなのにしてないあたり、僕にもよくわからない謎がありそう
+
+あとは結構いろんな箇所でちらほらつかってますが一例をだしておくと
+;────────────────────────────────────
+;010,애무/수음する（Ｓ/Ｎ/Ｈ）（쾌Ｃ、쾌Ｂ、접촉、애정、성행위、불결）
+;────────────────────────────────────
+ELSEIF IS_NOWACTNAME("손으로 애무")
+	SOURCE:MASTER:쾌Ｃ = 75 + S:1 * (2 + TALENT:손가락기술) / 4
+	;탈의の処理
+	;벽통과があると3/4で無視する
+	IF !TALENT:벽통과 || !RAND:4
+		IF TALENT:억압 == 0 && TALENT:수줍음 == 0 && TALENT:착의플레이선호 == 0
+			IF TALENT:해방 * 4 + A:1 / 10 + A:30 / 5 > 3 + RAND:3
+				TFLAG:강제탈의 = 8
+				SIF RAND:3 > 0
+					TFLAG:강제탈의 = 7
+			ELSEIF RAND:3 > 1
+				TFLAG:강제탈의 = 3
+			ENDIF
+		ENDIF
+	ENDIF
+TFLAG:강제탈의 は　3で속옷を全てはぐ。7で악세서리ーまで全部剥ぐ。8で전라まで剥ぐ
+この時はA:1、つまりTARGETの욕망の보정値とA:30、つまり죠교레벨による보정値で脱がしの大成功率を보정しています
+他にはソースの追加なんかにもけっこうつかわれてそう
+呼び出しが多いのは一文字がグローバルな関係で中身の保全が不安だからっぽい
+常に再計算する方式なので呼び出しが頻繁でも中身は大丈夫
+
+S配列は쾌락を与えるコマンドの際の보정値です
+S:1－4　 CVAB애무　S5－6 VA성교　S7-8 VA성교봉사　S:11-14　CVAB도구のTARGET→MASTERの보정値
+S:21-24  ASSI→MASTERの보정値になります
+S:41-48　MASTER→TARGETの보정値になります
+S:51-58  MASTER→ASSIの보정値になります
+※MASTER→はS:11-14の도구がないので配列が少ないです
+
+보정値はまず基礎値を以下の式で算出します
+LOCAL:1 = MAX(애무する側の죠교레벨  * 10 / (애무を受ける側の죠교레벨 + 1) , MIN(애무実行者への호의/ 200 , 30), 10)
+受ける側の죠교레벨が高いと죠교레벨部分は伸びなくなるんで、実質的には호의キャップの보정値30がキャップっぽい気がします
+
+次に기교-감각による보정値を以下の式で算出します
+LOCAL = MAX(2 * 애무実行者の기교 - 被애무者の감각 , 굴복각인)
+
+最後に(LOCAL + 10) * (LOCAL + 10) * LOCAL:1  / 10で보정値を確定します
+ちなみに(LOCAL + 10) * (LOCAL + 10)部分は以下のとおりだそうです
+;基本値		기교－감각
+;100		0
+;121		1
+;144		2
+;169		3
+;196		4
+;225		5
+;256		6
+;289		7
+;324		8
+;361		9
+;400		10
+
+使用の実例を示すと
+SOURCE:MASTER:쾌Ｃ = 75 + S:1 * (2 + TALENT:손가락기술) / 4（애무のC감각ソース）
+※TALENT:57は손가락기술
+보정値が30*400/10なら1200で、75+600で675となります
+
+あとまぁ、このあと処理おっかけてみたんですが
+SOURCE:MASTER:0をUP:0に変換するまでに、C감각見てる様子が見つけらんなかったんで
+C감각は、あがるとCで感じやすくなるのではなく、感じにくくなるものっぽい
+これはもとのRevからそうで했다っけか
+
+なお、一文字だよりから脱却するために式中関数をつくってて、余裕があれば置き換えていきたいとかそんなんっぽい？
+
+;────────────────────────────────────
+;ABL,CFLAG:**:죠교레벨 보정
+;今後は GET_ABL, GET_TRAINLV を使用すること
+;────────────────────────────────────
+
+;元々の条件では TARGET,ASSI > 0 だったが、
+;죠교자および조수が『당신』の時でも処理されるべきだと思ったので修正
+
+;元々のREPEATでは1-30の範囲で回していたが、
+;30で代入했다値が直後に上書きされて無駄になっていたので1-29に変更(無駄なこだわり)
+
+;죠교자が存在する
+IF TARGET > -1
+	;A:1-29にABL:TARGET:1-29の보정値を代入
+	FOR LCOUNT, 1, 30
+		A:LCOUNT = (100 - 500/(ABL:LCOUNT + 5))
+	NEXT
+	;A:30にCFLAG:TARGET:죠교레벨の보정値を代入
+	A:30 = 50 - 2000 / (CFLAG:죠교레벨 + 40)
+ENDIF
+;B:1-29にABL:MASTER:1-29の보정値を代入
+FOR LCOUNT, 1, 30
+	B:LCOUNT = (100 - 500/(ABL:MASTER:LCOUNT + 5))
+NEXT
+;B:30にABL:MASTER:0の보정値を代入
+B:30 = (100 - 500/(ABL:MASTER:순종 + 5))
+;조수が存在する
+;(조수二人目以降は考慮されないが、
+; そもそもGET_ABL, GET_TRAINLV を使うべきなので無視)
+IF ASSI > -1
+	;C:1-29にABL:ASSI:1-29の보정値を代入
+	FOR LCOUNT, 1, 30
+	C:LCOUNT = (100 - 500/(ABL:ASSI:LCOUNT + 5))
+	NEXT
+	;C:30にCFLAG:ASSI:죠교레벨の보정値を代入
+	C:30 = 50 - 2000 / (CFLAG:ASSI:죠교레벨 + 40)
+ENDIF
+
+;────────────────────────────────────
+;애무効果보정
+;今後は ACT_FROM, ACT_TO を使用すること
+;────────────────────────────────────
+
+;大幅に短縮することは可能だが、
+;その結果が ACT_FROM, ACT_TO に他ならないのでそちらを参照
+
+;TARGET애무(TARGET存在時計算)
+IF TARGET > 0
+	;죠교자죠교레벨が過剰な場合増加する値、
+	;죠교대상から죠교자への호의が大きい場合増加する値(最大30)
+	;10 ……の中から最大の値を選ぶ(10-1000)
+	LOCAL:1 = MAX(CFLAG:죠교레벨  * 10 / (CFLAG:MASTER:죠교레벨 + 1) , MIN(CFLAG:M호의 / 200 , 30), 10)
+	LOCAL:1 = LIMIT(LOCAL:1, 10, 1000)
+	
+	;애무系
+	;죠교자기교 + 애무 から 죠교대상対応감각を引いたものと굴복각인を比べ、
+	;大きいものに10を발して二乗し、LOCAL:1 をかけて10で割る
+	;C애무
+	LOCAL = MAX(ABL:기교 + ABL:애무 - ABL:MASTER:Ｃ감각 , MARK:굴복각인)
+	S:1 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;V애무
+	LOCAL = MAX(ABL:기교 + ABL:애무 - ABL:MASTER:Ｖ감각 , MARK:굴복각인)
+	S:2 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A애무
+	LOCAL = MAX(ABL:기교 + ABL:애무 - ABL:MASTER:Ａ감각 , MARK:굴복각인)
+	S:3 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;B애무
+	LOCAL = MAX(ABL:기교 + ABL:애무 - ABL:MASTER:Ｂ감각 , MARK:굴복각인)
+	S:4 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	
+	;성교系
+	;죠교자기교 + 성교 から 죠교대상対応감각を引いたものと굴복각인を比べ、
+	;大きいものに10を발して二乗し、LOCAL:1 をかけて10で割る
+	;V성교
+	LOCAL = MAX(ABL:기교 + ABL:성교- ABL:MASTER:Ｖ감각 , MARK:굴복각인)
+	S:5 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A성교
+	LOCAL = MAX(ABL:기교 + ABL:성교 - ABL:MASTER:Ａ감각 , MARK:굴복각인)
+	S:6 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	
+	;성교봉사系
+	;죠교자기교 + 성교 + 죠교자対応감각 から 죠교대상対応감각を引いたものと굴복각인を比べ、
+	;大きいものに10を발して二乗し、LOCAL:1 をかけて10で割る
+	;V성교봉사
+	LOCAL = MAX(ABL:기교 + ABL:성교 + ABL:Ｖ감각 - ABL:MASTER:Ｃ감각 , MARK:굴복각인)
+	S:7 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A성교봉사
+	LOCAL = MAX(ABL:기교 + ABL:성교 + ABL:Ａ감각 - ABL:MASTER:Ｃ감각 , MARK:굴복각인)
+	S:8 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	
+	;도구系
+	;죠교자기교 + 도구 から 죠교대상対応감각を引いたものと굴복각인を比べ、
+	;大きいものに10を발して二乗し、LOCAL:1 をかけて10で割る
+	;C도구
+	LOCAL = MAX(ABL:기교 + ABL:도구 - ABL:MASTER:Ｃ감각 , MARK:굴복각인)
+	S:11 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;V도구
+	LOCAL = MAX(ABL:기교 + ABL:도구 - ABL:MASTER:Ｖ감각 , MARK:굴복각인)
+	S:12 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A도구
+	LOCAL = MAX(ABL:기교 + ABL:도구 - ABL:MASTER:Ａ감각 , MARK:굴복각인)
+	S:13 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;B도구
+	LOCAL = MAX(ABL:기교 + ABL:도구 - ABL:MASTER:Ｂ감각 , MARK:굴복각인)
+	S:14 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+ENDIF
+
+;以後、基本的にはTARGET애무と同様なので詳細略
+
+;ASSI애무(ASSI存在時計算)
+IF ASSI > 0
+	LOCAL:1 = MAX(CFLAG:ASSI:죠교레벨  * 10 / (CFLAG:MASTER:죠교레벨 + 1) , MIN(CFLAG:ASSI:M호의 / 200 , 30), 10)
+	LOCAL:1 = LIMIT(LOCAL:1, 10, 1000)
+	
+	;C애무
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:애무 - ABL:MASTER:Ｃ감각 , MARK:ASSI:굴복각인)
+	S:21 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;V애무
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:애무 - ABL:MASTER:Ｖ감각 , MARK:ASSI:굴복각인)
+	S:22 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A애무
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:애무 - ABL:MASTER:Ａ감각 , MARK:ASSI:굴복각인)
+	S:23 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;B애무
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:애무 - ABL:MASTER:Ｂ감각 , MARK:ASSI:굴복각인)
+	S:24 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+
+	;V성교
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:성교 - ABL:MASTER:Ｖ감각 , MARK:ASSI:굴복각인)
+	S:25 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A성교
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:성교 - ABL:MASTER:Ａ감각 , MARK:ASSI:굴복각인)
+	S:26 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	
+	;V성교봉사
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:성교 + ABL:ASSI:Ｖ감각 - ABL:MASTER:Ｃ감각 , MARK:ASSI:굴복각인)
+	S:27 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A성교봉사
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:성교 + ABL:ASSI:Ａ감각 - ABL:MASTER:Ｃ감각 , MARK:ASSI:굴복각인)
+	S:27 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+
+	;C도구
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:도구 - ABL:MASTER:Ｃ감각 , MARK:굴복각인)
+	S:31 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;V도구
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:도구 - ABL:MASTER:Ｖ감각 , MARK:굴복각인)
+	S:32 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;A도구
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:도구 - ABL:MASTER:Ａ감각 , MARK:굴복각인)
+	S:33 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+	;B도구
+	LOCAL = MAX(ABL:ASSI:기교 + ABL:ASSI:도구 - ABL:MASTER:Ｂ감각 , MARK:굴복각인)
+	S:34 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 / 10
+ENDIF
+
+;以後V애무など一部보정計算が行われていないが無視
+;(今後利用する場合はここの計算を필요としないため)
+
+;애무系など系列ABLが存在しないため기교の値を二倍にして対応している
+
+;MASTER→TARGET애무
+IF TARGET > 0
+	LOCAL:1 = MAX(CFLAG:MASTER:죠교레벨  * 10 / (CFLAG:죠교레벨 + 1) , MIN(CFLAG:호의 / 200 , 30), 10)
+	LOCAL:1 = LIMIT(LOCAL:1, 10, 1000)
+	
+	;C애무
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:Ｃ감각 , MARK:굴복각인)
+	S:41 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;A애무
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:Ａ감각 , MARK:굴복각인)
+	S:43 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;B애무
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:Ｂ감각 , MARK:굴복각인)
+	S:44 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	
+	;V성교
+	LOCAL = MAX(ABL:MASTER:기교 + ABL:MASTER:Ｖ감각 - ABL:Ｃ감각 , MARK:굴복각인)
+	S:45 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;A성교
+	LOCAL = MAX(ABL:MASTER:기교 + ABL:MASTER:Ａ감각 - ABL:Ｃ감각 , MARK:굴복각인)
+	S:46 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	
+	;V성교봉사
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:Ｖ감각 , MARK:굴복각인)
+	S:47 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;A성교봉사
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:Ａ감각 , MARK:굴복각인)
+	S:48 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+ENDIF
+
+;MASTER→ASSI애무
+IF ASSI > 0
+	LOCAL:1 = MAX(CFLAG:MASTER:죠교레벨  * 10 / (CFLAG:ASSI:죠교레벨 + 1) , MIN(CFLAG:호의 / 200 , 30), 10)
+	LOCAL:1 = LIMIT(LOCAL:1, 10, 1000)
+	;C애무
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:ASSI:Ｃ감각 , MARK:ASSI:굴복각인)
+	S:51 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;A애무
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:ASSI:Ａ감각 , MARK:ASSI:굴복각인)
+	S:53 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;B애무
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:ASSI:Ｂ감각 , MARK:ASSI:굴복각인)
+	S:54 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	
+	;V성교
+	LOCAL = MAX(ABL:MASTER:기교 + ABL:MASTER:Ｖ감각 - ABL:ASSI:Ｃ감각 , MARK:ASSI:굴복각인)
+	S:55 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;A성교
+	LOCAL = MAX(ABL:MASTER:기교 + ABL:MASTER:Ａ감각 - ABL:ASSI:Ｃ감각 , MARK:ASSI:굴복각인)
+	S:56 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	
+	;V성교봉사
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:ASSI:Ｖ감각 , MARK:ASSI:굴복각인)
+	S:57 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+	;A성교봉사
+	LOCAL = MAX(2 * ABL:MASTER:기교 - ABL:ASSI:Ａ감각 , MARK:ASSI:굴복각인)
+	S:58 = (LOCAL + 10) * (LOCAL + 10) * LOCAL:1 * (FLAG:3185 + 100) / 1000
+ENDIF
+
+;基本値		기교－감각
+;100		0
+;121		1
+;144		2
+;169		3
+;196		4
+;225		5
+;256		6
+;289		7
+;324		8
+;361		9
+;400		10
+[SKIPEND]
+

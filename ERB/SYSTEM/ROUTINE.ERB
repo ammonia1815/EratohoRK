@@ -1,0 +1,136 @@
+﻿;────────────────────────────────────
+;コマンド선택後のTFLAGリセット
+;────────────────────────────────────
+@EVENTCOM
+#PRI
+;強制終了시킨다際にSHOW_USERCOM内でBEGINできないのでここに持ってきて終わらせる
+SIF SELECTCOM == 999
+	BEGIN AFTERTRAIN
+DRAWLINE
+;TFLAG:0-39初期化
+FOR LOCAL, 0, 40
+	TFLAG:LOCAL = 0
+NEXT
+
+
+;────────────────────────────────────
+;죠교終了時の回復
+;────────────────────────────────────
+@BASE_RECOVERY
+#DIM 残存체력
+;CHARA全員を順番に回復
+FOR LOCAL, 0, CHARANUM
+	;残存체력を記憶
+	残存체력 = BASE:LOCAL:체력
+	
+	;체력回復
+	BASE:LOCAL:체력 += (400 + TIME * 100 + MAXBASE:LOCAL:체력 / 5) * (4 + TIME + TALENT:LOCAL:회복빠름 - TALENT:LOCAL:회복느림 + TALENT:LOCAL:불사 * 2) * 3 / (10 + CFLAG:LOCAL:소모)
+	;체력が上限を突破しないよう調整
+	SIF BASE:LOCAL:체력 > MAXBASE:LOCAL:체력
+		BASE:LOCAL:체력 = MAXBASE:LOCAL:체력
+	
+	;정액ゲージ回復
+	SIF MAXBASE:LOCAL:사정 > 0
+		BASE:LOCAL:사정 += MAXBASE:LOCAL:사정 * (50 + TIME * 20 + TALENT:LOCAL:정력절륜 * 10 - TALENT:LOCAL:정력박약 * 10) / (100 + CFLAG:LOCAL:소모 * 10)
+	;정액ゲージが上限を突破しないよう調整
+	SIF BASE:LOCAL:사정 > MAXBASE:LOCAL:사정
+		BASE:LOCAL:사정 = MAXBASE:LOCAL:사정
+	
+	;분유ゲージ回復
+	SIF MAXBASE:LOCAL:모유 > 0
+		BASE:LOCAL:모유 += (1200 + TIME * 400 + CFLAG:LOCAL:죠교레벨 * 80) * (3 + TIME + TALENT:LOCAL:회복빠름 - TALENT:LOCAL:회복느림) * (3 + ABL:LOCAL:순종) / (7 + CFLAG:LOCAL:소모)
+	;분유ゲージが上限を突破しないよう調整
+	SIF BASE:LOCAL:모유 > MAXBASE:LOCAL:모유
+		BASE:LOCAL:모유 = MAXBASE:LOCAL:모유
+	
+	;이성回復(上限まで)
+	BASE:LOCAL:이성 = MAXBASE:LOCAL:이성
+	
+	;흥미の回復(上限まで)、초조함/만족のリセット
+	BASE:LOCAL:흥미 = MAXBASE:LOCAL:흥미
+	BASE:LOCAL:초조함 = 0
+	BASE:LOCAL:만족 = 0
+	
+	;죄책감軽減
+	IF CFLAG:LOCAL:죄책감 > 0
+		;固定値軽減
+		CFLAG:LOCAL:죄책감 -= 3
+		;아라이멘도によって割合で軽減
+		CFLAG:LOCAL:죄책감 = CFLAG:LOCAL:죄책감 * (200 + CFLAG:LOCAL:아라이멘도) / 500
+		;아라이멘도によって減算
+		CFLAG:LOCAL:죄책감 += LIMIT(CFLAG:LOCAL:아라이멘도 / 9 - 9, -14, 0)
+		;아라이멘도が-75未満なら消滅
+		SIF CFLAG:LOCAL:아라이멘도 < -75
+			CFLAG:LOCAL:죄책감 = 0
+		;죄책감は0未満にならない
+		SIF CFLAG:LOCAL:죄책감 < 0
+			CFLAG:LOCAL:죄책감 = 0
+	ENDIF
+	
+	;기력回復
+	BASE:LOCAL:기력 += (240 + TIME * 60 + 残存체력 + MAXBASE:LOCAL:기력 / 5) * (4 + TIME * 2 + TALENT:LOCAL:회복빠름 - TALENT:LOCAL:회복느림 + TALENT:LOCAL:불사) * (3 + TALENT:LOCAL:정력절륜 - TALENT:LOCAL:정력박약) / (10 + CFLAG:LOCAL:소모)
+	;기력が上限を突破しないよう調整
+	SIF BASE:LOCAL:기력 > MAXBASE:LOCAL:기력
+		BASE:LOCAL:기력 = MAXBASE:LOCAL:기력
+	
+	;피폐플래그の軽減
+	;피폐が20超過であれば固定値軽減
+	SIF CFLAG:LOCAL:소모 > 20
+		CFLAG:LOCAL:소모 -= 5
+	;시간경과によって軽減
+	CFLAG:LOCAL:소모 -= 1 + CFLAG:LOCAL:소모 / 3 + TIME
+	;체력が全快に近ければさらに軽減
+	SIF BASE:LOCAL:체력 > MAXBASE:LOCAL:체력 * 4 / 5
+		CFLAG:LOCAL:소모 -= 1
+	;기력が全快に近ければさらに軽減
+	SIF BASE:LOCAL:기력 > MAXBASE:LOCAL:기력 * 4 / 5
+		CFLAG:LOCAL:소모 -= 1
+	;피폐플래그は0未満にならない
+	SIF CFLAG:LOCAL:소모 < 0
+		CFLAG:LOCAL:소모 = 0
+NEXT
+;죠교자が치료素質を持っている場合
+IF TARGET > -1 && TALENT:치료
+	;죠교대상체력、기력を割合回復
+	TIMES BASE:MASTER:체력, 1.2
+	TIMES BASE:MASTER:기력, 1.2
+	;체력、기력が上限を突破しないよう調整
+	SIF BASE:MASTER:체력 > MAXBASE:MASTER:체력
+		BASE:MASTER:체력 = MAXBASE:MASTER:체력
+	SIF BASE:MASTER:기력 > MAXBASE:MASTER:기력
+		BASE:MASTER:기력 = MAXBASE:MASTER:기력
+ENDIF
+
+;日時の更新
+;午前なら午後に、午後なら次の日にする
+;日時更新処理が２箇所あったのが気되었다ので関数にまとめた
+;それにしても酷い関数名だぜ…英語とかわかんないよね
+@NEXTTIME
+IF TIME++
+	;総일수/日/年/계절/昼夜の更新
+	DAY++
+	FLAG:일수 = DAY % 120
+	FLAG:연수 = DAY / 120
+	FLAG:계절 = FLAG:연수 / 30
+	TIME = 0
+;OriginalString : 一日が終わった・・・
+	PRINTW 하루가 끝났다···
+
+	;30日目以降ならエンディング条件を参照する(시나리오모드ができたら시나리오時に変更するかも)
+	IF DAY >= 30 && !FLAG:END달성
+		CALL ENDING
+		SIF RESULT > 0
+			FLAG:END달성 = 1
+	ENDIF
+	
+ELSE
+;OriginalString : 夜が更ける・・・
+	PRINTW 밤이 깊어진다···
+ENDIF
+CALL DAY_EFFECT
+
+;────────────────────────────────────
+;NEWDAYを呼び出し
+;────────────────────────────────────
+@EVENTSHOP
+#PRI

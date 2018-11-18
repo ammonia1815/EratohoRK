@@ -1,0 +1,138 @@
+﻿;────────────────────────────────────
+;ゲージを表示
+;────────────────────────────────────
+;아라이멘도のバーの色が少しキツイ感が했다ので微調整。無駄にボタン化するのを回避。他、微調整@revkoishi(14/05/26)
+@INFO_GAUGE_TRAINER
+#LOCALSSIZE 1
+PRINTFORM %CALLNAME:TARGET% [LV {CFLAG:TARGET:죠교레벨}  EXP {CFLAG:TARGET:죠교경험}/{CFLAG:TARGET:필요경험치}] 하지만
+PRINTFORML %CALLNAME:MASTER% [LV {CFLAG:MASTER:죠교레벨}  EXP {CFLAG:MASTER:죠교경험}/{CFLAG:MASTER:필요경험치}] (을)를 조교중
+LOCALS = %CALLNAME:TARGET%의 상태:[%CONDITION(TCVAR:상태변화)%]\@ FLAG:디버그 ? %"　"%피폐[{TFLAG:조교자소모도}] # \@
+;OriginalString : %LOCALS,54,LEFT% %CALLNAME:MASTER%의 상태:[%CONDITION(TCVAR:MASTER:상태변화)%]\@ FLAG:디버그 ? %"　"%피폐[{TFLAG:소모도}] # \@
+PRINTPLAINFORM %LOCALS,54,LEFT% %CALLNAME:MASTER%상태:[%CONDITION(TCVAR:MASTER:상태변화)%]\@ FLAG:디버그 ? %"　"%피폐[{TFLAG:소모도}] # \@
+PRINTL 
+
+;호감도表示         //このあたりはもう少しやりようがある感
+IF TALENT:MASTER:독심능력 == 1
+	SELECTCASE CFLAG:호의
+		CASE IS < -100
+			LOCALS = %CALLNAME:MASTER%에의 호감도：最悪
+		CASE IS < 0
+			LOCALS = %CALLNAME:MASTER%에의 호감도：とても悪い
+		CASE IS < 200
+			LOCALS = %CALLNAME:MASTER%에의 호감도：悪い
+		CASE IS < 500
+			LOCALS = %CALLNAME:MASTER%에의 호감도：普通
+		CASE IS < 1000
+			LOCALS = %CALLNAME:MASTER%에의 호감도：少し気になる
+		CASE IS < 1500
+			LOCALS = %CALLNAME:MASTER%에의 호감도：どきどき
+		CASE IS < 2000
+			LOCALS = %CALLNAME:MASTER%에의 호감도：好き
+		CASE IS < 3000
+			LOCALS = %CALLNAME:MASTER%에의 호감도：大好き
+		CASE IS < 5000
+			LOCALS = %CALLNAME:MASTER%에의 호감도：%CALLNAME:MASTER%なしではいられない
+		CASEELSE
+			LOCALS = %CALLNAME:MASTER%에의 호감도：CAUTION!!限界突破!!CAUTION
+	ENDSELECT
+ELSEIF TALENT:MASTER:독심능력 == 2
+	LOCALS = %CALLNAME:MASTER%에의 호감도[{CFLAG:TARGET:호의}] 
+ELSE
+	LOCALS =
+ENDIF
+;OriginalString : %LOCALS,54,LEFT% %CALLNAME:TARGET%에의 호감도[{CFLAG:TARGET:M호의}]
+PRINTPLAINFORM %LOCALS,54,LEFT% %CALLNAME:TARGET%에의 호감도[{CFLAG:TARGET:M호의}]
+PRINTL 
+
+HTML_PRINT HTML_BASE("체력", TARGET, 0) + "　　" + HTML_BASE("체력", MASTER, 0)
+HTML_PRINT HTML_BASE("기력", TARGET, 1) + "　　" + HTML_BASE("기력", MASTER, 1)
+
+LOCALS '= ""
+IF PENIS(TARGET) || PENIS(MASTER)
+	IF PENIS(TARGET)
+		LOCALS += HTML_BASE("사정", TARGET, 2)
+	ELSE
+		LOCALS += "　　　　　　　　　　　　　　　　　　　　　　　　　 "
+	ENDIF
+	LOCALS += "　　"
+	SIF PENIS(MASTER)
+		LOCALS += HTML_BASE("사정", MASTER, 2)
+	HTML_PRINT LOCALS
+ENDIF
+
+LOCALS '= ""
+IF TALENT:TARGET:모유체질 || TALENT:MASTER:모유체질
+	IF TALENT:TARGET:모유체질
+		LOCALS += HTML_BASE("모유", TARGET, 3)
+	ELSE
+		LOCALS += ""
+	ENDIF
+	LOCALS += "　　"
+	SIF TALENT:MASTER:모유체질
+		LOCALS += HTML_BASE("모유", MASTER, 3)
+	HTML_PRINT LOCALS
+ENDIF
+SIF TALENT:MASTER:오줌싸개
+	HTML_PRINT "　　　　　　　　　　　　　　　　　　　　　　　　　　　 " + HTML_BASE("소변", MASTER, 4)
+
+IF PENIS(MASTER)
+	{
+	HTML_PRINT 
+	 "　　　　　　　　　　　　　　　　　　　　　　　　　　　 발기"
+	+ LAYER_RECTBAR(TCVAR:MASTER:발기도, MAX(TCVAR:MASTER:발기도, 1000), 16, 0xC070C0, 0x502050, , , 30)
+	+ @"({TCVAR:MASTER:발기도,5}/ 1000)　"
+	}
+ENDIF
+
+SELECTCASE TALENT:MASTER:독심능력
+	CASE 1
+		HTML_PRINT @"이성[%TENSION(TARGET, 5)%]" + "　　　　　　　　　　　　　　　　　　　　　　 " + HTML_BASE("이성", MASTER, 5)
+		LOCALS += @"흥미[%TENSION(TARGET, 6)%]："
+		LOCALS += @"苛立[%TENSION(TARGET, 7)%]："
+		LOCALS += @"만족[%TENSION(TARGET, 8)%]"
+		HTML_PRINT LOCALS
+	CASE 2
+		HTML_PRINT HTML_BASE("이성", TARGET, 5, 32, 1) + "　　" + HTML_BASE("이성", MASTER, 5)
+		LOCALS '= ""
+		HTML_PRINT HTML_BASE("흥미", TARGET, 6, 32, 1)
+		HTML_PRINT HTML_BASE("苛立", TARGET, 7, 32, 1)
+		HTML_PRINT HTML_BASE("만족", TARGET, 8, 32, 1)
+		PRINTFORM 죄악감[{CFLAG:TARGET:죄책감}]　아라이먼트
+		HTML_PRINT LOCALS
+		LOCAL = GETCOLOR()
+		SETCOLOR CFLAG:TARGET:아라이멘도 >= 0 ? 0x0041FF # 0xFF2800
+		BAR CFLAG:TARGET:아라이멘도 + 100, 199, 32
+		SETCOLOR LOCAL
+;OriginalString : [{CFLAG:TARGET:아라이멘도}]
+		PRINTPLAINFORM [{CFLAG:TARGET:아라이멘도}]
+		PRINTL 
+	CASEELSE
+		LOCALS += "　　　　　　　　　　　　　　　　　　　　　　　　　　　 " + HTML_BASE("이성", MASTER, 5)
+		HTML_PRINT LOCALS
+ENDSELECT
+;────────────────────────────────────
+;조수のゲージを表示
+;────────────────────────────────────
+;@INFO_GAUGE_ASSI
+;조수関連の処理は今回見送り
+;IF ASSIPLAY
+;	IF TALENT:ASSI:후타나리 || TALENT:ASSI:남자
+;		PRINT 사정（조수）
+;		BAR BASE:ASSI:2,MAXBASE:ASSI:2,32
+;		PRINTFORML ({BASE:ASSI:2}/{MAXBASE:ASSI:2})
+;	ENDIF
+;ENDIF
+
+
+;────────────────────────────────────
+;촉수のゲージを表示
+;────────────────────────────────────
+;@INFO_GAUGE_TENTACLE
+;촉수関連の処理も今回見送り
+;IF TEQUIP:촉수조교중
+;	SIF MAXBASE:MASTER:소변 == 0
+;		MAXBASE:MASTER:소변 == 10000
+;	PRINT 사정（촉수）
+;	BAR BASE:MASTER:4,MAXBASE:MASTER:4,32
+;	PRINTFORML ({BASE:MASTER:4}/{MAXBASE:MASTER:4})
+;ENDIF

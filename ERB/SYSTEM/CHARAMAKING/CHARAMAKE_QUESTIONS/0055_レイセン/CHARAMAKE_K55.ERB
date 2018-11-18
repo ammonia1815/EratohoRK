@@ -1,0 +1,116 @@
+﻿;レイセン＠ぱ。
+@CHARAMAKE_K55(ARG)
+SELECTCASE ARG
+	CASE 0
+;OriginalString : 「おはよう、夢よ。起きなさい」
+		PRINTFORMW 「안녕, 꿈이야. 일어나 주세요」
+	CASE 9
+;OriginalString : 「私が最後でいいのかな。この夢ももうすぐ終わるわ」
+		PRINTFORMW 「내가 최후로 좋은 것인지. 이 꿈도 이제 곧 끝나요」
+	CASEELSE
+;OriginalString : 「おはよう。残念？　まだ夢よ」
+		PRINTFORMW 「안녕. 유감？　아직 꿈이야」
+ENDSELECT
+;OriginalString : 
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+;OriginalString : 
+PRINTL 
+;OriginalString : 「どんな夢を見ています？　夢…誰かに追われる夢、見ませんか？」
+PRINTFORML 「어떤 꿈을 꾸고 있습니다？　몽…누군가에게 쫓기는 꿈, 보지 않습니까？」
+;OriginalString : 「罪を犯して追われるの。さあ、貴方は誰に追われているの？」
+PRINTFORMW 「죄를 범해 쫓겨. 자, 당신은 누구에 쫓기고 있어？」
+;OriginalString : 
+PRINTL 
+;OriginalString : [0] 答えない
+PRINTFORMDL [0] 대답하지 않는다
+;OriginalString : [1] 自分が裏切った仲間
+PRINTFORMDL [1] 자신이 배반한 동료
+;OriginalString : [2] 法をかざす警察官
+PRINTFORMDL [2] 법을 가리는 경찰관
+;OriginalString : [3] 嫉妬に狂う女
+PRINTFORMDL [3] 질투에 미치는 여자
+;OriginalString : [4] 誰も追ってこない
+PRINTFORMDL [4] 아무도 쫓아 오지 않는다
+CALL INPUTINTD(0, 1, 2, 3, 4)
+SELECTCASE RESULT
+	CASE 0
+;OriginalString : 「追われたことがないのかしら」
+		PRINTFORML 「쫓겼던 적이 없는 것일까」
+;OriginalString : 「…それとも、罪が大きく重すぎて顧みることができない？」
+		PRINTFORMW 「…그렇지 않으면, 죄가 크고 너무 무거워 돌아볼 수가 없다？」
+		;無回答の보정値は固定
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 1
+;OriginalString : 「理由なんて関係なく、裏切りは罪よ。合わせる顔もないのに追われるの」
+		PRINTFORML 「이유는 관계없이, 배반은 죄야. 맞추는 얼굴도 없는데 쫓겨」
+;OriginalString : 「一番辛いのはそれを追う者。とても、悲しいですよね」
+		PRINTFORMW 「제일 괴로운 것은 그것을 쫓는 사람. 매우, 슬프지요」
+		CALLF CM_PROF("攻撃", -20)
+		CALLF CM_PROF("被虐", 20)
+		CALLF CM_PROF("プライド", -20)
+		CALLF CM_PROF("衝動", 10)
+		CALLF CM_PROF("호기심", 10)
+		CALLF CM_PROF("수치", 30)
+		CALLF CM_PROF("楽観", -30)
+		CALLF CM_PROF("倒錯", 30)
+		CALLF CM_PROF("同性愛", 10)
+		CALLF CM_PROF("潔癖", -10)
+		CALLF CM_PROF("モラル", -10)
+		CALLF CM_PROF("神経質", 20)
+	CASE 2
+;OriginalString : 「法を破るのは罪。みんなが決めたみんなのためのルール、そりゃ正しいわ」
+		PRINTFORML 「법을 깨는 것은 죄. 모두가 결정한 모두의 유익의 룰, 그렇다면 올발라요」
+;OriginalString : 「違反者はみんなでボコボコにすればいいってことね」
+		PRINTFORMW 「위반자는 모두 보코보코로 하면 좋다는 일이군요」
+		CALLF CM_PROF("攻撃", 20)
+		CALLF CM_PROF("被虐", -10)
+		CALLF CM_PROF("솔직さ", 20)
+		CALLF CM_PROF("衝動", 10)
+		CALLF CM_PROF("수치", -20)
+		CALLF CM_PROF("楽観", -20)
+		CALLF CM_PROF("モラル", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 3
+;OriginalString : 「貴方を巡ってか、貴方が誑か했다人を巡ってか。どちらにしてもね」
+		PRINTFORML 「당신을 둘러싸인가, 당신이 광인가 한 사람을 둘러싸인가. 어느 쪽으로 해도」
+;OriginalString : 「結局、人心を惑わ했다貴方がその罪を背負い、逃げ回るのよね」
+		PRINTFORMW 「결국, 인심을 유혹한 당신이 그 죄를 짊어져, 도망치고 돌아」
+		CALLF CM_PROF("攻撃", 10)
+		CALLF CM_PROF("被虐", 20)
+		CALLF CM_PROF("솔직さ", -10)
+		CALLF CM_PROF("プライド", 10)
+		CALLF CM_PROF("衝動", 20)
+		CALLF CM_PROF("호기심", 20)
+		CALLF CM_PROF("수치", -10)
+		CALLF CM_PROF("楽観", 10)
+		CALLF CM_PROF("知性", -20)
+		CALLF CM_PROF("倒錯", 20)
+		CALLF CM_PROF("モラル", -10)
+		CALLF CM_PROF("神経質", -10)
+		CALLF CM_PROF("Ｃ好き", 10)
+	CASE 4
+;OriginalString : 「逃げても気に留められない。なくなっても問題がない、無い方がいい歯車」
+		PRINTFORML 「도망쳐도 기분에 둘 수 없다. 없어져도 문제가 없는, 없는 것이 좋은 톱니바퀴」
+;OriginalString : 「いなくなっても罪にならないのは、今までが罪だったってこと。悲しいわ」
+		PRINTFORMW 「없어져도 죄가 되지 않는 것은, 지금까지가 죄였다는 일. 슬퍼요」
+		CALLF CM_PROF("攻撃", -30)
+		CALLF CM_PROF("被虐", 20)
+		CALLF CM_PROF("솔직さ", -30)
+		CALLF CM_PROF("プライド", -30)
+		CALLF CM_PROF("衝動", -20)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("楽観", -30)
+		CALLF CM_PROF("倒錯", 20)
+		CALLF CM_PROF("同性愛", 10)
+		CALLF CM_PROF("潔癖", 20)
+		CALLF CM_PROF("モラル", 10)
+		CALLF CM_PROF("神経質", 20)
+		CALLF CM_PROF("Ｃ好き", -10)
+		CALLF CM_PROF("Ａ好き", 10)
+ENDSELECT
+RETURN 1

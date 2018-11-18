@@ -1,0 +1,249 @@
+﻿;────────────────────────────────────
+;050,자위를 시작한다（자위、열락、반항、징계・포인트）
+;────────────────────────────────────
+@COM50
+;자위処理
+CALL ONANIE_APPLY
+;열락、굴종SOURCE増加
+SOURCE:MASTER:열락 += (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) / 1000
+SOURCE:MASTER:굴종 += 250 + (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) * (GET_ABL(MASTER, "욕망") + 10) / 300
+LOCAL = (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) * (3 + TALENT:심술궂음) / 50
+SIF LOCAL > 100
+	LOCAL = 100
+;-------------------------------------------------
+;ACTが휴식시킨다、もしくは봉사系ならREACT분류は거부扱いに。징계・포인트加算でCOMGRO受け入れるは違和感という事も含めての処置
+;さらにSET_COMGRO, SET_COMIMPをREACT파생代入箇所と統合@/L
+;-------------------------------------------------
+;죠교자が만족してるなら징계・にならないかもしれません
+IF BASE:만족 / 100 + CFLAG:MASTER:죠교레벨 / 2 < BASE:초조함 / 100 + RAND:5 || MENUMATCH(TFLAG:ACT, "봉사") || IS_NOWACTNAME("휴식시킨다")
+	;징계・포인트加算
+	TFLAG:징계・포인트 += LOCAL
+	;派生：勝손にオナニーするな
+	TFLAG:REACT파생 = 1
+	;REACT분류:거부をセット
+	CALL SET_COMGRO("거부")
+	;REACT인상はCOM40,거부한다に準じて悪印象大
+	CALL SET_COMIMP("悪印象大")
+	;의존도변화
+	CALL ADD_DEPEND(-3, +2)
+ELSE
+	;派生：勝손にオナニーしてるけどいいか
+	TFLAG:REACT파생 = 0
+	;REACT분류:受け入れるをセット
+	CALL SET_COMGRO("受け入れる")
+	;REACT인상は悪印象小
+	CALL SET_COMIMP("悪印象小")
+	;의존도변화
+	CALL ADD_DEPEND(-1, 0)
+ENDIF
+;참다플래그解消
+TCVAR:MASTER:참다 = 0
+RETURN 1
+
+
+;────────────────────────────────────
+;051,도구를 제거한다（쾌Ｃ、쾌Ａ、달성逆、반항、징계・포인트）
+;────────────────────────────────────
+@COM51
+;달성SOURCE減少
+SOURCE:MASTER:달성 -= 100 + (CFLAG:M호의 - 500) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ) / 1000
+;반항SOURCE増加
+SOURCE:MASTER:반항 += 250 + SOURCE:MASTER:쾌Ｖ / 2 + SOURCE:MASTER:쾌Ａ / 2 + (CFLAG:MASTER:죠교레벨 + 1) * (GET_ABL(MASTER, "기교") + 10) * CFLAG:M호의 / 100
+;도구를 제거한다の우선順判定。一度は一つまで。最初はランダム１～３外す予定だったが何だか面倒で
+;外했다도구のTEQUIP번호がREACT파생に入る
+IF TEQUIP:눈가리개
+	TEQUIP:눈가리개 = 0
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "눈가리개")
+ELSEIF TEQUIP:관장그릇＋플러그
+	SOURCE:MASTER:쾌Ａ = 500 * TEQUIP:관장그릇＋플러그 * (100 + RAND:11 - RAND:11) / 100
+	TEQUIP:관장그릇＋플러그 = 0
+	;남자はＡで전립선자극
+	SIF TALENT:MASTER:남자
+		TCVAR:MASTER:전립선자극 += 1
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "관장그릇＋플러그")
+ELSEIF TEQUIP:항문바이브
+	TEQUIP:항문바이브 = 0
+	;남자はＡで전립선자극
+	SIF TALENT:MASTER:남자
+		TCVAR:MASTER:전립선자극 += 1
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "항문바이브")
+ELSEIF TEQUIP:바이브
+	TEQUIP:바이브 = 0
+	TCVAR:MASTER:전립선자극 += 1
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "바이브")
+ELSEIF TEQUIP:오나홀
+	SOURCE:MASTER:쾌Ｃ = 50 * (TALENT:MASTER:도구능숙 + 1) * GET_ABL(MASTER, "기교") * CFLAG:MASTER:죠교레벨 / 10
+	TEQUIP:오나홀 = 0
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "오나홀")
+ELSEIF TEQUIP:클리캡
+	SOURCE:MASTER:쾌Ｃ = 50 * (TALENT:MASTER:도구능숙 + 1) * GET_ABL(MASTER, "기교") * CFLAG:MASTER:죠교레벨 / 10
+	TEQUIP:클리캡 = 0
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "클리캡")
+ELSEIF TEQUIP:볼개그
+	TEQUIP:볼개그 = 0
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "볼개그")
+ELSEIF TEQUIP:유두캡
+	TEQUIP:유두캡 = 0
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "유두캡")
+ELSEIF TEQUIP:페니스밴드
+	TEQUIP:페니스밴드 = 0
+	TCVAR:MASTER:전립선자극 += 1
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "페니스밴드")
+ELSE
+	SOURCE:MASTER:쾌Ａ = 50 * TEQUIP:항문비즈 + 50 * TEQUIP:항문비즈 + (TALENT:MASTER:도구능숙 + 1) * GET_ABL(MASTER, "기교") * CFLAG:MASTER:죠교레벨 * (TEQUIP:항문비즈 - 1) / 10
+	TEQUIP:항문비즈 = 0
+	;남자はＡで전립선자극
+	SIF TALENT:MASTER:남자
+		TCVAR:MASTER:전립선자극 += 2
+	TFLAG:REACT파생 = GETNUM(TEQUIP, "항문비즈")
+ENDIF
+;죠교대상자위を中断
+TEQUIP:자위중 &= ~1
+;징계・포인트加算
+LOCAL = (BASE:초조함 / 100 + PALAM:MASTER:반항 / 1000) * (GET_TRAINLV(TARGET) + 5) + 5 + RAND:10
+SIF LOCAL > 100
+	LOCAL = 100
+TFLAG:징계・포인트 += LOCAL
+;暴れたように設定
+;COM分類
+CALL SET_COMGRO("날뛴다")
+;COM印象
+CALL SET_COMIMP("悪印象大")
+;의존도변화
+CALL ADD_DEPEND(-3, -10)
+RETURN 1
+
+
+;────────────────────────────────────
+;052,이루는대로（効果なし。実行できる反応が一つもない時の救済、필요かどうかはわかりませんが）
+;필요になってしまったので改名し、多少内容を整備。
+;────────────────────────────────────
+@COM52
+;派性の処理
+;일회휴게
+IF TFLAG:일회휴게 == 1
+	TFLAG:REACT파생 = -1
+;성교系ACT・역강간
+ELSEIF MENUMATCH(TFLAG:ACT, "성교") && !IS_NOWACTNAME("기승위") || IS_NOWACTNAME("역강간")
+	;無抵抗に犯される
+	TFLAG:REACT파생 = 1
+	;COM分類
+	CALL SET_COMGRO("受け入れる")
+	;의존도변화
+	CALL ADD_DEPEND(+4, +10)
+;성교봉사系ACT・기승위
+ELSEIF MENUMATCH(TFLAG:ACT, "성봉") && !IS_NOWACTNAME("역강간") || IS_NOWACTNAME("기승위")
+	;溺れたように허리를 흔든다
+	TFLAG:REACT파생 = 2
+	;COM分類
+	CALL SET_COMGRO("受け入れる")
+	;의존도변화
+	CALL ADD_DEPEND(+10, +10)
+;의상変更・자위・방뇨・開帳・이라마치오
+ELSEIF IS_NOWACTNAME("의상 변경을 요구한다/자위/비패개장/방뇨/이라마치오")
+	;言われるままゆっくり従う
+	TFLAG:REACT파생 = 3
+	;COM分類
+	CALL SET_COMGRO("受け入れる")
+	;의존도변화
+	CALL ADD_DEPEND(+4, +10)
+;봉사系ACT
+ELSEIF MENUMATCH(TFLAG:ACT, "봉사")
+	;魅入られたように봉사を繰り返す
+	TFLAG:REACT파생 = 4
+	;COM分類
+	CALL SET_COMGRO("受け入れる")
+	;의존도변화
+	CALL ADD_DEPEND(+8, +10)
+;脅す・기분나쁘게 웃다・매도・고함치다・징계・
+ELSEIF IS_NOWACTNAME("엄하게 위협한다/징계한다고 위협한다/고함치다/기분나쁘게 웃다/매도")
+	;반항적な素質があり、굴복각인5以下
+	IF MARK:굴복각인 <= 5 && (TALENT:MASTER:굳셈 || TALENT:MASTER:프라이드높음 || TALENT:MASTER:건방짐 || TALENT:MASTER:반항적)
+		;悔しそうに睨む
+		TFLAG:REACT파생 = 5
+		;의존도변화
+		CALL ADD_DEPEND(0, -2)
+	ELSE
+		;怯えたように見つめる
+		TFLAG:REACT파생 = 6
+		;의존도변화
+		CALL ADD_DEPEND(+2, +10)
+	ENDIF
+	;COM分類
+	CALL SET_COMGRO("소극적으로 한다")
+;가학系ACT・または고통が大きい
+ELSEIF SOURCE:MASTER:고통 > 400 || MENUMATCH(TFLAG:ACT, "가학")
+	;声にならない悲鳴を上げてのたうちまわる
+	TFLAG:REACT파생 = 7
+	;COM分類
+	CALL SET_COMGRO("소극적으로 한다")
+	;의존도변화
+	CALL ADD_DEPEND(+8, +10)
+;快感がある
+ELSEIF SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ > 10
+	;회화系ACT
+	IF MENUMATCH(TFLAG:ACT, "회화")
+		;자위중
+		IF GETBIT(TEQUIP:자위중, 0)
+			;おなにーに夢中で聞いてない
+			TFLAG:REACT파생 = 8
+			;COM印象
+			CALL SET_COMIMP("悪印象小")
+			;COM分類
+			CALL SET_COMGRO("受け入れる")
+			;의존도변화
+			CALL ADD_DEPEND(-2, +2)
+		ELSE
+			;気持ちよくって生返事
+			TFLAG:REACT파생 = 9
+			;COM分類
+			CALL SET_COMGRO("受け入れる")
+			;의존도변화
+			CALL ADD_DEPEND(+4, +2)
+		ENDIF
+	ELSE
+		;頭真っ白恍惚상태
+		TFLAG:REACT파생 = 10
+		;COM分類
+		CALL SET_COMGRO("受け入れる")
+		;의존도변화
+		CALL ADD_DEPEND(+4, +10)
+	ENDIF
+;회화系ACT
+ELSEIF MENUMATCH(TFLAG:ACT, "회화")
+	;自分でもわからないまま恥ずかしいことを입走る
+	TFLAG:REACT파생 = 11
+	;COM分類
+	CALL SET_COMGRO("受け入れる")
+	;의존도변화
+	CALL ADD_DEPEND(+8, +4)
+;どれでもない
+ELSE
+	TFLAG:REACT파생 = 0
+	;COM分類
+	CALL SET_COMGRO("受け入れる")
+	;의존도변화
+	CALL ADD_DEPEND(+4, +10)
+ENDIF
+
+;快感系보정
+IF SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ > 10
+	;快ＸSOURCE増加
+	TIMES SOURCE:MASTER:쾌Ｃ , 1.20
+	TIMES SOURCE:MASTER:쾌Ｖ , 1.20
+	TIMES SOURCE:MASTER:쾌Ａ , 1.20
+	TIMES SOURCE:MASTER:쾌Ｂ , 1.20
+	;이탈SOURCE減少
+	TIMES SOURCE:MASTER:이탈 , 0.70
+	;트라우마化加速
+	TIMES SOURCE:MASTER:트라우마 , 1.30
+	;굴종、열락SOURCE増加
+	SOURCE:MASTER:굴종 += 50 + (MARK:MASTER:쾌락각인 + 1) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) * CFLAG:MASTER:죠교레벨 / 200
+	SOURCE:MASTER:열락 += 100 + SOURCE:MASTER:쾌Ｃ / 25 + SOURCE:MASTER:쾌Ｖ / 25 + SOURCE:MASTER:쾌Ａ / 25 + SOURCE:MASTER:쾌Ｂ / 25
+ENDIF
+
+;굴복系보정
+;굴종SOURCE増加
+SOURCE:MASTER:굴종 += 50 + MARK:MASTER:고통각인 * 20 + GET_ABL(MASTER, "마조끼") * CFLAG:MASTER:죠교레벨 * 2
+
+RETURN 1

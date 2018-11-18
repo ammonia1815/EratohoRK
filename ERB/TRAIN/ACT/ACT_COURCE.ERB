@@ -1,0 +1,598 @@
+﻿;────────────────────────────────────
+;죠교방침の判定 (휴식1/소프트2/노멀3/하드4/이상5)
+;────────────────────────────────────
+@ACT_COURSE
+#LOCALSSIZE 10
+#DIMS 방침種
+
+방침種 = 휴식/소프트/노멀/하드/이상
+
+;変数を初期化
+CALL SET_CRI_VAR, 방침種
+
+LOCALS = ACT_COURCE
+
+CALL CHA_CRI_VAR, @"本日の방침(%POLICY("금일")%)"
+CALLFORM %LOCALS%_OF_TODAY
+
+CALL CHA_CRI_VAR, "죠교자の素質"
+CALLFORM %LOCALS%_TALENT_T
+
+CALL CHA_CRI_VAR, "죠교자の能力"
+CALLFORM %LOCALS%_ABL_T
+
+CALL CHA_CRI_VAR, "죠교대상の能力"
+CALLFORM %LOCALS%_ABL_M
+
+CALL CHA_CRI_VAR, "죠교자の아라이멘도"
+CALLFORM %LOCALS%_ALI
+
+CALL CHA_CRI_VAR, "죠교자の죄책감"
+CALLFORM %LOCALS%_SIN
+
+CALL CHA_CRI_VAR, @"죠교자の상태(%CONDITION(TCVAR:상태변화)%)"
+CALLFORM %LOCALS%_CONDITION_T
+
+CALL CHA_CRI_VAR, "죠교대상の疲労"
+CALLFORM %LOCALS%_TIRED
+
+CALL CHA_CRI_VAR, "죠교자の체력"
+CALLFORM %LOCALS%_PHYSICAL_T
+
+CALL CHA_CRI_VAR, "죠교자の기력"
+CALLFORM %LOCALS%_MENTAL_T
+
+CALL CHA_CRI_VAR, "죠교자の이성"
+CALLFORM %LOCALS%_REASON_T
+
+CALL CHA_CRI_VAR, "죠교자の흥미"
+CALLFORM %LOCALS%_INTEREST_T
+
+CALL CHA_CRI_VAR, "죠교자の공포"
+CALLFORM %LOCALS%_TERROR_T
+
+CALL CHA_CRI_VAR, "죠교자の反感"
+CALLFORM %LOCALS%_ANGER_T
+
+CALL CHA_CRI_VAR, "발기도(요강제발기모드)"
+CALLFORM %LOCALS%_ERECTION_M
+
+CALL CHA_CRI_VAR, "전회コマンド"
+CALLFORM %LOCALS%_PREVCOM
+
+CALL CHA_CRI_VAR, "TEQUIP"
+CALLFORM %LOCALS%_TEQUIP
+
+CALL CHA_CRI_VAR, "징계・"
+CALLFORM %LOCALS%_OSHIOKI
+
+CALL CHA_CRI_VAR, "ヒート値"
+CALLFORM %LOCALS%_HEAT(방침種)
+
+CALL CHA_CRI_VAR, "状況による방침制限"
+CALLFORM %LOCALS%_PLAYNOW
+
+;SANDBOX限定処理
+CALL CHA_CRI_VAR, "暫定処理"
+;SANDBOX限定処理
+SIF FLAG:모드 == 1
+	CALL ADD_CRI_VAR("휴식", -99)
+
+;──────────────────────────────
+;最終判定、引き分ける時の우선順はﾉｰﾏﾙ3＞ｿﾌﾄ2＞ﾊｰﾄﾞ4＞이상5＞휴식1
+;──────────────────────────────
+SPLIT 방침種, "/", LOCALS
+CALL DEF_CRI_VAR("最大우선指定-노멀/소프트/하드/이상/휴식")
+LOCAL = GET_CRI_VAR("決定")
+IF LOCAL == -1
+;OriginalString : 죠교방침カウンタが이상です
+	PRINTW 조교 방침 카운터가 이상합니다
+	TFLAG:턴방침 = 3
+ELSE
+	TFLAG:턴방침 = FINDELEMENT(LOCALS, RESULTS, , , 1) + 1
+ENDIF
+CALL ANA_CRI_VAR()
+
+;-------------------------------------------
+;本日の방침
+;0=いつもどおり/1=A開発/2=징계・/3=하드/4=イチャイチャ/5=이상/6=야외/7=이상/8=휴식
+;TFLAG:금일의방침で관리されている
+;ここで영향するのは４방침のみなので注意
+;-------------------------------------------
+@ACT_COURCE_OF_TODAY
+;금일의방침
+SELECTCASE POLICY("금일")
+	CASE "항문"
+		CALL ADD_CRI_VAR("소프트"  , -5)
+	CASE "하드"
+		CALL ADD_CRI_VAR("소프트"  , -5)
+		CALL ADD_CRI_VAR("노멀", -2)
+		CALL ADD_CRI_VAR("하드"  ,  5)
+		CALL ADD_CRI_VAR("이상"    ,  5)
+	CASE "イチャイチャ"
+		CALL ADD_CRI_VAR("소프트"  , 10)
+	CASE "이상"
+		CALL ADD_CRI_VAR("하드"  ,  0, 20)
+		CALL ADD_CRI_VAR("이상"    ,  0, 20)
+ENDSELECT
+
+;-------------------------------------------
+;죠교자の성격보정
+;ARGが省略당했다場合はTARGETを参照する
+;というか特にこだわりがなければTARGET以外を見ることはないと思いますが一応
+;-------------------------------------------
+@ACT_COURCE_TALENT_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+
+;휴식の보정値
+;============
+SIF TALENT:LOCAL:겁쟁이               ;10,        겁쟁이
+	CALL ADD_CRI_VAR("휴식",  0, 3)
+SIF TALENT:LOCAL:반항적             ;11,      반항적
+	CALL ADD_CRI_VAR("휴식", -1)
+SIF TALENT:LOCAL:굳셈               ;12,        굳셈
+	CALL ADD_CRI_VAR("휴식", -1)
+SIF TALENT:LOCAL:얌전한           ;14,    얌전한
+	CALL ADD_CRI_VAR("휴식",  2)
+SIF TALENT:LOCAL:건방짐             ;16,      건방짐
+	CALL ADD_CRI_VAR("휴식", -2)
+SIF TALENT:LOCAL:감정결여         ;24,  감정결여
+	CALL ADD_CRI_VAR("휴식", -1)
+SIF TALENT:LOCAL:튀고싶어함       ;29,튀고싶어함
+	CALL ADD_CRI_VAR("휴식", -2)
+SIF TALENT:LOCAL:신중함               ;84,        신중함
+	CALL ADD_CRI_VAR("휴식",  2)
+SIF TALENT:LOCAL:민감               ;85,        민감
+	CALL ADD_CRI_VAR("휴식", -2)
+SIF TALENT:LOCAL:마음씨착한         ;87,  마음씨착한
+	CALL ADD_CRI_VAR("휴식",  2)
+SIF TALENT:LOCAL:유치               ;88,        유치
+	CALL ADD_CRI_VAR("휴식", -1)
+
+
+;소프트の보정値
+;==============
+SIF TALENT:LOCAL:임신                  ; 2,        임신
+	CALL ADD_CRI_VAR("소프트",  6)
+SIF TALENT:LOCAL:겁쟁이                  ;10,        겁쟁이
+	CALL ADD_CRI_VAR("소프트",  0,  5)
+SIF TALENT:LOCAL:굳셈                  ;12,        굳셈
+	CALL ADD_CRI_VAR("소프트",  0, -4)
+SIF TALENT:LOCAL:얌전한              ;14,    얌전한
+	CALL ADD_CRI_VAR("소프트",  0,  5)
+SIF TALENT:LOCAL:건방짐                ;16,      건방짐
+	CALL ADD_CRI_VAR("소프트", -1)
+SIF TALENT:LOCAL:자제심                ;20,      자제심
+	CALL ADD_CRI_VAR("소프트",  2)
+SIF TALENT:LOCAL:충동적                ;21,      충동적
+	CALL ADD_CRI_VAR("소프트",  0, -5)
+SIF TALENT:LOCAL:일선을넘지않음          ;28,일선을넘지않음
+	CALL ADD_CRI_VAR("소프트",  2)
+SIF TALENT:LOCAL:청초                  ;37,        청초
+	CALL ADD_CRI_VAR("소프트",  2)
+SIF TALENT:LOCAL:새드                  ;83,        새드
+	CALL ADD_CRI_VAR("소프트", -1, -5)
+SIF TALENT:LOCAL:신중함                  ;84,        신중함
+	CALL ADD_CRI_VAR("소프트",  1)
+SIF TALENT:LOCAL:심술궂음                ;86,      심술궂음
+	CALL ADD_CRI_VAR("소프트", -2)
+SIF TALENT:LOCAL:마음씨착한            ;87,  마음씨착한
+	CALL ADD_CRI_VAR("소프트",  2)
+
+
+;노멀の보정値
+;================
+SIF TALENT:LOCAL:임신                   ; 2,        임신
+	CALL ADD_CRI_VAR("노멀", 0,  3)
+SIF TALENT:LOCAL:자제심                 ;20,      자제심
+	CALL ADD_CRI_VAR("노멀", 1)
+SIF TALENT:LOCAL:감정결여             ;24  ,감정결여
+	CALL ADD_CRI_VAR("노멀", 1)
+SIF TALENT:LOCAL:정서적               ;25,    정서적
+	CALL ADD_CRI_VAR("노멀", 0,  1)
+SIF TALENT:LOCAL:일선을넘지않음           ;28,일선을넘지않음
+	CALL ADD_CRI_VAR("노멀", 1)
+SIF TALENT:LOCAL:해방                   ;33,        해방
+	CALL ADD_CRI_VAR("노멀", 0,  5)
+SIF TALENT:LOCAL:청초                   ;37,        청초
+	CALL ADD_CRI_VAR("노멀", 1)
+SIF TALENT:LOCAL:새드                   ;83,        새드
+	CALL ADD_CRI_VAR("노멀", 0, -2)
+SIF TALENT:LOCAL:민감                   ;85,        민감
+	CALL ADD_CRI_VAR("노멀", 0,  3)
+SIF TALENT:LOCAL:마음씨착한             ;87,  마음씨착한
+	CALL ADD_CRI_VAR("노멀", 1)
+
+
+;하드の보정値
+;==============
+SIF TALENT:LOCAL:임신                  ; 2,        임신
+	CALL ADD_CRI_VAR("하드", -4)
+SIF TALENT:LOCAL:겁쟁이                  ;10,        겁쟁이
+	CALL ADD_CRI_VAR("하드", -1)
+SIF TALENT:LOCAL:굳셈                  ;12,        굳셈
+	CALL ADD_CRI_VAR("하드",  1)
+SIF TALENT:LOCAL:얌전한              ;14,    얌전한
+	CALL ADD_CRI_VAR("하드",  0, -3)
+SIF TALENT:LOCAL:건방짐                ;16,      건방짐
+	CALL ADD_CRI_VAR("하드",  0,  6)
+SIF TALENT:LOCAL:자제심                ;20,      자제심
+	CALL ADD_CRI_VAR("하드",  -1)
+SIF TALENT:LOCAL:충동적                ;21,      충동적
+	CALL ADD_CRI_VAR("하드", IS_CONDITION(TARGET, "분노") ? 5 # 0, 7)
+SIF TALENT:LOCAL:정서적              ;25,    정서적
+	CALL ADD_CRI_VAR("하드",  0,  4)
+SIF TALENT:LOCAL:튀고싶어함          ;29,튀고싶어함
+	CALL ADD_CRI_VAR("하드",  0,  4)
+SIF TALENT:LOCAL:억압                  ;32,        억압
+	CALL ADD_CRI_VAR("하드", -2)
+SIF TALENT:LOCAL:해방                  ;33,        해방
+	CALL ADD_CRI_VAR("하드",  0,  4)
+SIF TALENT:LOCAL:새드                  ;83,        새드
+	CALL ADD_CRI_VAR("하드",  5)
+SIF TALENT:LOCAL:민감                  ;85,        민감
+	CALL ADD_CRI_VAR("하드",  0,  5)
+SIF TALENT:LOCAL:심술궂음                ;86,      심술궂음
+	CALL ADD_CRI_VAR("하드",  2)
+SIF TALENT:LOCAL:마음씨착한            ;87,  마음씨착한
+	CALL ADD_CRI_VAR("하드", -2)
+
+
+;이상の보정値
+;============
+SIF TALENT:LOCAL:임신                ; 2,        임신
+	CALL ADD_CRI_VAR("이상", -5)
+SIF TALENT:LOCAL:겁쟁이                ;10,        겁쟁이
+	CALL ADD_CRI_VAR("이상",  0, -4)
+SIF TALENT:LOCAL:얌전한            ;14,    얌전한
+	CALL ADD_CRI_VAR("이상", -2)
+SIF TALENT:LOCAL:건방짐              ;16,      건방짐
+	CALL ADD_CRI_VAR("이상",  0,  2)
+SIF TALENT:LOCAL:자제심              ;20,      자제심
+	CALL ADD_CRI_VAR("이상", -2)
+SIF TALENT:LOCAL:충동적              ;21,      충동적
+	CALL ADD_CRI_VAR("이상",  0, IS_CONDITION(LOCAL, "분노") ? 8 + 9 # 9)
+SIF TALENT:LOCAL:감정결여          ;24,  감정결여
+	CALL ADD_CRI_VAR("이상", -1)
+SIF TALENT:LOCAL:정서적            ;25,    정서적
+	CALL ADD_CRI_VAR("이상",  0,  3)
+SIF TALENT:LOCAL:일선을넘지않음        ;28,일선을넘지않음
+	CALL ADD_CRI_VAR("이상", -3)
+SIF TALENT:LOCAL:튀고싶어함        ;29,튀고싶어함
+	CALL ADD_CRI_VAR("이상",  0,  3)
+SIF TALENT:LOCAL:억압                ;32,        억압
+	CALL ADD_CRI_VAR("이상", -3)
+SIF TALENT:LOCAL:해방                ;33,        해방
+	CALL ADD_CRI_VAR("이상",  0,  3)
+SIF TALENT:LOCAL:새드                ;83,        새드
+	CALL ADD_CRI_VAR("이상",  2)
+SIF TALENT:LOCAL:신중함                ;84,        신중함
+	CALL ADD_CRI_VAR("이상", -2)
+SIF TALENT:LOCAL:마음씨착한          ;87,  마음씨착한
+	CALL ADD_CRI_VAR("이상", -3)
+SIF TALENT:LOCAL:광기                ;89,        광기
+	CALL ADD_CRI_VAR("이상",  5, 10)
+
+
+;-------------------------------------------
+;죠교자のABL보정
+;ARGが省略당했다場合はTARGETを参照する
+;というか特にこだわりがなければTARGET以外を見ることはないと思いますが一応
+;-------------------------------------------
+@ACT_COURCE_ABL_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+;욕망
+CALL ADD_CRI_VAR("휴식", -ABL:LOCAL:욕망)
+
+;봉사정신
+CALL ADD_CRI_VAR("소프트"  , LINE_CALC(ABL:LOCAL:봉사정신, "0→0,5→2,LIMIT/0～2"))
+CALL ADD_CRI_VAR("노멀", LINE_CALC(ABL:LOCAL:봉사정신, "0→0,5→4,LIMIT/0～4"))
+
+;가학
+CALL ADD_CRI_VAR("노멀", LINE_CALC(ABL:LOCAL:가학, "0→0,5→-2,LIMIT/-2～0"))
+CALL ADD_CRI_VAR("하드"  , LINE_CALC(ABL:LOCAL:가학, "0→0,5→4,LIMIT/0～4"))
+
+;이상
+CALL ADD_CRI_VAR("하드", LINE_CALC(ABL:LOCAL:이상, "0→0,5→2,LIMIT/0～2"))
+CALL ADD_CRI_VAR("이상"  , LINE_CALC(ABL:LOCAL:이상, "0→0,5→4,LIMIT/0～4"))
+
+;-------------------------------------------
+;죠교대상のABL보정
+;ARGが省略당했다場合はMASTERを参照する
+;というか特にこだわりがなければMASTER以外を見ることはないと思いますが一応
+;-------------------------------------------
+@ACT_COURCE_ABL_M, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # MASTER
+;죠교Lv(ABLと似たようなものだしここで処理)
+CALL ADD_CRI_VAR("소프트"  , LINE_CALC(CFLAG:LOCAL:죠교레벨, "0→2,9→-1,LIMIT/-1～2"))
+CALL ADD_CRI_VAR("노멀", LINE_CALC(CFLAG:LOCAL:죠교레벨, "0→1,9→-1,LIMIT/-1～1"))
+CALL ADD_CRI_VAR("하드"  , LINE_CALC(CFLAG:LOCAL:죠교레벨, "0→-2,9→2,LIMIT/-2～2"))
+
+;-------------------------------------------
+;죠교자のALI보정
+;ARGが省略당했다場合はTARGETを参照する
+;というか特にこだわりがなければTARGET以外を見ることはないと思いますが一応
+;-------------------------------------------
+@ACT_COURCE_ALI, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("소프트"  , LINE_CALC(CFLAG:LOCAL:아라이멘도, "-50→-5,0→0,50→5,LIMIT/-5～5"))
+CALL ADD_CRI_VAR("노멀", LINE_CALC(CFLAG:LOCAL:아라이멘도, "-50→0,0→3,50→0,LIMIT/0～3"))
+CALL ADD_CRI_VAR("하드"  , LINE_CALC(CFLAG:LOCAL:아라이멘도, "-50→6,0→0,50→-3,LIMIT/-3～6"))
+CALL ADD_CRI_VAR("이상",  0, LINE_CALC(CFLAG:LOCAL:아라이멘도, "-50→9,0→0,50→-5,LIMIT/-5～9"))
+
+;-------------------------------------------
+;죠교자の죄책감보정
+;ARGが省略당했다場合はTARGETを参照する
+;というか特にこだわりがなければTARGET以外を見ることはないと思いますが一応
+;-------------------------------------------
+@ACT_COURCE_SIN, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("하드", LINE_CALC(CFLAG:LOCAL:죄책감, "0→0,100→-5,LIMIT/-5～0"))
+CALL ADD_CRI_VAR("이상"  , LINE_CALC(CFLAG:LOCAL:죄책감, "0→0,100→-3,LIMIT/-3～0"), LINE_CALC(CFLAG:LOCAL:죄책감, "0→0,100→-5,LIMIT/-5～0"))
+
+;-------------------------------------------
+;죠교자の상태보정
+;ARGが省略당했다場合はTARGETを参照する
+;というか特にこだわりがなければTARGET以外を見ることはないと思いますが一応
+;
+;;죠교자の상태(0=통상/1=피폐/2=쇠약/3=무기력/4=몽롱/5=정욕/6=분노/7=싫증/8=울굴)
+;-------------------------------------------
+@ACT_COURCE_CONDITION_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+SELECTCASE GET_CONDITION(LOCAL)
+	CASE "피폐", "쇠약"
+		;TCVAR:상태변화は1の時피폐、2の時쇠약、つまり、피폐は+2、쇠약は+4
+		;TFLAG:조교자소모도は죠교자の소모플래그
+		CALL ADD_CRI_VAR("휴식"    ,  TFLAG:조교자소모도 + 5 + TCVAR:상태변화 * 2)
+		CALL ADD_CRI_VAR("소프트"  , -TFLAG:조교자소모도)
+		CALL ADD_CRI_VAR("노멀", -TFLAG:조교자소모도)
+		CALL ADD_CRI_VAR("하드"  , -TFLAG:조교자소모도)
+		CALL ADD_CRI_VAR("이상"    , -TFLAG:조교자소모도)
+		CALL ADD_CRI_VAR("소프트"  , -TFLAG:조교자소모도)
+	CASE "무기력"
+		CALL ADD_CRI_VAR("소프트"  , -1)
+		CALL ADD_CRI_VAR("노멀", -1)
+		CALL ADD_CRI_VAR("하드"  , -2)
+		CALL ADD_CRI_VAR("이상"    , -2)
+	CASE "몽롱"
+		CALL ADD_CRI_VAR("휴식"    ,  6)
+		CALL ADD_CRI_VAR("소프트"  ,  0, 10)
+		CALL ADD_CRI_VAR("노멀",  0, 10)
+		CALL ADD_CRI_VAR("하드"  ,  0, 10)
+		CALL ADD_CRI_VAR("이상"    ,  0, 10)
+	CASE "정욕"
+		CALL ADD_CRI_VAR("소프트"  ,  4)
+		CALL ADD_CRI_VAR("노멀",  4)
+	CASE "분노"
+		CALL ADD_CRI_VAR("휴식"    , -3)
+		CALL ADD_CRI_VAR("소프트"  , -4)
+		CALL ADD_CRI_VAR("노멀", -2)
+		CALL ADD_CRI_VAR("하드"  ,  4)
+		CALL ADD_CRI_VAR("이상"    ,  2)
+	CASE "싫증"
+		CALL ADD_CRI_VAR("휴식"    ,  4)
+		CALL ADD_CRI_VAR("소프트"  , -3)
+		CALL ADD_CRI_VAR("노멀", -3)
+		CALL ADD_CRI_VAR("하드"  , -3)
+		CALL ADD_CRI_VAR("이상"    ,  3)
+	CASE "울굴"
+		CALL ADD_CRI_VAR("이상"    ,  4, 10)
+ENDSELECT
+
+;-------------------------------------------
+;죠교대상が疲れている場合の보정
+;ARGが省略당했다場合はTARGETを参照する
+;疲れているのは죠교대상であるがそれに対する態度を決めるのは
+;あくまで죠교자であるので注意
+;
+;ここのRANDは切りだすのが厄介なので固定に混ぜてしまう
+;-------------------------------------------
+@ACT_COURCE_TIRED, ARG = -1
+#LOCALSIZE 2
+
+LOCAL = ARG == -1 ? TARGET # ARG
+;疲れが0なら帰る
+SIF !TFLAG:소모도
+	RETURN 0
+LOCAL:1 = TFLAG:소모도 * 2
+;죠교자が반항적/심술궂음/위압감/까다로움
+SIF TALENT:LOCAL:반항적 || TALENT:LOCAL:심술궂음 || TALENT:LOCAL:위압감 || TALENT:LOCAL:까다로움
+	TIMES LOCAL:1, 0.80
+;죠교자が솔직/헌신적/마음씨착한
+SIF TALENT:LOCAL:솔직 || TALENT:LOCAL:헌신적 || TALENT:LOCAL:마음씨착한
+	TIMES LOCAL:1, 1.20
+;죠교대상の상태が쇠약
+SIF IS_CONDITION(MASTER, "피폐")
+	TIMES LOCAL:1, 1.20
+;죠교자が광기/죠교자の상태が울굴
+SIF TALENT:LOCAL:광기 || IS_CONDITION(TARGET, "울굴")
+	LOCAL:1 -= RAND:6
+LOCAL:1 += MAX(LOCAL:1, 0)
+CALL ADD_CRI_VAR("휴식", LOCAL:1)
+
+;-------------------------------------------
+;以下、BASE及びPALAMによる보정
+;これらは個別で見ていく
+;-------------------------------------------
+
+;-------------------------------------------
+;죠교자の체력보정
+;ARGが省略당했다場合はTARGETを参照する
+;というか特にこだわりがなければTARGET以外を見ることはないと思いますが一応
+;-------------------------------------------
+@ACT_COURCE_PHYSICAL_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("휴식", LINE_CALC(BASE:LOCAL:체력, "0→3,1500→-1,LIMIT/-1～3"))
+CALL MUL_CRI_VAR("휴식", LINE_CALC(BASE:LOCAL:체력, "0→120,1500→80,LIMIT/80～120"))
+
+;-------------------------------------------
+;죠교자の기력보정
+;-------------------------------------------
+@ACT_COURCE_MENTAL_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("소프트"  , LINE_CALC(BASE:LOCAL:기력, "0→-2,500→0,LIMIT/-2～0"))
+CALL ADD_CRI_VAR("노멀", LINE_CALC(BASE:LOCAL:기력, "0→-2,750→0,LIMIT/-2～0"))
+CALL ADD_CRI_VAR("하드"  , LINE_CALC(BASE:LOCAL:기력, "0→-3,750→0,LIMIT/-3～0"))
+CALL ADD_CRI_VAR("이상"    , LINE_CALC(BASE:LOCAL:기력, "0→-3,1000→0,LIMIT/-3～0"))
+IF BASE:LOCAL:기력 > 750
+	CALL ADD_CRI_VAR("휴식", -2)
+	CALL MUL_CRI_VAR("휴식", 80)
+ENDIF
+
+;-------------------------------------------
+;죠교자の이성보정
+;-------------------------------------------
+@ACT_COURCE_REASON_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("소프트"  , LINE_CALC(BASE:LOCAL:이성, "0→-2,600→0,LIMIT/-2～0"))
+CALL ADD_CRI_VAR("노멀", LINE_CALC(BASE:LOCAL:이성, "0→-2,600→0,LIMIT/-2～0"))
+CALL ADD_CRI_VAR("하드"  , LINE_CALC(BASE:LOCAL:이성, "0→-1,300→0,LIMIT/-1～0"))
+CALL ADD_CRI_VAR("이상"    , LINE_CALC(BASE:LOCAL:이성, "0→4,800→-2,LIMIT/-2～4"))
+
+;-------------------------------------------
+;죠교자の흥미보정
+;-------------------------------------------
+@ACT_COURCE_INTEREST_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("소프트"  , LINE_CALC(BASE:LOCAL:흥미, "0→-3,900→1,LIMIT/-3～1"))
+CALL ADD_CRI_VAR("노멀", LINE_CALC(BASE:LOCAL:흥미, "0→-3,900→1,LIMIT/-3～1"))
+CALL ADD_CRI_VAR("하드"  , LINE_CALC(BASE:LOCAL:흥미, "0→-3,900→1,LIMIT/-3～1"))
+CALL ADD_CRI_VAR("이상"    , LINE_CALC(BASE:LOCAL:흥미, "0→-3,900→1,LIMIT/-3～1"))
+
+;-------------------------------------------
+;죠교자の공포보정
+;-------------------------------------------
+@ACT_COURCE_TERROR_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("소프트", LINE_CALC(PALAM:LOCAL:공포, "3000→0,7500→3,LIMIT/0～3"))
+CALL ADD_CRI_VAR("하드", LINE_CALC(PALAM:LOCAL:공포, "4500→0,7500→-2,LIMIT/-2～0"))
+CALL ADD_CRI_VAR("이상"  , LINE_CALC(PALAM:LOCAL:공포, "4500→0,7500→-2,LIMIT/-2～0"))
+
+;-------------------------------------------
+;죠교자の反感보정
+;-------------------------------------------
+@ACT_COURCE_ANGER_T, ARG = -1
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+CALL ADD_CRI_VAR("하드", LINE_CALC(PALAM:LOCAL:반항, "3000→0,7500→3,LIMIT/0～3"))
+CALL ADD_CRI_VAR("이상"  , LINE_CALC(PALAM:LOCAL:반항, "4500→0,7500→2,LIMIT/0～2"))
+
+;-------------------------------------------
+;발기도(요강제발기모드)による보정
+;-------------------------------------------
+@ACT_COURCE_ERECTION_M
+
+SIF !TCVAR:MASTER:요강제발기
+	RETURN 0
+CALL ADD_CRI_VAR("소프트", LINE_CALC(TCVAR:MASTER:발기도, "0→-50,1000→0,LIMIT/-50～0"))
+
+;--------------------------------------------
+;전회의コマンドによる보정
+;--------------------------------------------
+@ACT_COURCE_PREVCOM, ARG
+#LOCALSIZE 1
+
+LOCAL = ARG == -1 ? TARGET # ARG
+;もっと하드にお願い했다
+IF IS_PREVCOMNAME("더 하드하게 해")
+	CALL ADD_CRI_VAR("소프트"  , -5)
+	CALL ADD_CRI_VAR("노멀", -3)
+	CALL ADD_CRI_VAR("하드"  ,  5)
+	CALL ADD_CRI_VAR("이상"    ,  3)
+ENDIF
+
+;許しを乞ったかつ、죠교자の상태が울굴以外
+IF IS_PREVCOMNAME("용서를 빌다") && !IS_CONDITION(TARGET, "울굴")
+	CALL ADD_CRI_VAR("휴식"    ,  5, (TALENT:새드 || TALENT:심술궂음) ? -5 # 0)
+	CALL ADD_CRI_VAR("소프트"  ,  5)
+	CALL ADD_CRI_VAR("노멀",  0, (TALENT:새드 || TALENT:심술궂음) ? 2 # 0)
+	CALL ADD_CRI_VAR("하드"  , -5, (TALENT:새드 || TALENT:심술궂음) ? 5 # 0)
+	CALL ADD_CRI_VAR("이상"    , -5)
+ENDIF
+
+;気持ちよくしてかつ、죠교자の상태が분노/싫증/울굴以外
+SIF IS_PREVCOMNAME("기분좋게 해") && IS_CONDITION(TARGET, "통상/피폐/쇠약/무기력/몽롱/정욕")
+	CALL ADD_CRI_VAR("소프트", 3)
+
+;무서워한다かつ、죠교자の상태が울굴以外
+IF IS_PREVCOMNAME("무서워한다") && !IS_CONDITION(TARGET, "울굴")
+	CALL ADD_CRI_VAR("휴식"    ,  5, (TALENT:새드 || TALENT:심술궂음) ? -5 # 0)
+	CALL ADD_CRI_VAR("소프트"  ,  5)
+	CALL ADD_CRI_VAR("노멀",  0, (TALENT:새드 || TALENT:심술궂음) ? 2 # 0)
+	CALL ADD_CRI_VAR("하드"  , -5, (TALENT:새드 || TALENT:심술궂음) ? 5 # 0)
+	CALL ADD_CRI_VAR("이상"    , -5)
+ENDIF
+
+;--------------------------------------------
+;TEQUIPによる보정
+;これはターゲット以外みれないはずなのでターゲットに
+;--------------------------------------------
+@ACT_COURCE_TEQUIP
+
+;볼개그
+SIF TEQUIP:볼개그
+	CALL ADD_CRI_VAR("휴식", -5)
+;거울
+SIF TEQUIP:거울
+	CALL ADD_CRI_VAR("노멀", 1)
+;야외
+SIF TEQUIP:야외플레이
+	CALL ADD_CRI_VAR("이상", 0, 6)
+	
+;--------------------------------------------
+;징계・による보정
+;--------------------------------------------
+@ACT_COURCE_OSHIOKI
+
+IF TFLAG:징계・플래그
+	CALL ADD_CRI_VAR("휴식", -99)
+	CALL ADD_CRI_VAR("하드", 4)
+ENDIF
+
+;--------------------------------------------
+;ヒート値による보정
+;--------------------------------------------
+@ACT_COURCE_HEAT(ARGS)
+#LOCALSSIZE 10
+#DIM LCOUNT
+
+SPLIT ARGS, "/", LOCALS
+FOR LCOUNT, 0, RESULT
+	CALL ADD_CRI_VAR(LOCALS:LCOUNT, -TFLAG:(@"%LOCALS:LCOUNT%방침히트"))
+NEXT
+
+;--------------------------------------------
+;状況による방침制限
+;--------------------------------------------
+@ACT_COURCE_PLAYNOW
+
+IF TEQUIP:성교중 || TEQUIP:성교봉사중 || IS_CONDITION(TARGET, "정욕")
+	CALL ADD_CRI_VAR("휴식", -99)
+	CALL ADD_CRI_VAR("이상", -99)
+ENDIF
+IF TCVAR:MASTER:애태움도
+	CALL ADD_CRI_VAR("휴식", -99)
+ENDIF

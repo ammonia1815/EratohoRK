@@ -1,0 +1,91 @@
+﻿;==================================================
+;
+;	描写関数置き場
+;		各表現は個人的趣味
+;
+;==================================================
+;本体側に移했다ものを削除
+;-------------------------------------------------
+
+;-------------------------------------------------
+;関数名:TITTIES_DESCRIPTION_K39
+;概　要:美乳であること、それが全て
+;引　数:ARG…キャラ등록번호。省略すればTARGET
+;戻り値:文字列
+;備　考:式中関数
+;使用例:%TITTIES_DESCRIPTION_K39(TARGET)%
+;-------------------------------------------------
+@TITTIES_DESCRIPTION_K39(ARG = -2)
+#FUNCTIONS
+#LOCALSSIZE 1
+LOCALS:0 = 
+ARG = ARG != -2 ? ARG # TARGET
+;거유時
+IF TALENT:ARG:거유
+	STRDATA LOCALS:0
+;OriginalString : 形の整った、たわわな
+		DATA 형태가 갖추어진, 휘어있는
+;OriginalString : 張りのある、豊かな
+		DATA 붙은 있는, 풍부한
+;OriginalString : 
+	ENDDATA
+;빈유時
+ELSEIF TALENT:ARG:빈유
+	STRDATA LOCALS:0
+;OriginalString : 控えめながらも形の整った
+		DATA 소극적이면서도 형태가 갖추어졌다
+;OriginalString : ささやかながらも気品のある
+		DATA 자그마하면서도 기품이 있다
+;OriginalString : 
+	ENDDATA
+;その他
+ELSE
+	STRDATA LOCALS:0
+;OriginalString : 見事に均整のとれた美しい
+		DATA 보기좋게 균정을 취할 수 있던 아름답다
+;OriginalString : たまらない感触の美しい
+		DATA 견딜 수 없는 감촉의 아름답다
+;OriginalString : 
+	ENDDATA
+ENDIF
+RETURNF LOCALS:0
+
+;-------------------------------------------------
+;関数名:MOIST
+;概　要:ARGの윤활具合に該当すれば真を返す
+;引　数:キャラ번호。省略すればMASTER
+;備　考:式中関数
+;現在のバリアントの仕様上、機能するのはMASTERの場合においてのみ
+;-------------------------------------------------
+@MOIST_K39(ARG = -2)
+#FUNCTIONS
+#LOCALSSIZE 1
+LOCALS:0 = 
+ARG = ARG != -2 ? ARG # MASTER
+SELECTCASE PALAM:ARG:윤활
+	CASE IS < 250
+		LOCALS:0 = "低い"
+	CASE IS < 500
+		LOCALS:0 = "一般"
+	CASE IS > 499
+		LOCALS:0 = "高い"
+ENDSELECT
+RETURNF LOCALS:0
+
+;-------------------------------------------------
+;MASTER用と割り切る事にする
+;-------------------------------------------------
+@PENIS_DESCRIPTION2_K39(ARG)
+#FUNCTIONS
+#LOCALSSIZE 1
+LOCALS:0 = 
+SELECTCASE TCVAR:MASTER:발기도
+	CASE IS > 1500
+		LOCALS:0 = %RAND_SPLIT("限界まで/はちきれんばかりに/危ういくらいに")%%RAND_SPLIT("そそり勃った/いきり立った/屹立했다")%
+	CASE IS > 1000
+		LOCALS:0 = %RAND_SPLIT("そそり勃った/いきり立った/屹立했다")%
+	CASEELSE
+		LOCALS:0 = %RAND_SPLIT("未だ柔らかい/硬さを増하면서ある/ムクムクと頭をもたげつつある")%
+ENDSELECT
+RETURNF LOCALS:0
+

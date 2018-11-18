@@ -1,0 +1,766 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;		히나구상 일상이벤트구상ファイル
+;
+;	일상이벤트で呼び出される구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;일상이벤트구상
+;========================================================================
+;굴복각인*5％で実行 굴복각인は죠교자毎に判別される
+;이벤트が発生했다際の内訳はスキンシップ67％、일상33％
+;-------------------------------------------------
+
+;────────────────────────────────────
+;EV201, 介抱		DAILY_LIFE_NURSING
+;────────────────────────────────────
+;・조교중気絶했다後
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_201(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,실신で조교중止되었다場合/=1,疲労で조교중止되었다場合)
+;-------------------------------------------------
+;介抱の場合、구상主はTARGETで参照可能
+;-------------------------------------------------
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;介抱
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && GROUPMATCH(ARG, 0, 1) > 0
+	IF GET_KFLAG_K39("상사상애", TARGET)
+		PRINTFORMW 「 면없음 있고…나의 탓이군요…」
+		PRINTFORMW 「무엇인가 정령이 붙는 식사라도 만들기 때문에, 당신은 천천히 쉬어？」
+	ELSE
+		PRINTFORMW 「 면없음 있고, 너무 해 버렸어요…」
+		PRINTFORMW 「다른 일은 신경쓰지 않고, 천천히 쉬어 주세요」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;========================================================================
+;スキンシップ（各種の性경험が入ります）
+;========================================================================
+;@DAILY_LIFE_1_0～からランダムで選ぶ　RETURN 0されると再抽選、RETURN 1(0以外)で抽選から抜ける
+;-------------------------------------------------
+;※スキンシップの場合、구상主がTARGETであるとは限らない
+;  (ASSI:1)や(ASSI:2)である場合もあったり、ASSIですらない場合もある
+;  この箇所での구상主の参照はDAILY_TARGETで
+;-------------------------------------------------
+
+;────────────────────────────────────
+;EV202, スキンシップ0
+;────────────────────────────────────
+;・台所でセクハラ
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_202(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,股間まさぐり/=1,おっぱいまさぐり/=2,無視했다ら諦めて出て行った/=3,身をゆだねて股間でイかされ
+;              =4,身をゆだねておっぱいで/=5,ぱんつお着替えさせてくれま했다)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ0_0 股間まさぐり/0_1 おっぱいまさぐり
+		CASE 0, 1
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응, 어때？ 이봐요, 어떻게야？」
+				PRINTFORMW 「 나에게 좀 더 만지작거리기를 원한거 아니야？ 킥킥」
+			ELSE
+				PRINTFORMW 「 나의 일은 신경쓰지 않고 계속해 주세요」
+				;股間まさぐり
+				IF !ARG
+					PRINTFORMW 「응…조금 딱딱해지고 있습니다만, 무엇을 기대하고 있는 것입니까？」
+				;おっぱいまさぐり		남자限定구상の為現在では死に分岐
+				ELSE
+					PRINTFORMW 「유두가 딱딱해지고 있습니다만, 무엇인가 기대하고 있습니까？」
+				ENDIF
+			ENDIF
+		;スキンシップ0_2 無視했다ら諦めて出て行った
+		CASE 2
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「지금은 시 싶지 않은 것 같구나…」
+				PRINTFORMW 「그러면, 좋아요. 그대로 계속해？」
+			ELSE
+				PRINTFORMW 「그 기분은 없는 것 같네요…」
+				PRINTFORMW 「알았습니다. 그대로 계속해 주세요」
+			ENDIF
+		;スキンシップ0_3 身をゆだねて股間でイかされ
+		CASE 3
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「여기서 뽑았으면 좋구나？」
+				PRINTFORM 「좋아…이대로 이크까지 시고 있어 준다
+			ELSE
+				PRINTFORMW 「우대신, 뽑았으면 좋네요？」
+				PRINTFORM 「좋아요, 이대로 이나 키라고 줍니다
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+		;スキンシップ0_4 身をゆだねておっぱいで
+		CASE 4
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「여기서 시라고 갖고 싶구나？」
+				PRINTFORM 「좋아…이대로 젖가슴으로 이나 키라고 준다
+			ELSE
+				PRINTFORMW 「우대신, 저항하지 않네요？」
+				PRINTFORM 「좋아요, 이대로 이나 키라고 줍니다
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+		;スキンシップ0_5 ぱんつお着替えさせてくれま했다
+		CASE 5
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이렇게 더럽혀 버렸다들 갈아입음이 필요하구나」
+				PRINTFORM 「후후, 지금 취해 와 준다
+			ELSE
+				PRINTFORMW 「이것은 유석으로 갈아입고가 필요같네요」
+				PRINTFORM 「곧바로 취해 오므로, 기다리고 있어 주세요
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV203, スキンシップ1
+;────────────────────────────────────
+;・食堂でお茶하면서
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_203(ARG)
+;-------------------------------------------------
+;引数…ARG(=0,お紅茶いかが？/=1,미약で무라무라おっぱい気になる/=2,おっぱい見せつけられま했다
+;          =3,あわてて逃げま했다/=4,むしゃぶりついてご봉사했다らご褒美にぱいずりorクンニでイかされちゃいま했다(長いｗ))
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ1_0 お紅茶いかが？
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응, 가끔 씩은 홍차는 어때？」
+				PRINTFORMW 「때에는 이런 것도 좋다고 생각하는데」
+			ELSE
+				PRINTFORMW 「조금 차로 하지 않습니까？」
+				PRINTFORMW 「차잎을 다 써버려 버려 홍차 밖에 없는데요」
+			ENDIF
+		;スキンシップ1_1 미약で무라무라おっぱい気になる
+		CASE 1
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응, 어디 봐？」
+				PRINTFORMW 「그런 눈으로 볼 수 있으면(자), 초조하지만？ 킥킥」
+			ELSE
+				PRINTFORM 「눈외야인것 같네요
+				CALL PRINT_SYMBOL_K39
+				PRINTFORMW 「 나의 가슴이 그렇게 신경이 쓰입니까？」
+			ENDIF
+		;スキンシップ1_2 おっぱい見せつけられま했다
+		CASE 2
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이봐요, 보고 싶지요？」
+				PRINTFORM 「～구 보여 주기 때문에, 좀 더 여기에 와
+			ELSE
+				PRINTFORMW 「그런 눈으로 볼 수 있으면(자) 거절할 수 없어요」
+				PRINTFORM 「, 사양말고 봐도 좋아요
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+		;スキンシップ1_3 あわてて逃げま했다
+		CASE 3
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「코아로부터님에게 차이면(자), 조금 다칠지도…」
+			ELSE
+				PRINTFORMW 「도망가 버렸어요…」
+				PRINTFORM 「뭐,다음의 기회에 기대합시다
+				CALL PRINT_SYMBOL_K39
+			ENDIF
+		;スキンシップ1_4 むしゃぶりついてご봉사했다らご褒美にぱいずりorクンニでイかされちゃいま했다
+		CASE 4
+			;죠교대상に페니스有り
+			IF PENIS(MASTER)
+				IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+					PRINTFORML 「이제 인내 할 수 없지요？」
+					PRINTFORMW 「이봐요, 나의 젖가슴 마음대로 해도 좋아요」
+					PRINTFORM 「끝나면(자) 가슴으로 분명하게 이나 키라고 주기 때문에
+				ELSE
+					PRINTFORMW 「, 좋아요」
+					PRINTFORM 「 나의 가슴, 좋아하는 대로 해 주세요
+				ENDIF
+			;페니스無し
+			ELSE
+				IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+					PRINTFORML 「이제 인내 할 수 없지요？」
+					PRINTFORM 「이봐요, 나의 젖가슴 마음대로 해도 좋아요
+				ELSE
+					PRINTFORMW 「, 좋아요」
+					PRINTFORM 「 나의 가슴, 좋아하는 대로 해 주세요
+				ENDIF
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV204, スキンシップ2
+;────────────────────────────────────
+;・廊下で無理やり키스
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_204(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,廊下で주인님に呼び止められま했다/=1,いきなりちゅぅ/=2,数分後만족してばいばい)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ2_0 廊下で주인님に呼び止められま했다
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응, 조금 이야기가 있는데」
+			ELSE
+				PRINTFORMW 「저, 조금 기다려 주세요」
+			ENDIF
+		;スキンシップ2_1 いきなりちゅぅ
+		CASE 1
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「…」
+			;それ以外
+			ELSE
+				PRINTFORMW 「…」
+			ENDIF
+		;スキンシップ2_1 数分後만족してばいばい
+		CASE 2
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「우선 이런 곳일까♪」
+				PRINTFORMW 「그러면, 또 나중에」
+			ELSE
+				PRINTFORMW 「우대신, 맛있는 음식 같습니다」
+			ENDIF
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV205, スキンシップ3
+;────────────────────────────────────
+;・廊下でおっぱい揉み揉み
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_205(ARG)
+;-------------------------------------------------
+;引数内訳…(0,いきなり背中から抱きつかれたなう、1,おっぱい揉まれてるなう、2,만족していなくなったお…)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ3_0 いきなり背中から抱きつかれたなう
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「, 잡았어요. 킥킥」
+			ELSE
+				PRINTFORMW 「조금의 사이, 그대로 있어 주세요？ 우대신」
+			ENDIF
+			RETURN 1
+		;スキンシップ3_1 おっぱい揉まれてるなう
+		CASE 1
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이봐요, 코코가 좋지요？」
+				PRINTFORM 「우대신, 이대로 이나 키챠오 건더기등
+				CALL PRINT_SYMBOL_K39
+			ELSE
+				PRINTFORM 「꽤 좋은 감촉이군요…
+				CALL PRINT_SYMBOL_K39
+				PRINTFORMW 「좀 더만, 즐기게 해 주세요？ 킥킥」
+			ENDIF
+			RETURN 1
+		;スキンシップ3_1 만족していなくなったお…
+		CASE 2
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;────────────────────────────────────
+;EV206, スキンシップ4
+;────────────────────────────────────
+;・食事中にしゃぶられ
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_206(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お食事ご一緒いいかしら？/=1,マッハで食って逃げま했다/=2,テーブルの下でしゃぶられてます
+;              =3,どくんどくん/=4,倍プッシュだ)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ4_0 お食事ご一緒いいかしら？
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「어머나, 꼭 좋았어요」
+				PRINTFORMW 「 나도 배가 고픈 곳이었어요. 후후」
+			ELSE
+				PRINTFORMW 「 나도 함께 해 좋을까요？」
+			ENDIF
+		;スキンシップ4_1 マッハで食って逃げま했다
+		CASE 1
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「～응. 꽤 감이 날카롭네요…」
+			ELSE
+				PRINTFORMW 「이것은 감 그라고 끝냈습니까…」
+			ENDIF
+		;スキンシップ4_2 テーブルの下でしゃぶられてます
+		CASE 2
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「그러면, 승부에서 이기는 일-. 킥킥」
+			ELSE
+				PRINTFORMW 「에서는 받습니다. 후후」
+			ENDIF
+		;スキンシップ4_3 입内に사정
+		CASE 3
+			PRINTL 
+			PRINTFORM 「%KOJO_RAND_K39(("펠라"), 1)%…
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTW 이봐요, 이대로 사정해도 좋으니까…」
+			ELSE
+				PRINTW 이대로 내도 좋아요？」
+			ENDIF
+;OriginalString : 20, COLOR2_K39("HINA"), COLOR2_K39("black"), @"　　%KOJO_RAND_K39(("펠라"), 1)%")
+			CALL FADE(20, COLOR2_K39("HINA"), COLOR2_K39("black"), @"  %KOJO_RAND_K39(("펠라"), 1)%")
+			SIF ANIME_CONFIG("FADE")
+				CLEARLINE 1
+		;スキンシップ4_4 さらにしゃぶられ搾り取られる
+		CASE 4
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「아직도 안될 것 같은 느낌이군요？」
+				PRINTFORM 「이봐요, 텅 비게 될 때까지 입으로 짜 취해 준다
+				CALL PRINT_SYMBOL_K39
+			ELSE
+				PRINTFORMW 「아직도 안될 것 같네요？」
+				PRINTFORMW 「, 텅 비게 될 때까지 짜 취해 주어요. 킥킥」
+			ENDIF
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV207, スキンシップ5
+;────────────────────────────────────
+;・皿洗い손伝い→ファックの流れ
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_207(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お皿洗いを손伝ってくれるようです/=1,おとこわりします/=2,一緒に頑張って終わらせま했다
+;              =3,おくちにほしいなーオーラ/=4,おいしかったです/=5,お손伝い했다んだからお尻犯せよ
+;              =6,お尻でヤってしまいま했다/7,謝礼はまんまん銀行に突っ込んでくれ/=8,確かに受け取った)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ5_0 お皿洗いを손伝ってくれるようです
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「말해 준다면 돕는데」
+				PRINTFORMW 「이봐요, 도와 주기 때문에. 빨리 정리합시다？」
+			ELSE
+				PRINTFORML 「혼자서는 큰 일이겠지요？」
+				PRINTFORMW 「 나도 도와요」
+			ENDIF
+		;スキンシップ5_1 だが断る
+		CASE 1
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「사양이라면 하지 않아 좋은데……」
+				PRINTFORMW 「그렇지 않으면 접시닦이에 무엇인가 구애됨이라도 있어？」
+			ELSE
+				PRINTFORMW 「정말로 좋습니까？」
+				PRINTFORMW 「아무튼, 거기까지 말한다면……후는 전부 맡기네요」
+			ENDIF
+		;スキンシップ5_2 一緒に頑張って終わらせま했다
+		CASE 2
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「생각했던 것보다 빨리 끝났다？」
+				PRINTFORMW 「내가 도왔으니까 당연하다고 생각하는데. 후후」
+			ELSE
+				PRINTFORMW 「의외로 빨리 정리되었어요」
+				PRINTFORMW 「아, 그것은 여기에 두어 주세요」
+			ENDIF
+		;スキンシップ5_3 おくちにほしいなーオーラ
+		CASE 3
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응, 알고 있는 겠지？」
+				PRINTFORMW 「그다지 심술쟁이하지 않고」
+			ELSE
+				PRINTFORMW 「저, 어와 그……」
+			ENDIF
+		;スキンシップ5_4 おいしかったです
+		CASE 4
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응！？ 구, 코쿠……코쿤……」 
+				PRINTFORMW 「우대신, 맛있는 음식님♪」
+			ELSE
+				PRINTFORMW 「응응！？ 구, 코쿠……코쿤……」
+				PRINTFORMW 「우대신, 맛있었어요♪」
+			ENDIF
+		;スキンシップ5_5 お손伝い했다んだからお尻犯せよ
+		CASE 5
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응, 엉덩이가 쑤시는데……시라고 주겠죠？」
+			ELSE
+				PRINTFORMW 「아, 저, 뒤로 시라고 갖고 싶습니다만…」
+			ENDIF
+		;スキンシップ5_6 お尻でヤってしまいま했다
+		CASE 6
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이나다 , 엉덩이로부터 흘러넘쳐, 늘어져 와버린다…」
+				PRINTFORMW 「응, 스스로 낸 것 빨아 본다？ 킥킥」
+			ELSE
+				PRINTFORMW 「응, 엉덩이로부터 흘러넘칠 것 같습니다…」
+				PRINTFORMW 「그렇게 기분 좋았습니까？ 우대신」
+			ENDIF
+		;スキンシップ5_7 謝礼はまんまん銀行に突っ込んでくれ
+		CASE 7
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「도와 주었으니까, 이 정도 당연하겠지？」
+				PRINTFORM 「당신도 만갱은 없는 것 같고, 군요
+			ELSE
+				PRINTFORMW 「노동의 대가로서는 타당하다고 생각합니다만」
+				PRINTFORM 「에서는, 살릴 수 있어 주네요
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+		;スキンシップ5_8 確かに受け取った
+		CASE 8
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이나다 , 이렇게 나오면(자), 흘러넘쳐 늘어져 와버린다…」
+				PRINTFORMW 「이봐요, 스스로 낸 것 빨아 본다？ 킥킥」
+			ELSE
+				PRINTFORMW 「응, 질내로부터 흘러넘칠 것 같습니다…」
+				PRINTFORMW 「그렇게 기분 좋았습니까？」
+			ENDIF
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV208, スキンシップ6
+;────────────────────────────────────
+;・入浴中に襲われる
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_208(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お風呂場強襲/=1,背中を流します泡踊り/=2,ちんこは触ってあげない/3,가게해줘！
+;              =4,참다してたら焦らすの面倒되었다ようです/=5,どくんどくん/=6,전신ぬるぬる気持ちいい？/=7,びくんびくん)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ6_0 주인님お風呂場強襲
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「혼자서 들어가다니 무정하네요？」
+				PRINTFORMW 「소리 걸어서 좋았을텐데 」
+			ELSE
+				PRINTFORMW 「 나도 함께 들어가 있고입니까？」
+			ENDIF
+		;スキンシップ6_1 ほら背中を流してあげる
+		CASE 1
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「등 흘려 주기 때문에 뒤 향해？」
+				PRINTFORMW 「괜찮아, 이상한 일은 하지 않으니까. 킥킥」
+			ELSE
+				PRINTFORMW 「등을 흘리므로, 조금 뒤를 향해 줄 수 있습니까？」
+			ENDIF
+		;スキンシップ6_2 でもちんこは触ってあげない
+		CASE 2
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이봐요, 어떻게야？ 사실은 만지작거리기를 원한거 아니야？」
+			ELSE
+				PRINTFORMW 「사실은 만지작거리기를 원하지 않습니까？」
+				PRINTFORMW 「어떻게입니다？ 우대신」
+			ENDIF
+		;スキンシップ6_3 당신は참다できず가게해줘！
+		CASE 3
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「우대신, 산등성이다 리나응이라고 해 버려서 사랑스럽다」
+				PRINTFORMW 「좋아, 망가질 정도로 시고 있어 주기 때문에♪」
+			ELSE
+				PRINTFORMW 「최초부터 그렇게 말해 준다면 좋았는데 」
+				PRINTFORMW 「 그렇지만, 좋아요. 마음껏 이나 키라고 줍니다♪」
+			ENDIF
+		;スキンシップ6_4 참다してたら焦らすの面倒되었다ようです
+		CASE 4
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「 이제 , 정말로 솔직하지 않기 때문에！」
+				PRINTFORMW 「답례에 망가지는 위시고 있어버린다하지만, 각오 해？」
+			ELSE
+				PRINTFORMW 「갔어요. 이제 제 쪽이 한계입니다…」
+			ENDIF
+		;スキンシップ6_5 どくんどくん
+		CASE 5
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「사정이 멈추지 않지만 괜찮아？」
+				PRINTFORMW 「 이제 어차피라면, 텅 비게 될 때까지 내버린다？ 킥킥」
+			ELSE
+				PRINTFORMW 「굉장한, 아직 나옵니다？」
+				PRINTFORM 「이런 건 보여지면(자), 조금 두근두근 해 버립니다
+				CALL PRINT_SYMBOL_K39
+			ENDIF
+		;スキンシップ6_6 （女당신の場合）전신ぬるぬる気持ちいい？
+		CASE 6
+			PRINTFORM 「\@ TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET) ? 부드럽고 좋은 감촉이군요 # 절각이기 때문에 즐기는 일로 합시다 \@
+			CALL PRINT_SYMBOL_K39
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이봐요, 코코라든지 손대어지는 것은 어때？」
+			ELSE
+				PRINTFORMW 「어머나, 조금 습기차 오고 있는 것 같네요？」
+			ENDIF
+		;スキンシップ6_7 （女당신の場合）びくんびくん
+		CASE 7
+			PRINTL 
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「 이제 , 사랑스러워서 감등 돌아가셔버린다！ , 」
+				PRINTFORM 「이봐요, 이번은 여기를 만지작거려 준다
+			ELSE
+				PRINTFORMW 「 이제 전신이 민감하게 되어있는 느낌이군요？」
+				PRINTFORM 「이봐요, 사양하지 않고, 몇 번이라도 이라고 해 예요
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV209, スキンシップ7
+;────────────────────────────────────
+;・주인님が바이브で…
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_209(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,바이브で펠라の練習/=1,！　何見てるの！？/=2,あら…試してみる？)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ7_0 펠라の練習をしている
+		CASE 0
+			;죠교자の기교3以上
+			IF ABL:TARGET:기교 >= 3
+;OriginalString : 20, COLOR2_K39("HINA"), COLOR2_K39("black"), @"「%KOJO_RAND_K39(("펠라"), 1)%」")
+				CALL FADE(20, COLOR2_K39("HINA"), COLOR2_K39("black"), @"「%KOJO_RAND_K39(("펠라"), 1)%」")
+				IF ANIME_CONFIG("FADE")
+					CLEARLINE 1
+				ENDIF
+				IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+					PRINTFORMW 「우대신, 이런 느낌이라면 기쁨응에서도들 네그렇게」
+					PRINTFORM 「이것은 조금 시험해 보고 싶어져요
+				ELSE
+					PRINTFORM 「우대신, 조금 요령을 잡았는지 해들
+				ENDIF
+				CALL PRINT_SYMBOL_K39
+			;죠교자の기교3未満
+			ELSE
+;OriginalString : 20, COLOR2_K39("HINA"), COLOR2_K39("black"), @"「%KOJO_RAND_K39(("펠라"), 1)%」")
+				CALL FADE(20, COLOR2_K39("HINA"), COLOR2_K39("black"), @"「%KOJO_RAND_K39(("펠라"), 1)%」")
+				SIF ANIME_CONFIG("FADE")
+					CLEARLINE 1
+				PRINTFORMW 「\@ GET_KFLAG_K39("상사상애", DAILY_TARGET) ? 어렵네요, 이것 # 뭔가 조금 다른 것 같은 느낌이군요 \@…」
+			ENDIF
+		;スキンシップ7_1 何見てるの！？(죠교자が청초・수줍음持ちの場合限定)
+		;CASE 1
+			;히나の素質的に不要な箇所。CSV弄ったのは知らねぇｗ
+		;スキンシップ7_2 あら…試してみる？
+		CASE 2
+			;죠교자の기교3以上
+			IF ABL:TARGET:기교 >= 3
+				IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+					PRINTFORML 「엿보기라든지 별로 감탄하지 않네요…」
+					PRINTFORMW 「아무튼별로 좋지만, 조금 시험해 보고 싶은거야」
+					PRINTFORM 「반드시 기쁨응으로 받을 수 있다고 생각해요
+					CALL PRINT_SYMBOL_K39
+				ELSE
+					PRINTFORMW 「어머나, 들켜 버린 것 같네요」
+					PRINTFORMW 「조금 요령을 잡았으므로 시험해 보고 싶습니다만, 어떻습니까？」
+				ENDIF
+			;기교3未満
+			ELSE
+				IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+					PRINTFORMW 「이나다 , 보았어！？」
+					PRINTFORMW 「아무튼 좋은데. 응, 어차피라면 연습에 교제하지 않는다？」
+				ELSE
+					PRINTFORMW 「보고, 보았습니까！？」
+					PRINTFORMW 「아무튼, 좋지만…어차피라면, 조금 시험해 보겠습니다？」
+				ENDIF
+			ENDIF
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV210, スキンシップ8
+;────────────────────────────────────
+;・入浴中주인님と조수に襲われて…
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_210(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,二人でお風呂場強襲/=1,二人で洗いっこ/=2,見られてエスカレート/=3,のぼせてしまいま했다
+;              =4,混ぜてもらってぬるぬるまっと/=5,二人でそーぷぷれい)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ8_0 二人でお風呂場強襲%
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응,%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%(와)과 함께 실례해도 괜찮지요？」
+			ELSE
+				PRINTFORMW 「모두가 욕실이라고 하는 것도 좋다고 생각하지 않습니까？」
+				PRINTFORMW 「,%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%도 사양말고 들어가 주세요」
+			ENDIF
+		;スキンシップ8_1 二人で洗いっこ→後に선택肢で分岐
+		CASE 1
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이봐요, 봐%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%」
+				PRINTFORM 「조금 전부터 여기를 이야라시이 눈초리로 보고 있는 원
+			ELSE
+				PRINTFORMW 「우대신,%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%의 피부, 매우 기려」
+				PRINTFORM 「그러면, 다음은 제 쪽을 씻어 받을까
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+		;スキンシップ8_2 당신に見られて興奮してる様子
+		CASE 2
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「%CNAME(DAILY_SUBTARGET, (FLAG:주인님))%의 코코, 매우 민감하고 사랑스럽다
+				CALL PRINT_SYMBOL_K39
+				PRINTFORMW 「이봐요, 여기도 만지작거려 준다. 킥킥」
+			ELSE
+				PRINTFORMW 「볼 수 있고 있다고(면) 불필요하게 흥분해버린다
+				CALL PRINT_SYMBOL_K39
+				PRINTFORMW 「응,%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%. 귀부인도 그렇겠지요？」
+			ENDIF
+		;スキンシップ8_3 じっくり鑑賞してたらのぼせてしまった
+		CASE 3
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORM 「 이제, 어쩔 수 없는 사람
+				CALL PRINT_SYMBOL_K39
+				PRINTFORMW 「그러면%CNAME(DAILY_SUBTARGET, (FLAG:주인님))%, 옮기는 것 도와 준다？」
+			ELSE
+				PRINTFORM 「완전히 주선이 타는 사람이군요
+				CALL PRINT_SYMBOL_K39
+				PRINTFORMW 「에서는%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%, 방까지 옮기는 것 도와 간다\@ NO:DAILY_SUBTARGET != 40 ? (이)다 차이인 # 할짝？ \@」
+			ENDIF
+		;スキンシップ8_4 混ぜてあげるわ、いらっしゃいと仰る
+		CASE 4
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이봐요, 섞이고 싶지요？ 좋아요？」
+				PRINTFORM 「%CNAME(DAILY_SUBTARGET, (FLAG:주인님))%(와)과 둘이서 즐기게 해 주기 때문에
+			ELSE
+				PRINTFORMW 「혼합했으면 좋네요？ 우대신, 말하지 않아도 알아요」
+				PRINTFORM 「, 아무쪼록. 나와%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%가 즐기게 해 줄테니까
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+		;スキンシップ8_5 二人でマット洗いをしてくれま했다
+		CASE 5
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「이봐요, 키스 해.%KOJO_RAND_K39(("키스"), 1)%」
+				PRINTFORM 「우대신,%CNAME(DAILY_SUBTARGET, (FLAG:주인님))%하지만 조금 예응 나와요
+				CALL PRINT_SYMBOL_K39
+			ELSE
+				PRINTFORML 「어떻습니까？ 기분이 좋습니까？」
+				PRINTFORMW 「 나는%CNAME(DAILY_SUBTARGET, DAILY_TARGET)%, 두 명의 몸을 동시에 즐길 수 있다는 최고지요？」
+				PRINTFORMW 「후후……」
+			ENDIF
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;EV211, スキンシップ9
+;────────────────────────────────────
+;・風呂から上ったらパンツが無かった
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_211(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お風呂上りのーぱんえんかうんと/=1,ガン見されてます/=2,風邪ひかないようにね)
+;-------------------------------------------------
+IF 구상記入チェック(100)
+	SELECTCASE ARG
+		;スキンシップ9_0 すーすーするけど仕方ない
+		CASE 0
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORMW 「응, 왜？」
+				PRINTFORMW 「무엇인가 초조한 것 같지만. 킥킥」
+			ELSE
+				PRINTFORMW 「초조한 것 같네요」
+				PRINTFORMW 「어떻게든 했습니까？ 후후…」
+			ENDIF
+			RETURN 1
+		;スキンシップ9_1 주인님ガン見
+		CASE 1
+			IF TALENT:DAILY_TARGET:주인님 && GET_KFLAG_K39("상사상애", DAILY_TARGET)
+				PRINTFORM 「새빨간 얼굴 해 버려서 사랑스럽네요
+			ELSE
+				PRINTFORM 「의외로 우브이군요. 사랑스럽다
+			ENDIF
+			CALL PRINT_SYMBOL_K39
+			RETURN 1
+		;スキンシップ9_2 風邪ひかないようにね
+		CASE 2
+			RETURN 0
+	ENDSELECT
+ENDIF
+
+;========================================================================
+;일상（호감도上昇、その他소프트な경험など）
+;========================================================================
+
+;────────────────────────────────────
+;EV212, 일상0
+;────────────────────────────────────
+;・ティータイム
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_212(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お茶はいかが？/=1,楽しいお茶たいむで했다)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상0_0 お茶はいかが？ このあと地の文
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(0) && ARG == 0
+;ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상0_1 주인님と楽しいひととき
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(0) && ARG == 1
+;ENDIF
+
+
+;────────────────────────────────────
+;EV213, 일상1
+;────────────────────────────────────
+;・昼寝（当然夜には発生しない）
+;・ここで寝ているのは구상主
+;・계절が夏もしくは冬の場合は発生しない
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_213(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,お昼寝発見/=1,ごゆっくりどうぞ)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상1_0 주인님がお昼寝をしてます
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(0) && ARG == 0
+;ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;일상1_1 どうぞごゆっくり
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(0) && ARG == 1
+;ENDIF
+
+;────────────────────────────────────
+;EV214, 반항除去
+;────────────────────────────────────
+;・반항除去
+;・반항각인を持った죠교자の아라이멘도が高くなると発生
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K39_214(ARG)
+;-------------------------------------------------
+;引数内訳…ARG(=0,懐柔당했다ようです)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;반항除去0_0 懐柔されま했다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;IF 구상記入チェック(0)
+;ENDIF

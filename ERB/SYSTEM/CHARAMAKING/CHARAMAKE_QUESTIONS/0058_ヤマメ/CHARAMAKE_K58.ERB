@@ -1,0 +1,76 @@
+﻿;ヤマメ＠ぱ。
+@CHARAMAKE_K58(ARG)
+;OriginalString : 「おや、お目覚めかい。悪いね、起こしちゃって」
+PRINTFORMW 「이런, 눈을 뜨고 보람. 나쁘다, 일으켜 버려서」
+;OriginalString : 
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+;OriginalString : 
+PRINTL 
+;OriginalString : 「さて、質問させてもらうのがここのルールだったね」
+PRINTFORML 「그런데, 질문시켜 주는 것이 여기의 룰이었다」
+;OriginalString : 「そうねえ…あんたは急に病気되었다とき、どうする？」
+PRINTFORMW 「그렇구나…너는 갑자기 병이 들었을 때, 어떻게 한다？」
+;OriginalString : 
+PRINTL 
+;OriginalString : [0] 答えない
+PRINTFORMDL [0] 대답하지 않는다
+;OriginalString : [1] 布団で寝込む
+PRINTFORMDL [1] 이불에서 드러눕는다
+;OriginalString : [2] 医者にかかる
+PRINTFORMDL [2] 의사에게 걸린다
+;OriginalString : [3] 病は気から、普段通り活動
+PRINTFORMDL [3] 병은 기분으로부터, 평상시 대로 활동
+;OriginalString : [4] 祈祷師を呼ぶ
+PRINTFORMDL [4] 기도사를 부른다
+CALL INPUTINTD(0, 1, 2, 3, 4)
+SELECTCASE RESULT
+	CASE 0
+;OriginalString : 「その弱い気持ちに病は巣食う。あんた、取り殺されるよ？」
+		PRINTFORML 「그 약한 기분에 병은 깃들인다. 너, 취해 살해당해？」
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 1
+;OriginalString : 「自然治癒力というやつね。人間に備わった強さだわ」
+		PRINTFORML 「자연치유력이라고 하는 녀석. 인간에게 갖춰진 강함이예요」
+		CALLF CM_PROF("솔직さ", 20)
+		CALLF CM_PROF("호기심", -20)
+		CALLF CM_PROF("モラル", 10)
+		CALLF CM_PROF("衝動", -20)
+		CALLF CM_PROF("知性", 20)
+		CALLF CM_PROF("倒錯", -20)
+		CALLF CM_PROF("Ｂ好き", 10)
+	CASE 2
+;OriginalString : 「賢いね。けど、そうして体が弱くなる。それは本当の病よ」
+		PRINTFORML 「영리하다. 하지만, 그렇게 해서 몸이 약해진다. 그것은 진정한 병이야」
+		CALLF CM_PROF("攻撃", -20)
+		CALLF CM_PROF("楽観", -20)
+		CALLF CM_PROF("솔직さ", 20)
+		CALLF CM_PROF("衝動", -20)
+		CALLF CM_PROF("知性", 30)
+		CALLF CM_PROF("神経質", 20)
+		CALLF CM_PROF("Ｃ好き", 10)
+		CALLF CM_PROF("Ａ好き", 10)
+	CASE 3
+;OriginalString : 「あんたは一度痛い目に遭ったほうがいいかもね。結核あたり？」
+		PRINTFORML 「너는 한 번 아픈 눈을 당하는 편이 좋을지도. 결핵 근처？」
+		CALLF CM_PROF("攻撃", 20)
+		CALLF CM_PROF("プライド", 30)
+		CALLF CM_PROF("被虐", 30)
+		CALLF CM_PROF("潔癖", -10)
+		CALLF CM_PROF("솔직さ", -20)
+	CASE 4
+;OriginalString : 「…面白いことを言うのね。ふふ、私にゃそんなの効かないよ？」
+		PRINTFORML 「…재미있는 말을 하군요. 후후, 나그런 것 효과가 없어？」
+		CALLF CM_PROF("攻撃", 10)
+		CALLF CM_PROF("솔직さ", -20)
+		CALLF CM_PROF("モラル", 10)
+		CALLF CM_PROF("호기심", 30)
+		CALLF CM_PROF("知性", -10)
+		CALLF CM_PROF("倒錯", 10)
+ENDSELECT
+;OriginalString : 「それじゃおやすみ。お大事にね――」
+PRINTFORMW 「그러면 휴업(휴가). 몸조심을――」
+RETURN 1

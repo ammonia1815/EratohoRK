@@ -1,0 +1,1287 @@
+﻿;MASTERの体勢
+@MASTER_POSE
+;자세関連のTCVARを初期化する
+;eratohoぱ。等の実装と違って、前の자세を考慮はしない路線
+;　　だったのですが、メッセージ表示の上でのみ考慮することに変更
+;現在の位置情報を전회의位置へ転送
+TCVAR:MASTER:전회의자세 = TCVAR:MASTER:자세
+TCVAR:MASTER:전회의위치전후 = TCVAR:MASTER:위치전후
+TCVAR:MASTER:전회의위치상하 = TCVAR:MASTER:위치상하
+;一度初期化する
+TCVAR:MASTER:자세 = 0
+TCVAR:MASTER:위치전후 = 0
+TCVAR:MASTER:위치상하 = 0
+TCVAR:MASTER:REACT자세변화 = 0
+
+;강제탈의が発生していれば자세を보정
+IF TFLAG:강제탈의
+	;전회의자세によって보정
+	SELECTCASE TCVAR:MASTER:전회의자세
+		;네발로 엎드림は자유に戻す
+		CASE 3
+			TCVAR:MASTER:전회의자세 = 0
+		;무릎으로 서있다は座らせる
+		CASE 10
+			TCVAR:MASTER:전회의자세 = 2
+	ENDSELECT
+		;他は継続する
+ENDIF
+
+;자주탈의が発生していれば位置をリセット
+IF TFLAG:자주탈의
+	TCVAR:MASTER:전회의위치전후 = 0
+	TCVAR:MASTER:전회의위치상하 = 0
+ENDIF
+
+VARSET TCVAR:MASTER, 0, 1, 5
+;체력限界なら누움
+SIF BASE:MASTER:체력 <= 0
+	TFLAG:누움 = 2
+;자위중
+IF GETBIT(TEQUIP:자위중, 0)
+	TFLAG:Ｐ사용중++
+	TFLAG:손사용중++
+ENDIF
+;안면승마中
+IF TEQUIP:안면승마 || TEQUIP:안면승마항문
+	TFLAG:입사용중 += 2
+	;누움
+	TFLAG:누움 = 2
+ENDIF
+
+;Ｃ애무
+SIF TEQUIP:죠교대상Ｃ사용
+	TFLAG:Ｐ사용중++
+
+;ACTごとのPOSE情報を呼ぶ
+;※要修正
+;ACTごとにACTABLE、MESSAGE、POSEを収めたファイルにするとかいいと思う。まずは関数化から始めます
+TRYCALLFORM MASTER_POSE_ACT{TFLAG:ACT}
+
+;とは言うけど関数化しないほうが設定しやすいんですよねここ…
+;以下자세の設定　ぱ。追加部分
+
+;안면승마、밀어넘어짐による強制누움
+;	//MASTER_POSEはACTION_APPLYより先に処理される
+;	//そして성교、성봉時のTEQUIP:안면승마等のリセットはACTION_APPLY内で行われる(即ち、この箇所が処理される時点ではリセットされていない)
+;	//今回のメニューが성교、성봉なら弾くようにしないと色々と不味いことになる(ACT32:기승위時に죠교자が上되었다りする)
+;	//자세制御関数刷新が控えてるので、とりあえず最小限の손当だけ(2015/02/01)
+IF !MENUMATCH(TFLAG:ACT, "성교") && !MENUMATCH(TFLAG:ACT, "성봉") && (TEQUIP:안면승마 || TEQUIP:안면승마항문 || TEQUIP:밀어넘어지는중 || IS_NOWACTNAME("밀어 넘어트린다"))
+	TCVAR:MASTER:자세 = 1
+	;TCVAR:MASTER:위치전후 = TEQUIP:밀어넘어지는중 || IS_NOWACTNAME("밀어 넘어트린다") ? 1 # 0
+	TCVAR:MASTER:위치전후 = 1
+	TCVAR:MASTER:위치상하 = 1
+;성교・성봉系ACTは先に処理
+ELSEIF MENUMATCH(TFLAG:ACT, "성교") || MENUMATCH(TFLAG:ACT, "성봉")
+	;ACT毎の体位による設定
+	SELECTCASE GET_ACTNAME(TFLAG:ACT)
+		CASE "정상위"
+			TCVAR:MASTER:자세 = 1
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 1
+		CASE "후배위", "항문섹스"
+			TCVAR:MASTER:자세 = 3
+			TCVAR:MASTER:위치전후 = 2
+			TCVAR:MASTER:위치상하 = 0
+		CASE "기승위"
+			TCVAR:MASTER:자세 = 10
+			TCVAR:MASTER:위치전후 = 0
+			TCVAR:MASTER:위치상하 = 2
+		CASE "대면좌위"
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 0
+		CASE "배면좌위"
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 2
+			TCVAR:MASTER:위치상하 = 0
+		CASE "정상위시킨다"
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 2
+		CASE "후배위시킨다", "항문섹스시킨다"
+			TCVAR:MASTER:자세 = 10
+			TCVAR:MASTER:위치전후 = 3
+			TCVAR:MASTER:위치상하 = 0
+		CASE "역강간"
+			TCVAR:MASTER:자세 = 1
+			TCVAR:MASTER:위치전후 = 0
+			TCVAR:MASTER:위치상하 = 1
+		CASE "대면좌위시킨다"
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 0
+		CASE "배면좌위시킨다"
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 3
+			TCVAR:MASTER:위치상하 = 0
+	ENDSELECT
+;성교중
+ELSEIF TEQUIP:성교중
+	;TEQUIP毎の体位による設定
+	SELECTCASE TEQUIP:성교중
+		;정상위
+		CASE 1
+			TCVAR:MASTER:자세 = 1
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 1
+		;후배위、항문섹스
+		CASE 2, 6
+			TCVAR:MASTER:자세 = 3
+			TCVAR:MASTER:위치전후 = 2
+			TCVAR:MASTER:위치상하 = 0
+		;기승위
+		CASE 3
+			TCVAR:MASTER:자세 = 10
+			TCVAR:MASTER:위치전후 = 0
+			TCVAR:MASTER:위치상하 = 2
+		;대면좌위
+		CASE 4
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 0
+		;배면좌위
+		CASE 5
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 2
+			TCVAR:MASTER:위치상하 = 0
+	ENDSELECT
+;성교봉사중
+ELSEIF TEQUIP:성교봉사중
+	;TEQUIP毎の体位による設定
+	SELECTCASE TEQUIP:성교봉사중
+		;정상위
+		CASE 1
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 2
+		;후배위、항문섹스
+		CASE 2, 6
+			TCVAR:MASTER:자세 = 10
+			TCVAR:MASTER:위치전후 = 3
+			TCVAR:MASTER:위치상하 = 0
+		;기승위（역강간）
+		CASE 3
+			TCVAR:MASTER:자세 = 1
+			TCVAR:MASTER:위치전후 = 0
+			TCVAR:MASTER:위치상하 = 1
+		;대면좌위
+		CASE 4
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 1
+			TCVAR:MASTER:위치상하 = 0
+		;배면좌위
+		CASE 5
+			TCVAR:MASTER:자세 = 2
+			TCVAR:MASTER:위치전후 = 3
+			TCVAR:MASTER:위치상하 = 0
+	ENDSELECT
+;ACTごとの자세情報を代入
+;ただしCOM次第では変更になる（날뛴다など）
+ELSE
+	;ACT분류による設定
+	SELECTCASE MENU(GET_ACTM(TFLAG:ACT))
+		CASE "애무", "도구"
+			;どこ를 애무하기ているか
+			SELECTCASE CARESS_SPOT(TARGET)
+				;Ａ
+				CASE 3
+					;입でしている
+					IF MA_PLAYER(1) == 1
+						;すでに누움の場合（難易度高い気がするが）
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 0
+							TCVAR:MASTER:위치전후 = 1
+						;そうでなければ네발로 엎드림
+						ELSE
+							TCVAR:MASTER:자세 = 3
+							TCVAR:MASTER:위치상하 = 0
+							TCVAR:MASTER:위치전후 = 2
+						ENDIF
+					;손など
+					ELSE
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 0
+							TCVAR:MASTER:위치전후 = 1
+						ELSE
+							;전회의자세によって보정
+							;입と違い、前後・上下の指定はありません
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;기립・무릎으로 서있다
+								CASE 4, 10
+									;3/4で継続
+									IF RAND:4
+										TCVAR:MASTER:자세 = TCVAR:MASTER:전회의자세
+									;そうでなければ네발로 엎드림
+									ELSE
+										TCVAR:MASTER:자세 = 3
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 2
+									ENDIF
+								;座り
+								CASE 2
+									;3/4で무릎으로 서있다に변화する
+									IF RAND:4
+										TCVAR:MASTER:자세 = 10
+									;そうでなければ네발로 엎드림
+									ELSE
+										TCVAR:MASTER:자세 = 3
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 2
+									ENDIF
+								;それ以外は네발로 엎드림
+								CASEELSE
+									TCVAR:MASTER:자세 = 3
+									TCVAR:MASTER:위치상하 = 0
+									TCVAR:MASTER:위치전후 = 2
+							ENDSELECT
+						ENDIF
+					ENDIF
+				;Ｃ、Ｖ
+				CASE 1, 2
+					;성기同士でしている
+					IF GROUPMATCH(MC_PLAYER(1), 3, 8) || GROUPMATCH(MV_PLAYER(1), 3, 8)
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 1
+							TCVAR:MASTER:위치전후 = 1
+						;스마타の場合、누움でなければ후배위準拠
+						ELSEIF PENIS(MASTER) && MC_PLAYER(1) == 8
+							TCVAR:MASTER:자세 = 10
+							TCVAR:MASTER:위치상하 = 0
+							TCVAR:MASTER:위치전후 = 3
+						ELSE
+							;전회의자세によって보정
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;누움は継続
+								CASE 1
+									TCVAR:MASTER:자세 = 1
+									TCVAR:MASTER:위치상하 = 1
+									TCVAR:MASTER:위치전후 = 1
+								;それ以外
+								CASEELSE
+									;Ｃでイった直後は1/2で누움に변화する
+									IF NOWEX:MASTER:Ｃ절정 && RAND:2
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 1
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ座り
+									ELSE
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+							ENDSELECT
+						ENDIF
+					;가슴でしている
+					ELSEIF MC_PLAYER(1) == 6 || MV_PLAYER(1) == 6
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 1
+							TCVAR:MASTER:위치전후 = 1
+						ELSE
+							;전회의자세によって보정
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;누움は継続
+								CASE 1
+									TCVAR:MASTER:자세 = 1
+									TCVAR:MASTER:위치상하 = 1
+									TCVAR:MASTER:위치전후 = 1
+								;それ以外
+								CASEELSE
+									;Ｃでイった直後は1/2で누움に변화する
+									IF NOWEX:MASTER:Ｃ절정 && RAND:2
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 1
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ무릎으로 서있다
+									ELSE
+										TCVAR:MASTER:자세 = 10
+										TCVAR:MASTER:위치상하 = 2
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+							ENDSELECT
+						ENDIF
+					;발でしている
+					ELSEIF MC_PLAYER(1) == 7 || MV_PLAYER(1) == 7
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 0
+							TCVAR:MASTER:위치전후 = 1
+						ELSE
+							;전회의자세によって보정
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;누움は継続
+								CASE 1
+									TCVAR:MASTER:자세 = 1
+									TCVAR:MASTER:위치상하 = 0
+									TCVAR:MASTER:위치전후 = 1
+								;それ以外
+								CASEELSE
+									;Ｃでイった直後は1/2で누움に변화する
+									IF NOWEX:MASTER:Ｃ절정 && RAND:2
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ座り
+									ELSE
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+							ENDSELECT
+						ENDIF
+					;입でしている
+					ELSEIF MC_PLAYER(1) == 1 || MV_PLAYER(1) == 1
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							;シックスナインは안면승마に流れているはず
+							TCVAR:MASTER:위치상하 = 0
+							TCVAR:MASTER:위치전후 = 1
+						ELSE
+							;전회의자세によって보정
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;누움
+								CASE 1
+									;가버려なら3/4で座りに변화する
+									IF TCVAR:MASTER:가버려 && RAND:4
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;1/4で座りに변화する
+									ELSEIF !RAND:4
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;座り、자유
+								CASE 2, 0
+									;가버려なら3/4で무릎으로 서있다に변화する
+									IF TCVAR:MASTER:가버려 && RAND:4
+										TCVAR:MASTER:자세 = 10
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;Ｃでイった直後は1/2で누움に변화する
+									ELSEIF NOWEX:MASTER:Ｃ절정 && RAND:2
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ座り
+									ELSE
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;네발로 엎드림
+								CASE 3
+									;3/4で座りに변화する
+									IF RAND:4
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ누움
+									ELSE
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;기립
+								CASE 4
+									;Ｃでイった直後は무릎으로 서있다に변화する
+									IF NOWEX:MASTER:Ｃ절정
+										TCVAR:MASTER:자세 = 10
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 4
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;무릎으로 서있다
+								CASE 10
+									;Ｃでイった直後は座りに변화する
+									IF NOWEX:MASTER:Ｃ절정
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 10
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+							ENDSELECT
+						ENDIF
+					;손・도구類など
+					ELSE
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 0
+							TCVAR:MASTER:위치전후 = 1
+						ELSE
+							;전회의자세によって보정
+							;입と違い、前後・上下の指定はありません
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;누움
+								CASE 1
+									;가버려なら3/4で座りに변화する
+									IF TCVAR:MASTER:가버려 && RAND:4
+										TCVAR:MASTER:자세 = 2
+									;1/4で座りに변화する
+									ELSEIF !RAND:4
+										TCVAR:MASTER:자세 = 2
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;座り、자유
+								CASE 2, 0
+									;가버려なら3/4で무릎으로 서있다に변화する
+									IF TCVAR:MASTER:가버려 && RAND:4
+										TCVAR:MASTER:자세 = 10
+									;Ｃでイった直後は1/2で누움に변화する
+									ELSEIF NOWEX:MASTER:Ｃ절정 && RAND:2
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ座り
+									ELSE
+										TCVAR:MASTER:자세 = 2
+									ENDIF
+								;네발로 엎드림
+								CASE 3
+									;位置が前でない場合、2/3で後ろから継続
+									IF TCVAR:MASTER:위치전후 != 1 && RAND:3
+										TCVAR:MASTER:자세 = 3
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 2
+									;そうでなければ座りに변화する
+									ELSE
+										TCVAR:MASTER:자세 = 2
+									ENDIF
+								;기립
+								CASE 4
+									;Ｃでイった直後は무릎으로 서있다に변화する
+									IF NOWEX:MASTER:Ｃ절정
+										TCVAR:MASTER:자세 = 10
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 4
+									ENDIF
+								;무릎으로 서있다
+								CASE 10
+									;Ｃでイった直後は座りに변화する
+									IF NOWEX:MASTER:Ｃ절정
+										TCVAR:MASTER:자세 = 2
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 10
+									ENDIF
+							ENDSELECT
+						ENDIF
+					ENDIF
+				;Ｂ
+				CASE 4
+					;입でしている、or 乳の揉み合い
+					IF MB_PLAYER(1) == 1 || TB_PLAYER(0) == 1
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 1
+							TCVAR:MASTER:위치전후 = 0
+						ELSE
+							;전회의자세によって보정
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;누움
+								CASE 1
+									;1/4で座りに변화する
+									IF !RAND:4
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 1
+										TCVAR:MASTER:위치전후 = 0
+									ENDIF
+								;座り、자유
+								CASE 2, 0
+									;Ｂでイった直後は1/2で누움に변화する
+									IF NOWEX:MASTER:Ｂ절정 && RAND:2
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 1
+										TCVAR:MASTER:위치전후 = 0
+									;そうでなければ座り
+									ELSE
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;네발로 엎드림
+								CASE 3
+									;3/4で座りに변화する
+									IF RAND:4
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ누움
+									ELSE
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;기립
+								CASE 4
+									;Ｂでイった直後は무릎으로 서있다に변화する
+									IF NOWEX:MASTER:Ｂ절정
+										TCVAR:MASTER:자세 = 10
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 4
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;무릎으로 서있다
+								CASE 10
+									;Ｂでイった直後は座りに변화する
+									IF NOWEX:MASTER:Ｂ절정
+										TCVAR:MASTER:자세 = 2
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 10
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+							ENDSELECT
+						ENDIF
+					;손など
+					ELSE
+						;すでに누움の場合
+						IF TFLAG:누움
+							TCVAR:MASTER:자세 = 1
+							TCVAR:MASTER:위치상하 = 1
+							TCVAR:MASTER:위치전후 = 1
+						ELSE
+							;전회의자세によって보정
+							;입と違い、前後・上下の指定はありません
+							SELECTCASE TCVAR:MASTER:전회의자세
+								;누움
+								CASE 1
+									;1/4で座りに변화する
+									IF !RAND:4
+										TCVAR:MASTER:자세 = 2
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 1
+										TCVAR:MASTER:위치전후 = 1
+									ENDIF
+								;座り、자유
+								CASE 2, 0
+									;Ｂでイった直後は1/2で누움に변화する
+									IF NOWEX:MASTER:Ｃ절정 && RAND:2
+										TCVAR:MASTER:자세 = 1
+										TCVAR:MASTER:위치상하 = 1
+										TCVAR:MASTER:위치전후 = 1
+									;そうでなければ座り
+									ELSE
+										TCVAR:MASTER:자세 = 2
+									ENDIF
+								;네발로 엎드림
+								CASE 3
+									;位置が前でない場合、2/3で後ろから継続
+									IF TCVAR:MASTER:위치전후 != 1 && RAND:3
+										TCVAR:MASTER:자세 = 3
+										TCVAR:MASTER:위치상하 = 0
+										TCVAR:MASTER:위치전후 = 2
+									;そうでなければ座りに변화する
+									ELSE
+										TCVAR:MASTER:자세 = 2
+									ENDIF
+								;기립
+								CASE 4
+									;Ｂでイった直後は무릎으로 서있다に변화する
+									IF NOWEX:MASTER:Ｂ절정
+										TCVAR:MASTER:자세 = 10
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 4
+									ENDIF
+								;무릎으로 서있다
+								CASE 10
+									;Ｂでイった直後は座りに변화する
+									IF NOWEX:MASTER:Ｂ절정
+										TCVAR:MASTER:자세 = 2
+									;そうでなければ継続
+									ELSE
+										TCVAR:MASTER:자세 = 10
+									ENDIF
+							ENDSELECT
+						ENDIF
+					ENDIF
+			ENDSELECT
+		CASE "봉사"
+			;すでに누움の場合（やりにくいと思うけど…）
+			IF TFLAG:누움
+				TCVAR:MASTER:자세 = 1
+				TCVAR:MASTER:위치전후 = 0
+				TCVAR:MASTER:위치상하 = 1
+			ELSE
+				;전회의자세によって보정
+				SELECTCASE TCVAR:MASTER:전회의자세
+					;누움…下から触る
+					CASE 1
+						TCVAR:MASTER:자세 = 1
+						TCVAR:MASTER:위치전후 = 0
+						TCVAR:MASTER:위치상하 = 1
+					;他…座って前から
+					;손の場合、COMで적극적으로 한다ことで後ろに回ることがある
+					CASEELSE
+						TCVAR:MASTER:자세 = 2
+						TCVAR:MASTER:위치전후 = 1
+						TCVAR:MASTER:위치상하 = 0
+				ENDSELECT
+			ENDIF
+		;その他
+		CASEELSE
+			;すでに누움の場合
+			IF TFLAG:누움
+				TCVAR:MASTER:자세 = 1
+			ELSE
+				;個別の設定
+				SELECTCASE TFLAG:ACT
+					;키스
+					CASE 15
+						;자유の場合座らせる
+						TCVAR:MASTER:자세 = TCVAR:MASTER:전회의자세 ? TCVAR:MASTER:전회의자세 # 2
+						;자유の場合前に
+						TCVAR:MASTER:위치전후 = TCVAR:MASTER:전회의위치전후 ? TCVAR:MASTER:전회의위치전후 # 1
+					;자위、방뇨
+					CASE 40, 45
+						;자유の場合座らせるのみ
+						TCVAR:MASTER:자세 = TCVAR:MASTER:전회의자세 ? TCVAR:MASTER:전회의자세 # 2
+					;비패개장
+					CASE 41
+						;座り대면
+						TCVAR:MASTER:자세 = 2
+						TCVAR:MASTER:위치전후 = 1
+						TCVAR:MASTER:위치상하 = 0
+					;자위를과시한다、페니스밴드장착
+					CASE 42, 75
+						;대면
+						TCVAR:MASTER:위치전후 = 1
+					;거울、야외플레이、코스프레、휴식、栄養剤
+					CASE 43, 44, 46, 90, 91
+						;リセット
+						TCVAR:MASTER:자세 = 0
+						TCVAR:MASTER:위치전후 = 0
+						TCVAR:MASTER:위치상하 = 0
+					;방치플레이、공중변소플레이
+					CASE 45, 74
+						;位置リセット、자세1/2で자유、1/2で継続
+						TCVAR:MASTER:자세 = RAND:2 ? TCVAR:MASTER:전회의자세 # 0
+						TCVAR:MASTER:위치전후 = 0
+						TCVAR:MASTER:위치상하 = 0
+					;스펭킹、채찍、フィスト類
+					CASE 60, 61, 70, 71, 72
+						;네발로 엎드림・後ろ
+						TCVAR:MASTER:자세 = 3
+						TCVAR:MASTER:위치전후 = 2
+						TCVAR:MASTER:위치상하 = 0
+					;밧줄・目隠し・볼개그、치료
+					CASE 63, 64, 65, 92
+						;座り・後ろ
+						TCVAR:MASTER:자세 = 2
+						TCVAR:MASTER:위치전후 = 2
+						TCVAR:MASTER:위치상하 = 0
+					;삼각목마
+					CASE 67
+						;무릎으로 서있다、位置リセット
+						TCVAR:MASTER:자세 = 10
+						TCVAR:MASTER:위치전후 = 0
+						TCVAR:MASTER:위치상하 = 0
+				ENDSELECT
+			ENDIF
+	ENDSELECT
+ENDIF
+
+;펠라継続中の場合、前後位置を前に固定
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	TCVAR:MASTER:위치전후 = 1
+
+;ここまでで자유자세だった場合
+IF !TCVAR:MASTER:자세
+	;성교중・Ｐ사용중・자위중ならば전회의자세・位置を踏襲
+	IF TEQUIP:성교중 || TEQUIP:성교봉사중 || TEQUIP:죠교대상Ｃ사용 || GETBIT(TEQUIP:자위중, 0)
+		TCVAR:MASTER:자세 = TCVAR:MASTER:전회의자세
+		SIF !TCVAR:MASTER:위치전후
+			TCVAR:MASTER:위치전후 = TCVAR:MASTER:전회의위치전후
+		SIF !TCVAR:MASTER:위치상하
+			TCVAR:MASTER:위치상하 = TCVAR:MASTER:전회의위치상하
+	ENDIF
+ENDIF
+
+;ここまでで자유前後位置だった場合
+IF !TCVAR:MASTER:위치전후 && !TCVAR:MASTER:위치상하
+	;애무系・도구系ACTならば전회의位置を踏襲
+	;전회が자유なら前と後ろにランダムで振る
+	SIF GROUPMATCH(GET_ACTM(TFLAG:ACT), 1, 2)
+		TCVAR:MASTER:위치전후 = RANGE(TCVAR:MASTER:위치전후, 1, 2) ? TCVAR:MASTER:위치전후 # RAND:2+1
+ENDIF
+
+;조수の성교を취소
+IF TFLAG:Ｐ사용중 || TFLAG:Ｐ삽입중
+	TFLAG:조수에삽입중 = 0
+	TFLAG:조수연속교합 = 0
+ENDIF
+
+@MASTER_POSE_ASSI, ARG
+;조수행동
+;수음
+IF TCVAR:ARG:조수ACT == 7
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+;クンニ,펠라
+ELSEIF TCVAR:ARG:조수ACT == 1
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+;貝あわせ,스마타
+ELSEIF TCVAR:ARG:조수ACT == 2
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+;파이즈리
+ELSEIF TCVAR:ARG:조수ACT == 3
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+;발コキ
+ELSEIF TCVAR:ARG:조수ACT == 4
+	SIF TFLAG:누움 == 0
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+;로터, 오나홀
+ELSEIF TCVAR:ARG:조수ACT == 5
+	TFLAG:Ｐ사용중 += 1
+;역강간
+ELSEIF TCVAR:ARG:조수ACT == 6
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:Ｐ삽입중 = 1
+;항문애무
+ELSEIF TCVAR:ARG:조수ACT == 10
+	TFLAG:Ａ사용중 = 2
+;항문펠라
+ELSEIF TCVAR:ARG:조수ACT == 11
+	TFLAG:Ａ사용중 = 2
+;항문로터
+ELSEIF TCVAR:ARG:조수ACT == 12
+	TFLAG:Ａ사용중 = 2
+;항문바이브
+ELSEIF TCVAR:ARG:조수ACT == 13
+	TFLAG:Ａ사용중 = 2
+;가슴애무
+ELSEIF TCVAR:ARG:조수ACT == 20
+	TFLAG:가슴사용중 = 1
+
+;유두핥기
+ELSEIF TCVAR:ARG:조수ACT == 21
+	TFLAG:가슴사용중 = 1
+;유두로터
+ELSEIF TCVAR:ARG:조수ACT == 22
+	TFLAG:가슴사용중 = 1
+;손가락삽입
+ELSEIF TCVAR:ARG:조수ACT == 30
+	TFLAG:Ｖ사용중 = 2
+;바이브
+ELSEIF TCVAR:ARG:조수ACT == 31
+	TFLAG:Ｖ사용중 = 2
+;성교
+ELSEIF TCVAR:ARG:조수ACT == 32
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:Ｖ사용중 = 1
+;키스
+ELSEIF TCVAR:ARG:조수ACT == 40
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:입사용중 += 1
+;안면승마
+ELSEIF TCVAR:ARG:조수ACT == 41
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	TFLAG:입사용중 = 2
+;발을핥게한다
+ELSEIF TCVAR:ARG:조수ACT == 42
+	TFLAG:입사용중 = 2
+ENDIF
+
+
+;────────────────────────────────────
+;ACTごとのPOSE情報。主にMASTERについて
+;現状MASTER側だけが情報을 가지고 있습니다。拡張性のためTCVARを利用
+;どれも、=0は情報なし・자유ということで。회화とかそんな感じです
+;
+;結局、구상くらいしかこれらを参照していませんが…そのうち役に立つ？
+;
+;※要修正
+;＠TCVAR:MASTER:1（자세）
+;	자세情報を格納するらしい。TFLAG:누움（누움）はそのうちこちらに移植されるべきか？
+;	一応、現在はTFLAG:누움=2から１ターンでは起き上がれないという要素があるので残하면서こちらにも기록することに。
+;	ほとんどこのTCVARは参照されていませんが、ここでデータだけは入れておいてもいいよね。
+;	(0=자유 1=누움 2=앉다 3=네발로 엎드림 4=기립 10=무릎으로 서있다)
+;
+;＠TCVAR:MASTER:2（위치전후）
+;	MASTERとTARGETの前後位置情報だけ格納。現状MASTER側だけが持っています
+;	=0は자유
+;	=1で대면（Ｍ→←Ｔ）
+;	=2でMASTERの背後（Ｔ→Ｍ→）
+;	=3でMASTERが背後（Ｍ→Ｔ→）
+;
+;＠TCVAR:MASTER:3（위치상하）
+;	MASTERとTARGETの上下位置情報。現状MASTER側だけが持っています
+;	=1で正位（MASTERが組み敷かれている）
+;	=2で逆位（MASTERがTARGETを組み敷いている）
+
+;これでとりあえず、大まかには表せます。
+;────────────────────────────────────
+;010,애무/수음する（Ｓ/Ｎ/Ｈ）（쾌Ｃ、쾌Ｂ、접촉、애정、성행위、불결）
+;────────────────────────────────────
+@MASTER_POSE_ACT10
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+
+;────────────────────────────────────
+;011,가슴애무/乳首吸い/乳の揉み合い（Ｓ/Ｎ/Ｈ）（쾌Ｂ、접촉、애정、성행위、고통、불결）
+;────────────────────────────────────
+@MASTER_POSE_ACT11
+	TFLAG:가슴사용중 = 1
+	;乳首吸い、乳の揉み合いは대면
+	SIF GROUPMATCH(TFLAG:ACT파생, 1, 2)
+		TCVAR:MASTER:위치전후 = 1
+
+;────────────────────────────────────
+;012,クンニ/펠라する（Ｓ/Ｎ/Ｈ）（쾌Ｃ、접촉、애정、성행위、고통、불결）
+;────────────────────────────────────
+@MASTER_POSE_ACT12
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+	SIF !PENIS(MASTER)
+		TFLAG:Ｖ사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;013,항문애무（Ｎ/Ｈ）[罰]（쾌Ａ、접촉、성행위、고통、불결、이탈）
+;────────────────────────────────────
+@MASTER_POSE_ACT13
+	TFLAG:Ａ사용중 += 1
+;────────────────────────────────────
+;014,항문펠라（Ｎ/Ｈ）[罰]（쾌Ａ、접촉、성행위、고통、불결、이탈）
+;────────────────────────────────────
+@MASTER_POSE_ACT14
+	TFLAG:Ａ사용중 += 1
+	;背後
+	TCVAR:MASTER:위치전후 = 2
+;────────────────────────────────────
+;015,키스（Ｓ/Ｎ）（접촉、애정、성행위、고통、불결）
+;────────────────────────────────────
+@MASTER_POSE_ACT15
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:입사용중 += 1
+;────────────────────────────────────
+;016,貝あわせ/스마타する（Ｓ/Ｎ）（쾌Ｃ、접촉、애정、성행위、불결、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT16
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+	TFLAG:Ｖ사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;017,파이즈리한다（Ｓ/Ｎ）（쾌Ｃ、접촉、애정、고통、성행위、불결、쾌Ｂ）
+;────────────────────────────────────
+@MASTER_POSE_ACT17
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;018,풋잡하기（Ｓ/Ｎ/Ｈ）[罰]（쾌Ｃ、접촉、애정、성행위、불결、이탈）
+;────────────────────────────────────
+@MASTER_POSE_ACT18
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;018,손가락삽입한다
+;────────────────────────────────────
+@MASTER_POSE_ACT19
+	TFLAG:Ｖ사용중 += 1
+;────────────────────────────────────
+;020,로터（Ｓ/Ｎ）（쾌Ｃ、중독충족）
+;────────────────────────────────────
+@MASTER_POSE_ACT20
+	TFLAG:Ｐ사용중 = 6
+;────────────────────────────────────
+;021,바이브（Ｓ/Ｎ/Ｈ）[罰]（쾌Ｖ、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@MASTER_POSE_ACT21
+	TFLAG:Ｖ사용중 = 2
+;────────────────────────────────────
+;022,항문바이브（Ｎ/Ｈ）[罰]（쾌Ａ、고통、이탈、중독충족）
+;────────────────────────────────────
+@MASTER_POSE_ACT22
+	TFLAG:Ａ사용중 = 2
+;────────────────────────────────────
+;023,항문비즈（Ｓ/Ｎ/Ｈ）（쾌Ａ、고통、이탈、중독충족）
+;────────────────────────────────────
+@MASTER_POSE_ACT23
+	TFLAG:Ａ사용중 = 2
+;────────────────────────────────────
+;024,클리캡/오나홀（Ｓ/Ｎ）（쾌Ｃ、중독충족）
+;────────────────────────────────────
+@MASTER_POSE_ACT24
+	TFLAG:Ｐ사용중 = 5
+;────────────────────────────────────
+;025,유두캡
+;────────────────────────────────────
+@MASTER_POSE_ACT25
+	TFLAG:가슴사용중 = 1
+;────────────────────────────────────
+;026,페니스밴드
+;────────────────────────────────────
+@MASTER_POSE_ACT26
+	TFLAG:Ｐ사용중 = 6
+	TFLAG:Ａ사용중 = 2
+	TFLAG:Ｖ사용중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;030,정상위（Ｓ/Ｎ）（쾌Ｖ、접촉、애정、성행위、고통、중독충족、트라우마、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT30
+	TFLAG:누움 = 2
+	TFLAG:Ｖ사용중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;031,후배위（Ｎ/Ｈ）[罰]（쾌Ｖ、접촉、애정、성행위、고통、중독충족、트라우마、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT31
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중 = 1
+	;背後
+	TCVAR:MASTER:위치전후 = 2
+;────────────────────────────────────
+;032,기승위（Ｓ/Ｎ）（쾌Ｖ、접촉、애정、성행위、고통、중독충족、트라우마、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT32
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;033,대면좌위（Ｓ/Ｎ/Ｈ）（쾌Ｖ、접촉、애정、성행위、고통、중독충족、트라우마、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT33
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;034,배면좌위（Ｎ/Ｈ）（쾌Ｖ、접촉、애정、성행위、고통、노출、중독충족、트라우마、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT34
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중 = 1
+	;背後
+	TCVAR:MASTER:위치전후 = 2
+;────────────────────────────────────
+;035,항문섹스（Ｎ/Ｈ/Ａ）[罰]（쾌Ａ、접촉、애정、성행위、고통、이탈、중독충족、트라우마、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT35
+	TFLAG:Ａ사용중 = 2
+	;背後
+	TCVAR:MASTER:위치전후 = 2
+;────────────────────────────────────
+;103,역강간（Ｎ/Ｈ/Ａ）[罰]（쾌Ｃ、접촉、애정、성행위、고통、이탈、중독충족、트라우마、쾌Ｖ）
+;────────────────────────────────────
+@MASTER_POSE_ACT103
+	TFLAG:누움 = 2
+	TFLAG:Ｐ삽입중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;041,비패개장（Ｓ/Ｎ/Ｈ）（쾌Ｃ、노출、이탈）
+;────────────────────────────────────
+@MASTER_POSE_ACT41
+	TFLAG:Ｖ사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;045,방뇨（Ｎ/Ｈ/Ａ）[罰]（노출、이탈、트라우마）
+;────────────────────────────────────
+@MASTER_POSE_ACT45
+	TFLAG:Ｐ사용중 = 3
+	TFLAG:Ｖ사용중 = 2
+;────────────────────────────────────
+;050,수음/애무強制（Ｓ/Ｎ）（불결）
+;────────────────────────────────────
+;봉사系の행동は거부できるので、反応が出るまで身体の접촉がないようにしておきます
+@MASTER_POSE_ACT50
+	TFLAG:발사용중 += 1
+	;대면（조수に事前に前を開け시킨다ため）
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;051,펠라チオ/クンニ強制（Ｓ/Ｎ/Ｈ）（불결）
+;────────────────────────────────────
+@MASTER_POSE_ACT51
+	SIF TFLAG:누움
+		TFLAG:누움 = 2
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	SIF TEQUIP:죠교대상Ｃ사용 == 1 || TEQUIP:죠교대상Ｃ사용 == 2 || TEQUIP:죠교대상Ｃ사용 == 4
+		TFLAG:누움 = 2
+	TFLAG:입사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;052,파이즈리（Ｓ/Ｎ/Ｈ）（불결）
+;────────────────────────────────────
+@MASTER_POSE_ACT52
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:가슴사용중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;053,스마타（Ｓ/Ｎ/Ｈ）（불결）
+;────────────────────────────────────
+@MASTER_POSE_ACT53
+	TFLAG:Ｐ사용중 = 4
+	TFLAG:Ｖ사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;055,발핥기강제（Ｎ/Ｈ/Ａ）[罰]（불결、이탈、트라우마）
+;────────────────────────────────────
+@MASTER_POSE_ACT55
+	TFLAG:입사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;056,이라마치오（Ｈ/Ａ）[罰]（접촉、애정逆、성행위、고통、구속<=頭を掴む事、불결、이탈、트라우마、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT56
+	TFLAG:입사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+
+;────────────────────────────────────
+;070,피스트퍽（Ｈ/Ａ）[罰]（쾌Ｖ、접촉、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@MASTER_POSE_ACT70
+	TFLAG:Ｖ사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;071,애널피스트（Ｈ/Ａ）[罰]（쾌Ａ、접촉、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@MASTER_POSE_ACT71
+	TFLAG:Ａ사용중 = 2
+	;背後
+	TCVAR:MASTER:위치전후 = 2
+;────────────────────────────────────
+;072,양쪽피스트（Ａ）[罰]（쾌Ｖ、쾌Ａ、접촉、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@MASTER_POSE_ACT72
+	TFLAG:Ａ사용중 = 2
+	TFLAG:Ｖ사용중 = 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;095,정상위시킨다（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ）
+;────────────────────────────────────
+@MASTER_POSE_ACT95
+	TFLAG:누움 = 0
+	TFLAG:Ｐ삽입중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;096,후배위시킨다（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ）
+;────────────────────────────────────
+@MASTER_POSE_ACT96
+	TFLAG:누움 = 0
+	TFLAG:Ｐ삽입중 = 1
+	;背面
+	TCVAR:MASTER:위치전후 = 3
+;────────────────────────────────────
+;097,대면좌위시킨다（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ、쾌Ｃ）
+;────────────────────────────────────
+@MASTER_POSE_ACT97
+	TFLAG:누움 = 0
+	TFLAG:Ｐ삽입중 = 1
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;098,배면좌위시킨다（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ、쾌Ｃ、쾌Ｂ）
+;────────────────────────────────────
+@MASTER_POSE_ACT98
+	TFLAG:누움 = 0
+	TFLAG:Ｐ삽입중 = 1
+	;背面
+	TCVAR:MASTER:위치전후 = 3
+;────────────────────────────────────
+;099,항문섹스시킨다（Ｎ/Ｈ/Ａ）[접촉]（쾌Ｃ、접촉、애정、성행위、중독충족、달성、열락、쾌Ｖ、쾌Ｃ、쾌Ｂ）
+;────────────────────────────────────
+@MASTER_POSE_ACT99
+	IF	TFLAG:누움 == 0
+		SIF RAND:2 == 0
+			TFLAG:누움 = 2
+	ELSE
+		TFLAG:누움 = 2
+	ENDIF
+	TFLAG:Ｐ삽입중 = 1
+	;背面
+	TCVAR:MASTER:위치전후 = 3
+
+;※要修正
+;↑ここまであんまり弄ってないです。Ｐ사용중플래그の代入とかだいぶ変ですが現状では実害ないので방치
+;そのうち直すタスクということで
+
+;────────────────────────────────────
+;300,Ｗ수음
+;────────────────────────────────────
+@MASTER_POSE_ACT300
+	;누움判定は수음と同じ
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	;ＷでＰ사용중
+	TFLAG:Ｐ사용중 += 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;301,Ｗ펠라
+;────────────────────────────────────
+@MASTER_POSE_ACT301
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;302,Ｗ키스
+;────────────────────────────────────
+@MASTER_POSE_ACT302
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:입사용중 += 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;303,Ｗ스마타
+;────────────────────────────────────
+@MASTER_POSE_ACT303
+	TFLAG:Ｐ사용중 += 2
+	TFLAG:Ｖ사용중 += 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;304,Ｗ파이즈리
+;────────────────────────────────────
+@MASTER_POSE_ACT304
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;305,Ｗ풋잡
+;────────────────────────────────────
+@MASTER_POSE_ACT305
+	SIF RAND:(10 + ABL:욕망 + ABL:기교) > RAND:(10 + ABL:MASTER:기교)
+		TFLAG:누움 = 2
+	TFLAG:Ｐ사용중 += 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;306,騎乗二穴責め
+;────────────────────────────────────
+@MASTER_POSE_ACT306
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중++
+	TFLAG:Ａ사용중++
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;307,대면二穴責め
+;────────────────────────────────────
+@MASTER_POSE_ACT307
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중++
+	TFLAG:Ａ사용중++
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;308,노니는모난
+;────────────────────────────────────
+@MASTER_POSE_ACT308
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중++
+	;背後
+	TCVAR:MASTER:위치전후 = 2
+;────────────────────────────────────
+;309,항문二穴責め
+;────────────────────────────────────
+@MASTER_POSE_ACT309
+	TFLAG:누움 = 0
+	TFLAG:Ｖ사용중++
+	TFLAG:Ａ사용중++
+	;背後
+	TCVAR:MASTER:위치전후 = 2
+;────────────────────────────────────
+;310,Ｗ역강간
+;────────────────────────────────────
+@MASTER_POSE_ACT310
+	TFLAG:누움 = 2
+	TFLAG:Ｐ삽입중 += 2
+	;대면
+	TCVAR:MASTER:위치전후 = 1
+;────────────────────────────────────
+;311,타니와타리
+;────────────────────────────────────
+@MASTER_POSE_ACT311
+	TFLAG:누움 = 0
+	TFLAG:Ｐ삽입중 += 2
+	;背面
+	TCVAR:MASTER:위치전후 = 3

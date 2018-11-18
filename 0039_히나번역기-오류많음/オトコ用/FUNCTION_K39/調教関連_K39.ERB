@@ -1,0 +1,450 @@
+﻿;==================================================
+;
+;			죠교関連関数置き場
+;
+;	죠교時の各種参照、判定、捏造用関数類
+;
+;==================================================
+
+;-------------------------------------------------
+;関数名:GET_EX_K39
+;概　要:文字列でEX関連を参照する
+;引　数:ARGS…절정の種類
+;戻り値:指定했다文字列に準じたNOWEX
+;使用例:GET_EX_K39("MC절정")
+;-------------------------------------------------
+@GET_EX_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 30
+SPLIT ARGS, "/", LOCALS
+
+LOCAL:0 = NOWEX:MASTER:Ｃ절정
+LOCAL:1 = NOWEX:MASTER:Ｖ절정
+LOCAL:2 = NOWEX:MASTER:Ａ절정
+LOCAL:3 = NOWEX:MASTER:Ｂ절정
+LOCAL:4 = NOWEX:MASTER:분유
+LOCAL:5 = NOWEX:MASTER:사정
+LOCAL:6 = NOWEX:MASTER:방뇨
+LOCAL:7 = NOWEX:Ｃ절정
+LOCAL:8 = NOWEX:Ｖ절정
+LOCAL:9 = NOWEX:Ａ절정
+LOCAL:10 = NOWEX:Ｂ절정
+LOCAL:11 = NOWEX:분유
+LOCAL:12 = NOWEX:사정
+LOCAL:13 = NOWEX:MASTER:시오후키
+
+;시오후키が追加당했다けど번호入れ替えるの面倒なんで取りあえずLOCAL:13で
+SELECTCASE ARGS
+	CASE "MC절정"
+		RETURNF LOCAL:0
+	CASE "MV절정"
+		RETURNF LOCAL:1
+	CASE "MA절정"
+		RETURNF LOCAL:2
+	CASE "MB절정"
+		RETURNF LOCAL:3
+	CASE "M분유"
+		RETURNF LOCAL:4
+	CASE "M사정"
+		RETURNF LOCAL:5
+	CASE "M드라이사정"
+		RETURNF LOCAL:5 == 1
+	CASE "M대량사정"
+		RETURNF LOCAL:5 == 3
+	CASE "M조루사정"
+		RETURNF LOCAL:5 == 4
+	CASE "MA責め사정"
+		RETURNF LOCAL:5 == 5
+	CASE "M통상사정"
+		RETURNF LOCAL:5 == 2
+	CASE "M방뇨"
+		RETURNF LOCAL:6
+	CASE "TC절정"
+		RETURNF LOCAL:7
+	CASE "TV절정"
+		RETURNF LOCAL:8
+	CASE "TA절정"
+		RETURNF LOCAL:9
+	CASE "TB절정"
+		RETURNF LOCAL:10
+	CASE "T분유"
+		RETURNF LOCAL:11
+	CASE "T사정"
+		RETURNF LOCAL:12
+	CASE "T드라이사정"
+		RETURNF LOCAL:12 == 1
+	CASE "T대량사정"
+		RETURNF LOCAL:12 == 3
+	CASE "T통상사정"
+		RETURNF LOCAL:12 == 2
+	CASE "M_CVAB절정"
+		RETURNF LOCAL:0 > 0 && LOCAL:1 > 0 && LOCAL:2 > 0 && LOCAL:3 > 0
+	CASE "M_CVA절정"
+		RETURNF LOCAL:0 > 0 && LOCAL:1 > 0 && LOCAL:2 > 0
+	CASE "M_CVB절정"
+		RETURNF LOCAL:0 > 0 && LOCAL:1 > 0 && LOCAL:3 > 0
+	CASE "M_CV절정"
+		RETURNF LOCAL:0 > 0 && LOCAL:1 > 0
+	CASE "M_CA절정"
+		RETURNF LOCAL:0 > 0 && LOCAL:2 > 0
+	CASE "M_CB절정"
+		RETURNF LOCAL:0 > 0 && LOCAL:3 > 0
+	CASE "T_CVAB절정"
+		RETURNF LOCAL:7 > 0 && LOCAL:8 > 0 && LOCAL:9 > 0 && LOCAL:10 > 0
+	CASE "T_CVA절정"
+		RETURNF LOCAL:7 > 0 && LOCAL:8 > 0 && LOCAL:9 > 0
+	CASE "T_CVB절정"
+		RETURNF LOCAL:7 > 0 && LOCAL:8 > 0 && LOCAL:10 > 0
+	CASE "T_CV절정"
+		RETURNF LOCAL:7 > 0 && LOCAL:8 > 0
+	CASE "T_CA절정"
+		RETURNF LOCAL:7 > 0 && LOCAL:9 > 0
+	CASE "T_CB절정"
+		RETURNF LOCAL:7 > 0 && LOCAL:10 > 0
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@GET_EX_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+RETURNF 0
+
+;=================================================
+;部位別애무物判定関数類
+;=================================================
+;MC_PLAYERとか判り難いので文字列で返す事にしてみる
+;基本的にEV20 절정구상での使用を想定
+;用途を絞りXX_PLAYERの引数が真の場合のみ想定
+;-------------------------------------------------
+
+;-------------------------------------------------
+;関数名:MC_CHECK_K39
+;概　要:MASTER用Ｃ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:MC_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@MC_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = MC_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASE "膣입"
+		RETURNF LOCAL == 8
+	CASE "로터"
+		RETURNF LOCAL == 100
+	CASE "클리캡"
+		RETURNF LOCAL == 112
+	CASE "오나홀"
+		RETURNF LOCAL == 114
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@MC_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:MV_CHECK_K39
+;概　要:MASTER用Ｖ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:MV_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@MV_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = MV_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASE "腕"
+		RETURNF LOCAL == 10
+	CASE "로터"
+		RETURNF LOCAL == 100
+	CASE "바이브"
+		RETURNF LOCAL == 101
+	CASE "페니스밴드"
+		RETURNF LOCAL == 103
+	CASE "삼각목마"
+		RETURNF LOCAL == 133
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@MV_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:MA_CHECK_K39
+;概　要:MASTER用Ａ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:MA_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@MA_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = MA_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASE "腕"
+		RETURNF LOCAL == 10
+	CASE "로터"
+		RETURNF LOCAL == 100
+	CASE "항문비즈"
+		RETURNF LOCAL == 102
+	CASE "페니스밴드"
+		RETURNF LOCAL == 103
+	CASE "항문바이브"
+		RETURNF LOCAL == 111
+	CASE "관장그릇＋플러그"
+		RETURNF LOCAL == 132
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@MA_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:MB_CHECK_K39
+;概　要:MASTER用Ｂ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:MB_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@MB_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = MB_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASE "腕"
+		RETURNF LOCAL == 10
+	CASE "로터"
+		RETURNF LOCAL == 100
+	CASE "유두캡"
+		RETURNF LOCAL == 113
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@MB_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:TC_CHECK_K39
+;概　要:TARGET用ｃ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:TC_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@TC_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = TC_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASE "膣입"
+		RETURNF LOCAL == 8
+	CASE "페니스밴드"
+		RETURNF LOCAL == 103
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@TC_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:TV_CHECK_K39
+;概　要:TARGET用ｖ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:TV_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@TV_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = TV_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASE "腕"
+		RETURNF LOCAL == 10
+	CASE "로터"
+		RETURNF LOCAL == 100
+	CASE "바이브"
+		RETURNF LOCAL == 101
+	CASE "페니스밴드"
+		RETURNF LOCAL == 103
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@TV_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:TA_CHECK_K39
+;概　要:TARGET用ａ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:TA_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@TA_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = TA_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@TA_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;-------------------------------------------------
+;関数名:TB_CHECK_K39
+;概　要:TARGET用ｂ애무物判定関数
+;引　数:ARGS…当該箇所の애무物を表す文字列
+;戻り値:TB_PLAYERの引数が偽である場合に準拠했다もの
+;備　考:式中関数
+;-------------------------------------------------
+@TB_CHECK_K39(ARGS)
+#FUNCTION
+#LOCALSIZE 10
+LOCAL = TB_PLAYER(1)
+SPLIT ARGS, "/", LOCALS
+
+SELECTCASE ARGS
+	CASE "입"
+		RETURNF LOCAL == 1
+	CASE "손"
+		RETURNF LOCAL == 2
+	CASE "페니스"
+		RETURNF LOCAL == 3
+	CASE "바기나"
+		RETURNF LOCAL == 4
+	CASE "항문"
+		RETURNF LOCAL == 5
+	CASE "가슴"
+		RETURNF LOCAL == 6
+	CASE "발"
+		RETURNF LOCAL == 7
+	CASEELSE
+		CALLF PRINT_ERRORMESSAGE("@TB_CHECK_K39に無効な定義が渡されま했다")
+		RETURNF -1
+ENDSELECT
+
+;=================================================
+;捏造系関数
+;=================================================
+;-------------------------------------------------
+;関数名:SET_FINGERING_K39
+;概　要:任意の箇所で손によるＶ애무の処理を行い경험を付与する
+;引　数:なし
+;使用例 CALL SET_FINGERING_K39
+;-------------------------------------------------
+@SET_FINGERING_K39
+#LOCALSIZE 1
+;손가락삽입한다に伴う一連の処理 불결SOURCEについては割愛
+SOURCE:MASTER:쾌Ｖ = 90 + ACT_FROM(TARGET, 3) * (2 + TALENT:손가락기술) / 2
+;죠교레벨に応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 80 + GET_TRAINLV(TARGET) * 5
+;쾌ＶSOURCEに応じて성행위SOURCE増加
+SOURCE:MASTER:성행위 = 80 + SOURCE:MASTER:쾌Ｖ / 10
+;汚れが相互に移動
+CALL MOVE_STAIN("손", TARGET, "바기나", MASTER)
+;경험を付与
+EXP:수음경험 += 1

@@ -1,0 +1,266 @@
+﻿;-------------------------------------------------
+;코이시구상 自作関数ファイル
+;-------------------------------------------------
+;雑多な自作関数のファイル
+;適当な作りなので正常な動作の保証は致しかねます(汗
+;多分この구상でしか使わないようなやつとか
+;分類しようの無いやつとか
+;纏めるにしても数が발りないやつとか
+;置き換え予定の関数とか
+;-------------------------------------------------
+
+;-------------------------------------------------
+;関数名:K64_DICE
+;概　要:ダイスを振る関数
+;引　数: ARG:0…[省略可] ダイスを振る個数(1以上) 省略했다場合は1
+;　　　  ARG:1…[省略可] ダイスの面数(2以上) 省略했다場合は6
+;　　　 ARGS:0…[省略可] 戻り値の種類(SUM:合計/LOW:一番低い目/HIGH:一番高い目) 省略했다場合はSUM(合計)
+;戻り値:ダイス目(1以上)
+;備　考:式中関数
+;なんとなく思いつきで。以下は使用例
+;4d6(6面ダイス4個の合計値)→K64_DICE(4, 6)
+;2d20して低い目(20面ダイス2個の一番低い目)→K64_DICE(2, 20, 1)
+;コインフリップ5回中3回以上成功→K64_DICE(5, 2) - 5 >= 3
+;とりあえずTRPGなんかだと1d2とか出てくるようなので面数2以上で動く
+;1d100の計算でRAND:100するのとRAND:10*10+RAND:10するのとでどれだけの差が出るのかは知らない
+;数字が大きくなれば偏りが無視できないんだろうけど…数学はよくわからない
+;つまり、あまり面数の大きすぎるダイスにしてはいけない。いいね？
+;-------------------------------------------------
+@K64_DICE(ARG:0 = 1, ARG:1 = 6, ARGS:0 = "SUM")
+#FUNCTION
+#LOCALSIZE 2
+;引数おかしいとき
+SIF ARG:0 < 1
+	THROW @K64_DICEでダイスを振る個数が1個未満です（{ARG:0}）
+SIF ARG:1 < 2
+	THROW @K64_DICEでダイスの面数が2未満です（{ARG:1}）
+LOCAL:0 = 1 + RAND:(ARG:1)	;1個目
+FOR LOCAL:1, 1, ARG:0		;2個目以降
+	;戻り値種類分岐
+	SELECTCASE TOUPPER(ARGS:0)
+		CASE "SUM"
+			LOCAL:0 += 1 + RAND:(ARG:1)					;合計値
+		CASE "LOW"
+			LOCAL:0 = MIN(LOCAL:0, 1 + RAND:(ARG:1))	;一番低い目
+		CASE "HIGH"
+			LOCAL:0 = MAX(LOCAL:0, 1 + RAND:(ARG:1))	;一番高い目
+		CASEELSE
+			THROW @K64_DICEで未定義の戻り値種が指定されま했다（%ARGS:0%）
+	ENDSELECT
+	SIF LOCAL:0 < 1	;ここで1未満とかオーバーフローですねやりすぎです
+		THROW @K64_DICEでオーバーフローが発生했다模様です。現在の値={LOCAL:0}
+NEXT
+RETURNF LOCAL:0
+
+
+;-------------------------------------------------
+;関数名:K64_FNAME
+;概　要:フルネーム취득関数(居る人限定)
+;引　数:ARG:0…キャラ등록번호(MASTERとかTARGETとか)
+;戻り値:指定キャラのフルネームの文字列
+;備　考:式中関数
+;@K64_FULLNAMEの引数違い版。処理も丸投げ
+;☆半角スペースを消すオプションとか要るかな？ むしろデフォで消すべき？
+;-------------------------------------------------
+@K64_FNAME(ARG:0)
+#FUNCTIONS
+RETURNF K64_FULLNAME(NO:(ARG:0))
+
+
+;-------------------------------------------------
+;関数名:K64_FULLNAME
+;概　要:フルネーム취득関数
+;引　数:ARG:0…キャラ번호(코이시ちゃんなら64とか)
+;戻り値:指定キャラのフルネームの文字列
+;備　考:式中関数
+;CSTR:등장명が使えるのでほとんどいらないかも
+;一部変わった名前が入っている人がいたりするのでその対応だけ
+;基本はCSVからCSTR:등장명を返すだけ
+;☆半角スペースを消すオプションとか要るかな？ むしろデフォで消すべき？
+;-------------------------------------------------
+@K64_FULLNAME(ARG:0)
+#FUNCTIONS
+SELECTCASE ARG:0	;特殊ケース処理
+	CASE 0	;당신					存在していたら名前変わっているかもしれないのでNAMEを返す
+		SIF GETCHARA(ARG:0, 1) >= 0
+			RETURNF NAME:(ARG:0)
+	CASE 62	;燐						定義が"お燐"なので
+		RETURNF "火焔猫 燐"
+	CASE 71	;미나미츠					定義が"ムラサ船長"なので
+		RETURNF "村紗 미나미츠"
+	CASE 73	;華扇					定義が"茨華仙"なので
+		RETURNF "茨木 華扇"
+	CASE 76	;青娥					定義が"青娥딸々"なので
+		RETURNF "霍 青娥"
+ENDSELECT
+RETURNF CSVCSTR(ARG:0, GETNUM(CSTR, "등장명"))
+
+
+;-------------------------------------------------
+;関数名:K64_GETCHARABYNAME
+;概　要:指定キャラカウント関数
+;引　数:ARGS:0…キャラの名前(NAME)または呼び名(CALLNAME)
+;　　　  ARG:0…[省略可] 0なら非SPキャラ、1なら非SP・SPキャラ両方を検索。省略했다場合は1(両方)
+;　　　         ※SPキャラ…CFLAG:0が0でないキャラ
+;戻り値:指定キャラの등록번호。存在しない場合は-1
+;備　考:式中関数
+;ARG:0省略時の挙動がEmueraのGETCHARAと逆なので一応注意
+;-------------------------------------------------
+@K64_GETCHARABYNAME(ARGS:0, ARG:0 = 1)
+#FUNCTION
+RETURNF GETCHARA(K64_NOBYNAME(ARGS:0), ARG:0)
+
+
+;-------------------------------------------------
+;関数名:K64_GETCHARACOUNT
+;概　要:指定キャラカウント関数
+;引　数:ARGS:0…キャラの名前(NAME)または呼び名(CALLNAME)。"/"区切りで複数指定可能
+;戻り値:指定했다キャラのうち存在している人数
+;備　考:式中関数
+;どこで活きるかは不明
+;-------------------------------------------------
+@K64_GETCHARACOUNT(ARGS:0)
+#FUNCTION
+#LOCALSIZE 3
+LOCAL:0 = 0
+SPLIT ARGS:0, "/", LOCALS, LOCAL:1
+FOR LOCAL:2, 0, LOCAL:1
+	LOCAL:0 += (K64_GETCHARABYNAME(LOCALS:(LOCAL:2)) >= 0)
+NEXT
+RETURNF LOCAL:0
+
+
+;-------------------------------------------------
+;関数名:K64_GETKCOLOR
+;概　要:구상色취득関数
+;引　数:ARG:0…キャラ번호
+;戻り値:구상の色値(16進, 0xRRGGBB)
+;指定キャラの구상色設定が定義されていればその色を취득
+;されていなければ、K64_KOJO_COLORで定義している値を返す
+;式中関数ではないので実際面倒
+;-------------------------------------------------
+@K64_GETKCOLOR(ARG:0)
+#LOCALSIZE 2
+LOCAL:0 = GETCOLOR()
+CALL K64_KOJO_COLOR(ARG:0)
+LOCAL:1 = GETCOLOR()
+SETCOLOR LOCAL:0
+RETURN LOCAL:1
+
+
+;-------------------------------------------------
+;関数名:K64_KCOLOR
+;概　要:勝손に구상色定義関数
+;引　数:ARG:0…キャラ번호
+;戻り値:色値(16進, 0xRRGGBB)
+;特定キャラの구상色を勝손に定義しておく関数
+;殆ど重複避けのメモ書きに近いけど、地霊殿の方々は作っておく
+;（といいつつさとりしか作ってない）
+;だけど直接呼ぶのはちょっと奥ゆかしくない
+;구상入っているなら、問題無い限りはその구상色を尊重했다いので
+;将来的に구상が入ってくる可能性も考慮して、面倒でもK64_GETKCOLORを用いるべき
+;-------------------------------------------------
+@K64_KCOLOR(ARG:0)
+#FUNCTION
+SELECTCASE ARG:0
+	CASE 4	;대요정
+		RETURNF 0x00FF00
+	CASE 11	;플랑드르
+		RETURNF 0xFF5E64
+	CASE 14	;엘리스
+		RETURNF 0x36A6FF
+	CASE 21	;란
+		RETURNF 0xDAA520
+	CASE 22	;유카리
+		RETURNF 0xCC99FF
+	CASE 29	;에이린
+		RETURNF 0xFFFAFA
+	CASE 32	;文
+		RETURNF 0xA07878
+	CASE 39	;히나
+		RETURNF 0xB5213B
+	CASE 40	;니토리
+		RETURNF 0x00AAC8
+	CASE 44	;스와코
+		RETURNF 0xEEEE00
+	CASE 48	;아큐
+		RETURNF 0xF2B2FF
+	CASE 52	;텐시
+		RETURNF 0x5A96FA
+	CASE 59	;파르시
+		RETURNF 0x96C896
+	CASE 61	;さとり。白蓮さんと色被りしちゃってるけど、今のところ구상があるわけではないので、とりあえずこのまま
+		RETURNF 0xFFCCFF
+	CASE 62	;燐
+		;RETURNF ＜保留＞
+	CASE 63	;空
+		;RETURNF ＜保留＞
+	CASE 64	;코이시
+		RETURNF 0xCCFFCC
+	CASE 68	;미나미츠
+		RETURNF 0x96B4FA
+	CASE 69	;星
+		RETURNF 0xF04040
+	CASE 70	;白蓮
+		RETURNF 0xFFE0FF
+	CASE 71	;누에
+		RETURNF 0xDDA0DD
+ENDSELECT
+RETURNF 0xA0A0A0	;その他の方々はデフォルト
+
+
+;-------------------------------------------------
+;関数名:K64_KOJO_COLOR
+;概　要:強制구상色設定関数
+;引　数:ARG:0…キャラ번호
+;戻り値:なし(RESULT保護)
+;指定キャラの구상色設定が定義されていればその色に、
+;されていなければ、K64_KCOLORで定義している色にする
+;デフォルト色に당했다場合も変えちゃう…いいのかしら？ いいわよね
+;色値だけ취득する式中関数の方がいろいろと使いまわせるけど
+;TRYCCALLFORMする都合上、式中関数に出来ないのがなんとも
+;-------------------------------------------------
+@K64_KOJO_COLOR(ARG:0)
+#LOCALSIZE 1
+LOCAL:0 = RESULT
+TRYCCALLFORM KOJO_COLOR_K{ARG:0}
+	SETCOLOR GETCOLOR() == 0xA0A0A0 ? K64_KCOLOR(ARG:0) # GETCOLOR()	;結果デフォルト色なら変えても…いい？
+CATCH
+	SETCOLOR K64_KCOLOR(ARG:0)
+ENDCATCH
+RETURN LOCAL:0
+
+
+;-------------------------------------------------
+;関数名:K64_NOBYNAME
+;概　要:キャラ名→キャラ번호変換関数
+;引　数:ARGS:0…キャラの名前(NAME)または呼び名(CALLNAME)
+;戻り値:指定했다キャラのキャラ번호
+;備　考:式中関数
+;思いつき…思いつきなのよ…
+;-------------------------------------------------
+@K64_NOBYNAME(ARGS:0)
+#FUNCTION
+#LOCALSIZE 1
+LOCAL:0 = GETNUM(RELATION, ARGS:0)
+SIF LOCAL:0 < 0
+	THROW @K64_NOBYNAMEに存在しないキャラの名前が渡されま했다（%ARGS:0%）
+RETURNF LOCAL:0
+
+
+;-------------------------------------------------
+;関数名:K64_SILENCE
+;概　要:静寂関数
+;引　数:ARGS:0…[省略可]表示位置(LEFT/CENTER/RIGHT)。省略했다場合は現在のALIGNMENTに従う
+;戻り値:なし(多分RESULT保護)
+;静寂やら沈黙している様子などを表現する文字列を表示する関数
+;実態は見ての通り
+;-------------------------------------------------
+@K64_SILENCE(ARGS:0)
+#LOCALSSIZE 1
+LOCALS:0 = %CURRENTALIGN()%
+CALL ALIGNMENTS(ARGS:0)
+;OriginalString : \n・\n・\n・\n
+PRINTFORMDW \n·\n·\n·\n
+CALL ALIGNMENTS(LOCALS:0)
+RETURN RESULT

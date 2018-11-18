@@ -1,0 +1,99 @@
+﻿
+@HOSEI_SHOP
+DRAWLINE
+SIF FLAG:디버그
+;OriginalString : 선택했다メニューの흥미を増減することができます
+	PRINTL 선택한 메뉴의 흥미를 증감할 수가 있습니다
+FOR LOCAL, 0, 200
+	IF STR:(100 + LOCAL) != ""
+;OriginalString : [{LOCAL, 3}]  
+		PRINTFORM [{LOCAL, 3}]  
+;OriginalString : %STR:(100 + LOCAL), 20, LEFT%  
+		PRINTFORM %STR:(100 + LOCAL), 20, LEFT%  
+;OriginalString : ({CFLAG:(400 + LOCAL), 4})  
+		PRINTFORML ({CFLAG:(400 + LOCAL), 4})  
+	ENDIF
+NEXT
+;OriginalString : [999] 돌아가기
+PRINTL [999] 돌아온다
+
+$INPUT_LOOP_HOSEISHOP1
+INPUT
+
+SIF RESULT == 999
+	RETURN 0
+IF RESULT < 200 && STR:(100 + RESULT) != "" && FLAG:디버그
+	CALL HOSEI_SHOP2(RESULT)
+ELSE
+	GOTO INPUT_LOOP_HOSEISHOP1
+ENDIF
+
+;ARG は 変更するコマンド번호
+@HOSEI_SHOP2(ARG)
+#LOCALSIZE 200
+;선택肢用
+LOCAL:1 = 1
+LOCAL:2 = 2
+LOCAL:3 = 3
+LOCAL:4 = 4
+LOCAL:5 = 5
+LOCAL:6 = 10
+LOCAL:7 = 20
+LOCAL:8 = 30
+LOCAL:9 = 50
+;単価
+IF FLAG:디버그
+	LOCAL:100 = 0
+ELSE
+	LOCAL:100 = 100
+ENDIF
+
+;OriginalString : 増減する量を選んでください（所持金${MONEY}）
+PRINTFORML 증감하는 양을 선택해 주세요（소지금${MONEY}）
+;OriginalString : %STR:(100 + ARG)%({CFLAG:(400 + ARG)}) を
+PRINTFORML %STR:(100 + ARG)%({CFLAG:(400 + ARG)}) (을)를
+FOR LOCAL:0, 1, 9
+;OriginalString : 	[{LOCAL:(LOCAL:0), 3}] {LOCAL:(LOCAL:0), 2}増やす(${LOCAL:(LOCAL:0) * LOCAL:100, 4})　　
+	PRINTFORM	[{LOCAL:(LOCAL:0), 3}] {LOCAL:(LOCAL:0), 2}늘린다(${LOCAL:(LOCAL:0) * LOCAL:100, 4})　　
+;OriginalString : 	[{LOCAL:(LOCAL:0) + 100, 3}] {LOCAL:(LOCAL:0), 2}減らす(${LOCAL:(LOCAL:0) * LOCAL:100, 4})
+	PRINTFORML	[{LOCAL:(LOCAL:0) + 100, 3}] {LOCAL:(LOCAL:0), 2}줄인다(${LOCAL:(LOCAL:0) * LOCAL:100, 4})
+NEXT
+;OriginalString : [  0] 돌아가기
+PRINTL [  0] 돌아온다
+
+$INPUT_LOOP_HOSEISHOP2
+INPUT
+
+IF RESULT == 0
+	RETURN 0
+ELSEIF RESULT <= 100
+	IF MONEY < RESULT * LOCAL:100
+;OriginalString : お金が발りません
+		PRINTL 돈이 충분하지 않습니다
+		GOTO INPUT_LOOP_HOSEISHOP2
+	ELSE
+		MONEY -= RESULT * LOCAL:100
+		CFLAG:(400 + ARG) += RESULT
+;OriginalString : 흥미があがりま했다
+		PRINTL 흥미가 올랐습니다
+;OriginalString : %STR:(100 + ARG)%({CFLAG:(400 + ARG)})
+		PRINTFORML %STR:(100 + ARG)%({CFLAG:(400 + ARG)})
+	ENDIF
+ELSEIF RESULT <= 200
+	IF MONEY < (RESULT - 100) * LOCAL:100
+;OriginalString : お金が발りません
+		PRINTL 돈이 충분하지 않습니다
+		GOTO INPUT_LOOP_HOSEISHOP2
+	ELSE
+		MONEY -= (RESULT - 100) * LOCAL:100
+		CFLAG:(400 + ARG) -= RESULT - 100
+;OriginalString : 흥미がさがりま했다
+		PRINTL 흥미가 내려갔습니다
+;OriginalString : %STR:(100 + ARG)%({CFLAG:(400 + ARG)})
+		PRINTFORML %STR:(100 + ARG)%({CFLAG:(400 + ARG)})
+	ENDIF
+ELSE
+	GOTO INPUT_LOOP_HOSEISHOP2
+ENDIF
+
+RETURN 0

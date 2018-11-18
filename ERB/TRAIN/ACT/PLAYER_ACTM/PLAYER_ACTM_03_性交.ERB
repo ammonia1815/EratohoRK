@@ -1,0 +1,520 @@
+﻿;────────────────────────────────────
+;성교 (正常30/後背31/騎乗32/대면33/背面34/ＡＳ35)
+;────────────────────────────────────
+@ACT_M3(ARG = 0)
+;1以上なら判定を行わない
+#DIM LCOUNT, 1
+
+;関数初期化
+CALL ACT_M_INIT(3)
+
+;処理開始
+
+LOCALS = ACT_ACTM3
+
+CALL CHA_CRI_VAR, "基準値"
+CALLFORM %LOCALS%_REFERENCE
+
+CALL CHA_CRI_VAR, @"本日の방침(%POLICY("금일")%)"
+CALLFORM %LOCALS%_POLYCY
+
+CALL CHA_CRI_VAR, @"턴방침(%POLICY("今")%)"
+CALLFORM %LOCALS%_MENU
+
+CALL CHA_CRI_VAR, "죠교자の素質"
+CALLFORM %LOCALS%_TALENT_T
+
+CALL CHA_CRI_VAR, "죠교대상が처녀"
+CALLFORM %LOCALS%_MAIDEN_M
+
+CALL CHA_CRI_VAR, "죠교대상の素質"
+CALLFORM %LOCALS%_TALENT_M
+
+CALL CHA_CRI_VAR, "죠교자の能力"
+CALLFORM %LOCALS%_ABL_T
+
+CALL CHA_CRI_VAR, "죠교대상の能力"
+CALLFORM %LOCALS%_ABL_M
+
+CALL CHA_CRI_VAR, "죠교대상の공순"
+CALLFORM %LOCALS%_ALLEGIANCE_M
+
+CALL CHA_CRI_VAR, "죠교대상の경험"
+CALLFORM %LOCALS%_EXP_M
+
+CALL CHA_CRI_VAR, "죠교자の죄책감"
+CALLFORM %LOCALS%_SIN_T
+
+CALL CHA_CRI_VAR, "죠교자のALI"
+CALLFORM %LOCALS%_ALI_T
+
+CALL CHA_CRI_VAR, "죠교대상の체력"
+CALLFORM %LOCALS%_PHYSICAL_M
+
+CALL CHA_CRI_VAR, "죠교대상の기력"
+CALLFORM %LOCALS%_MENTAL_M
+
+CALL CHA_CRI_VAR, "밧줄"
+CALLFORM %LOCALS%_ROPE
+
+CALL CHA_CRI_VAR, "눈가리개"
+CALLFORM %LOCALS%_EYEMASK
+
+CALL CHA_CRI_VAR, "거울"
+CALLFORM %LOCALS%_T_MILLER
+
+CALL CHA_CRI_VAR, "体位"
+CALLFORM %LOCALS%_S_POSITION
+
+CALL CHA_CRI_VAR, "연속행동보정"
+CALLFORM %LOCALS%_PREV
+
+CALL CHA_CRI_VAR, "징계・"
+CALLFORM %LOCALS%_OSHIOKI
+
+CALL CHA_CRI_VAR, "구상보정値"
+CALL ACT_ACTM_KOJO_CORRECTION_T, 3
+
+CALL CHA_CRI_VAR, "ACT보정値"
+CALLFORM %LOCALS%_CORRECTION(ARG)
+
+;ARGが1以上なら処理中断
+SIF ARG
+	RETURN RESULT
+
+CALL CHA_CRI_VAR, "実行判定"
+CALLFORM %LOCALS%_ABLE
+
+;────────────────────────────────────
+;最終判定
+;────────────────────────────────────
+CALL DEF_CRI_VAR("最大前者")
+LOCAL = GET_CRI_VAR("決定")
+;삽입する棒が無い場合、可能ならば페니스밴드장착に변화。페니스밴드が無いならここへは来ない
+IF !PENIS(TARGET) && !TEQUIP:죠교자페니스밴드
+	CALL ACT_ABLE75
+	IF RESULT
+		TFLAG:ACT분류 = 7
+		TFLAG:ACT = 75
+	ELSE
+		TFLAG:ACT분류 = 0
+		TFLAG:ACT = 0
+	ENDIF
+ELSEIF LOCAL == -1
+	SIF FLAG:디버그
+;OriginalString : (성교ACT분류に実行可能なACTが存在しません)
+		PRINTL (성교ACT분류에 실행 가능한ACT하지만 존재하지 않습니다)
+	TFLAG:ACT = -1
+	CALL ACT_MENU_RESULT(2, "성교")
+ELSE
+	TFLAG:ACT = GET_ACTNUM(RESULTS)
+	;연속数加算
+	TFLAG:(326 + GET_ACTNUM(RESULTS))++
+ENDIF
+CALL ANA_CRI_VAR()
+
+;-------------------------------------------------------------------------
+;基準値
+;-------------------------------------------------------------------------
+@ACT_ACTM3_REFERENCE
+
+;要らないかもと思ったので試しに無効化@これみ
+[SKIPSTART]
+CALL ADD_CRI_VAR("정상위", 10)
+CALL ADD_CRI_VAR("후배위", 6)
+CALL ADD_CRI_VAR("기승위", 8)
+CALL ADD_CRI_VAR("대면좌위", 8, 4)
+CALL ADD_CRI_VAR("배면좌위", 6, 6)
+CALL ADD_CRI_VAR("항문섹스", 5)
+[SKIPEND]
+
+;-------------------------------------------------------------
+;本日の방침
+;本日の방침(0=いつもどおり/1=A開発/2=징계・/3=하드/4=イチャイチャ/5=이상/6=야외/7=애만들기/8=휴식/9=抱いて/10=ご봉사/11=귀여워해)
+;-------------------------------------------------------------
+@ACT_ACTM3_POLYCY
+;금일의방침
+SELECTCASE POLICY("금일")
+	CASE "항문"
+		CALL ADD_CRI_VAR("정상위"  , -10)
+		CALL ADD_CRI_VAR("후배위"  , -10)
+		CALL ADD_CRI_VAR("기승위"  , -10)
+		CALL ADD_CRI_VAR("대면좌위", -10)
+		CALL ADD_CRI_VAR("배면좌위", -10)
+		CALL ADD_CRI_VAR("항문섹스", 15)
+	CASE "抱いて"
+		CALL ADD_CRI_VAR("항문섹스", -10)
+		CALL ADD_CRI_VAR("정상위"  , 10)
+		CALL ADD_CRI_VAR("후배위"  , 10)
+		CALL ADD_CRI_VAR("기승위"  , 10)
+		CALL ADD_CRI_VAR("대면좌위", 10)
+		CALL ADD_CRI_VAR("배면좌위", 10)
+	CASE "귀여워해"
+		CALL ADD_CRI_VAR("정상위"  ,   5)
+		CALL ADD_CRI_VAR("후배위"  , -10)
+		CALL ADD_CRI_VAR("기승위"  , -10)
+		CALL ADD_CRI_VAR("대면좌위",  15)
+		CALL ADD_CRI_VAR("배면좌위", -10)
+		CALL ADD_CRI_VAR("항문섹스", -10)
+	CASEELSE
+		;none
+ENDSELECT
+
+
+;-------------------------------------------------------------------------
+;죠교방침(1=휴식/2=소프트/3=노멀/4=하드/5=이상)
+;-------------------------------------------------------------------------
+@ACT_ACTM3_MENU
+;턴방침を見る
+SELECTCASE POLICY("今")
+	CASE "소프트"
+		CALL ADD_CRI_VAR("기승위", 2)
+	CASE "하드"
+		CALL ADD_CRI_VAR("후배위", 4)
+		CALL ADD_CRI_VAR("항문섹스", 3)
+	CASE "이상"
+		CALL ADD_CRI_VAR("후배위", 2)
+		CALL ADD_CRI_VAR("항문섹스", 5)
+ENDSELECT
+
+;-------------------------------------------------------------------------
+;죠교자の素質を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM3_TALENT_T
+
+;죠교자が겁쟁이/굳셈
+IF TALENT:겁쟁이
+	CALL ADD_CRI_VAR("후배위", -2)
+	CALL ADD_CRI_VAR("항문섹스", -4)
+ELSEIF TALENT:굳셈
+	CALL ADD_CRI_VAR("후배위", 3, 3)
+	CALL ADD_CRI_VAR("항문섹스", 2, 5)
+ENDIF
+
+;죠교자が허리기술
+IF TALENT:허리기술
+	CALL ADD_CRI_VAR("정상위"  ,  5)
+	CALL ADD_CRI_VAR("후배위"  ,  4)
+	CALL ADD_CRI_VAR("기승위"  , -1)
+	CALL ADD_CRI_VAR("대면좌위",  3)
+	CALL ADD_CRI_VAR("배면좌위",  3)
+	CALL ADD_CRI_VAR("항문섹스", 1)
+ENDIF
+
+
+;죠교자が일선을넘지않음
+IF TALENT:일선을넘지않음
+	CALL ADD_CRI_VAR("후배위"  , -3)
+	CALL ADD_CRI_VAR("기승위"  , -1)
+	CALL ADD_CRI_VAR("대면좌위", -2)
+	CALL ADD_CRI_VAR("배면좌위", -3)
+	CALL ADD_CRI_VAR("항문섹스", -5)
+ENDIF
+
+;죠교자が수동적
+SIF TALENT:수동적
+	CALL ADD_CRI_VAR("기승위", 5)
+
+;죠교자が새드
+IF TALENT:새드
+	CALL ADD_CRI_VAR("후배위"  , 5)
+	CALL ADD_CRI_VAR("배면좌위", 3)
+	CALL ADD_CRI_VAR("항문섹스", 7)
+ENDIF
+
+;죠교자が광기
+SIF TALENT:광기
+	CALL ADD_CRI_VAR("항문섹스", , 5)
+	
+;-----------------------------------------
+;죠교대상が처녀
+;-----------------------------------------
+@ACT_ACTM3_MAIDEN_M
+
+IF TALENT:MASTER:처녀
+	CALL ADD_CRI_VAR("정상위"  , -12 + CFLAG:합의 * 10 + CFLAG:M호의 / 200 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("후배위"  , -12 + CFLAG:합의 * 10 + CFLAG:M호의 / 200 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("기승위"  , -12 + CFLAG:합의 * 10 + CFLAG:M호의 / 200 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("대면좌위", -12 + CFLAG:합의 * 10 + CFLAG:M호의 / 200 + GET_TRAINLV(TARGET) / 3)
+	CALL ADD_CRI_VAR("배면좌위", -12 + CFLAG:합의 * 10 + CFLAG:M호의 / 200 + GET_TRAINLV(TARGET) / 3)
+ENDIF
+
+;-------------------------------------------------------------------------
+;죠교대상の素質を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM3_TALENT_M
+
+;죠교대상が작은체형体型
+IF TALENT:MASTER:작은체형
+	CALL ADD_CRI_VAR("기승위"  , 2)
+	CALL ADD_CRI_VAR("대면좌위", 3)
+	CALL ADD_CRI_VAR("배면좌위", 3)
+ENDIF
+
+;죠교대상が허리기술
+IF TALENT:MASTER:허리기술
+	CALL ADD_CRI_VAR("정상위"  , 3)
+	CALL ADD_CRI_VAR("후배위"  , 2)
+	CALL ADD_CRI_VAR("기승위"  , 6)
+	CALL ADD_CRI_VAR("대면좌위", 4)
+	CALL ADD_CRI_VAR("배면좌위", 2)
+ENDIF
+
+;죠교대상が튀고싶어함/해방/헌신적
+SIF TALENT:MASTER:튀고싶어함 || TALENT:MASTER:해방 || TALENT:MASTER:헌신적
+	CALL ADD_CRI_VAR("기승위", 2, 4)
+
+;죠교대상が음호
+IF TALENT:MASTER:음호
+	CALL ADD_CRI_VAR("정상위"  , 5)
+	CALL ADD_CRI_VAR("후배위"  , 5)
+	CALL ADD_CRI_VAR("기승위"  , 5)
+	CALL ADD_CRI_VAR("대면좌위", 5)
+	CALL ADD_CRI_VAR("배면좌위", 5)
+ENDIF
+
+;죠교대상が음고
+SIF TALENT:MASTER:음고
+	CALL ADD_CRI_VAR("항문섹스", 5)
+
+;죠교대상が변태적
+IF TALENT:MASTER:변태적
+	CALL ADD_CRI_VAR("후배위", 2, 2)
+	CALL ADD_CRI_VAR("항문섹스", , 6)
+ENDIF
+
+;죠교대상がＶ민감/둔감
+IF TALENT:MASTER:Ｖ민감
+	CALL ADD_CRI_VAR("정상위"  , , 4)
+	CALL ADD_CRI_VAR("후배위"  , , 4)
+	CALL ADD_CRI_VAR("기승위"  , , 4)
+	CALL ADD_CRI_VAR("대면좌위", , 4)
+	CALL ADD_CRI_VAR("배면좌위", , 4)
+ELSEIF TALENT:MASTER:Ｖ둔감
+	CALL ADD_CRI_VAR("정상위"  , , -4)
+	CALL ADD_CRI_VAR("후배위"  , , -4)
+	CALL ADD_CRI_VAR("기승위"  , , -4)
+	CALL ADD_CRI_VAR("대면좌위", , -4)
+	CALL ADD_CRI_VAR("배면좌위", , -4)
+ENDIF
+
+;죠교대상がＡ민감/둔감
+IF TALENT:Ａ민감
+	CALL ADD_CRI_VAR("항문섹스", , 4)
+ELSEIF TALENT:Ａ둔감
+	CALL ADD_CRI_VAR("항문섹스", , -4)
+ENDIF
+
+;죠교대상が巨躯
+IF TALENT:MASTER:장신
+	CALL ADD_CRI_VAR("기승위"  , -3)
+	CALL ADD_CRI_VAR("대면좌위", -5)
+	CALL ADD_CRI_VAR("배면좌위", -5)
+ENDIF
+
+;────────────────────────────────────
+;能力、パラメーターによる変動
+;────────────────────────────────────
+;-------------------------------------------------------------------------
+;죠교자の能力を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM3_ABL_T
+
+;죠교자のＣ감각(죠교자に페니스がある場合)
+IF TALENT:후타나리 || TALENT:남자 || TEQUIP:죠교자페니스밴드
+	;が[0→0, 5→3～7]を加算(0～7)
+	CALL ADD_CRI_VAR("정상위"  , LINE_CALC(ABL:Ｃ감각, "0→0,5→3,LIMIT/0～3"), LINE_CALC(ABL:Ｃ감각, "0→0,5→4,LIMIT/0～4"))
+	CALL ADD_CRI_VAR("기승위"  , LINE_CALC(ABL:Ｃ감각, "0→0,5→3,LIMIT/0～3"), LINE_CALC(ABL:Ｃ감각, "0→0,5→4,LIMIT/0～4"))
+	CALL ADD_CRI_VAR("대면좌위", LINE_CALC(ABL:Ｃ감각, "0→0,5→3,LIMIT/0～3"), LINE_CALC(ABL:Ｃ감각, "0→0,5→4,LIMIT/0～4"))
+	;が[0→0, 5→4～9]を加算(0～9)
+	CALL ADD_CRI_VAR("후배위"  , LINE_CALC(ABL:Ｃ감각, "0→0,5→4,LIMIT/0～4"), LINE_CALC(ABL:Ｃ감각, "0→0,5→5,LIMIT/0～5"))
+	CALL ADD_CRI_VAR("배면좌위", LINE_CALC(ABL:Ｃ감각, "0→0,5→4,LIMIT/0～4"), LINE_CALC(ABL:Ｃ감각, "0→0,5→5,LIMIT/0～5"))
+	;が[0→0, 5→4～11]を加算(0～11)
+	CALL ADD_CRI_VAR("항문섹스", LINE_CALC(ABL:Ｃ감각, "0→0,5→4,LIMIT/0～4"), LINE_CALC(ABL:Ｃ감각, "0→0,5→7,LIMIT/0～7"))
+ENDIF
+
+;-------------------------------------------------------------------------
+;죠교대상の能力を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM3_ABL_M
+
+;죠교대상のＶ감각が[0→0, 5→2～10]を加算(0～10)
+CALL ADD_CRI_VAR("정상위"  , LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→2,LIMIT/0～2"), LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→8,LIMIT/0～8"))
+CALL ADD_CRI_VAR("후배위"  , LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→2,LIMIT/0～2"), LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→8,LIMIT/0～8"))
+CALL ADD_CRI_VAR("기승위"  , LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→2,LIMIT/0～2"), LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→8,LIMIT/0～8"))
+CALL ADD_CRI_VAR("대면좌위", LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→2,LIMIT/0～2"), LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→8,LIMIT/0～8"))
+CALL ADD_CRI_VAR("배면좌위", LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→2,LIMIT/0～2"), LINE_CALC(ABL:MASTER:Ｖ감각, "0→0,5→8,LIMIT/0～8"))
+
+;죠교대상のＡ감각が[0→0, 5→0～12]を加算(0～12)
+CALL ADD_CRI_VAR("항문섹스", , LINE_CALC(ABL:MASTER:Ａ감각, "0→0,5→12,LIMIT/0～12"))
+
+;죠교대상の봉사정신が[0→0, 5→2～10]を加算(0～10)
+CALL ADD_CRI_VAR("기승위", LINE_CALC(ABL:MASTER:봉사정신, "0→0,5→2,LIMIT/0～2"), LINE_CALC(ABL:MASTER:봉사정신, "0→0,5→8,LIMIT/0～8"))
+
+;-------------------------------------------------------------------------
+;PALAM群
+;ここは個別に
+;-------------------------------------------------------------------------
+;----------------------------------
+;공순
+;----------------------------------
+@ACT_ACTM3_ALLEGIANCE_M
+
+;죠교대상の공순PALAMが[3000→0, 8000→5]を加算(0～5)
+CALL ADD_CRI_VAR("기승위", LINE_CALC(PALAM:MASTER:공순, "3000→0,8000→5,LIMIT/0～5"))
+
+;-------------------------------------------------------------------------
+;죠교대상の경험を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM3_EXP_M
+
+;죠교대상のＡ경험が[0→-15, 20→0]を加算(-15～0)
+CALL ADD_CRI_VAR("항문섹스", LINE_CALC(EXP:MASTER:Ａ경험, "0→-15,20→0,LIMIT/-15～0"))
+
+;-------------------------------------
+;죠교자の죄책감
+;-------------------------------------
+@ACT_ACTM3_SIN_T
+
+;죠교자の죄책감が[60→0, 100→-2]を加算(-2～0)
+CALL ADD_CRI_VAR("후배위", LINE_CALC(CFLAG:죄책감, "60→0,100→-2,LIMIT/-2～0"))
+;죠교자の죄책감が[80→0, 100→-1]を加算(-1～0)
+CALL ADD_CRI_VAR("배면좌위", LINE_CALC(CFLAG:죄책감, "80→0,100→-1,LIMIT/-1～0"))
+;죠교자の죄책감が[0→0, 100→-4]を加算(-4～0)
+CALL ADD_CRI_VAR("항문섹스", LINE_CALC(CFLAG:죄책감, "0→0,100→-4,LIMIT/-4～0"))
+
+;-------------------------------------
+;죠교자のALI
+;-------------------------------------
+@ACT_ACTM3_ALI_T
+
+;아라이멘도が[-50→-3, 50→3]を加算(-3～3)
+CALL ADD_CRI_VAR("정상위", LINE_CALC(CFLAG:아라이멘도, "-50→-3,50→3,LIMIT/-3～3"))
+;아라이멘도が[-50→3, 50→-3]を加算(-3～3)
+CALL ADD_CRI_VAR("항문섹스", LINE_CALC(CFLAG:아라이멘도, "-50→3,50→-3,LIMIT/-3～3"))
+
+;────────────────────────────────────
+;ゲージや상태による変動
+;────────────────────────────────────
+;-------------------------------------
+;죠교대상の체력
+;-------------------------------------
+@ACT_ACTM3_PHYSICAL_M
+
+;죠교대상の체력が[0→-2, 1500→0]を加算(-2～0)
+CALL ADD_CRI_VAR("대면좌위", LINE_CALC(BASE:MASTER:체력, "0→-2,1500→0,LIMIT/-2～0"))
+;죠교대상の체력が[0→-3, 1500→0]を加算(-3～0)
+CALL ADD_CRI_VAR("후배위"  , LINE_CALC(BASE:MASTER:체력, "0→-3,1500→0,LIMIT/-3～0"))
+CALL ADD_CRI_VAR("배면좌위", LINE_CALC(BASE:MASTER:체력, "0→-3,1500→0,LIMIT/-3～0"))
+;죠교대상の체력が[0→-4, 1500→0]を加算(-4～0)
+CALL ADD_CRI_VAR("항문섹스", LINE_CALC(BASE:MASTER:체력, "0→-4,1500→0,LIMIT/-4～0"))
+;죠교대상の체력が[0→-5, 1500→0]を加算(-5～0)
+CALL ADD_CRI_VAR("기승위", LINE_CALC(BASE:MASTER:체력, "0→-5,1500→0,LIMIT/-5～0"))
+
+;-------------------------------------
+;죠교대상の기력
+;-------------------------------------
+@ACT_ACTM3_MENTAL_M
+
+;죠교대상の기력が[0→-4, 750→0]を加算(-4～0)
+CALL ADD_CRI_VAR("기승위", LINE_CALC(BASE:MASTER:기력, "0→-4,750→0,LIMIT/-4～0"))
+
+;-------------------------------------
+;죠교자の상태(0=통상/1=피폐/2=쇠약/3=무기력/4=몽롱/5=정욕/6=분노/7=싫증/8=울굴)
+;-------------------------------------
+@ACT_ACTM3_CONDITION_T
+SELECTCASE GET_CONDITION(TARGET)
+	CASE "피폐", "쇠약"
+		CALL ADD_CRI_VAR("정상위", -TFLAG:조교자소모도)
+		CALL ADD_CRI_VAR("후배위", -TFLAG:조교자소모도 * 2)
+		CALL ADD_CRI_VAR("기승위"  , , -TFLAG:조교자소모도)
+		CALL ADD_CRI_VAR("대면좌위", , -TFLAG:조교자소모도 * 3)
+		CALL ADD_CRI_VAR("배면좌위", , -TFLAG:조교자소모도 * 3)
+		CALL ADD_CRI_VAR("항문섹스", -TFLAG:조교자소모도 * 2)
+	CASE "무기력"
+		CALL ADD_CRI_VAR("정상위", -1)
+		CALL ADD_CRI_VAR("후배위", -3)
+		CALL ADD_CRI_VAR("기승위", , 5)
+		CALL ADD_CRI_VAR("대면좌위", -5)
+		CALL ADD_CRI_VAR("배면좌위", -5)
+		CALL ADD_CRI_VAR("항문섹스", -3)
+ENDSELECT
+
+;────────────────────────────────────
+;전회의행동や状況による変動
+;────────────────────────────────────
+;-------------------------------------
+;밧줄
+;-------------------------------------
+@ACT_ACTM3_ROPE
+SIF TEQUIP:밧줄
+	CALL ADD_CRI_VAR("기승위", -5)
+
+;-------------------------------------
+;눈가리개
+;-------------------------------------
+@ACT_ACTM3_EYEMASK
+SIF TEQUIP:눈가리개
+	CALL ADD_CRI_VAR("기승위", -7)
+
+;-------------------------------------
+;거울
+;-------------------------------------
+@ACT_ACTM3_T_MILLER
+SIF TEQUIP:거울
+	CALL ADD_CRI_VAR("배면좌위", 5)
+
+;────────────────────────────────────
+;体位関連
+;────────────────────────────────────
+@ACT_ACTM3_S_POSITION
+#DIM LCOUNT
+
+;体位変更の하드ル
+SIF TEQUIP:성교중
+	CALL ADD_CRI_VAR(GET_ACTNAME(29 + TEQUIP:성교중), 5, 5)
+
+;────────────────────────────────────
+;同じ행동연속실행の確率をダウンします
+;────────────────────────────────────
+@ACT_ACTM3_PREV
+SELECTCASE TFLAG:전ACT
+	;항문섹스は연속실행制限に引っかからない
+	CASE 30 TO 34
+		CALL ADD_CRI_VAR(GET_ACTNAME(TFLAG:전ACT), -3 * TFLAG:(TFLAG:전ACT + 326) / 100, -4 * TFLAG:(TFLAG:전ACT + 326) / 100)
+ENDSELECT
+
+;-------------------------------------
+;징계・中
+;-------------------------------------
+@ACT_ACTM3_OSHIOKI
+IF TFLAG:징계・플래그
+	CALL ADD_CRI_VAR("후배위", , 4)
+	CALL ADD_CRI_VAR("항문섹스", 3, 3)
+ENDIF
+
+;────────────────────────────────────
+;보정値計算
+;────────────────────────────────────
+@ACT_ACTM3_CORRECTION(ARG)
+#DIM LCOUNT
+
+;ARGが0以外なら보정値を計算し、以後の処理を行わない
+IF ARG
+	FOR LCOUNT, 30, 36
+		CALL ACT_M_RES_CALC(LCOUNT, GET_CRI_VAR(GET_ACTNAME(LCOUNT) + "累計"))
+	NEXT
+ELSE
+	;보정値を判定値に加算する
+	CALL ACT_ACTM_CORRECTION(3)
+ENDIF
+
+;────────────────────────────────────
+;その他変動や実行不可能の判定
+;────────────────────────────────────
+@ACT_ACTM3_ABLE
+#DIM LCOUNT
+
+;不可能判定
+CALL ACT_ACTM_ABLE(3)
+

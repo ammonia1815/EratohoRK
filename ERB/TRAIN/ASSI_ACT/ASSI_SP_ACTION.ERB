@@ -1,0 +1,14 @@
+﻿;────────────────────────────────────
+;조수の特殊能力のチェック。特定の조수と행동の組み合わせによって特殊能力행동に변화します
+;────────────────────────────────────
+@GET_SP_ASSIACTNUM, ARG
+#FUNCTION
+SELECTCASE CSVCALLNAME(NO:ARG, 0)
+	CASE "文", "はたて"
+		;사진を撮る＝＞신문 기사로 한다
+		SIF NOWASSIACTNAME(ARG) == "사진촬영"
+			RETURNF GET_ASSIACTNUM("신문 기사로 한다")
+		SIF NOWASSIACTNAME(ARG) == "신문 기사로 한다"
+			RETURNF GET_ASSIACTNUM("사진촬영")
+ENDSELECT
+RETURNF -1

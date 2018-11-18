@@ -1,0 +1,621 @@
+﻿;────────────────────────────────────
+;수치 (자위40/開帳41/見せ42/거울43/야외44/방뇨45/コス(미구현)46/방치73)
+;────────────────────────────────────
+@ACT_M4(ARG = 0)
+;1以上なら判定を行わない
+#DIM LCOUNT, 1
+
+;関数初期化
+CALL ACT_M_INIT(4)
+
+;処理開始
+
+LOCALS = ACT_ACTM4
+
+CALL CHA_CRI_VAR, "基準値"
+CALLFORM %LOCALS%_REFERENCE
+
+CALL CHA_CRI_VAR, "죠교자の素質"
+CALLFORM %LOCALS%_TALENT_T
+
+CALL CHA_CRI_VAR, "죠교대상の素質"
+CALLFORM %LOCALS%_TALENT_M
+
+CALL CHA_CRI_VAR, "죠교대상の能力"
+CALLFORM %LOCALS%_ABL_M
+
+CALL CHA_CRI_VAR, "죠교자の能力"
+CALLFORM %LOCALS%_ABL_T
+
+CALL CHA_CRI_VAR, "죠교대상の욕정"
+CALLFORM %LOCALS%_DESIRE_M
+
+CALL CHA_CRI_VAR, "죠교자の죄책감"
+CALLFORM %LOCALS%_SIN_T
+
+CALL CHA_CRI_VAR, "죠교자のALI"
+CALLFORM %LOCALS%_ALI_T
+
+CALL CHA_CRI_VAR, "죠교대상の체력"
+CALLFORM %LOCALS%_PHYSICAL_M
+
+CALL CHA_CRI_VAR, "죠교대상の기력"
+CALLFORM %LOCALS%_MENTAL_M
+
+CALL CHA_CRI_VAR, "죠교자の흥미"
+CALLFORM %LOCALS%_INTEREST_T
+
+CALL CHA_CRI_VAR, "죠교자の만족"
+CALLFORM %LOCALS%_SATISFACTION_T
+
+CALL CHA_CRI_VAR, @"죠교자の상태(%CONDITION(TCVAR:상태변화)%)"
+CALLFORM %LOCALS%_CONDITION_T
+
+CALL CHA_CRI_VAR, @"죠교대상の상태(%CONDITION(TCVAR:MASTER:상태변화)%)"
+CALLFORM %LOCALS%_CONDITION_M
+
+CALL CHA_CRI_VAR, "미약"
+CALLFORM %LOCALS%_DRAG
+
+CALL CHA_CRI_VAR, "이뇨제"
+CALLFORM %LOCALS%_DIURETIC
+
+CALL CHA_CRI_VAR, "장착도구"
+CALLFORM %LOCALS%_TOOLS
+
+CALL CHA_CRI_VAR, "밧줄"
+CALLFORM %LOCALS%_ROPE
+
+CALL CHA_CRI_VAR, "눈가리개"
+CALLFORM %LOCALS%_EYEMASK
+
+CALL CHA_CRI_VAR, "볼개그"
+CALLFORM %LOCALS%_GAG
+
+CALL CHA_CRI_VAR, "삼각목마"
+CALLFORM %LOCALS%_HORSE
+
+CALL CHA_CRI_VAR, "야외플레이"
+CALLFORM %LOCALS%_OUT
+
+CALL CHA_CRI_VAR, "거울"
+CALLFORM %LOCALS%_T_MILLER
+
+CALL CHA_CRI_VAR, "도구をはず했다"
+CALLFORM %LOCALS%_TAKE_OFF_TOOLS
+
+CALL CHA_CRI_VAR, "죠교자자위중"
+CALLFORM %LOCALS%_MASTURBATION_T
+
+CALL CHA_CRI_VAR, "죠교대상자위중"
+CALLFORM %LOCALS%_MASTURBATION_M
+
+CALL CHA_CRI_VAR, "죠교대상の衣服"
+CALLFORM %LOCALS%_CLOTH_M
+
+CALL CHA_CRI_VAR, "더 하드하게 해"
+CALLFORM %LOCALS%_PLEASE_HARD
+
+CALL CHA_CRI_VAR, "용서를 빌다"
+CALLFORM %LOCALS%_PLEASE_HELP
+
+CALL CHA_CRI_VAR, "연속행동보정"
+CALLFORM %LOCALS%_PREV
+
+CALL CHA_CRI_VAR, "구상보정値"
+CALL ACT_ACTM_KOJO_CORRECTION_T, 4
+
+CALL CHA_CRI_VAR, "ACT보정値"
+CALLFORM %LOCALS%_CORRECTION(ARG)
+
+;ARGが1以上なら処理中断
+SIF ARG
+	RETURN RESULT
+
+CALL CHA_CRI_VAR, "実行判定"
+CALLFORM %LOCALS%_ABLE
+
+;────────────────────────────────────
+;最終判定
+;────────────────────────────────────
+CALL DEF_CRI_VAR("最大前者")
+LOCAL = GET_CRI_VAR("決定")
+IF LOCAL == -1
+	SIF FLAG:디버그
+;OriginalString : (수치ACT분류に実行可能なACTが存在しません)
+		PRINTL (수치ACT분류에 실행 가능한ACT하지만 존재하지 않습니다)
+	TFLAG:ACT = -1
+	CALL ACT_MENU_RESULT(2, "수치")
+ELSE
+	TFLAG:ACT = GET_ACTNUM(RESULTS)
+ENDIF
+CALL ANA_CRI_VAR()
+
+;-------------------------------------------------------------------------
+;基準値
+;-------------------------------------------------------------------------
+@ACT_ACTM4_REFERENCE
+
+;要らないかもと思ったので試しに無効化@これみ
+[SKIPSTART]
+CALL ADD_CRI_VAR("자위", 10)
+CALL ADD_CRI_VAR("비패개장", 10)
+CALL ADD_CRI_VAR("자위과시", 8)
+CALL ADD_CRI_VAR("수치플레이", 8)
+CALL ADD_CRI_VAR("야외플레이", 0)
+CALL ADD_CRI_VAR("방뇨", 5)
+CALL ADD_CRI_VAR("코스프레", 5)
+CALL ADD_CRI_VAR("방치플레이", 0)
+[SKIPEND]
+
+;-------------------------------------------------------------------------
+;죠교자の素質を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM4_TALENT_T
+
+;죠교자が프라이드높음/低い
+IF TALENT:프라이드높음
+	CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 0 # -5)
+ELSEIF TALENT:프라이드낮음
+	CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 0 # 5)
+ENDIF
+
+;죠교자が자제심/충동적
+IF TALENT:자제심
+	CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 0 # -3)
+	CALL ADD_CRI_VAR("야외플레이", -3)
+ELSEIF TALENT:충동적
+	CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 0 # 3)
+	CALL ADD_CRI_VAR("야외플레이", 3)
+ENDIF
+
+;죠교자が무관심/호기심
+IF TALENT:무관심
+	CALL ADD_CRI_VAR("자위", GETBIT(TEQUIP:자위중, 0) ? 0 # -2)
+	CALL ADD_CRI_VAR("비패개장", -3)
+	CALL ADD_CRI_VAR("방치플레이", 3, 4)
+ELSEIF TALENT:호기심
+	CALL ADD_CRI_VAR("자위", GETBIT(TEQUIP:자위중, 0) ? 0 # 1, GETBIT(TEQUIP:자위중, 0) ? 0 # 3)
+	CALL ADD_CRI_VAR("비패개장", 2, 3)
+ENDIF
+
+;죠교자が일선을넘지않음
+SIF TALENT:일선을넘지않음 && !TEQUIP:야외플레이
+	CALL ADD_CRI_VAR("야외플레이", -5)
+
+;죠교자が튀고싶어함かつ、죠교자が자위していない
+SIF TALENT:튀고싶어함 && !GETBIT(TEQUIP:자위중, 1)
+	CALL ADD_CRI_VAR("자위과시", 5, 5)
+
+;죠교자が억압/해방
+IF TALENT:억압
+	CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 0 # -3)
+	CALL ADD_CRI_VAR("야외플레이", TEQUIP:야외플레이 ? 0 # -5)
+	CALL ADD_CRI_VAR("방뇨", -5)
+	CALL ADD_CRI_VAR("코스프레", -5)
+ELSEIF TALENT:해방
+	CALL ADD_CRI_VAR("자위과시", , GETBIT(TEQUIP:자위중, 1) ? 0 # 5)
+	CALL ADD_CRI_VAR("야외플레이", , TEQUIP:야외플레이 ? 0 # 7)
+	CALL ADD_CRI_VAR("방뇨", , 7)
+	CALL ADD_CRI_VAR("코스프레", , 7)
+ENDIF
+
+;죠교자が수줍음/수치없음
+IF TALENT:수줍음
+	CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 0 # -7)
+	CALL ADD_CRI_VAR("수치플레이", TEQUIP:거울 ? 0 # -5)
+ELSEIF TALENT:수치없음
+	CALL ADD_CRI_VAR("자위과시", , GETBIT(TEQUIP:자위중, 1) ? 0 # 5)
+	CALL ADD_CRI_VAR("수치플레이", TEQUIP:거울 ? 0 # 5)
+ENDIF
+
+;죠교자が젖기쉬움
+SIF TALENT:젖기쉬움
+	CALL ADD_CRI_VAR("비패개장", , 2)
+
+;죠교자が자위하기쉬움かつ、죠교자が자위していない
+SIF TALENT:자위하기쉬움 && !GETBIT(TEQUIP:자위중, 1)
+	CALL ADD_CRI_VAR("자위과시", 3, 1)
+
+;죠교자が더러움무시、냄새둔감/민감
+IF TALENT:더러움무시 || TALENT:냄새둔감
+	CALL ADD_CRI_VAR("방뇨", 1, 4)
+ELSEIF TALENT:냄새민감
+	CALL ADD_CRI_VAR("방뇨", 4)
+ENDIF
+
+;죠교자が쾌감에솔직/否定
+IF TALENT:쾌감에솔직
+	CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 0 # 3)
+ELSEIF TALENT:쾌감을부정
+	CALL ADD_CRI_VAR("자위과시", , GETBIT(TEQUIP:자위중, 1) ? 0 # -6)
+ENDIF
+
+;죠교자が남성혐오かつ、죠교대상が남자
+SIF TALENT:남성혐오 && TALENT:MASTER:남자
+	CALL ADD_CRI_VAR("자위", -5)
+
+;죠교자が새드
+IF TALENT:새드
+	CALL ADD_CRI_VAR("야외플레이", , TEQUIP:야외플레이 ? 0 # 4)
+	CALL ADD_CRI_VAR("방뇨", 3, 3)
+ENDIF
+
+;죠교자が신중함かつ、야외플레이中でない
+SIF TALENT:신중함 && !TEQUIP:야외플레이
+	CALL ADD_CRI_VAR("야외플레이", -3)
+
+;죠교자が심술궂음
+IF TALENT:심술궂음
+	CALL ADD_CRI_VAR("수치플레이", TEQUIP:거울 ? 0 # 3)
+	CALL ADD_CRI_VAR("야외플레이", TEQUIP:야외플레이 ? 0 # 1)
+	CALL ADD_CRI_VAR("방뇨", 3)
+	CALL ADD_CRI_VAR("방치플레이", 3)
+ENDIF
+
+;죠교자が유치
+SIF TALENT:유치
+	CALL ADD_CRI_VAR("방뇨", , 4)
+
+;죠교자が매혹かつ、죠교대상が자위していない
+SIF TALENT:매혹 && !GETBIT(TEQUIP:자위중, 0)
+	CALL ADD_CRI_VAR("자위", , 6)
+
+;-------------------------------------------------------------------------
+;죠교대상の素質を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM4_TALENT_M
+
+;죠교대상が자위하기쉬움かつ、죠교대상が자위していない
+SIF TALENT:MASTER:자위하기쉬움 && !GETBIT(TEQUIP:자위중, 0)
+	CALL ADD_CRI_VAR("자위", 3, 1)
+
+;────────────────────────────────────
+;能力、パラメーターによる変動
+;────────────────────────────────────
+;-------------------------------------------------------------------------
+;죠교대상の能力を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM4_ABL_M
+
+;죠교대상の노출증。죠교が進んだ상태でより하드なメニューを선택する경향
+;が[0→2, 5→-5]を加算(0～7)
+CALL ADD_CRI_VAR("비패개장", LINE_CALC(ABL:MASTER:노출증, "0→2,5→-5,LIMIT/-5～2"))
+;が[2→0, 5→2～8]を加算(0～8)
+CALL ADD_CRI_VAR("방뇨", LINE_CALC(ABL:MASTER:노출증, "2→0,5→2,LIMIT/0～2"), LINE_CALC(ABL:MASTER:노출증, "2→0,5→6,LIMIT/0～6"))
+;が[1→0, 5→0～9]を加算(0～9)
+CALL ADD_CRI_VAR("코스프레", , LINE_CALC(ABL:MASTER:노출증, "1→0,5→9,LIMIT/0～9"))
+;が[2→0, 5→0～7]を加算(0～7)
+CALL ADD_CRI_VAR("방치플레이", , LINE_CALC(ABL:MASTER:노출증, "2→0,5→7,LIMIT/0～7"))
+;が[0→0, 2→0～4, 4→0]を加算(0～4)
+CALL ADD_CRI_VAR("자위", , LINE_CALC(ABL:MASTER:노출증, "0→0,2→4,4→0,LIMIT/0～4"))
+;が[0→0, 2→2, 4→0]を加算(0～2)
+CALL ADD_CRI_VAR("자위과시", LINE_CALC(ABL:MASTER:노출증, "0→0,2→2,4→0,LIMIT/0～2"))
+;※취소に보정は付かない
+;が[0→0/0, 4→0/3～5, 8→0/0]を加算(0～5)
+SIF !TEQUIP:거울
+	CALL ADD_CRI_VAR("수치플레이", LINE_CALC(ABL:MASTER:노출증, "0→0,4→3,8→0,LIMIT/0～3"), LINE_CALC(ABL:MASTER:노출증, "0→0,4→2,8→0,LIMIT/0～2"))
+;が[2→0/0, 5→0/4～8]を加算(0～8)
+SIF !TEQUIP:야외플레이
+	CALL ADD_CRI_VAR("야외플레이", LINE_CALC(ABL:MASTER:노출증, "2→0,5→4,LIMIT/0～4"), LINE_CALC(ABL:MASTER:노출증, "2→0,5→4,LIMIT/0～4"))
+
+;-------------------------------------------------------------------------
+;죠교자の能力を参照
+;-------------------------------------------------------------------------
+@ACT_ACTM4_ABL_T
+
+;죠교자の이상が[0→0, 5→3～5]を加算(0～5)
+CALL ADD_CRI_VAR("방치플레이", LINE_CALC(ABL:이상, "0→0,5→3,LIMIT/0～3"), LINE_CALC(ABL:이상, "0→0,5→2,LIMIT/0～2"))
+
+;-------------------------------------------------------------------------
+;PALAM群
+;ここは個別に
+;-------------------------------------------------------------------------
+;----------------------------------
+;욕정
+;----------------------------------
+@ACT_ACTM4_DESIRE_M
+
+;暫定の処理。죠교자が심술궂음なら、욕정했다죠교대상を…
+IF TALENT:심술궂음
+	;죠교대상が자위중
+	IF GETBIT(TEQUIP:자위중, 0)
+		;죠교자の욕정が[3000→0, 7500→5]を加算(0～5)
+		CALL ADD_CRI_VAR("자위", LINE_CALC(PALAM:MASTER:욕정, "3000→0,7500→5,LIMIT/0～5"))
+	;죠교대상は자위していない
+	ELSE
+		;죠교자の욕정が[3000→0/2, 7500→5/7]を加算(0～7)(죠교자자위によって増加)
+		CALL ADD_CRI_VAR("방치플레이", LINE_CALC(PALAM:MASTER:욕정, "3000→0,7500→5,LIMIT/0～5") + GETBIT(TEQUIP:자위중, 1))
+	ENDIF
+ENDIF
+
+;-------------------------------------
+;죠교자の죄책감
+;-------------------------------------
+@ACT_ACTM4_SIN_T
+
+;죄책감が[0→0, 100→-5～-2]を加算(-5～0)
+CALL ADD_CRI_VAR("방뇨", LINE_CALC(CFLAG:죄책감, "0→0,100→-2,LIMIT/-2～0"), LINE_CALC(CFLAG:죄책감, "0→0,100→-3,LIMIT/-3～0"))
+;죄책감が[0→0, 100→-7～-4]を加算(-7～0)
+CALL ADD_CRI_VAR("방치플레이", LINE_CALC(CFLAG:죄책감, "0→0,100→-4,LIMIT/-4～0"), LINE_CALC(CFLAG:죄책감, "0→0,100→-3,LIMIT/-3～0"))
+;※취소に보정は付かない
+;죄책감が[0→0, 100→0/-5～-2]を加算(-5～0)
+SIF !TEQUIP:야외플레이
+	CALL ADD_CRI_VAR("야외플레이", LINE_CALC(CFLAG:죄책감, "0→0,100→-2,LIMIT/-2～0"), LINE_CALC(CFLAG:죄책감, "0→0,100→-3,LIMIT/-3～0"))
+
+;-------------------------------------
+;죠교자のALI
+;-------------------------------------
+@ACT_ACTM4_ALI_T
+
+;아라이멘도が[0→0, 50→0/3]を加算(0～3)(죠교대상자위중は보정なし)
+SIF !GETBIT(TEQUIP:자위중, 0)
+	CALL ADD_CRI_VAR("자위", LINE_CALC(CFLAG:아라이멘도, "0→0,50→3,LIMIT/0～3"))
+;아라이멘도が[0→0, 50→0/3]を加算(0～3)
+CALL ADD_CRI_VAR("비패개장", LINE_CALC(CFLAG:아라이멘도, "0→0,50→3,LIMIT/0～3"))
+;아라이멘도が[-50→3, 50→-3]を加算(-3～3)
+CALL ADD_CRI_VAR("방치플레이", LINE_CALC(CFLAG:아라이멘도, "-50→3,50→-3,LIMIT/-3～3"))
+;아라이멘도が[-50→3, 0→0]を加算(0～3)(취소には보정なし)
+SIF !TEQUIP:야외플레이
+	CALL ADD_CRI_VAR("야외플레이", LINE_CALC(CFLAG:아라이멘도, "-50→3,0→0,LIMIT/0～3"))
+;아라이멘도が[-50→3, 0→0]を加算(0～3)
+CALL ADD_CRI_VAR("방뇨", LINE_CALC(CFLAG:아라이멘도, "-50→3,0→0,LIMIT/0～3"))
+
+;────────────────────────────────────
+;ゲージや상태による変動
+;────────────────────────────────────
+;-------------------------------------
+;죠교대상の체력
+;-------------------------------------
+@ACT_ACTM4_PHYSICAL_M
+
+;죠교자の체력が[0→-1, 500→0]を加算(-1～0)
+CALL ADD_CRI_VAR("수치플레이", LINE_CALC(BASE:체력, "0→-1,500→0,LIMIT/-1～0"))
+;죠교자の체력が[0→3/-3, 1500→0/0]を加算(-3～3)(죠교자자위중は正)
+LOCAL = GETBIT(TEQUIP:자위중, 1) ? 1 # -1
+CALL ADD_CRI_VAR("자위과시", LOCAL * LINE_CALC(BASE:체력, "0→3,1500→0,LIMIT/0～3"))
+;죠교자の체력が[0→3/-3, 1500→0/0]を加算(-3～3)(実行中は正)
+LOCAL = TEQUIP:야외플레이 ? 1 # -1
+CALL ADD_CRI_VAR("야외플레이", LOCAL * LINE_CALC(BASE:체력, "0→3,1500→0,LIMIT/0～3"))
+
+;-------------------------------------
+;죠교대상の기력
+;-------------------------------------
+@ACT_ACTM4_MENTAL_M
+
+;죠교자の기력が[0→-2, 500→0]を加算(-2～0)
+CALL ADD_CRI_VAR("비패개장", LINE_CALC(BASE:기력, "0→-2,500→0,LIMIT/-2～0"))
+;죠교자の기력が[0→2, 500→0]を加算(0～2)
+CALL ADD_CRI_VAR("방치플레이", LINE_CALC(BASE:기력, "0→2,500→0,LIMIT/0～2"))
+;죠교자の기력が[0→5/-5, 500→0/0]を加算(-5～5)(죠교자자위중は正)
+LOCAL = GETBIT(TEQUIP:자위중, 1) ? 1 # -1
+CALL ADD_CRI_VAR("자위과시", LOCAL * LINE_CALC(BASE:기력, "0→5,750→0,LIMIT/0～5"))
+;죠교자の기력が[0→3/-3, 500→0/0]を加算(-3～3)(実行中は正)
+LOCAL = TEQUIP:야외플레이 ? 1 # -1
+CALL ADD_CRI_VAR("야외플레이", LOCAL * LINE_CALC(BASE:기력, "0→3,500→0,LIMIT/0～3"))
+
+;-------------------------------------
+;죠교자の흥미
+;-------------------------------------
+@ACT_ACTM4_INTEREST_T
+
+;죠교자の흥미が[500→1～2, 750→3～6]を加算(-2～6)
+CALL ADD_CRI_VAR("비패개장", LINE_CALC(BASE:흥미, "500→1,750→3,LIMIT/-1～3"), LINE_CALC(BASE:흥미, "500→1,750→3,LIMIT/-1～3"))
+;죠교자の흥미が500未満なら
+IF BASE:흥미 < 500
+	CALL ADD_CRI_VAR("코스프레", , 4)
+	CALL ADD_CRI_VAR("방치플레이", 3)
+ENDIF
+
+;-------------------------------------
+;죠교자の만족
+;-------------------------------------
+@ACT_ACTM4_SATISFACTION_T
+
+;죠교자の만족が[500→3/-3, 750→5/-5]を加算(-5～5)(実行中は正)
+LOCAL = TEQUIP:야외플레이 ? 1 # -1
+CALL ADD_CRI_VAR("야외플레이", LOCAL * LINE_CALC(BASE:만족, "500→3,750→5,LIMIT/0～5"))
+
+;-------------------------------------
+;죠교자の상태
+;-------------------------------------
+@ACT_ACTM4_CONDITION_T
+
+;죠교자の상태(0=통상/1=피폐/2=쇠약/3=무기력/4=몽롱/5=정욕/6=분노/7=싫증/8=울굴)
+SELECTCASE TCVAR:상태변화
+	CASE 1 TO 3
+		CALL ADD_CRI_VAR("자위과시", GETBIT(TEQUIP:자위중, 1) ? 5 # -5)
+		CALL ADD_CRI_VAR("야외플레이", TEQUIP:야외플레이 ? 5 # -5)
+	CASE 7
+		CALL ADD_CRI_VAR("자위", GETBIT(TEQUIP:자위중, 0) ? 5 # 0)
+		CALL ADD_CRI_VAR("코스프레", TEQUIP:MASTER:코스프레 ? 5 # 0)
+		CALL ADD_CRI_VAR("방치플레이", GETBIT(TEQUIP:자위중, 0) ? 0 # 5)
+	CASE 8
+		CALL ADD_CRI_VAR("방뇨", , 6)
+ENDSELECT
+
+;-------------------------------------
+;죠교대상の상태
+;-------------------------------------
+@ACT_ACTM4_CONDITION_M
+
+;죠교대상の상태が피폐/쇠약/무기력
+IF 1 <= TCVAR:MASTER:상태변화 && TCVAR:MASTER:상태변화 <= 3
+	CALL ADD_CRI_VAR("자위", (GETBIT(TEQUIP:자위중, 0) ? 1 # -1) * (TFLAG:소모도 * 2 + TCVAR:MASTER:상태변화 + 1))
+	CALL ADD_CRI_VAR("수치플레이", (TEQUIP:거울 && TCVAR:MASTER:상태변화 == 3 ? 1 # -1) * (TFLAG:소모도 + 3))
+	CALL ADD_CRI_VAR("야외플레이", (TEQUIP:야외플레이 ? 1 # -1) * (TFLAG:소모도 * 2 + TCVAR:MASTER:상태변화), (TEQUIP:야외플레이 ? 1 # -1) * 5)
+ENDIF
+
+;────────────────────────────────────
+;전회의행동や状況による変動
+;────────────────────────────────────
+;-------------------------------------
+;미약
+;-------------------------------------
+@ACT_ACTM4_DRAG
+SIF TEQUIP:미약
+	CALL ADD_CRI_VAR("방치플레이", TALENT:심술궂음 * 3 - TALENT:마음씨착한 * 3, 4)
+
+;-------------------------------------
+;이뇨제
+;-------------------------------------
+@ACT_ACTM4_DIURETIC
+SIF TEQUIP:이뇨제
+	CALL ADD_CRI_VAR("방뇨", 3, 4)
+
+;-------------------------------------
+;장착도구類
+;-------------------------------------
+@ACT_ACTM4_TOOLS
+
+;바이브/Ａ바이브/클리캡/오나홀/유두캡장착中で、죠교대상자위중でない
+SIF (TEQUIP:바이브 || TEQUIP:항문바이브 || TEQUIP:클리캡 || TEQUIP:오나홀 || TEQUIP:유두캡) && !GETBIT(TEQUIP:자위중, 0)
+	CALL ADD_CRI_VAR("자위", 3 + TEQUIP:바이브 + TEQUIP:항문바이브 + TEQUIP:클리캡 + TEQUIP:오나홀 + TEQUIP:유두캡)
+
+;-------------------------------------
+;밧줄
+;-------------------------------------
+@ACT_ACTM4_ROPE
+SIF TEQUIP:밧줄
+	CALL ADD_CRI_VAR("방치플레이", 5)
+
+;-------------------------------------
+;눈가리개
+;-------------------------------------
+@ACT_ACTM4_EYEMASK
+IF TEQUIP:눈가리개
+	CALL ADD_CRI_VAR("수치플레이", TEQUIP:거울 ? 0 # -10)
+	CALL ADD_CRI_VAR("방치플레이", 3)
+ENDIF
+
+;-------------------------------------
+;볼개그
+;-------------------------------------
+@ACT_ACTM4_GAG
+SIF TEQUIP:볼개그
+	CALL ADD_CRI_VAR("방치플레이", , 3)
+
+;-------------------------------------
+;삼각목마
+;-------------------------------------
+@ACT_ACTM4_HORSE
+SIF TEQUIP:삼각목마
+	CALL ADD_CRI_VAR("방치플레이", , 7)
+
+;-------------------------------------
+;야외플레이
+;-------------------------------------
+@ACT_ACTM4_OUT
+SIF TEQUIP:야외플레이
+	CALL MUL_CRI_VAR("방치플레이", 150)
+
+;-------------------------------------
+;거울
+;-------------------------------------
+@ACT_ACTM4_T_MILLER
+IF TEQUIP:거울
+	CALL ADD_CRI_VAR("자위", GETBIT(TEQUIP:자위중, 0) ? 0 # 3)
+	CALL ADD_CRI_VAR("방뇨", , 4)
+ENDIF
+
+;-------------------------------------
+;要求されて도구をはず했다
+;-------------------------------------
+@ACT_ACTM4_TAKE_OFF_TOOLS
+
+;취소に応じて장착を躊躇
+SIF !TEQUIP:야외플레이
+	CALL ADD_CRI_VAR("야외플레이", -CANCEL_TEQUIP_COUNT("야외플레이") / 20)
+SIF !TEQUIP:거울
+	CALL ADD_CRI_VAR("수치플레이", -CANCEL_TEQUIP_COUNT("거울") / 20)
+
+;-------------------------------------
+;죠교자자위중
+;-------------------------------------
+@ACT_ACTM4_MASTURBATION_T
+
+;죠교자のみ
+IF TEQUIP:자위중 == 2
+	CALL ADD_CRI_VAR("자위", 5)
+	CALL ADD_CRI_VAR("방치플레이", , 10)
+ENDIF
+
+;-------------------------------------
+;죠교대상자위중
+;-------------------------------------
+@ACT_ACTM4_MASTURBATION_M
+
+;죠교대상のみ
+IF TEQUIP:자위중 == 1
+	CALL ADD_CRI_VAR("비패개장", -5)
+	;죠교자の하반신겉옷で妨害されないとき
+	SIF CLOTHESTYPE(0, 1) != 2
+		CALL ADD_CRI_VAR("자위과시", 5)
+	CALL ADD_CRI_VAR("방뇨", -3)
+ENDIF
+
+;-------------------------------------
+;죠교대상の衣服
+;-------------------------------------
+@ACT_ACTM4_CLOTH_M
+
+;죠교대상の하반신겉옷で妨害されるとき
+IF CLOTHESTYPE(1, 1) == 2
+	CALL ADD_CRI_VAR("자위", -5)
+	CALL ADD_CRI_VAR("수치플레이", TEQUIP:거울 ? 0 # -5)
+	CALL ADD_CRI_VAR("방뇨", -10)
+ENDIF
+
+;-------------------------------------
+;더 하드하게 해
+;-------------------------------------
+@ACT_ACTM4_PLEASE_HARD
+IF IS_NOWCOMNAME("더 하드하게 해")
+	CALL ADD_CRI_VAR("수치플레이", TEQUIP:거울 ? -5 # 5)
+	CALL ADD_CRI_VAR("야외플레이", TEQUIP:야외플레이 ? -5 # 5)
+ENDIF
+
+;-------------------------------------
+;용서를 빌다
+;-------------------------------------
+@ACT_ACTM4_PLEASE_HELP
+;許しを乞ったかつ、죠교자の상태が울굴以外
+IF IS_NOWCOMNAME("용서를 빌다") && TCVAR:상태변화 < 8
+	CALL ADD_CRI_VAR("수치플레이", TEQUIP:거울 ? 5 # -5)
+	CALL ADD_CRI_VAR("야외플레이", TEQUIP:야외플레이 ? 5 # -5)
+ENDIF
+
+;────────────────────────────────────
+;同じ행동연속실행の確率をダウンします
+;────────────────────────────────────
+@ACT_ACTM4_PREV
+SELECTCASE TFLAG:전ACT
+	CASE 40 TO 47, 73
+		CALL ADD_CRI_VAR(GET_ACTNAME(TFLAG:전ACT), -3 * TFLAG:동일행동보너스, -4 * TFLAG:동일행동보너스)
+ENDSELECT
+
+;────────────────────────────────────
+;보정値計算
+;────────────────────────────────────
+@ACT_ACTM4_CORRECTION(ARG)
+#DIM LCOUNT
+
+;ARGが0以外なら보정値を計算し、以後の処理を行わない
+IF ARG
+	;73に関してはここで計算しない
+	FOR LCOUNT, 40, 47
+		CALL ACT_M_RES_CALC(LCOUNT, GET_CRI_VAR(GET_ACTNAME(LCOUNT) + "累計"))
+	NEXT
+ELSE
+	;보정値を判定値に加算する
+	CALL ACT_ACTM_CORRECTION(4)
+ENDIF
+
+;────────────────────────────────────
+;その他変動や実行不可能の判定
+;────────────────────────────────────
+@ACT_ACTM4_ABLE
+#DIM LCOUNT
+
+;不可能判定
+CALL ACT_ACTM_ABLE(4)

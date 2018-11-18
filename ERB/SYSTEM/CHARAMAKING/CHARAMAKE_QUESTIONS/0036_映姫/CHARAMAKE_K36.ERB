@@ -1,0 +1,77 @@
+﻿;映姫＠Crow
+@CHARAMAKE_K36(ARG)
+;OriginalString : 「目を開けて下さい」
+PRINTFORML 「눈을 떠 주세요」
+;OriginalString : 「私が見えますか？　うふふ、こっちです」
+PRINTFORMW 「내가 보입니까？　후후, 여기입니다」
+;OriginalString : 
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+;OriginalString : 
+PRINTL 
+;OriginalString : 「では、私からも一つ問いましょう」
+PRINTFORML 「에서는, 나부터도 1개(살) 물읍시다」
+;OriginalString : 「貴方が今までに犯했다最も酷い悪行を思い浮かべなさい」
+PRINTFORML 「당신이 지금까지 범한 가장 심한 악행을 떠올리세요」
+;OriginalString : 「その被害者の立場되었다場合、相손を許すことができますか？」
+PRINTFORMW 「그 피해자의 입장이 되었을 경우, 상대를 허락할 수가 있습니까？」
+;OriginalString : 
+PRINTL 
+;OriginalString : [0] 答えない
+PRINTFORMDL [0] 대답하지 않는다
+;OriginalString : [1] 悪行など身に覚えがない
+PRINTFORMDL [1] 악행 등 몸에 기억이 없다
+;OriginalString : [2] 許せる
+PRINTFORMDL [2] 허락할 수 있다
+;OriginalString : [3] たぶん許せると思う
+PRINTFORMDL [3] 아마 허락할 수 있다고 생각한다
+;OriginalString : [4] 絶対に許せないよ
+PRINTFORMDL [4] 절대로 허락할 수 없어
+CALL INPUTINTD(0, 1, 2, 3, 4)
+SELECTCASE RESULT
+	CASE 0
+;OriginalString : 「……わかりま했다」
+		PRINTFORML 「……알았습니다」
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 1
+;OriginalString : 「貴方は少し嘘を吐き過ぎる」
+		PRINTFORML 「당신은 조금 거짓말을 너무 토한다」
+		CALLF CM_PROF("攻撃",      +5)
+		CALLF CM_PROF("プライド", +10)
+		CALLF CM_PROF("솔직さ",   -20)
+		CALLF CM_PROF("楽観",     +20)
+
+	CASE 2
+;OriginalString : 「ふふ、良いでしょう」
+		PRINTFORML 「후후, 좋을 것입니다」
+;OriginalString : 「貴方が再びこの地へ来たとき、答えを出しましょうか」
+		PRINTFORML 「당신이 다시 이 땅에 왔을 때, 대답을 낼까요」
+		CALLF CM_PROF("モラル",   +20)
+		CALLF CM_PROF("プライド", -10)
+		CALLF CM_PROF("솔직さ",   -10)
+		CALLF CM_PROF("楽観",     +10)
+
+	CASE 3
+;OriginalString : 「加害者と被害者では受け止め方がまるで違います」
+		PRINTFORML 「가해자와 피해자에서는 해석 방법이 전혀 다릅니다」
+;OriginalString : 「貴方がハッキリ出来ないということは、きっとそういうことなのでしょう」
+		PRINTFORML 「당신이 분명하게 할 수 없다고 하는 것은, 반드시 그런 것이겠지요」
+		CALLF CM_PROF("モラル",   +10)
+		CALLF CM_PROF("プライド", -10)
+		CALLF CM_PROF("솔직さ",   +10)
+		CALLF CM_PROF("神経質",   +10)
+	CASE 4
+;OriginalString : 「生きている限り、犯했다罪は貴方を縛り、相손をも縛り続けます」
+		PRINTFORML 「살아 있는 한, 범한 죄는 당신을 묶어, 상대도 계속 묶습니다」
+;OriginalString : 「死後に私達のような存在が필요とされる所以です」
+		PRINTFORML 「사후에 저희들과 같은 존재가 필요하게 되는 소이입니다」
+		CALLF CM_PROF("プライド",  20)
+		CALLF CM_PROF("솔직さ",   +20)
+		CALLF CM_PROF("神経質",   +20)
+ENDSELECT
+;OriginalString : 「さあ、行きなさい」
+PRINTFORMW 「자, 가세요」
+RETURN 1

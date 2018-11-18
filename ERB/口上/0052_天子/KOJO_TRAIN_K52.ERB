@@ -1,0 +1,3662 @@
+﻿;-------------------------------------------------
+;텐시구상 죠교이벤트구상ファイル
+;-------------------------------------------------
+;절정など、조교중に発生する이벤트をまとめたファイル
+;-------------------------------------------------
+;射命丸구상といい누에구상といい、寄生ばっかりして申し訳ない…
+;-------------------------------------------------
+;*************************************************
+;죠교이벤트구상
+;*************************************************
+
+;=================================================
+;EV20, 절정구상 FIRSTTIME(500～519)
+;=================================================
+;・죠교자か죠교대상が절정に達するときに表示
+;・小分岐をすべて埋めようとすると辛くなるので注意
+;-------------------------------------------------
+@KOJO_EVENT_K52_20(ARG)
+
+;-------------------------------------------------
+;질내사정(죠교대상→죠교자)
+;-------------------------------------------------
+;・Ｖ성교봉사系で질내사정する場合に表示
+;・TFLAG:안빼고は抜かない判定ごとに+1される
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && (TFLAG:전회질싸 == 2 || TFLAG:전회질싸 == 4)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;안빼고に続行
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:안빼고
+		;동시절정(죠교자が同時にＶ절정)
+		IF NOWEX:Ｖ절정
+			SELECTCASE NOWEX:MASTER:사정
+				;드라이사정
+				CASE 1
+					;상사상애
+					IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+						PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+						PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「愛しくて幸せでっ、満たされてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+						PRINTFORMW 「사랑스럽고 행복해 , 채워져…！ 도, 이제 안 됨, 익… 아！」
+						CALL QUAKE(4)
+;OriginalString : 「あぁぁぁぁ…　あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+						PRINTFORMW 「아… 어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+						PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「ごめんなさい、夢中になり過ぎてしまったわね…　体は大丈夫？」
+						PRINTFORMW 「미안해요, 너무 열중해 버린 원이군요… 몸은 괜찮아？」
+;OriginalString : 「大丈夫みたいね…　それならば、もう少しだけ頑張ってもらえると嬉しいかな…？」
+						PRINTFORMW 「괜찮아 같구나… 그러면, 좀 더만 노력해 줄 수 있으면(자) 기쁠까…？」
+;OriginalString : 「もう少し、もう少しだけ貴方のを注いでもらえたら、それで十分만족出来るから…ね？」
+						PRINTFORMW 「좀 더, 좀 더만 당신의 것을 따라 줄 수 있으면(자), 그래서 충분히 만족 할 수 있기 때문에…그런데？」
+					;それ以外
+					ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+						PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+						PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「膣を満たされてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+						PRINTFORMW 「질을 채워져…！ 도, 이제 안 됨, 익… 아！」
+						CALL QUAKE(4)
+;OriginalString : 「あぁぁぁぁ…　あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+						PRINTFORMW 「아… 어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+						PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「ごめんなさい、夢中になり過ぎてしまったわね…　体は大丈夫？」
+						PRINTFORMW 「미안해요, 너무 열중해 버린 원이군요… 몸은 괜찮아？」
+;OriginalString : 「大丈夫みたいね…　それならば、もう少しだけ頑張ってもらえると嬉しいかな…？」
+						PRINTFORMW 「괜찮아 같구나… 그러면, 좀 더만 노력해 줄 수 있으면(자) 기쁠까…？」
+;OriginalString : 「もう少し、もう少しだけ貴方のを注いでもらえたら、それで十分만족出来るから…ね？」
+						PRINTFORMW 「좀 더, 좀 더만 당신의 것을 따라 줄 수 있으면(자), 그래서 충분히 만족 할 수 있기 때문에…그런데？」
+						
+					ENDIF
+				;その他
+				CASEELSE
+					;상사상애
+					IF KFLAG:0 == 1
+						SELECTCASE RAND:2
+							CASE 0
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+								PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+								PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「愛しくて幸せでっ、満たされてっ…！　貴方の정액をっ、たっぷり注がれてっ…！」
+								PRINTFORMW 「사랑스럽고 행복해 , 채워져…！ 당신의 정액을 , 충분히 따라져…！」
+;OriginalString : 「お腹の奥が熱くて、気持ち良くて、も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+								PRINTFORMW 「배의 안쪽이 뜨거워서, 기분 좋아서, 도, 이제 안 됨, 익… 아！」
+								CALL QUAKE(4)
+;OriginalString : 텐시が절정を迎えた後も텐시の膣は本人の意志に関係無く、정액をねだるように締め付けてくる…
+								PRINTFORMDW 천자가 절정을 맞이한 후도 천자의 질은 본인의 의지에 관계 없고, 정액을 조르도록(듯이) 단단히 조여 온다…
+;OriginalString : どうやら、もっとたくさん注いで欲しいらしい…　愛しい텐시のためにも要望に答えてあげよう
+								PRINTFORMDW 아무래도, 좀 더 많이 따랐으면 좋은 것 같다… 사랑스러운 천자를 위해서(때문에)도 요망에 대답해 주자
+							CASEELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+								PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 정액をっ、たっぷり注がれてっ…！」
+								PRINTFORMW 「%CALLNAME:MASTER%의 정액을 , 충분히 따라져…！」
+;OriginalString : 「貴方の子供が出来るのが嬉しくてっ、幸せでっ、気持ち良くてっ…！」
+								PRINTFORMW 「당신의 아이가 생기는 것이 기뻐서 , 행복해 , 기분 좋아서…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+								PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+								CALL QUAKE(4)
+;OriginalString : 텐시が절정を迎えた後も텐시の膣は本人の意志に関係無く、정액をねだるように締め付けてくる…
+								PRINTFORMDW 천자가 절정을 맞이한 후도 천자의 질은 본인의 의지에 관계 없고, 정액을 조르도록(듯이) 단단히 조여 온다…
+;OriginalString : どうやら、もっとたくさん注いで欲しいらしい…　愛しい텐시のためにも要望に答えてあげよう
+								PRINTFORMDW 아무래도, 좀 더 많이 따랐으면 좋은 것 같다… 사랑스러운 천자를 위해서(때문에)도 요망에 대답해 주자
+						ENDSELECT
+					;それ以外
+					ELSE
+						SELECTCASE RAND:2
+							CASE 0
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+								PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+								PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「貴方の정액をっ、たっぷり注がれてっ、膣を満たされてっ…！」
+								PRINTFORMW 「당신의 정액을 , 충분히 따라져 , 질을 채워져…！」
+;OriginalString : 「お腹の奥が熱くて、気持ち良くて、も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+								PRINTFORMW 「배의 안쪽이 뜨거워서, 기분 좋아서, 도, 이제 안 됨, 익… 아！」
+								CALL QUAKE(4)
+;OriginalString : 텐시が절정を迎えた後も텐시の膣は本人の意志に関係無く、정액をねだるように締め付けてくる…
+								PRINTFORMDW 천자가 절정을 맞이한 후도 천자의 질은 본인의 의지에 관계 없고, 정액을 조르도록(듯이) 단단히 조여 온다…
+;OriginalString : どうやら、もっとたくさん注いで欲しいらしい…　要望に答えてあげよう
+								PRINTFORMDW 아무래도, 좀 더 많이 따랐으면 좋은 것 같다… 요망에 대답해 주자
+							CASEELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+								PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 정액をっ、たっぷり注がれてっ…！」
+								PRINTFORMW 「%CALLNAME:MASTER%의 정액을 , 충분히 따라져…！」
+;OriginalString : 「こんなに注いだらっ、임신してっ、しまうじゃないっ…！」
+								PRINTFORMW 「이렇게 따르면(자) , 임신해 , 끝내는이 아니다…！」
+;OriginalString : 「本当はこんな事しちゃっ、ダメっ、なのに…！　貴方のがっ、気持ち良くてっ、嬉しいのよっ…！」
+								PRINTFORMW 「사실은 이런 일 하면 , 안 됨, 인데…！ 당신의 것이 , 기분 좋아서 , 기뻐…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+								PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+								CALL QUAKE(4)
+;OriginalString : 텐시が절정を迎えた後も텐시の膣は本人の意志に関係無く、정액をねだるように締め付けてくる…
+								PRINTFORMDW 천자가 절정을 맞이한 후도 천자의 질은 본인의 의지에 관계 없고, 정액을 조르도록(듯이) 단단히 조여 온다…
+;OriginalString : どうやら、もっとたくさん注いで欲しいらしい…　要望に答えてあげよう
+								PRINTFORMDW 아무래도, 좀 더 많이 따랐으면 좋은 것 같다… 요망에 대답해 주자
+						ENDSELECT
+					ENDIF
+					RETURN LOCAL
+			ENDSELECT
+		;통상
+		ELSE
+			SELECTCASE NOWEX:MASTER:사정
+				;드라이사정
+				CASE 1
+					;상사상애
+					IF KFLAG:0 == 1
+;OriginalString : 「んっ…　%CALLNAME:MASTER%がイッたのが顔からも膣からも伝わって来るわ…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%(은)는 지만 익의 것이 얼굴로부터도 질로부터도 전해져 와요…」
+;OriginalString : 「あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+						PRINTFORMW 「어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+						PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「ごめんなさい、夢中になり過ぎてしまったわね…　体は大丈夫？」
+						PRINTFORMW 「미안해요, 너무 열중해 버린 원이군요… 몸은 괜찮아？」
+;OriginalString : 「ふふ、私がつい夢中になり過ぎるくらいに魅力的な%CALLNAME:MASTER%が悪いのよ…？」
+						PRINTFORMW 「후후, 내가 너무 무심코 열중할 정도로 에 매력적인%CALLNAME:MASTER%(은)는 지만 나빠…？」
+;OriginalString : 「だから、もう少しだけ頑張ってもらえると嬉しいかな…？」
+						PRINTFORMW 「그러니까, 좀 더만 노력해 줄 수 있으면(자) 기쁠까…？」
+;OriginalString : 「もう少し、もう少しだけ貴方のを注いでもらえたら、それで十分만족出来るから…ね？」
+						PRINTFORMW 「좀 더, 좀 더만 당신의 것을 따라 줄 수 있으면(자), 그래서 충분히 만족 할 수 있기 때문에…그런데？」
+					;それ以外
+					ELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%がイッたのが顔からも膣からも伝わって来るわ…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%(은)는 지만 익의 것이 얼굴로부터도 질로부터도 전해져 와요…」
+;OriginalString : 「あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+						PRINTFORMW 「어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+						PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「ごめんなさい、夢中になり過ぎてしまったわね…　体は大丈夫？」
+						PRINTFORMW 「미안해요, 너무 열중해 버린 원이군요… 몸은 괜찮아？」
+;OriginalString : 「大丈夫みたいね…　それならば、もう少しだけ頑張ってもらえると嬉しいかな…？」
+						PRINTFORMW 「괜찮아 같구나… 그러면, 좀 더만 노력해 줄 수 있으면(자) 기쁠까…？」
+;OriginalString : 「もう少し、もう少しだけ貴方のを注いでもらえたら、それで十分만족出来るから…ね？」
+						PRINTFORMW 「좀 더, 좀 더만 당신의 것을 따라 줄 수 있으면(자), 그래서 충분히 만족 할 수 있기 때문에…그런데？」
+					ENDIF
+				;その他
+				CASEELSE
+					;상사상애
+					IF KFLAG:0 == 1
+						SELECTCASE RAND:2
+							CASE 0
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+								PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　たっぷり奥まで注いでくれて嬉しいわ」
+								PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 충분히 안쪽까지 흘러 들어가 주어 기뻐요」
+;OriginalString : 「知らなかったわ、애만들기ってこんなに燃える物なのね…　これで임신できたかしら？」
+								PRINTFORMW 「몰랐어요, 아이 만들기는 이렇게 불타는 것인 것… 이것으로 임신할 수 있었는지 해들？」
+;OriginalString : 「…念のため、もう一度たっぷり注いでくれないかしら？　また欲しくなって来たわ…」
+								PRINTFORMW 「…만약을 위해, 한번 더 충분히 따라 주지 않을까？ 또 갖고 싶어져 왔어요…」
+							CASEELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+								PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様でし！　たっぷり奥まで注いでくれて嬉しいわ」
+								PRINTFORMW 「후후, 맛있는 음식 같아 해！ 충분히 안쪽까지 흘러 들어가 주어 기뻐요」
+;OriginalString : 「ここまでたっぷり出たという事は、%CALLNAME:MASTER%はそれだけ私に夢中になってくれたという事よね？」
+								PRINTFORMW 「여기까지 충분히 나왔다고 하는 일은,%CALLNAME:MASTER%(은)는 그 만큼 나에 열중해 주었다고 하는 일이군요？」
+;OriginalString : 「정액の量が夫婦の애정を測るバロメーターか…　流石にその発想は無かったわ」
+								PRINTFORMW 「정액의 양이 부부의 애정을 측정하는 바로미터인가… 유석에 그 발상은 없었어요」
+;OriginalString : 「…それならば、もっといっぱい出してくれるわよね？」
+								PRINTFORMW 「…그러면, 좀 더 가득 내 주네요？」
+						ENDSELECT
+					;それ以外
+					ELSE
+						SELECTCASE RAND:2
+							CASE 0
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+								PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　あはは、私の질내がそんなに気持ち良かったのかしら？」
+								PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 아하하, 나의 질내가 그렇게 기분 좋았던 것일까 해들？」
+;OriginalString : 「それで、私はもう一回おかわりと行きたいのだけれど…　貴方は大丈夫かしら？」
+								PRINTFORMW 「그래서, 나는 다시 한번 한 그릇 더와 가고 싶은 것이지만… 당신은 괜찮을까？」
+							CASEELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+								PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　あはは、私の질내がそんなに気持ち良かったのかしら？」
+								PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 아하하, 나의 질내가 그렇게 기분 좋았던 것일까 해들？」
+;OriginalString : 「出했다ばかりですまないけれど…　もう少し注いでもらえると嬉しいかな…　なんてね？」
+								PRINTFORMW 「방편만으로 해결되지 않지만… 좀 더 따라 줄 수 있으면(자) 기쁠까… (이)라니？」
+						ENDSELECT
+					ENDIF
+					RETURN LOCAL
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;동시절정(죠교자が同時にＶ절정)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:Ｖ절정
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「愛しくて幸せでっ、満たされてっ…！　貴方の정액をっ、たっぷり注がれてっ…！」
+			PRINTFORMW 「사랑스럽고 행복해 , 채워져…！ 당신의 정액을 , 충분히 따라져…！」
+;OriginalString : 「お腹の奥が熱くて、気持ち良くて、も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「배의 안쪽이 뜨거워서, 기분 좋아서, 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「貴方の정액をっ、たっぷり注がれてっ、膣を満たされてっ…！」
+			PRINTFORMW 「당신의 정액을 , 충분히 따라져 , 질을 채워져…！」
+;OriginalString : 「お腹の奥が熱くて、気持ち良くて、も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「배의 안쪽이 뜨거워서, 기분 좋아서, 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;애태움から
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && TCVAR:MASTER:애태움도
+		;애태움中
+		IF TCVAR:MASTER:애태움도 > 1
+			SELECTCASE NOWEX:MASTER:사정
+				;Ａ責사정
+				CASE 5
+					;상사상애
+					IF KFLAG:0 == 1
+;OriginalString : 「ふふ、お尻の方から정액を押し出당했다せいで참다が効かなかったみたいね？」
+						PRINTFORMW 「후후, 엉덩이로부터 정액을 밀어 내진 탓으로 인내가 효과가 없었다 같구나？」
+;OriginalString : 「後ろから押されて前から出る…　これがトコロテンという物なのね」
+						PRINTFORMW 「뒤로부터 밀려 전부터 나온다… 이것이 우무라고 하는 것인 것」
+;OriginalString : 「無理やり押し出されるのだから、そりゃ참다が効かなくて当然よね…　無理시켰다みたいでごめんなさい」
+						PRINTFORMW 「억지로 밀어 내지니까, 그렇다면 인내가 효과가 없어 당연해요… 무리시킨 것 같아 미안해요」
+;OriginalString : 「でも、私に中出しを強要される%CALLNAME:MASTER%의 顔は本当に可愛かったわよ？」
+						PRINTFORMW 「 그렇지만, 나에게 질내사정을 강요받는다%CALLNAME:MASTER%의 얼굴은 정말로 사랑스러웠어요？」
+					;それ以外
+					ELSE
+;OriginalString : 「ふふ、お尻の方から정액を押し出당했다せいで참다が効かなかったみたいね？」
+						PRINTFORMW 「후후, 엉덩이로부터 정액을 밀어 내진 탓으로 인내가 효과가 없었다 같구나？」
+;OriginalString : 「後ろから押されて前から出る…　これがトコロテンという物なのね」
+						PRINTFORMW 「뒤로부터 밀려 전부터 나온다… 이것이 우무라고 하는 것인 것」
+;OriginalString : 「無理やり押し出されるのだから、そりゃ참다が効かなくて当然よね…　無理시켰다みたいでごめんなさい」
+						PRINTFORMW 「억지로 밀어 내지니까, 그렇다면 인내가 효과가 없어 당연해요… 무리시킨 것 같아 미안해요」
+;OriginalString : 「あはは、凄い量…　よっぽど気持ち良かったのね？」
+						PRINTFORMW 「아하하, 굉장한 양… 상당히 기분 좋았어？」
+					ENDIF
+				;その他(조루)
+				CASEELSE
+					;상사상애
+					IF KFLAG:0 == 1
+;OriginalString : 「せっかく、%CALLNAME:MASTER%に限界まで気持ち良くなってもらえるようにと애태움ていたのに…」
+						PRINTFORMW 「모처럼,%CALLNAME:MASTER%에 한계까지 기분 좋아져 줄 수 있도록(듯이)와 초조하게 하고 있었는데…」
+;OriginalString : 「これじゃ、貴方にイくのを참다시켰다意味が無いじゃない…」
+						PRINTFORMW 「이래서야, 당신에게 이구의 것을 인내 시킨 의미가 없지 않다…」
+;OriginalString : 「…私のテクニックがあまりに気持ち良すぎて、애태움ただけでついイってしまった？」
+						PRINTFORMW 「…나의 테크닉이 너무나 기분 너무 좋아, 초조하게 한 것만으로 무심코 이는 끝냈다？」
+;OriginalString : 「この場合、私が逆に下손なのか、貴方の참다が발りないのか、よく分からないわね…」
+						PRINTFORMW 「이 경우, 내가 반대로 서투른가, 당신의 인내가 부족한 것인지, 자주(잘) 모르네요…」
+					;それ以外
+					ELSE
+;OriginalString : 「せっかく、%CALLNAME:MASTER%に限界まで気持ち良くなってもらえるようにと애태움ていたのに…」
+						PRINTFORMW 「모처럼,%CALLNAME:MASTER%에 한계까지 기분 좋아져 줄 수 있도록(듯이)와 초조하게 하고 있었는데…」
+;OriginalString : 「これじゃ、貴方にイくのを참다시켰다意味が無いじゃない…」
+						PRINTFORMW 「이래서야, 당신에게 이구의 것을 인내 시킨 의미가 없지 않다…」
+;OriginalString : 「もしかして、貴方って조루の気があるのかしら？　조루って色々と苦労するらしいけれど…」
+						PRINTFORMW 「혹시, 당신은 조루의 마음이 있을까？ 조루는 다양하게 고생하는 것 같지만…」
+;OriginalString : 「もし良ければ、私が治す손伝いをしてあげるわよ？」
+						PRINTFORMW 「만약 좋다면, 내가 고치는 심부름을 해 주어요？」
+					ENDIF
+			ENDSELECT
+		;トドメ
+		ELSE
+			SELECTCASE NOWEX:MASTER:사정
+				;드라이사정
+				CASE 1
+					;상사상애
+					IF KFLAG:0 == 1
+;OriginalString : 「んっ…　%CALLNAME:MASTER%がイッたのが顔からも膣からも伝わって来るわ…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%(은)는 지만 익의 것이 얼굴로부터도 질로부터도 전해져 와요…」
+;OriginalString : 「あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+						PRINTFORMW 「어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+						PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「一度に限界まで注いで欲しかったから애태움たのに、実は既に空だったのね…」
+						PRINTFORMW 「한 번에 한계까지 따랐으면 좋았으니까 초조하게 했는데, 실은 이미 하늘이었구나…」
+;OriginalString : 「うーん、もっといっぱい注いで欲しかったな…」
+						PRINTFORMW 「응, 좀 더 가득 따랐으면 좋았다…」
+;OriginalString : 「今度する時は一度に全て私の질내に出させてあげるから、楽しみにしていて頂戴ね？」
+						PRINTFORMW 「이번에 할 때는 한 번에 모두 나의 질내에 내게 해 주기 때문에, 기대하고 있어 주세요군요？」
+					;それ以外
+					ELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%がイッたのが顔からも膣からも伝わって来るわ…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%(은)는 지만 익의 것이 얼굴로부터도 질로부터도 전해져 와요…」
+;OriginalString : 「あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+						PRINTFORMW 「어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+						PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「一度に限界まで注いで欲しかったから애태움たのに、実は既に空だったのね…」
+						PRINTFORMW 「한 번에 한계까지 따랐으면 좋았으니까 초조하게 했는데, 실은 이미 하늘이었구나…」
+;OriginalString : 「うーん、もっといっぱい注いで欲しかったな…」
+						PRINTFORMW 「응, 좀 더 가득 따랐으면 좋았다…」
+					ENDIF
+				;その他
+				CASEELSE
+					;상사상애
+					IF KFLAG:0 == 1
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　たっぷり奥まで注いでくれて嬉しいわ」
+						PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 충분히 안쪽까지 흘러 들어가 주어 기뻐요」
+;OriginalString : 「こんなにドプドプ出してくれたという事は、애태움作戦は大成功だったようね…」
+						PRINTFORMW 「이렇게 드프드프 내 주었다고 하는 일은, 초조하게 해 작전은 대성공이었던 것 같구나…」
+;OriginalString : 「これで임신できる確率は大分上がったとは思うのだけれど…　上손く行ってくれると良いわね？」
+						PRINTFORMW 「이것으로 임신할 수 있는 확률은 상당히 올랐다고는 생각한다 하지만… 능숙하게 가 주면 좋네요？」
+					;それ以外
+					ELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　あはは、私の질내がそんなに気持ち良かったのかしら？」
+						PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 아하하, 나의 질내가 그렇게 기분 좋았던 것일까 해들？」
+;OriginalString : 「こんなにドプドプ出してくれたという事は、애태움作戦は大成功だったようね…」
+						PRINTFORMW 「이렇게 드프드프 내 주었다고 하는 일은, 초조하게 해 작전은 대성공이었던 것 같구나…」
+;OriginalString : 「さて、一度に限界まで出す気持ち良さを楽しんでくれたかしら？」
+						PRINTFORMW 「그런데, 한 번에 한계까지 내는 기분 좋음을 즐겨 주었는지 해들？」
+					ENDIF
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;사정의派生
+	SELECTCASE NOWEX:MASTER:사정
+		;드라이사정
+		CASE 1
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「んっ…　%CALLNAME:MASTER%がイッたのが顔からも膣からも伝わって来るわ…」
+				PRINTFORMW 「응… %CALLNAME:MASTER%(은)는 지만 익의 것이 얼굴로부터도 질로부터도 전해져 와요…」
+;OriginalString : 「あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+				PRINTFORMW 「어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+				PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「ごめんなさい、夢中になり過ぎてしまったわね…　体は大丈夫？」
+				PRINTFORMW 「미안해요, 너무 열중해 버린 원이군요… 몸은 괜찮아？」
+;OriginalString : 「ふふ、私がつい夢中になり過ぎるくらいに魅力的な%CALLNAME:MASTER%が悪いのよ…？」
+				PRINTFORMW 「후후, 내가 너무 무심코 열중할 정도로 에 매력적인%CALLNAME:MASTER%(은)는 지만 나빠…？」
+			;それ以外
+			ELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%がイッたのが顔からも膣からも伝わって来るわ…」
+				PRINTFORMW 「응… %CALLNAME:MASTER%(은)는 지만 익의 것이 얼굴로부터도 질로부터도 전해져 와요…」
+;OriginalString : 「あれ？おちんちんはきちんとドクドクしているのに、정액が注ぎ込まれる感触が無いわね…」
+				PRINTFORMW 「어？자지는 제대로 드크드크 하고 있는데, 정액이 쏟아지는 감촉이 없네요…」
+;OriginalString : 「もしかして、打ち止めという奴かしら？」
+				PRINTFORMW 「혹시, 최후라고 하는 놈일까？」
+;OriginalString : 「ごめんなさい、夢中になり過ぎてしまったわね…　体は大丈夫？」
+				PRINTFORMW 「미안해요, 너무 열중해 버린 원이군요… 몸은 괜찮아？」
+			ENDIF
+		;대량사정
+		CASE 3
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「ふぁぁぁ…　%CALLNAME:MASTER%의 정액、凄い量…」
+				PRINTFORMW 「… %CALLNAME:MASTER%의 정액, 굉장한 양…」
+;OriginalString : 「ふふ、ご馳走様で했다！　まさか질내に入り切らずに溢れてくるとは思わなかったわ…」
+				PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 설마 질내에 접어들어 자르지 않고 흘러넘쳐 온다고는 생각하지 않았어요…」
+;OriginalString : 「子供が欲しい私のために、こんなに頑張って出してくれたのね…　嬉しいわ！」
+				PRINTFORMW 「아이를 갖고 싶은 나를 위해서(때문에), 이렇게 노력해 내 주었군요… 기뻐요！」
+;OriginalString : 「貴方の頑張りのお陰で임신できる確率は大分上がったとは思うのだけれど…　上손く行ってくれると良いわね？」
+				PRINTFORMW 「당신의 분발함의 덕분으로 임신할 수 있는 확률은 상당히 올랐다고는 생각한다 하지만… 능숙하게 가 주면 좋네요？」
+			;それ以外
+			ELSE
+;OriginalString : 「ふぁぁぁ…　%CALLNAME:MASTER%의 정액、凄い量…」
+				PRINTFORMW 「… %CALLNAME:MASTER%의 정액, 굉장한 양…」
+;OriginalString : 「ふふ、ご馳走様で했다！　まさか질내に入り切らずに溢れてくるとは思わなかったわ…」
+				PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 설마 질내에 접어들어 자르지 않고 흘러넘쳐 온다고는 생각하지 않았어요…」
+;OriginalString : 「こんなにドプドプ出るなんて、よっぽど私の질내が気持ち良かったのね？」
+				PRINTFORMW 「이렇게 드프드프 나오다니 상당히 나의 질내가 기분 좋았어？」
+;OriginalString : 「ふふ、私でこんなに気持ち良くなってくれたようで何よりだわ！」
+				PRINTFORMW 「후후, 나로 이렇게 기분 좋아져 준 것 같고 최상이구나！」
+			ENDIF
+			RETURN LOCAL
+		;조루
+		CASE 4
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「あれ、もうイッてしまったのかしら？　私の질내が気持ち良かったのだとしても、流石に早すぎると思うのだけれど…」
+				PRINTFORMW 「저것, 이제 익이라고 끝냈는지 해들？ 나의 질내가 기분 좋았던 것이다라고 해도, 유석에 너무 빠르다고 생각한다 하지만…」
+;OriginalString : 「もしかして、%CALLNAME:MASTER%って조루の気があるのかしら？　조루って色々と苦労するらしいけれど…」
+				PRINTFORMW 「혹시,%CALLNAME:MASTER%라는 조루의 마음이 있을까？ 조루는 다양하게 고생하는 것 같지만…」
+;OriginalString : 「分かったわ！　愛する貴方のためにも、私が一肌脱いであげましょう！」
+				PRINTFORMW 「알았어요！ 사랑하는 당신을 위해서(때문에)도, 내가 진지하게 일해 줍시다！」
+;OriginalString : 「まずは사정を참다するトレーニングね…　ほら、二人で一緒に頑張りましょう？」
+				PRINTFORMW 「우선은 사정을 참는 트레이닝이군요… 이봐요, 둘이서 함께 노력합시다？」
+			;それ以外
+			ELSE
+;OriginalString : 「あれ、もうイッてしまったのかしら？　私の질내が気持ち良かったのだとしても、流石に早すぎると思うのだけれど…」
+				PRINTFORMW 「저것, 이제 익이라고 끝냈는지 해들？ 나의 질내가 기분 좋았던 것이다라고 해도, 유석에 너무 빠르다고 생각한다 하지만…」
+;OriginalString : 「もしかして、%CALLNAME:MASTER%って조루の気があるのかしら？　조루って色々と苦労するらしいけれど…」
+				PRINTFORMW 「혹시,%CALLNAME:MASTER%라는 조루의 마음이 있을까？ 조루는 다양하게 고생하는 것 같지만…」
+;OriginalString : 「もし良ければ、私が治す손伝いをしてあげるわよ？」
+				PRINTFORMW 「만약 좋다면, 내가 고치는 심부름을 해 주어요？」
+			ENDIF
+		;Ａ責사정
+		CASE 5
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「ふふ、お尻の方から정액を押し出されるのも気持ち良いでしょう？」
+				PRINTFORMW 「후후, 엉덩이로부터 정액을 밀어 내지는 것도 기분 좋을 것입니다？」
+;OriginalString : 「後ろから押されて前から出る…　これがトコロテンという物よ！」
+				PRINTFORMW 「뒤로부터 밀려 전부터 나온다… 이것이 우무라고 하는 것이야！」
+;OriginalString : 「私の膣に前から絞り出されつつも、お尻を通じて後ろから押し出される…　まさに必殺コンボね！」
+				PRINTFORMW 「 나의 질에 전부터 짜 나오면서도, 엉덩이를 통해서 뒤로부터 밀어 내진다… 확실히 필살 재즈 악단이군요！」
+;OriginalString : 「ふふ、こんなに私の질내に注いでくれるなんて…　本当に嬉しいわ！」
+				PRINTFORMW 「후후, 이렇게 나의 질내에 흘러 들어가 주다니… 정말로 기뻐요！」
+			;それ以外
+			ELSE
+;OriginalString : 「ふふ、お尻の方から정액を押し出されるのも気持ち良いでしょう？」
+				PRINTFORMW 「후후, 엉덩이로부터 정액을 밀어 내지는 것도 기분 좋을 것입니다？」
+;OriginalString : 「後ろから押されて前から出る…　これがトコロテンという物よ！」
+				PRINTFORMW 「뒤로부터 밀려 전부터 나온다… 이것이 우무라고 하는 것이야！」
+;OriginalString : 「私の膣に前から絞り出されつつも、お尻を通じて後ろから押し出される…　まさに必殺コンボね！」
+				PRINTFORMW 「 나의 질에 전부터 짜 나오면서도, 엉덩이를 통해서 뒤로부터 밀어 내진다… 확실히 필살 재즈 악단이군요！」
+;OriginalString : 「あはは、凄い量…　よっぽど気持ち良かったのね？」
+				PRINTFORMW 「아하하, 굉장한 양… 상당히 기분 좋았어？」
+			ENDIF
+		;その他(사정)
+		CASEELSE
+			;상사상애
+			IF KFLAG:0 == 1
+				SELECTCASE RAND:2
+					CASE 0
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　たっぷり奥まで注いでくれて嬉しいわ」
+						PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 충분히 안쪽까지 흘러 들어가 주어 기뻐요」
+;OriginalString : 「知らなかったわ、애만들기ってこんなに燃える物なのね…　これで임신できたかしら？」
+						PRINTFORMW 「몰랐어요, 아이 만들기는 이렇게 불타는 것인 것… 이것으로 임신할 수 있었는지 해들？」
+					CASEELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様でし！　たっぷり奥まで注いでくれて嬉しいわ」
+						PRINTFORMW 「후후, 맛있는 음식 같아 해！ 충분히 안쪽까지 흘러 들어가 주어 기뻐요」
+;OriginalString : 「ここまでたっぷり出たという事は、%CALLNAME:MASTER%はそれだけ私に夢中になってくれたという事よね？」
+						PRINTFORMW 「여기까지 충분히 나왔다고 하는 일은,%CALLNAME:MASTER%(은)는 그 만큼 나에 열중해 주었다고 하는 일이군요？」
+;OriginalString : 「정액の量が夫婦の애정を測るバロメーターか…　流石にその発想は無かったわ」
+						PRINTFORMW 「정액의 양이 부부의 애정을 측정하는 바로미터인가… 유석에 그 발상은 없었어요」
+				ENDSELECT
+			;それ以外
+			ELSE
+				SELECTCASE RAND:2
+					CASE 0
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　あはは、私の질내がそんなに気持ち良かったのかしら？」
+						PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 아하하, 나의 질내가 그렇게 기분 좋았던 것일까 해들？」
+;OriginalString : 「…こうして一つになっていると、何だか貴方と通じ合えたようで嬉しいわ」
+						PRINTFORMW 「…이렇게 해 1개(살)이 되어 있으면(자), 무엇인가 당신과 서로  통할 수 있던 것 같고 기뻐요」
+;OriginalString : 「ふふ、これからも、もっともっと仲良くなりましょうか？」
+						PRINTFORMW 「후후, 앞으로도, 좀더 좀더 사이가 좋아질까요？」
+					CASEELSE
+;OriginalString : 「んっ…　%CALLNAME:MASTER%의 정액、あったかい…」
+						PRINTFORMW 「응… %CALLNAME:MASTER%의 정액, 따뜻하다…」
+;OriginalString : 「ふふ、ご馳走様で했다！　あはは、私の질내がそんなに気持ち良かったのかしら？」
+						PRINTFORMW 「후후, 맛있는 음식 같았습니다！ 아하하, 나의 질내가 그렇게 기분 좋았던 것일까 해들？」
+;OriginalString : 「섹스って本当に良い物ね…　あったかくて幸せになれるし、それに気持ち良くもなれる…」
+						PRINTFORMW 「섹스는 정말로 좋은 것이군요… 따뜻하게라고 행복하게 될 수 있고, 게다가 기분 좋게도 될 수 있다…」
+;OriginalString : 「そして、%CALLNAME:MASTER%と心も体も一つに繋がることが出来る…」
+						PRINTFORMW 「그리고,%CALLNAME:MASTER%(와)과 마음도 몸도 1개에 연결될 수가 있다…」
+;OriginalString : 「ふふ、これからもよろしくね？」
+						PRINTFORMW 「후후, 앞으로도 잘 부탁해？」
+				ENDSELECT
+			ENDIF
+			RETURN LOCAL
+	ENDSELECT
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;항문内사정(죠교대상→죠교자)
+;-------------------------------------------------
+;・Ａ성교봉사系で장내사정する場合に表示
+;・TFLAG:안빼고は抜かない判定ごとに+1される
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+;-------------------------------------------------
+;記入チェック
+LOCAL = 0
+;-------------------------------------------------
+IF LOCAL && (TFLAG:전회질싸 == 6 || TFLAG:전회질싸 == 8)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;안빼고に続行
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:안빼고
+		;동시절정(죠교자が同時にＡ절정)
+		IF NOWEX:Ａ절정
+				;その他
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+					RETURN LOCAL
+		;통상
+		ELSE
+			SELECTCASE NOWEX:MASTER:사정
+				;드라이사정
+				CASE 1
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+				;조루
+				CASE 4
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+				;その他
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+			RETURN LOCAL
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;동시절정(죠교자が同時にＡ절정)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:Ａ절정
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+				CALL QUAKE(4)
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+				CALL QUAKE(4)
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;애태움から
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TCVAR:MASTER:애태움도
+		;애태움中
+		IF TCVAR:MASTER:애태움도 > 1
+			SELECTCASE NOWEX:MASTER:사정
+				;Ａ責사정
+				CASE 5
+;OriginalString : 
+					PRINTFORMW 
+				;その他(조루)
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+		;トドメ
+		ELSE
+			SELECTCASE NOWEX:MASTER:사정
+				;드라이사정
+				CASE 1
+;OriginalString : 
+					PRINTFORMW 
+				;その他
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;사정의派生
+	SELECTCASE NOWEX:MASTER:사정
+		;드라이사정
+		CASE 1
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;대량사정
+		CASE 3
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;조루
+		CASE 4
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;Ａ責사정
+		CASE 5
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;その他(사정)
+		CASEELSE
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+	ENDSELECT
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;질내사정(죠교자→죠교대상)
+;-------------------------------------------------
+;・Ｖ성교系で질내사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+;-------------------------------------------------
+;記入チェック
+LOCAL = 0
+;-------------------------------------------------
+IF LOCAL && (TFLAG:전회질싸 == 1 || TFLAG:전회질싸 == 3)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;동시절정(죠교대상が同時にＶ절정)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:MASTER:Ｖ절정
+;OriginalString : 
+		PRINTFORMW 
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;안에 내!
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 21
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;안에 내면 안돼!
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 22
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;사정의派生
+	SELECTCASE NOWEX:사정
+		;드라이사정
+		CASE 1
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+		PRINTFORMW 
+		;대량사정
+		CASE 3
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;その他
+		CASEELSE
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+	ENDSELECT
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;항문内사정(죠교자→죠교대상)
+;-------------------------------------------------
+;・Ａ성교系で장내사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+;-------------------------------------------------
+;記入チェック
+LOCAL = 0
+;-------------------------------------------------
+IF LOCAL && (TFLAG:전회질싸 == 5 || TFLAG:전회질싸 == 7)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;동시절정(죠교대상が同時にＡ절정)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:MASTER:Ａ절정
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;안에 내!
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 21
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;안에 내면 안돼!
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 22
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;사정의派生
+	SELECTCASE NOWEX:사정
+		;드라이사정
+		CASE 1
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;대량사정
+		CASE 3
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;その他
+		CASEELSE
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+	ENDSELECT
+	RETURN 2
+ENDIF
+
+
+;-------------------------------------------------
+;죠교대상사정
+;-------------------------------------------------
+;・죠교대상が사정する場合に表示
+;・사정量による分岐は필요に応じ加減して使うのが望ましい
+;-------------------------------------------------
+;(죠교대상)
+;NOWEX:MASTER:사정 죠교대상사정(1=드라이사정 2=사정 3=대량사정 4=사정(조루) 5=A責사정)
+;(その他)
+;TEQUIP:자위중 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;記入チェック
+LOCAL = 0
+;-------------------------------------------------
+IF LOCAL && NOWEX:MASTER:사정
+	;-------------------------------------------------
+	;体勢別
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	SELECTCASE TCVAR:MASTER:자세
+		CASE IS == 1
+			IF TCVAR:MASTER:위치상하 == 2
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			ELSE
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			ENDIF
+		CASE IS == 2
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		CASE IS == 3
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		CASE IS == 4
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		CASE IS == 10
+			IF TCVAR:MASTER:위치전후 == 2
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			ELSE
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			ENDIF
+	ENDSELECT
+	
+	;-------------------------------------------------
+	;애무物を취득
+	LOCAL:2 = MC_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;Ａ責사정(Ａ절정時に쾌Ｃに関わらず사정)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:MASTER:사정 == 5
+;OriginalString : 
+		PRINTFORMW 
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;스마타で동시절정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 16 && NOWEX:Ｃ절정
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;파이즈리で동시절정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 17 && NOWEX:Ｂ절정
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위で사정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 0)
+		;입射
+		IF ME_PLAYER(1) == 9
+			SELECTCASE NOWEX:MASTER:사정
+				;드라이사정
+				CASE 1
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+				;その他
+				CASEELSE
+					SELECTCASE RAND:2
+						CASE 0
+;OriginalString : 
+							PRINTFORMW 
+;OriginalString : 
+							PRINTFORMW 
+						CASEELSE
+;OriginalString : 
+							PRINTFORMW 
+;OriginalString : 
+							PRINTFORMW 
+					ENDSELECT
+			ENDSELECT
+		;통상
+		ELSE
+			SELECTCASE NOWEX:MASTER:사정
+				;드라이사정
+				CASE 1
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+				;その他
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;스마타で사정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 16
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+				SELECTCASE RAND:2
+				CASE 0
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+				ENDSELECT
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で사정(펠라など)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+				SELECTCASE RAND:2
+					CASE 0
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+					CASEELSE
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+				ENDSELECT
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	;-------------------------------------------------
+	;손による애무で사정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 2
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+				SELECTCASE RAND:4
+					CASE 0
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+					CASE 1
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+					CASE 2
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+					CASEELSE
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+				ENDSELECT
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;거유による애무で사정(파이즈리)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 6 && TALENT:TARGET:거유
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;빈유による애무で사정(파이즈리)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 6 && TALENT:TARGET:빈유
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;가슴による애무で사정(파이즈리)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 6
+		SELECTCASE NOWEX:MASTER:사정
+		;드라이사정
+		CASE 1
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;その他
+		CASEELSE
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;발による애무で사정(발コキ)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 7
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+				SELECTCASE RAND:2
+					CASE 0
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+					CASEELSE
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+						PRINTFORMW 
+				ENDSELECT
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;오나홀で사정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 114
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+			;その他
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;派生を処理
+	SELECTCASE NOWEX:MASTER:사정
+		;드라이사정
+		CASE 1
+;OriginalString : 
+			PRINTFORMW 
+		;대량사정
+		CASE 3
+;OriginalString : 
+			PRINTFORMW 
+		;조루
+		CASE 4
+;OriginalString : 
+			PRINTFORMW 
+		;その他
+		CASEELSE
+;OriginalString : 
+			PRINTFORMW 
+	ENDSELECT
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교자사정
+;-------------------------------------------------
+;・죠교자が사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+;(죠교자)
+;NOWEX:사정 (1=드라이사정 2=사정 3=대량사정)
+;(その他)
+;TEQUIP:자위중 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;記入チェック
+LOCAL = 0
+;-------------------------------------------------
+IF LOCAL && NOWEX:사정
+	;애무物を취득
+	LOCAL:2 = TC_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;파이즈리で동시절정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 52 && NOWEX:MASTER:Ｂ절정
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;스마타で동시절정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 53 && NOWEX:MASTER:Ｃ절정
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위で사정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 1)
+		;顔射
+		IF TE_PLAYER(1) == 9
+;OriginalString : 
+			PRINTFORMW 
+		;통상
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;스마타で사정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 53
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;이라마치오で사정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 56
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で사정(펠라など)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;바기나による애무で사정(膣外사정)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 4
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;항문による애무で사정(腸外사정)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 4
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;가슴による애무で사정(파이즈리)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 6
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;발による애무で사정(발コキ)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 7
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;派生を処理
+	SELECTCASE NOWEX:사정
+		;드라이사정
+		CASE 1
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;대량사정
+		CASE 3
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;その他
+		CASEELSE
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+	ENDSELECT
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상Ｃ절정
+;-------------------------------------------------
+;・죠교대상がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;・사정は사정구상の分岐で書くのが望ましい
+;-------------------------------------------------
+;(その他)
+;TEQUIP:자위중 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+	;애무物を취득
+	LOCAL:2 = MC_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;貝合わせで동시절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 16 && TFLAG:ACT파생 == 0 && NOWEX:Ｃ절정
+;OriginalString : 「んんっ…！　ふぁ…！　ふぁぁ…！」
+		PRINTFORMW 「응응…！ …！ …！」
+;OriginalString : 「気持ち良い所が…くちゅくちゅこすれてっ…！！」
+		PRINTFORMW 「기분 좋은 곳이…스쳐…！！」
+;OriginalString : 「んぁぁ…！　もう駄目…！二人で一緒に…！！」
+		PRINTFORMW 「응…！ 이제 타목…！둘이서 함께…！！」
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;다중절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && (NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정)
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「…凄い、전신でイくのって、こんなに激しくビクンビクンするものなのね…」
+			PRINTFORMW 「…굉장한, 전신으로 이구의 것은, 이렇게 격렬하게 비쿤비쿤 하는 것인 것…」
+;OriginalString : 「大丈夫…？　うん、大丈夫そうね…」
+			PRINTFORMW 「괜찮아…？ 응, 괜찮아 그렇구나…」
+;OriginalString : 「ふふ、もう一度イッてみたい？　それとも、次は私を同じくらい가게해줘みたいのかしら？」
+			PRINTFORMW 「후후, 한번 더 익이라고 보고 싶다？ 그렇지 않으면, 다음은 나를 같은 정도이나 키라고 같았는가 해들？」
+		;それ以外
+		ELSE
+;OriginalString : 「…凄い、전신でイくのって、こんなに激しくビクンビクンするものなのね…」
+			PRINTFORMW 「…굉장한, 전신으로 이구의 것은, 이렇게 격렬하게 비쿤비쿤 하는 것인 것…」
+;OriginalString : 「大丈夫…？　うん、大丈夫そうね…」
+			PRINTFORMW 「괜찮아…？ 응, 괜찮아 그렇구나…」
+;OriginalString : 「…うん、調子に乗ってやり過ぎるのも考え物ね…」
+			PRINTFORMW 「…응, 본궤도에 올라 너무 주는 것도 생각할 일이군요…」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;죠교대상が同時に실금
+	;(죠교대상に素質:오줌싸개が無ければ発生しない)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:MASTER:방뇨
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、盛大に漏らしてしまったわね…」
+			PRINTFORMW 「후후, 성대하게 흘려 버린 원이군요…」
+;OriginalString : 「それだけ気持ち良くなってくれたって事だし、私は嬉しいわよ？」
+			PRINTFORMW 「그 만큼 기분 좋아져 주어도 일이고, 나는 기뻐요？」
+;OriginalString : 「それに、貴方のならいくらでも飲んであげたいと思うし…　ってこら、にやけないで頂戴！」
+			PRINTFORMW 「거기에, 당신의 습관 창고에서도 마셔 주고 싶다고 생각하고… 라는 이거 참, 에 질투나지 말고 주세요！」
+		;一般
+		ELSE
+;OriginalString : 「ふふ、盛大に漏らしてしまったわね…」
+			PRINTFORMW 「후후, 성대하게 흘려 버린 원이군요…」
+;OriginalString : 「それだけ気持ち良くなってくれたって事だし、私は嬉しいわよ？」
+			PRINTFORMW 「그 만큼 기분 좋아져 주어도 일이고, 나는 기뻐요？」
+ 		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위でＣ절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 0)
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、私に見られながら自分で弄って独りでイッて…　気持ち良かったでしょう？」
+			PRINTFORMW 「후후, 나로 보여지면서 스스로 만지작거려 혼자로 익이라고… 기분 좋았었지요？」
+;OriginalString : 「真っ赤に腫れたクリも、蕩けきった貴方の顔も、両方可愛いわよ？」
+			PRINTFORMW 「새빨갛게 부은 구리도, 녹고 자른 당신의 얼굴도, 양쪽 모두 사랑스러워요？」
+;OriginalString : 「…駄目ね、やっぱり自分からするのはいいけれど、相손に시킨다のは私の性に合わないわ」
+			PRINTFORMW 「…안되구나, 역시 자신으로부터 하는 것은 좋지만, 상대에게 시키는 것은 나의 성에 맞지 않아요」
+;OriginalString : 「ごめん、私に弄ってもらえなくて寂しかったわよね…？」
+			PRINTFORMW 「미안, 나에게 만지작거리고 받을 수 없어 외로웠어요군요…？」
+;OriginalString : 「次はきちんと私の손で優しく可愛がってあげるから、ね？」
+			PRINTFORMW 「다음은 제대로 나의 손으로 상냥하게 귀여워해 주기 때문에, 군요？」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、私に見られながら自分で弄って独りでイッて…　気持ち良かったでしょう？」
+			PRINTFORMW 「후후, 나로 보여지면서 스스로 만지작거려 혼자로 익이라고… 기분 좋았었지요？」
+;OriginalString : 「真っ赤に腫れたクリも、蕩けきった貴方の顔も、両方可愛いわよ？」
+			PRINTFORMW 「새빨갛게 부은 구리도, 녹고 자른 당신의 얼굴도, 양쪽 모두 사랑스러워요？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で절정(クンニなど)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「きゃっ！　びっくり했다…　貴方の潮で顔がベチャベチャよ…」
+			PRINTFORMW 「꺄！ 놀랐다… 당신의 조수로 얼굴이 베체베체야…」
+;OriginalString : 「ふふ、よっぽど気持ち良かったみたいで嬉しいわ」
+			PRINTFORMW 「후후, 상당히 기분 좋았다 같고 기뻐요」
+;OriginalString : 「…ふーん、潮っておしっことかと違って味がしない物なのね…」
+			PRINTFORMW 「…-응, 조수는 오줌이라든지와 달리 맛이 나지 않는 것인 것…」
+		;それ以外
+		ELSE
+;OriginalString : 「きゃっ！　びっくり했다…　貴方の潮で顔がベチャベチャよ…」
+			PRINTFORMW 「꺄！ 놀랐다… 당신의 조수로 얼굴이 베체베체야…」
+;OriginalString : 「ふふ、よっぽど気持ち良かったみたいで嬉しいわ」
+			PRINTFORMW 「후후, 상당히 기분 좋았다 같고 기뻐요」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(스마타)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、私のあそこでくちゅくちゅされるのがそんなに気持ち良かったのかしら？」
+			PRINTFORMW 「후후, 나의 저기에서 되는 것이 그렇게 기분 좋았던 것일까 해들？」
+;OriginalString : 「まだ질내にも入れていないのに、入り입で擦られるだけで限界を迎えてしまうなんて…　気が早いわね」
+			PRINTFORMW 「 아직 질내에도 들어갈 수 있지 않았는데, 입구에서 켜지는 것만으로 한계를 맞이해 버리다니… 성질이 급하네요」
+;OriginalString : 「ふふ、駄目なおちんちんね！」
+			PRINTFORMW 「후후, 안된 자지군요！」
+;OriginalString : 「…ってごめんなさい、言い過ぎたわ！　別に심술궂음を했다かった訳ではないのよ？」
+			PRINTFORMW 「…라고 미안해요, 지나치게 말했어요！ 별로 심술쟁이를 하고 싶었다  것은 아니어？」
+;OriginalString : 「ほら、次は질내に入れていいから…　お願い、機嫌を直して頂戴？」
+			PRINTFORMW 「이봐요, 다음은 질내에 들어갈 수 있어도 좋으니까… 부탁해요, 기분을 고쳐 주세요？」
+		;一般
+		ELSE
+;OriginalString : 「ふふ、私のあそこでくちゅくちゅされるのがそんなに気持ち良かったのかしら？」
+			PRINTFORMW 「후후, 나의 저기에서 되는 것이 그렇게 기분 좋았던 것일까 해들？」
+;OriginalString : 「まだ질내にも入れていないのに、入り입で擦られるだけで限界を迎えてしまうなんて…　気が早いわね」
+			PRINTFORMW 「 아직 질내에도 들어갈 수 있지 않았는데, 입구에서 켜지는 것만으로 한계를 맞이해 버리다니… 성질이 급하네요」
+;OriginalString : 「ふふ、駄目なおちんちんね！」
+			PRINTFORMW 「후후, 안된 자지군요！」
+ 		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;바기나による애무で절정(貝あわせ)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 4
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、びくんびくんしてる…　どうやらイッたみたいね」
+			PRINTFORMW 「후후, 군자 비친다… 아무래도 익같구나」
+;OriginalString : 「それにしても、くっつけるだけでこれだけ気持ち良いとなると…　一つになれた時はどれだけ気持ち良いのかしら？」
+			PRINTFORMW 「그렇다 치더라도, 붙이는 것만으로 이만큼 기분 좋다고 되면(자)… 1개(살)이 될 수 있었을 때는 얼마나 기분 좋은 것일까？」
+;OriginalString : 「…私は貴方ときちんと一つになりたいわ」
+			PRINTFORMW 「…나는 당신이라고 하고 침착하게 1개(살)이 되고 싶어요」
+;OriginalString : 「いつかその方法が見つかるといいわね…」
+			PRINTFORMW 「언젠가 그방법이 발견되면 좋네요…」
+		;一般
+		ELSE
+;OriginalString : 「ふふ、びくんびくんしてる…　どうやらイッたみたいね」
+			PRINTFORMW 「후후, 군자 비친다… 아무래도 익같구나」
+;OriginalString : 「それにしても、くっつけるだけでこれだけ気持ち良いとなると…　一つになれた時はどれだけ気持ち良いのかしら？」
+			PRINTFORMW 「그렇다 치더라도, 붙이는 것만으로 이만큼 기분 좋다고 되면(자)… 1개(살)이 될 수 있었을 때는 얼마나 기분 좋은 것일까？」
+ 		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;로터で절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 100
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、로터の刺激に耐えられなかったのね？」
+			PRINTFORMW 「후후, 로터의 자극에 견딜 수  없었어？」
+;OriginalString : 「振動なんて自分の손では与えられない分、慣れない刺激は凄く気持ちよかったでしょう？」
+			PRINTFORMW 「진동은 자신의 손에서는 주어지지 않는 분 , 익숙해지지 않는 자극은 굉장히 기분 좋았었지요？」
+;OriginalString : 「快感に必死に耐える%CALLNAME:MASTER%의 顔を思いっ切り眺められて、楽しかったわ！」
+			PRINTFORMW 「쾌감에 필사적으로 참는다%CALLNAME:MASTER%의 얼굴을 마음껏 조망되어, 즐거웠어요！」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、로터の刺激に耐えられなかったのね？」
+			PRINTFORMW 「후후, 로터의 자극에 견딜 수  없었어？」
+;OriginalString : 「振動なんて自分の손では与えられない分、慣れない刺激は凄く気持ちよかったでしょう？」
+			PRINTFORMW 「진동은 자신의 손에서는 주어지지 않는 분 , 익숙해지지 않는 자극은 굉장히 기분 좋았었지요？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;클리캡で절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 112
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、こんな只のおもちゃに吸い付かれただけでイかされて、%CALLNAME:MASTER%は今どんな気持ちなのかしら？」
+			PRINTFORMW 「후후, 이런 무료의 장난감에 달라붙어진 것만으로 이인가 되어,%CALLNAME:MASTER%(은)는 지금 어떤 기분인가 들어들？」
+;OriginalString : 「こんな物で気持ち良くなってしまった%CALLNAME:MASTER%의 顔は最高だったわよ？」
+			PRINTFORMW 「이런 물건으로 기분 좋아져 버렸다%CALLNAME:MASTER%의 얼굴은 최고였어？」
+;OriginalString : 「…ってごめんなさい、少し調子に乗りすぎたわ…　だから泣かないで頂戴？」
+			PRINTFORMW 「…라고 미안해요, 너무 조금 본궤도에 올랐어요… 그러니까 울지 말고 주세요？」
+;OriginalString : 「お詫びに私を好きにしていいから…ね？」
+			PRINTFORMW 「사과에 나를 마음대로 해도 좋으니까…그런데？」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、こんな只のおもちゃに吸い付かれただけでイかされて、%CALLNAME:MASTER%は今どんな気持ちなのかしら？」
+			PRINTFORMW 「후후, 이런 무료의 장난감에 달라붙어진 것만으로 이인가 되어,%CALLNAME:MASTER%(은)는 지금 어떤 기분인가 들어들？」
+;OriginalString : 「こんな物で気持ち良くなってしまった%CALLNAME:MASTER%의 顔は最高だったわよ？」
+			PRINTFORMW 「이런 물건으로 기분 좋아져 버렸다%CALLNAME:MASTER%의 얼굴은 최고였어？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+;一般
+	;상사상애
+	IF KFLAG:0 == 1
+;OriginalString : 「ふふ、そんなにクリが気持ちよかったのね？」
+		PRINTFORMW 「후후, 그렇게 구리가 기분 좋았어？」
+;OriginalString : 「…こうやって私の손で貴方をイかせられたと思うと、いつも嬉しくて愛しくて가슴がいっぱいになるのよね…」
+		PRINTFORMW 「…이렇게 나의 손으로 당신을 이인가 다투어졌다고 생각하면, 언제나 기쁘고 사랑스러워서 가슴이 벅차…」
+;OriginalString : 「大好きよ、%CALLNAME:MASTER%…」
+		PRINTFORMW 「정말 좋아해요,%CALLNAME:MASTER%…」
+	;それ以外
+	ELSE
+;OriginalString : 「ふふ、そんなにクリが気持ちよかったのね？」
+		PRINTFORMW 「후후, 그렇게 구리가 기분 좋았어？」
+;OriginalString : 「…まだまだ私は下손くそかも知れないけれど、今回は上손く出来たのかしら？」
+		PRINTFORMW 「…아직도 나는 아주 서툼일지도 모르지만, 이번은 능숙하게 할 수 있었는지 해들？」
+;OriginalString : 「ねえ、どうなの…？　%CALLNAME:MASTER%…」
+		PRINTFORMW 「응, 어떻게야…？ %CALLNAME:MASTER%…」
+	ENDIF
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상Ｖ절정
+;-------------------------------------------------
+;・죠교대상がＶ절정する場合に表示
+;(その他)
+;TEQUIP:자위중 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:MASTER:Ｖ절정
+	;애무物を취득
+	LOCAL:2 = MV_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;同時にＡ절정/Ｂ절정(다중절정)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && (NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정)
+		;Ｖ+ＡＢ절정
+		IF NOWEX:MASTER:Ａ절정 && NOWEX:MASTER:Ｂ절정
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「うわぁ…　前と後ろで同時にイくのって、こんなに気持ち良さそうなものなのね…」
+				PRINTFORMW 「위… 전과 뒤로 동시에 이구의 것은, 이렇게 기분 좋음 그런 것인 것…」
+;OriginalString : 「あ、そうか…　가슴も同時に弄っていたのだから、ここまで激しいのは当たり前よね…」
+				PRINTFORMW 「아, 그런가… 가슴도 동시에 만지작거리고 있었으니까, 여기까지 격렬한 것은 당연해요…」
+;OriginalString : 「…って感心している場合じゃないわ！　大丈夫？%CALLNAME:MASTER%…」
+				PRINTFORMW 「…라고 감탄하고 있을 때가 아니어요！ 괜찮아？%CALLNAME:MASTER%…」
+;OriginalString : 「良かった、もしもの事があったら、私…」
+				PRINTFORMW 「좋았다, 만약의 일이 있으면, 나…」
+			;それ以外
+			ELSE
+;OriginalString : 「うわぁ…　前と後ろで同時にイくのって、こんなに気持ち良さそうなものなのね…」
+				PRINTFORMW 「위… 전과 뒤로 동시에 이구의 것은, 이렇게 기분 좋음 그런 것인 것…」
+;OriginalString : 「あ、そうか…　가슴も同時に弄っていたのだから、ここまで激しいのは当たり前よね…」
+				PRINTFORMW 「아, 그런가… 가슴도 동시에 만지작거리고 있었으니까, 여기까지 격렬한 것은 당연해요…」
+;OriginalString : 「…って感心している場合じゃないわ！　大丈夫？%CALLNAME:MASTER%…」
+				PRINTFORMW 「…라고 감탄하고 있을 때가 아니어요！ 괜찮아？%CALLNAME:MASTER%…」
+;OriginalString : 「良かった、もしもの事があったらどうしようかと思ったわよ…」
+				PRINTFORMW 「좋았다, 만약의 일이 있으면 어떻게 하지 생각했어요…」
+			ENDIF
+		;Ｖ+Ａ절정
+		ELSEIF NOWEX:MASTER:Ａ절정
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「ふふ、前と後ろの両方でイッたみたいね」
+				PRINTFORMW 「후후, 전과 뒤의 양쪽 모두로 익같구나」
+;OriginalString : 「%CALLNAME:MASTER%がイッた後のそのぽーっと했다顔、本当に可愛いわよ」
+				PRINTFORMW 「%CALLNAME:MASTER%(은)는 지만 익후-로 한 얼굴, 정말로 사랑스러워요」
+;OriginalString : 「ねえねえ、その可愛い顔に키스してもいいかしら？」
+				PRINTFORMW 「응 , 그 사랑스러운 얼굴에 키스 해도 될까？」
+			;それ以外
+			ELSE
+;OriginalString : 「ふふ、前と後ろの両方でイッたみたいね」
+				PRINTFORMW 「후후, 전과 뒤의 양쪽 모두로 익같구나」
+;OriginalString : 「%CALLNAME:MASTER%がイッた後のそのぽーっと했다顔、本当に可愛いわよ」
+				PRINTFORMW 「%CALLNAME:MASTER%(은)는 지만 익후-로 한 얼굴, 정말로 사랑스러워요」
+			ENDIF
+		;Ｖ+Ｂ절정
+		ELSE
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「びっくり했다…　가슴と一緒にイくと、潮ってここまで激しく飛び散るのね…」
+				PRINTFORMW 「놀랐다… 가슴과 함께 이구와 조수는 여기까지 격렬하게 흩날리군요…」
+;OriginalString : 「うん、思いっ切り気持ち良くなれたみたいで私も만족だわ」
+				PRINTFORMW 「응, 마음껏 기분 좋아질 수 있던 것 같아 나도 만족하구나」
+;OriginalString : 「いいな…　次は私も同じようにイッてみたいわ…」
+				PRINTFORMW 「좋은데… 다음은 나도 똑같이 익이라고 보고 싶어요…」
+			;それ以外
+			ELSE
+;OriginalString : 「びっくり했다…　가슴と一緒にイくと、潮ってここまで激しく飛び散るのね…」
+				PRINTFORMW 「놀랐다… 가슴과 함께 이구와 조수는 여기까지 격렬하게 흩날리군요…」
+;OriginalString : 「うん、思いっ切り気持ち良くなれたみたいで私も만족だわ」
+				PRINTFORMW 「응, 마음껏 기분 좋아질 수 있던 것 같아 나도 만족하구나」
+			ENDIF
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위でＶ절정(바이브)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 0)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(Ｖ성교)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「질내がきゅうっておちんちんを締め付けてくるのが凄く気持ち良いわ…」
+			PRINTFORMW 「질내가 공은 자지를 단단히 조여 오는 것이 굉장히 기분 좋아요…」
+;OriginalString : 「ふふ、そんなに私の정액が欲しいのかしら？」
+			PRINTFORMW 「후후, 그렇게 나의 정액을 갖고 싶은 것일까？」
+;OriginalString : 「そんなにがっつかなくても大丈夫よ？　いっぱい注いであげるからね？」
+			PRINTFORMW 「그렇게가 붙지 않아도 괜찮아요？ 가득 따라 주니까요？」
+		;それ以外
+		ELSE
+;OriginalString : 「질내がきゅうっておちんちんを締め付けてくるのが凄く気持ち良いわ…」
+			PRINTFORMW 「질내가 공은 자지를 단단히 조여 오는 것이 굉장히 기분 좋아요…」
+;OriginalString : 「ふふ、そんなに私の정액が欲しいのかしら？」
+			PRINTFORMW 「후후, 그렇게 나의 정액을 갖고 싶은 것일까？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;腕による애무で절정(フィスト)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 10
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「凄い…　貴方がイッたのが文字通り、손に取るように分かるわ！」
+			PRINTFORMW 「굉장하다… 당신이 익의 것이 문자 그대로, 명확하게 알아요！」
+;OriginalString : 「ふふ、こんなに気持ち良さそうに締めつけてきちゃって…」
+			PRINTFORMW 「후후, 이렇게 기분 좋음 그렇게 잡고 붙여 와 버려서…」
+;OriginalString : 「貴方って、こんな酷い事をされているのに喜んでしまう変態なのね…」
+			PRINTFORMW 「당신은, 이런 심한 일 을 하고 있는데 기꺼이 버리는 변태인 것…」
+;OriginalString : 「あ、もちろん引いてはいないわよ？　恋人である私と一緒なのが嬉しくてしょうがないのよ！」
+			PRINTFORMW 「아, 물론 당기지는 않아요？ 애인인 나와 함께인 것이 기뻐서 어쩔 수 없어！」
+		;それ以外
+		ELSE
+;OriginalString : 「凄い…　貴方がイッたのが文字通り、손に取るように分かるわ！」
+			PRINTFORMW 「굉장하다… 당신이 익의 것이 문자 그대로, 명확하게 알아요！」
+;OriginalString : 「ふふ、こんなに気持ち良さそうに締めつけてきちゃって…」
+			PRINTFORMW 「후후, 이렇게 기분 좋음 그렇게 잡고 붙여 와 버려서…」
+;OriginalString : 「貴方って、こんな酷い事をされているのに喜んでしまう変態なのね…」
+			PRINTFORMW 「당신은, 이런 심한 일 을 하고 있는데 기꺼이 버리는 변태인 것…」
+;OriginalString : 「あ、もちろん引いてはいないわよ？　私と気が合うのが嬉しくてしょうがないのよ！」
+			PRINTFORMW 「아, 물론 당기지는 않아요？ 나와 마음이 맞는 것이 기뻐서 어쩔 수 없어！」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;바이브で절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 101
+		;상사상애
+		IF KFLAG:0 == 1
+			;텐시が후타나리
+			IF TALENT:TARGET:후타나리
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「%CALLNAME:MASTER%의 事だし、こんな도구じゃもちろん만족できないでしょう？」
+				PRINTFORMW 「%CALLNAME:MASTER%의 일이고, 이런 도구는 물론 만족할 수 없을 것입니다？」
+;OriginalString : 「ほら、私のおちんちんが欲しくて欲しくてしょうがないのよね？」
+				PRINTFORMW 「이봐요, 나의 자지를 갖고 싶고 갖고 싶어서 어쩔 수 없어？」
+;OriginalString : 「ふふ、今すぐ挿れて、奥までいっぱいかき回してあげるからね？」
+				PRINTFORMW 「후후, 금방 삽라고, 안쪽까지 가득한가 나무 돌려 주니까요？」
+			;후타나리じゃない
+			ELSE
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「奥までかき回されるのってやっぱり気持ち良い物なのよね…」
+				PRINTFORMW 「안쪽까지 휘저어지는 것은 역시 기분 좋은 것이야…」
+;OriginalString : 「うう、貴方にめちゃくちゃにされる想像を했다だけで濡れてきちゃたわ…」
+				PRINTFORMW 「우우, 당신에게 엄청으로 되는 상상을 한 것만으로 젖어 원…」
+;OriginalString : 「%CALLNAME:MASTER%、私も同じくらい기분좋게 해頂戴…？」
+				PRINTFORMW 「%CALLNAME:MASTER%, 나도 같은 정도 기분 좋게 해 주세요…？」
+			ENDIF
+		;それ以外
+		ELSE
+			;텐시が후타나리
+			IF TALENT:TARGET:후타나리
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「ふふ、次は私のおちんちんの番よ？　二人でもっと気持ち良くなりましょうね？」
+				PRINTFORMW 「후후, 다음은 나의 자지의 차례야？ 둘이서 좀 더 기분 좋아져요？」
+			;후타나리じゃない
+			ELSE
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「奥までかき回されるのってやっぱり気持ち良い物なのよね…」
+				PRINTFORMW 「안쪽까지 휘저어지는 것은 역시 기분 좋은 것이야…」
+;OriginalString : 「うう、想像했다だけで濡れてきちゃたわ…」
+				PRINTFORMW 「우우, 상상한 것만으로 젖어 원…」
+;OriginalString : 「%CALLNAME:MASTER%、私も同じくらい기분좋게 해頂戴…？」
+				PRINTFORMW 「%CALLNAME:MASTER%, 나도 같은 정도 기분 좋게 해 주세요…？」
+			ENDIF
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스밴드で절정(Ｖ성교)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 103
+		;상사상애
+		IF KFLAG:0 == 1
+			;당신が페니스有り
+			IF TALENT:MASTER:후타나리 || TALENT:MASTER:남자
+;OriginalString : 「ふふ、こんな도구でも貴方をイかせるのは簡単な事だわ！」
+				PRINTFORMW 「후후, 이런 도구로도 당신을 이인가 다투는 것은 간단한 일이예요！」
+;OriginalString : 「…これを使っていて思ったのだけれど、私も%CALLNAME:MASTER%みたいな立派なおちんちんが欲しいな…」
+				PRINTFORMW 「…이것을 사용하고 있고 생각했던 것이다 하지만, 나도%CALLNAME:MASTER%같은 훌륭한 자지를 갖고 싶은데…」
+;OriginalString : 「ほら、こんな도구を使わずに、私も自分の体で貴方と一つになってみたいのよね…」
+				PRINTFORMW 「이봐요, 이런 도구를 사용하지 않고 , 나도 자신의 몸으로 당신과 1살이 되어 보고 싶어…」
+			;당신が페니스無し
+			ELSE
+;OriginalString : 「ごめんなさい、これを使う度に現実を思い知らされて、悲しくなってしまうのよ…」
+				PRINTFORMW 「미안해요, 이것을 사용할 때에 현실을 생각해 알게 되어, 슬퍼져 버려…」
+;OriginalString : 「%CALLNAME:MASTER%ときちんと一つになれない事が、こんなにも苦しい事だなんて思わなかったわ…」
+				PRINTFORMW 「%CALLNAME:MASTER%(이)라고 하고 침착하게 1개(살)이 될 수 없는 것이, 이렇게도 괴로운 일이라니 생각하지 않았어요…」
+;OriginalString : 「欲しいのよ…　貴方と一つになるためにも、私はこんな도구では無くて、おちんちんが欲しいのよ…！」
+				PRINTFORMW 「갖고 싶어… 당신과 1살이 되기 위해서(때문에)도, 나는 이런 도구는 아니어서, 자지를 갖고 싶어…！」
+;OriginalString : …ボロボロと涙を流して泣きじゃくる텐시を、ありったけの애정を込めてぎゅっと抱きしめてあげた…
+				PRINTFORMDW …너덜너덜눈물을 흘려 흐느껴 우는 천자를, 있는 한 애정을 담아 꽉 꼭 껴안아 주었다…
+			ENDIF
+		;それ以外
+		ELSE
+			;당신が페니스有り
+			IF TALENT:MASTER:후타나리 || TALENT:MASTER:남자
+;OriginalString : 「ふふ、こんな도구でも貴方をイかせるのは簡単な事だわ！」
+				PRINTFORMW 「후후, 이런 도구로도 당신을 이인가 다투는 것은 간단한 일이예요！」
+;OriginalString : 「…これを使っていて思ったのだけれど、私も%CALLNAME:MASTER%みたいな立派なおちんちんが欲しいな…」
+				PRINTFORMW 「…이것을 사용하고 있고 생각했던 것이다 하지만, 나도%CALLNAME:MASTER%같은 훌륭한 자지를 갖고 싶은데…」
+;OriginalString : 「一度、私のおちんちんで貴方の膣を味わってみたいのよ…」
+				PRINTFORMW 「한 번, 나의 자지로 당신의 질을 맛보고 싶어…」
+;OriginalString : 「ふふ、その時は私と一緒にいっぱい気持ち良くなりましょう？」
+				PRINTFORMW 「후후, 그 때는 나와 함께 가득 기분 좋아집시다？」
+			;당신が페니스無し
+			ELSE
+;OriginalString : 「ふふ、こんな도구でも貴方をイかせるのは簡単な事だわ！」
+				PRINTFORMW 「후후, 이런 도구로도 당신을 이인가 다투는 것은 간단한 일이예요！」
+;OriginalString : 「…これを使っていて思ったのだけれど、도구じゃ無くて私自身の立派なおちんちんが欲しいな…」
+				PRINTFORMW 「…이것을 사용하고 있고 생각했던 것이다 하지만, 도구는 없어서 나 자신의 훌륭한 자지를 갖고 싶은데…」
+;OriginalString : 「一度、私のおちんちんで貴方の膣を味わってみたいのよ…」
+				PRINTFORMW 「한 번, 나의 자지로 당신의 질을 맛보고 싶어…」
+;OriginalString : 「ふふ、その時は私と一緒にいっぱい気持ち良くなりましょう？」
+				PRINTFORMW 「후후, 그 때는 나와 함께 가득 기분 좋아집시다？」
+			ENDIF
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;삼각목마で절정
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 133
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+;一般
+	;상사상애
+	IF KFLAG:0 == 1
+;OriginalString : 「ふふ、膣でイッたみたいね…　そんなにヒクヒクさせて、よっぽど気持ち良かったのかしら？」
+		PRINTFORMW 「후후, 질로 익같구나… 그렇게 히크히크 시켜, 상당히 기분 좋았던 것일까 해들？」
+;OriginalString : 「どう？こっちでイくのって、가슴とかでイくのとは別次元に気持ち良いでしょう？」
+		PRINTFORMW 「어때？여기로 이구의 것은, 가슴등으로 이구의 것과는 별차원에 기분 좋을 것입니다？」
+;OriginalString : 「女の悦びって奴を堪能してもらえたようで、私は만족だわ！」
+		PRINTFORMW 「여자의 즐거움은 놈을 즐겨 줄 수 있던 것 같아, 나는 만족하구나！」
+	;それ以外
+	ELSE
+;OriginalString : 「ふふ、膣でイッたみたいね…　そんなにヒクヒクさせて、よっぽど気持ち良かったのかしら？」
+		PRINTFORMW 「후후, 질로 익같구나… 그렇게 히크히크 시켜, 상당히 기분 좋았던 것일까 해들？」
+;OriginalString : 「どう？こっちでイくのって、가슴とかでイくのとは別次元に気持ち良いでしょう？」
+		PRINTFORMW 「어때？여기로 이구의 것은, 가슴등으로 이구의 것과는 별차원에 기분 좋을 것입니다？」
+	ENDIF
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상Ａ절정
+;-------------------------------------------------
+;・죠교대상がＡ절정する場合に表示
+;-------------------------------------------------
+;(その他)
+;TEQUIP:자위중 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:MASTER:Ａ절정
+	;애무物を취득
+	LOCAL:2 = MA_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;同時にＢ절정(다중절정)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:MASTER:Ｂ절정
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、お尻だけじゃ無くて가슴でも同時にイッてしまったみたいね？」
+			PRINTFORMW 「후후, 엉덩이만 이 아니어서 가슴에서도 동시에 익이라고 끝낸 것 같구나？」
+;OriginalString : 「가슴でも同時にイッてしまったら、快感がお互いを増幅し合って凄い事になるのよね…」
+			PRINTFORMW 「가슴에서도 동시에 익이라고 끝내면(자), 쾌감이 서로를 서로 증폭해 굉장한 일이 되어…」
+;OriginalString : 「ふふ、%CALLNAME:MASTER%의 イキ顔を堪能できて嬉しいわ…　ご馳走様で했다！」
+			PRINTFORMW 「후후,%CALLNAME:MASTER%의 이키얼굴을 즐길 수 있어 기뻐요… 맛있는 음식 같았습니다！」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、お尻だけじゃ無くて가슴でも同時にイッてしまったみたいね？」
+			PRINTFORMW 「후후, 엉덩이만 이 아니어서 가슴에서도 동시에 익이라고 끝낸 것 같구나？」
+;OriginalString : 「가슴でも同時にイッてしまったら、快感がお互いを増幅し合って凄い事になるのよね…」
+			PRINTFORMW 「가슴에서도 동시에 익이라고 끝내면(자), 쾌감이 서로를 서로 증폭해 굉장한 일이 되어…」
+;OriginalString : 「その様子だと、この気持ち良さを理解してもらえたようで何よりだわ」
+			PRINTFORMW 「그 모습이라고, 이 기분 좋음을 이해 받을 수 있던 것 같고 최상이구나」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위でＡ절정(항문바이브等)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 0)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で절정(항문펠라)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、お尻の穴が一気にキューッと締まっているわね」
+			PRINTFORMW 「후후, 엉덩이의 구멍이 단번에 큐와 꼭 죄이고 있어요」
+;OriginalString : 「お尻の穴를 핥아られて感じてしまってイッてしまう…　本当に、%CALLNAME:MASTER%は変態なのね」
+			PRINTFORMW 「엉덩이의 구멍을 빨 수 있고 느껴 버려 익이라고 끝낸다… 정말로,%CALLNAME:MASTER%(은)는 변태인 것」
+;OriginalString : 「ふふ、気持ち良くてつい締まっちゃう%CALLNAME:MASTER%의 お尻の穴…　可愛いわよ？」
+			PRINTFORMW 「후후, 기분 좋아서 무심코 꼭 죄여버린다%CALLNAME:MASTER%의 엉덩이의 구멍… 사랑스러워요？」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、お尻の穴が一気にキューッと締まっているわね」
+			PRINTFORMW 「후후, 엉덩이의 구멍이 단번에 큐와 꼭 죄이고 있어요」
+;OriginalString : 「お尻の穴를 핥아られて感じてしまってイッてしまう…　本当に、%CALLNAME:MASTER%は変態なのね」
+			PRINTFORMW 「엉덩이의 구멍을 빨 수 있고 느껴 버려 익이라고 끝낸다… 정말로,%CALLNAME:MASTER%(은)는 변태인 것」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(Ａ성교)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んっ…！　凄い、根本がギュウギュウ締め付けられて…！　駄目、絞り出されてしまいそう…！」
+			PRINTFORMW 「응…！ 굉장한, 근본을 꽉꽉 단단히 조일 수 있어…！ 타목, 짜 나오고 할 것 같다…！」
+;OriginalString : 「ふう…　私のおちんちんでいっぱい突かれて、お尻でイッてしまった感想はどう？」
+			PRINTFORMW 「식… 나의 자지로 가득 찔려, 엉덩이로 익이라고 끝낸 감상은 어때？」
+;OriginalString : 「ふふ、顔が真っ赤よ？　そんなにお尻でイッてしまったのが恥ずかしいのかしら？」
+			PRINTFORMW 「후후, 얼굴이 새빨가요？ 그렇게 엉덩이로 익이라고 끝냈던 것이 부끄러운 것일까？」
+;OriginalString : 「수치心を煽るのも良いわね…　それなら、もっともっと恥ずかしくしてあげるわね！」
+			PRINTFORMW 「수치심을 부추기는 것도 좋네요… 그렇다면, 좀더 좀더 부끄럽게 해 주어요！」
+		;それ以外
+		ELSE
+;OriginalString : 「んっ…！　凄い、根本がギュウギュウ締め付けられて…！　駄目、絞り出されてしまいそう…！」
+			PRINTFORMW 「응…！ 굉장한, 근본을 꽉꽉 단단히 조일 수 있어…！ 타목, 짜 나오고 할 것 같다…！」
+;OriginalString : 「ふう…　私のおちんちんでいっぱい突かれて、お尻でイッてしまった感想はどう？」
+			PRINTFORMW 「식… 나의 자지로 가득 찔려, 엉덩이로 익이라고 끝낸 감상은 어때？」
+;OriginalString : 「ふふ、顔が真っ赤よ？　そんなにお尻でイッてしまったのが恥ずかしいのかしら？」
+			PRINTFORMW 「후후, 얼굴이 새빨가요？ 그렇게 엉덩이로 익이라고 끝냈던 것이 부끄러운 것일까？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;腕による애무で절정(フィスト)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 10
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「凄い…　貴方がイッたのが文字通り、손に取るように分かるわ！」
+			PRINTFORMW 「굉장하다… 당신이 익의 것이 문자 그대로, 명확하게 알아요！」
+;OriginalString : 「ふふ、こんなに気持ち良さそうに締めつけてきちゃって…」
+			PRINTFORMW 「후후, 이렇게 기분 좋음 그렇게 잡고 붙여 와 버려서…」
+;OriginalString : 「貴方って、お尻に손を突っ込まれて喜んでしまうような変態なのね…」
+			PRINTFORMW 「당신은, 엉덩이에 손을 돌진해지고 기꺼이 버리는 것 같은 변태인 것…」
+;OriginalString : 「あ、もちろん引いてはいないわよ？　恋人たる私と一緒なのが嬉しくてしょうがないのよ！」
+			PRINTFORMW 「아, 물론 당기지는 않아요？ 애인인 나와 함께인 것이 기뻐서 어쩔 수 없어！」
+		;それ以外
+		ELSE
+;OriginalString : 「凄い…　貴方がイッたのが文字通り、손に取るように分かるわ！」
+			PRINTFORMW 「굉장하다… 당신이 익의 것이 문자 그대로, 명확하게 알아요！」
+;OriginalString : 「ふふ、こんなに気持ち良さそうに締めつけてきちゃって…」
+			PRINTFORMW 「후후, 이렇게 기분 좋음 그렇게 잡고 붙여 와 버려서…」
+;OriginalString : 「貴方って、お尻に손を突っ込まれて喜んでしまうような変態なのね…」
+			PRINTFORMW 「당신은, 엉덩이에 손을 돌진해지고 기꺼이 버리는 것 같은 변태인 것…」
+;OriginalString : 「あ、もちろん引いてはいないわよ？　私と気が合うのが嬉しくてしょうがないのよ！」
+			PRINTFORMW 「아, 물론 당기지는 않아요？ 나와 마음이 맞는 것이 기뻐서 어쩔 수 없어！」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;항문비즈で절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 102
+		;-------------------------------------------------
+		;引き抜き時に절정
+		;記入チェック
+		LOCAL:1 = 1
+		;-------------------------------------------------
+		IF LOCAL:1 && !TEQUIP:항문비즈
+			;상사상애
+			IF KFLAG:0 == 1
+;OriginalString : 「お尻に玉をいっぱい詰められて引っこ抜かれて、お尻の穴をいじめられて…」
+				PRINTFORMW 「엉덩이에 구슬을 가득 채울 수 있어 인개 뽑아져, 엉덩이의 구멍을 괴롭힘을 당해…」
+;OriginalString : 「それで気持ち良くなってしまうなんて、%CALLNAME:MASTER%はやっぱり変態なのね」
+				PRINTFORMW 「그래서 기분 좋아져 버리다니%CALLNAME:MASTER%(은)는 역시 변태인 것」
+;OriginalString : 「うう、貴方の気持ち良さそうな顔を見ていたら、私までお尻の穴が疼いてきたわ…」
+				PRINTFORMW 「우우, 당신의 기분 좋음 그런 얼굴을 보고 있으면(자), 나까지 엉덩이의 구멍이 쑤셔 왔어요…」
+;OriginalString : 「お願い、次は私のお尻もいっぱい弄って頂戴？」
+				PRINTFORMW 「부탁해요, 다음은 나의 엉덩이도 가득 만지작거려 주세요？」
+;OriginalString : 「애정を込めてねっとりと弄ってもらえたら嬉しいかな…　なんてね？」
+				PRINTFORMW 「애정을 담아새와 만지작거려 줄 수 있으면 기쁠까… (이)라니？」
+			;それ以外
+			ELSE
+;OriginalString : 「お尻に玉をいっぱい詰められて引っこ抜かれて、お尻の穴をいじめられて…」
+				PRINTFORMW 「엉덩이에 구슬을 가득 채울 수 있어 인개 뽑아져, 엉덩이의 구멍을 괴롭힘을 당해…」
+;OriginalString : 「それで気持ち良くなってしまうなんて、%CALLNAME:MASTER%はやっぱり変態なのね」
+				PRINTFORMW 「그래서 기분 좋아져 버리다니%CALLNAME:MASTER%(은)는 역시 변태인 것」
+;OriginalString : 「うう、貴方の気持ち良さそうな顔を見ていたら、私までお尻の穴が疼いてきたわ…」
+				PRINTFORMW 「우우, 당신의 기분 좋음 그런 얼굴을 보고 있으면(자), 나까지 엉덩이의 구멍이 쑤셔 왔어요…」
+;OriginalString : 「お願い、次は私のお尻もいっぱい弄って頂戴？」
+				PRINTFORMW 「부탁해요, 다음은 나의 엉덩이도 가득 만지작거려 주세요？」
+			ENDIF
+			RETURN 2
+		ENDIF
+		
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「お尻に玉をいっぱい詰められて、お尻の穴をいじめられて…」
+			PRINTFORMW 「엉덩이에 구슬을 가득 채울 수 있어, 엉덩이의 구멍을 괴롭힘을 당해…」
+;OriginalString : 「それで気持ち良くなってしまうなんて、%CALLNAME:MASTER%はやっぱり変態なのね」
+			PRINTFORMW 「그래서 기분 좋아져 버리다니%CALLNAME:MASTER%(은)는 역시 변태인 것」
+;OriginalString : 「うう、貴方の気持ち良さそうな顔を見ていたら、私までお尻の穴が疼いてきたわ…」
+			PRINTFORMW 「우우, 당신의 기분 좋음 그런 얼굴을 보고 있으면(자), 나까지 엉덩이의 구멍이 쑤셔 왔어요…」
+;OriginalString : 「お願い、次は私のお尻もいっぱい弄って頂戴？」
+			PRINTFORMW 「부탁해요, 다음은 나의 엉덩이도 가득 만지작거려 주세요？」
+;OriginalString : 「애정を込めてねっとりと弄ってもらえたら嬉しいかな…　なんてね？」
+			PRINTFORMW 「애정을 담아새와 만지작거려 줄 수 있으면 기쁠까… (이)라니？」
+		;それ以外
+		ELSE
+;OriginalString : 「お尻に玉をいっぱい詰められて、お尻の穴をいじめられて…」
+			PRINTFORMW 「엉덩이에 구슬을 가득 채울 수 있어, 엉덩이의 구멍을 괴롭힘을 당해…」
+;OriginalString : 「それで気持ち良くなってしまうなんて、%CALLNAME:MASTER%はやっぱり変態なのね」
+			PRINTFORMW 「그래서 기분 좋아져 버리다니%CALLNAME:MASTER%(은)는 역시 변태인 것」
+;OriginalString : 「うう、貴方の気持ち良さそうな顔を見ていたら、私までお尻の穴が疼いてきたわ…」
+			PRINTFORMW 「우우, 당신의 기분 좋음 그런 얼굴을 보고 있으면(자), 나까지 엉덩이의 구멍이 쑤셔 왔어요…」
+;OriginalString : 「お願い、次は私のお尻もいっぱい弄って頂戴？」
+			PRINTFORMW 「부탁해요, 다음은 나의 엉덩이도 가득 만지작거려 주세요？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스밴드で절정(Ａ성교)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 103
+		;상사상애
+		IF KFLAG:0 == 1
+			;당신が페니스有り
+			IF TALENT:MASTER:후타나리 || TALENT:MASTER:남자
+;OriginalString : 「ふふ、こんな도구でも貴方をイかせるのは簡単な事だわ！」
+				PRINTFORMW 「후후, 이런 도구로도 당신을 이인가 다투는 것은 간단한 일이예요！」
+;OriginalString : 「…これを使っていて思ったのだけれど、私も%CALLNAME:MASTER%みたいな立派なおちんちんが欲しいな…」
+				PRINTFORMW 「…이것을 사용하고 있고 생각했던 것이다 하지만, 나도%CALLNAME:MASTER%같은 훌륭한 자지를 갖고 싶은데…」
+;OriginalString : 「ほら、こんな도구では無くて、自分のおちんちんで貴方のお尻を味わってみたいのよ…」
+				PRINTFORMW 「이봐요, 이런 도구는 아니어서, 자신의 자지로 당신의 엉덩이를 맛보고 싶어…」
+;OriginalString : 「ふふ、その時はいっぱい애정を込めて可愛がってあげるから、ね？」
+				PRINTFORMW 「후후, 그 때는 가득 애정을 담아 귀여워해 주기 때문에, 군요？」
+			;당신が페니스無し
+			ELSE
+;OriginalString : 「ふふ、こんな도구でも貴方をイかせるのは簡単な事だわ！」
+				PRINTFORMW 「후후, 이런 도구로도 당신을 이인가 다투는 것은 간단한 일이예요！」
+;OriginalString : 「…これを使っていて思ったのだけれど、도구じゃ無くて私自身の立派なおちんちんが欲しいな…」
+				PRINTFORMW 「…이것을 사용하고 있고 생각했던 것이다 하지만, 도구는 없어서 나 자신의 훌륭한 자지를 갖고 싶은데…」
+;OriginalString : 「ほら、こんな도구では無くて、自分のおちんちんで貴方のお尻を味わってみたいのよ…」
+				PRINTFORMW 「이봐요, 이런 도구는 아니어서, 자신의 자지로 당신의 엉덩이를 맛보고 싶어…」
+;OriginalString : 「ふふ、その時はいっぱい애정を込めて可愛がってあげるから、ね？」
+				PRINTFORMW 「후후, 그 때는 가득 애정을 담아 귀여워해 주기 때문에, 군요？」
+			ENDIF
+		;それ以外
+		ELSE
+			;당신が페니스有り
+			IF TALENT:MASTER:후타나리 || TALENT:MASTER:남자
+;OriginalString : 「ふふ、こんな도구でも貴方をイかせるのは簡単な事だわ！」
+				PRINTFORMW 「후후, 이런 도구로도 당신을 이인가 다투는 것은 간단한 일이예요！」
+;OriginalString : 「…これを使っていて思ったのだけれど、私も%CALLNAME:MASTER%みたいな立派なおちんちんが欲しいな…」
+				PRINTFORMW 「…이것을 사용하고 있고 생각했던 것이다 하지만, 나도%CALLNAME:MASTER%같은 훌륭한 자지를 갖고 싶은데…」
+;OriginalString : 「一度、私のおちんちんで貴方のお尻を味わってみたいのよ…」
+				PRINTFORMW 「한 번, 나의 자지로 당신의 엉덩이를 맛보고 싶어…」
+;OriginalString : 「ふふ、その時は私と一緒にいっぱい気持ち良くなりましょう？」
+				PRINTFORMW 「후후, 그 때는 나와 함께 가득 기분 좋아집시다？」
+			;당신が페니스無し
+			ELSE
+;OriginalString : 「ふふ、こんな도구でも貴方をイかせるのは簡単な事だわ！」
+				PRINTFORMW 「후후, 이런 도구로도 당신을 이인가 다투는 것은 간단한 일이예요！」
+;OriginalString : 「…これを使っていて思ったのだけれど、도구じゃ無くて私自身の立派なおちんちんが欲しいな…」
+				PRINTFORMW 「…이것을 사용하고 있고 생각했던 것이다 하지만, 도구는 없어서 나 자신의 훌륭한 자지를 갖고 싶은데…」
+;OriginalString : 「一度、私のおちんちんで貴方のお尻を味わってみたいのよ…」
+				PRINTFORMW 「한 번, 나의 자지로 당신의 엉덩이를 맛보고 싶어…」
+;OriginalString : 「ふふ、その時は私と一緒にいっぱい気持ち良くなりましょう？」
+				PRINTFORMW 「후후, 그 때는 나와 함께 가득 기분 좋아집시다？」
+			ENDIF
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;항문바이브で절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 111
+		;상사상애
+		IF KFLAG:0 == 1
+			;텐시が후타나리
+			IF TALENT:TARGET:후타나리
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「%CALLNAME:MASTER%의 事だし、こんな도구じゃもちろん만족できないでしょう？」
+				PRINTFORMW 「%CALLNAME:MASTER%의 일이고, 이런 도구는 물론 만족할 수 없을 것입니다？」
+;OriginalString : 「ほら、私のおちんちんが欲しくて欲しくてしょうがないのよね？」
+				PRINTFORMW 「이봐요, 나의 자지를 갖고 싶고 갖고 싶어서 어쩔 수 없어？」
+;OriginalString : 「ふふ、今すぐ挿れて、奥までいっぱいかき回してあげるからね？」
+				PRINTFORMW 「후후, 금방 삽라고, 안쪽까지 가득한가 나무 돌려 주니까요？」
+			;후타나리じゃない
+			ELSE
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「直腸の奥までかき回されるのって、やっぱり気持ち良い物なのよね…」
+				PRINTFORMW 「직장의 안쪽까지 휘저어지는 것은, 역시 기분 좋은 것이야…」
+;OriginalString : 「うう、貴方にめちゃくちゃにされる想像を했다だけで濡れてきちゃたわ…」
+				PRINTFORMW 「우우, 당신에게 엄청으로 되는 상상을 한 것만으로 젖어 원…」
+;OriginalString : 「%CALLNAME:MASTER%、私も同じくらい기분좋게 해頂戴…？」
+				PRINTFORMW 「%CALLNAME:MASTER%, 나도 같은 정도 기분 좋게 해 주세요…？」
+			ENDIF
+		;それ以外
+		ELSE
+			;텐시が후타나리
+			IF TALENT:TARGET:후타나리
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「ふふ、次は私のおちんちんの番よ？　二人でもっと気持ち良くなりましょうね？」
+				PRINTFORMW 「후후, 다음은 나의 자지의 차례야？ 둘이서 좀 더 기분 좋아져요？」
+			;후타나리じゃない
+			ELSE
+;OriginalString : 「ふふ、そんなに바이브が気持ち良かったのかしら？」
+				PRINTFORMW 「후후, 그렇게 바이브래이터가 기분 좋았던 것일까 해들？」
+;OriginalString : 「直腸の奥までかき回されるのってやっぱり気持ち良い物なのよね…」
+				PRINTFORMW 「직장의 안쪽까지 휘저어지는 것은 역시 기분 좋은 것이야…」
+;OriginalString : 「うう、想像했다だけで濡れてきちゃたわ…」
+				PRINTFORMW 「우우, 상상한 것만으로 젖어 원…」
+;OriginalString : 「%CALLNAME:MASTER%、私も同じくらい기분좋게 해頂戴…？」
+				PRINTFORMW 「%CALLNAME:MASTER%, 나도 같은 정도 기분 좋게 해 주세요…？」
+			ENDIF
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;관장그릇＋플러그で절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 132
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、お尻でイッてしまったみたいね…」
+			PRINTFORMW 「후후, 엉덩이로 익이라고 끝낸 것 같구나…」
+;OriginalString : 「この栓が気持ち良かったのかしら？　それとも、うんちを참다するのが？　それとも…出すのがかしら？」
+			PRINTFORMW 「이 마개가 기분 좋았던 것일까 해들？ 그렇지 않으면, 똥을 참는 것이？ 그렇지 않으면…내는 것이 까？」
+;OriginalString : 「どれにしても、これでイッてしまう貴方も相当な変態なのね」
+			PRINTFORMW 「어느 것으로 해도, 이것으로 익이라고 끝내는 당신도 상당한 변태인 것」
+;OriginalString : 「…ってごめんなさい、言い過ぎたわ！　だから泣かないで頂戴！」
+			PRINTFORMW 「…라고 미안해요, 지나치게 말했어요！ 그러니까 울지 말고 주세요！」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、お尻でイッてしまったみたいね…」
+			PRINTFORMW 「후후, 엉덩이로 익이라고 끝낸 것 같구나…」
+;OriginalString : 「この栓が気持ち良かったのかしら？　それとも、うんちを참다するのが？　それとも…出すのがかしら？」
+			PRINTFORMW 「이 마개가 기분 좋았던 것일까 해들？ 그렇지 않으면, 똥을 참는 것이？ 그렇지 않으면…내는 것이 까？」
+;OriginalString : 「どれにしても、これでイッてしまう貴方も相当な変態なのね」
+			PRINTFORMW 「어느 것으로 해도, 이것으로 익이라고 끝내는 당신도 상당한 변태인 것」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+;一般
+	;상사상애
+	IF KFLAG:0 == 1
+;OriginalString : 「お尻でイッてしまった感想はどうかしら？」
+		PRINTFORMW 「엉덩이로 익이라고 끝낸 감상은 어떻게든 해들？」
+;OriginalString : 「가슴とかでイくのとは根本的に違う、痺れるような快感が病みつきになるでしょう？」
+		PRINTFORMW 「가슴등으로 이구의 것과는 근본적으로 다른, 저리는 것 같은 쾌감이 푹 빠지겠지요？」
+;OriginalString : 「次は私のお尻も弄ってくれると嬉しいな…」
+		PRINTFORMW 「다음은 나의 엉덩이도 만지작거려 주면(자) 기쁜데…」
+	;それ以外
+	ELSE
+;OriginalString : 「お尻でイッてしまった感想はどうかしら？」
+		PRINTFORMW 「엉덩이로 익이라고 끝낸 감상은 어떻게든 해들？」
+;OriginalString : 「가슴とかでイくのとは根本的に違う、痺れるような快感が病みつきになるでしょう？」
+		PRINTFORMW 「가슴등으로 이구의 것과는 근본적으로 다른, 저리는 것 같은 쾌감이 푹 빠지겠지요？」
+	ENDIF
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상Ｂ절정
+;-------------------------------------------------
+;・죠교대상がＢ절정する場合に表示
+;-------------------------------------------------
+;(その他)
+;TEQUIP:자위중 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:MASTER:Ｂ절정
+	;애무物を취득
+	LOCAL:2 = MB_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;가슴の揉み合いで동시절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && TFLAG:ACT == 11 && TFLAG:ACT파생 == 2 && NOWEX:Ｂ절정
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んっ…　ふぁ…　あぁぁっ…！　%CALLNAME:MASTER%의 손…　気持ち良いの…！　もっと強く揉んで…！」
+			PRINTFORMW 「응… … 아…！ %CALLNAME:MASTER%의 손… 기분 좋은거야…！ 좀 더 강하게 비비어…！」
+;OriginalString : 「あっ、ひぁっ、もう駄目…！　二人で…　一緒にっ…！」
+			PRINTFORMW 「아, 히, 이제 타목…！ 둘이서… 함께…！」
+		;それ以外
+		ELSE
+;OriginalString : 「んっ…　ふぁ…　あぁぁっ…！　気持ち良いの…！　もっと強く揉んで…！」
+			PRINTFORMW 「응… … 아…！ 기분 좋은거야…！ 좀 더 강하게 비비어…！」
+;OriginalString : 「あっ、ひぁっ、もう駄目…！　二人で…　一緒にっ…！」
+			PRINTFORMW 「아, 히, 이제 타목…！ 둘이서… 함께…！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;同時に분유
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:MASTER:분유
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위でＢ절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 0)
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、私に見られながら自分で弄って独りでイッて…　気持ち良かったでしょう？」
+			PRINTFORMW 「후후, 나로 보여지면서 스스로 만지작거려 혼자로 익이라고… 기분 좋았었지요？」
+;OriginalString : 「ピンと발기했다乳首も、蕩けきった貴方の顔も、両方可愛いわよ？」
+			PRINTFORMW 「핀과 발기한 유두도, 녹고 자른 당신의 얼굴도, 양쪽 모두 사랑스러워요？」
+;OriginalString : 「…駄目ね、やっぱり自分からするのはいいけれど、相손に시킨다のは私の性に合わないわ」
+			PRINTFORMW 「…안되구나, 역시 자신으로부터 하는 것은 좋지만, 상대에게 시키는 것은 나의 성에 맞지 않아요」
+;OriginalString : 「ごめん、私に弄ってもらえなくて寂しかったわよね…？」
+			PRINTFORMW 「미안, 나에게 만지작거리고 받을 수 없어 외로웠어요군요…？」
+;OriginalString : 「次はきちんと私の손で優しく可愛がってあげるから、ね？」
+			PRINTFORMW 「다음은 제대로 나의 손으로 상냥하게 귀여워해 주기 때문에, 군요？」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、私に見られながら自分で弄って独りでイッて…　気持ち良かったでしょう？」
+			PRINTFORMW 「후후, 나로 보여지면서 스스로 만지작거려 혼자로 익이라고… 기분 좋았었지요？」
+;OriginalString : 「ピンと발기했다乳首も、蕩けきった貴方の顔も、両方可愛いわよ？」
+			PRINTFORMW 「핀과 발기한 유두도, 녹고 자른 당신의 얼굴도, 양쪽 모두 사랑스러워요？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で절정(乳首吸い)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+		;상사상애
+		IF KFLAG:0 == 1
+			;남자
+			IF TALENT:MASTER:남자
+;OriginalString : 「ん…　ちゅっ…　ぷはっ…　…あら、もしかしてイッてしまったのかしら？」
+				PRINTFORMW 「응… … 하… …어머나, 혹시 익이라고 끝냈는지 해들？」
+;OriginalString : 「ふふ、赤ちゃんみたいに吸われて気持ち良くなるなんてね…」
+				PRINTFORMW 「후후, 아기같이 들이마셔져 기분 좋아지다니…」
+;OriginalString : 「私と貴方の子供が産まれたら、赤ちゃんに吸わせてあげようかしら？」
+				PRINTFORMW 「 나와 당신의 아이가 출생하면(자), 아기에게 들이마시게 해 줄까？」
+			;それ以外
+			ELSE
+;OriginalString : 「ん…　ちゅっ…　ぷはっ…　…あら、もしかしてイッてしまったのかしら？」
+				PRINTFORMW 「응… … 하… …어머나, 혹시 익이라고 끝냈는지 해들？」
+;OriginalString : 「ふふ、赤ちゃんみたいに吸われて気持ち良くなるなんてね…」
+				PRINTFORMW 「후후, 아기같이 들이마셔져 기분 좋아지다니…」
+;OriginalString : 「貴方に赤ちゃんが産まれたら、お乳をあげる度に嬌声を上げてイッてしまうのが目に見えるわ…」
+				PRINTFORMW 「당신에게 아기가 출생하면(자), 젖을 들 때에 교성을 올려 익이라고 끝내는 것이 눈에 보여요…」
+;OriginalString : 「…もしそれが私達の子供だったら、私ももしか했다らそうなるのかも知れないわね…」
+				PRINTFORMW 「…만약 그것이 저희들의 아이라면, 나도 혹시 그렇게 될지도 모르네요…」
+			ENDIF
+		;それ以外
+		ELSE
+			;남자
+			IF TALENT:MASTER:남자
+;OriginalString : 「ん…　ちゅっ…　ぷはっ…　…あら、もしかしてイッてしまったのかしら？」
+				PRINTFORMW 「응… … 하… …어머나, 혹시 익이라고 끝냈는지 해들？」
+;OriginalString : 「ふふ、赤ちゃんみたいに吸われて気持ち良くなるなんてね…」
+				PRINTFORMW 「후후, 아기같이 들이마셔져 기분 좋아지다니…」
+;OriginalString : 「%CALLNAME:MASTER%は男なのに、まるで여자みたいに민감なのね」
+				PRINTFORMW 「%CALLNAME:MASTER%(은)는 남자인데, 마치 여자 아이같이 민감한」
+			;それ以外
+			ELSE
+;OriginalString : 「ん…　ちゅっ…　ぷはっ…　…あら、もしかしてイッてしまったのかしら？」
+				PRINTFORMW 「응… … 하… …어머나, 혹시 익이라고 끝냈는지 해들？」
+;OriginalString : 「ふふ、赤ちゃんみたいに吸われて気持ち良くなるなんてね…」
+				PRINTFORMW 「후후, 아기같이 들이마셔져 기분 좋아지다니…」
+;OriginalString : 「貴方に赤ちゃんが産まれたら、お乳をあげる度に嬌声を上げてイッてしまうのが目に見えるわ…」
+				PRINTFORMW 「당신에게 아기가 출생하면(자), 젖을 들 때에 교성을 올려 익이라고 끝내는 것이 눈에 보여요…」
+;OriginalString : 「うん、流石の私でもそれは引くわ…」
+				PRINTFORMW 「응, 유석의 나라도 그것은 당겨요…」
+			ENDIF
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(파이즈리)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「あら、私より先に貴方がイッたら、봉사にならないじゃないのよ…」
+			PRINTFORMW 「어머나, 나보다 먼저 당신이 익등, 봉사가 되지 않지 않아…」
+;OriginalString : 「ふふ、私をイかせようとして逆に気持ち良くなってしまうなんて、%CALLNAME:MASTER%はダメダメね」
+			PRINTFORMW 「후후, 나를 이나 로서 반대로 기분 좋아져 버리다니%CALLNAME:MASTER%(은)는 안 됨 안되구나」
+;OriginalString : 「それだけ私のために一生懸命になってくれたという事でしょう？　ふふ、いつもありがとう」
+			PRINTFORMW 「그 만큼 나를 위해서(때문에) 열심히 되어 주었다고 하는 일이지요？ 후후, 언제나 고마워요」
+;OriginalString : 「一生懸命봉사してくれたお礼に、次は私が貴方に봉사してあげるわね」
+			PRINTFORMW 「열심히 봉사해 준 답례에, 다음은 내가 당신에게 봉사 해 주어요」
+		;それ以外
+		ELSE
+;OriginalString : 「あら、私より先に貴方がイッたら、봉사にならないじゃないのよ…」
+			PRINTFORMW 「어머나, 나보다 먼저 당신이 익등, 봉사가 되지 않지 않아…」
+;OriginalString : 「ふふ、私をイかせようとして逆に気持ち良くなってしまうなんて、%CALLNAME:MASTER%はダメダメね」
+			PRINTFORMW 「후후, 나를 이나 로서 반대로 기분 좋아져 버리다니%CALLNAME:MASTER%(은)는 안 됨 안되구나」
+;OriginalString : 「…ごめんなさい、馬鹿にしている訳では無いわよ？　お礼に、次は私が봉사してあげるわね」
+			PRINTFORMW 「…미안해요, 바보취급 하고 있는 것은 아니어요？ 답례에, 다음은 내가 봉사 해 주어요」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;유두캡で절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 113
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふふ、こんな只のおもちゃに가슴を吸われただけでイかされて、%CALLNAME:MASTER%は今どんな気持ちなのかしら？」
+			PRINTFORMW 「후후, 이런 무료의 장난감에 가슴을 들이마셔진 것만으로 이인가 되어,%CALLNAME:MASTER%(은)는 지금 어떤 기분인가 들어들？」
+;OriginalString : 「こんな物で気持ち良くなってしまった%CALLNAME:MASTER%의 顔は最高だったわよ？」
+			PRINTFORMW 「이런 물건으로 기분 좋아져 버렸다%CALLNAME:MASTER%의 얼굴은 최고였어？」
+;OriginalString : 「…ってごめんなさい、少し調子に乗りすぎたわ…　だから泣かないで頂戴？」
+			PRINTFORMW 「…라고 미안해요, 너무 조금 본궤도에 올랐어요… 그러니까 울지 말고 주세요？」
+;OriginalString : 「お詫びに私を好きにしていいから…ね？」
+			PRINTFORMW 「사과에 나를 마음대로 해도 좋으니까…그런데？」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、こんな只のおもちゃに가슴を吸われただけでイかされて、%CALLNAME:MASTER%は今どんな気持ちなのかしら？」
+			PRINTFORMW 「후후, 이런 무료의 장난감에 가슴을 들이마셔진 것만으로 이인가 되어,%CALLNAME:MASTER%(은)는 지금 어떤 기분인가 들어들？」
+;OriginalString : 「こんな物で気持ち良くなってしまった%CALLNAME:MASTER%의 顔は最高だったわよ？」
+			PRINTFORMW 「이런 물건으로 기분 좋아져 버렸다%CALLNAME:MASTER%의 얼굴은 최고였어？」
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+;一般
+	;상사상애
+	IF KFLAG:0 == 1
+		;남자
+		IF TALENT:MASTER:남자
+;OriginalString : 「ふふ、가슴で気持ち良くなってしまったのかしら？」
+			PRINTFORMW 「후후, 가슴으로 기분 좋아져 버렸는지 해들？」
+;OriginalString : 「まるで여자みたいなイキ方だったわね…」
+			PRINTFORMW 「마치 여자 아이같은 이키(분)편이었던 원이군요…」
+;OriginalString : 「여자みたいに喘ぎ声を上げて、여자みたいに가슴でイッてしまう%CALLNAME:MASTER%…　可愛いかったわよ？」
+			PRINTFORMW 「여자 아이같이 허덕여 소리를 높여, 여자 아이같이 가슴으로 익이라고 끝낸다%CALLNAME:MASTER%… 카이 좋았어요？」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、가슴で気持ち良くなってしまったのかしら？」
+			PRINTFORMW 「후후, 가슴으로 기분 좋아져 버렸는지 해들？」
+;OriginalString : 「綺麗な上に感度良好とか、本当に羨ましいかぎりね…」
+			PRINTFORMW 「깨끗한 위에 감도 양호라든지, 정말로 부러운 한…」
+;OriginalString : 「教えて頂戴？　どうやったら%CALLNAME:MASTER%みたいな가슴になれるのかしら？」
+			PRINTFORMW 「가르쳐 주세요？ 어떻게 하면(자)%CALLNAME:MASTER%같은 가슴이 될 수 있을까？」
+;OriginalString : 「私は貴方に見せても恥ずかしくない가슴が欲しいのよ…」
+			PRINTFORMW 「 나는 당신에게 보이게 해도 부끄럽지 않은 가슴을 갖고 싶어…」
+		ENDIF
+	;それ以外
+	ELSE
+		;남자
+		IF TALENT:MASTER:남자
+;OriginalString : 「ふふ、가슴で気持ち良くなってしまったのかしら？」
+			PRINTFORMW 「후후, 가슴으로 기분 좋아져 버렸는지 해들？」
+;OriginalString : 「まるで여자みたいなイキ方だったわね…」
+			PRINTFORMW 「마치 여자 아이같은 이키(분)편이었던 원이군요…」
+;OriginalString : 「여자みたいに喘ぎ声を上げて、여자みたいに가슴でイッてしまう%CALLNAME:MASTER%…　何か素敵ね」
+			PRINTFORMW 「여자 아이같이 허덕여 소리를 높여, 여자 아이같이 가슴으로 익이라고 끝낸다%CALLNAME:MASTER%… 무엇인가 멋지구나」
+		;それ以外
+		ELSE
+;OriginalString : 「ふふ、가슴で気持ち良くなってしまったのかしら？」
+			PRINTFORMW 「후후, 가슴으로 기분 좋아져 버렸는지 해들？」
+;OriginalString : 「綺麗な上に感度良好とか、本当に羨ましいかぎりね…」
+			PRINTFORMW 「깨끗한 위에 감도 양호라든지, 정말로 부러운 한…」
+;OriginalString : 「教えて頂戴？　どうやったら%CALLNAME:MASTER%みたいな가슴になれるのかしら？」
+			PRINTFORMW 「가르쳐 주세요？ 어떻게 하면(자)%CALLNAME:MASTER%같은 가슴이 될 수 있을까？」
+		ENDIF
+	ENDIF
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교자Ｃ절정
+;-------------------------------------------------
+;(その他)
+;TEQUIP:자위중 = 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;・죠교자がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;・사정は사정구상の分岐で書くのが望ましい
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:Ｃ절정
+	;애무物を취득
+	LOCAL:2 = TC_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;다중절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && (NOWEX:Ｖ절정 || NOWEX:Ａ절정 || NOWEX:Ｂ절정)
+;OriginalString : 「んぁっ…！！　な、に…　これ…！　気持ちっ…良すぎっ…　ふぁぁっ！」
+			PRINTFORMW 「응…！！ , 에… 이것…！ 기분…너무 좋고… ！」
+;OriginalString : 「すごいっ…！　もうダメっ、ひあぁぁぁぁぁぁぁぁぁっっっ！！！」
+			PRINTFORMW 「대단한…！ 이제 안 됨, 히아！！！」
+			CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위でＣ절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 1)
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%にっ、じっと見られてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%에 , 가만히 볼 수 있어 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%にっ、じっと見られてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「%CALLNAME:MASTER%에 , 가만히 볼 수 있어 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で절정(クンニなど)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+		;상사상애
+		IF  KFLAG:0 == 1
+;OriginalString : 「ふぁっ…　%CALLNAME:MASTER%의 舌、気持ち良いっ…！」
+			PRINTFORMW 「… %CALLNAME:MASTER%의 혀, 기분 좋다…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%にっ、舐められてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%에 , 빨 수 있어 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「ふぁっ…　%CALLNAME:MASTER%의 舌、気持ち良いっ…！」
+			PRINTFORMW 「… %CALLNAME:MASTER%의 혀, 기분 좋다…！」
+;OriginalString : 「%CALLNAME:MASTER%にっ、舐められてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「%CALLNAME:MASTER%에 , 빨 수 있어 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(스마타)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「駄目っ…　%CALLNAME:MASTER%を気持ち良く시킨다のはっ、私の方なのにっ…！」
+			PRINTFORMW 「타목… %CALLNAME:MASTER%(을)를 기분 좋게 시키는 것은 , 제 쪽인데…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%의 おちんちん、とっても固くてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%의 자지, 매우 단단해서 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「駄目っ…　%CALLNAME:MASTER%を気持ち良く시킨다のはっ、私の方なのにっ…！」
+			PRINTFORMW 「타목… %CALLNAME:MASTER%(을)를 기분 좋게 시키는 것은 , 제 쪽인데…！」
+;OriginalString : 「%CALLNAME:MASTER%의 おちんちん、とっても固くてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 자지, 매우 단단해서 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;바기나による애무で절정(貝あわせ)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 4
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！ くちゅくちゅ、気持ち良いのっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！ , 기분 좋은 것…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%とっ、一つになれてっ、嬉しくてっ…　気持ち良くてっ…！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%(와)과 , 1개(살)이 될 수 있어 , 기뻐서… 기분 좋아서…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！ くちゅくちゅ、気持ち良いのっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！ , 기분 좋은 것…！」
+;OriginalString : 「%CALLNAME:MASTER%とっ、一つになって、気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%(와)과 , 1개(살)이 되어, 기분 좋아서…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+;一般
+;OriginalString : 「んっ…　んぁっ…　はぁっ…！」
+	PRINTFORMW 「응… 응… 후~…！」
+;OriginalString : 「もう駄目っ…　気持ち良くすぎてっ…　イっちゃうっ…！」
+	PRINTFORMW 「 이제 타목… 기분 좋게 지나… 이…！」
+	CALL QUAKE(4)
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교자Ｖ절정
+;-------------------------------------------------
+;(その他)
+;TEQUIP:자위중 = 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;・죠교자がＶ절정する場合に表示
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:Ｖ절정
+	;애무物を취득
+	LOCAL:2 = TV_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;同時にＡ절정/Ｂ절정(다중절정)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && (NOWEX:Ａ절정 || NOWEX:Ｂ절정)
+		;ｖ+ａＢ절정
+		IF NOWEX:Ａ절정 && NOWEX:Ｂ절정
+;OriginalString : 「ふぁぁぁ…　気持ちっ…　いいぃっ…！」
+			PRINTFORMW 「… 기분… 좋은…！」
+;OriginalString : 「だ、ダメっ…　こ、こんなの…　耐えられなっ…　イッちゃ…　あぁぁぁぁぁ！」
+			PRINTFORMW 「이다, 안 됨… 개, 이런 건… 견딜 수 있고… 익… 아！」
+			CALL QUAKE(5)
+		;ｖ+Ａ절정
+		ELSEIF NOWEX:Ａ절정
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！ いいっ…！　前もっ、後ろもっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！ 좋다…！ 전도 , 뒤도…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+			CALL QUAKE(4)
+		;ｖ+Ｂ절정
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+			CALL QUAKE(4)
+		ENDIF
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위でＶ절정(바이브) TEQUIP:자위중 = 자위중
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 1)
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%に見られながらっ、膣っ、바이브でぐちゃぐちゃにかき混ぜられてっ、気持ち良くてっ…！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%(으)로 보여지면서 , 질, 바이브래이터로 질겅질겅에 뒤 수 있어 , 기분 좋아서…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%に見られながらっ、膣っ、바이브でぐちゃぐちゃにかき混ぜられてっ、気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%(으)로 보여지면서 , 질, 바이브래이터로 질겅질겅에 뒤 수 있어 , 기분 좋아서…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(섹스)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「愛しくて幸せでっ、満たされてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「사랑스럽고 행복해 , 채워져…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「膣を満たされてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「질을 채워져…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+;一般(現状の仕様では、小分岐をすべて記述すると死に구상になると思われる)
+;OriginalString : 「んっ…　んぁっ…　はぁっ…！」
+	PRINTFORMW 「응… 응… 후~…！」
+;OriginalString : 「もう駄目っ…　気持ち良くすぎてっ…　イっちゃうっ…！」
+	PRINTFORMW 「 이제 타목… 기분 좋게 지나… 이…！」
+	CALL QUAKE(4)
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교자Ａ절정
+;-------------------------------------------------
+;(その他)
+;TEQUIP:자위중 = 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;・죠교자がＡ절정する場合に表示
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:Ａ절정
+	;애무物を취득
+	LOCAL:2 = TA_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;同時にＢ절정(다중절정)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:Ｂ절정
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+		PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+		PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+		CALL QUAKE(5)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で절정(안면승마など)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふぁっ…　%CALLNAME:MASTER%의 舌、気持ち良いっ…！」
+			PRINTFORMW 「… %CALLNAME:MASTER%의 혀, 기분 좋다…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%にっ、お尻舐められてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%에 , 엉덩이 빨 수 있어 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「ふぁっ…　%CALLNAME:MASTER%의 舌、気持ち良いっ…！」
+			PRINTFORMW 「… %CALLNAME:MASTER%의 혀, 기분 좋다…！」
+;OriginalString : 「%CALLNAME:MASTER%にっ、お尻舐められてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「%CALLNAME:MASTER%에 , 엉덩이 빨 수 있어 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(Ａ성교봉사)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！　お尻っ…！　お尻気持ち良いのっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！ 엉덩이…！ 엉덩이 기분 좋은 것…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「愛しくて幸せでっ、満たされてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「사랑스럽고 행복해 , 채워져…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！　お尻っ…！　お尻気持ち良いのっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！ 엉덩이…！ 엉덩이 기분 좋은 것…！」
+;OriginalString : 「%CALLNAME:MASTER%의 たくましいおちんちんっ…！太くて固くてっ…！　気持ち良くてっ…！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 씩씩한 자지…！굵고 단단해서…！ 기분 좋아서…！」
+;OriginalString : 「奥まで満たされてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「안쪽까지 채워져…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+;一般(現状の仕様では、小分岐をすべて記述すると死に구상になると思われる)
+;OriginalString : 「んっ…　んぁっ…　はぁっ…！」
+	PRINTFORMW 「응… 응… 후~…！」
+;OriginalString : 「もう駄目っ…　気持ち良くすぎてっ…　イっちゃうっ…！」
+	PRINTFORMW 「 이제 타목… 기분 좋게 지나… 이…！」
+	CALL QUAKE(4)
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교자Ｂ절정
+;-------------------------------------------------
+;(その他)
+;TEQUIP:자위중 = 자위중（１＝主人公、２＝죠교자、３＝二人）
+;-------------------------------------------------
+;・죠교자がＢ절정する場合に表示
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:Ｂ절정
+	;애무物を취득
+	LOCAL:2 = TB_PLAYER(1)
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;同時に분유
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && NOWEX:분유
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「駄目っ…　おっぱい出하면서気持ち良くなんかっ…！　なっちゃいけないのにっ…！」
+			PRINTFORMW 「타목… 젖가슴 내면서 기분 좋게무슨…！ 되면 안 되는데…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%にっ、가슴弄られてっ、気持ち良くてっ…！　おっぱい出ちゃうっ…！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%에 , 가슴 만지작거려져 , 기분 좋아서…！ 젖가슴 나와버리는…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「駄目っ…　おっぱい出하면서気持ち良くなんかっ…！　なっちゃいけないのにっ…！」
+			PRINTFORMW 「타목… 젖가슴 내면서 기분 좋게무슨…！ 되면 안 되는데…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%にっ、가슴弄られてっ、気持ち良くてっ…！　おっぱい出ちゃうっ…！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%에 , 가슴 만지작거려져 , 기분 좋아서…！ 젖가슴 나와버리는…！」
+;OriginalString : 「も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;자위でＢ절정
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 1)
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%にっ、じっと見られてっ、가슴っ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%에 , 가만히 볼 수 있어 , 가슴, 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「んぁっ…！　はぁっ…！　あぁぁっ…！」
+			PRINTFORMW 「응…！ 후~…！ 아…！」
+;OriginalString : 「%CALLNAME:MASTER%にっ、じっと見られてっ、가슴っ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「%CALLNAME:MASTER%에 , 가만히 볼 수 있어 , 가슴, 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;입による애무で절정(乳首吸いなど)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 1
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「ふぁっ…　%CALLNAME:MASTER%의 舌、気持ち良いっ…！」
+			PRINTFORMW 「… %CALLNAME:MASTER%의 혀, 기분 좋다…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%にっ、おっぱい吸われてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%에 , 젖가슴 들이마셔져 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「ふぁっ…　%CALLNAME:MASTER%의 舌、気持ち良いっ…！」
+			PRINTFORMW 「… %CALLNAME:MASTER%의 혀, 기분 좋다…！」
+;OriginalString : 「%CALLNAME:MASTER%にっ、おっぱい吸われてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「%CALLNAME:MASTER%에 , 젖가슴 들이마셔져 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;페니스による애무で절정(파이즈리など)
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && LOCAL:2 == 3
+		;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「駄目っ…　%CALLNAME:MASTER%を気持ち良く시킨다のはっ、私の方なのにっ…！」
+			PRINTFORMW 「타목… %CALLNAME:MASTER%(을)를 기분 좋게 시키는 것은 , 제 쪽인데…！」
+;OriginalString : 「大好きな%CALLNAME:MASTER%의 おちんちん、とっても固くてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「정말 좋아하는 %CALLNAME:MASTER%의 자지, 매우 단단해서 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		;それ以外
+		ELSE
+;OriginalString : 「駄目っ…　%CALLNAME:MASTER%を気持ち良く시킨다のはっ、私の方なのにっ…！」
+			PRINTFORMW 「타목… %CALLNAME:MASTER%(을)를 기분 좋게 시키는 것은 , 제 쪽인데…！」
+;OriginalString : 「%CALLNAME:MASTER%의 おちんちん、とっても固くてっ、気持ち良くてっ…！　も、もうダメ、イッちゃ…　あぁぁぁぁ！」
+			PRINTFORMW 「%CALLNAME:MASTER%의 자지, 매우 단단해서 , 기분 좋아서…！ 도, 이제 안 됨, 익… 아！」
+		ENDIF
+		CALL QUAKE(4)
+		RETURN 2
+	ENDIF
+	
+;一般
+;OriginalString : 「んっ…　んぁっ…　はぁっ…！」
+	PRINTFORMW 「응… 응… 후~…！」
+;OriginalString : 「もう駄目っ…　気持ち良くすぎてっ…　イっちゃうっ…！」
+	PRINTFORMW 「 이제 타목… 기분 좋게 지나… 이…！」
+	CALL QUAKE(4)
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상실금
+;-------------------------------------------------
+;・죠교대상が실금する場合に表示
+;・죠교대상に素質:오줌싸개が無ければ発生しない
+;・Ｃ절정なしで실금だけというのは稀にあるケース
+;-------------------------------------------------
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && NOWEX:MASTER:방뇨
+;一般
+	;상사상애
+		IF KFLAG:0 == 1
+;OriginalString : 「凄い…　こんなにおもらししてしまうなんて、%CALLNAME:MASTER%はどれだけトイレを참다していたのかしら？」
+			PRINTFORMW 「굉장하다… 이렇게 주되들 이바지해 버리다니%CALLNAME:MASTER%(은)는 얼마나 화장실을 참고 있었는지 해들？」
+;OriginalString : 「배설の快感は原始的な快感らしいわね…　私に見られながらおもらしするのは気持ち良かったでしょう？」
+			PRINTFORMW 「배설의 쾌감은 원시적인 쾌감인것 같네요… 나로 보여지면서 주되들 이바지하는 것은 기분 좋았었지요？」
+;OriginalString : 「후후…　貴方のだし、飲んでもしまっても良いでしょう？」
+			PRINTFORMW 「후후… 당신의 것이고, 마셔도 버려도 좋을 것입니다？」
+;OriginalString : 尿道に直に입を付けられ、一滴残らず飲み干されてしまった…
+			PRINTFORMDW 요도에 직접적으로 입을 붙일 수 있어 한 방울 남김없이 다 마셔져 버렸다…
+		;それ以外
+		ELSE
+;OriginalString : 「凄い…　こんなにおもらししてしまうなんて、%CALLNAME:MASTER%はどれだけトイレを참다していたのかしら？」
+			PRINTFORMW 「굉장하다… 이렇게 주되들 이바지해 버리다니%CALLNAME:MASTER%(은)는 얼마나 화장실을 참고 있었는지 해들？」
+;OriginalString : 「배설の快感は原始的な快感らしいわね…　私に見られながらおもらしするのは気持ち良かったでしょう？」
+			PRINTFORMW 「배설의 쾌감은 원시적인 쾌감인것 같네요… 나로 보여지면서 주되들 이바지하는 것은 기분 좋았었지요？」
+		ENDIF
+	RETURN 2
+ENDIF
+
+
+;=================================================
+;EV21, 大만족구상 FIRSTTIME(520～529)
+;=================================================
+;・죠교자の대만족보너스を취득했다場合に表示
+;-------------------------------------------------
+@KOJO_EVENT_K52_21(ARG)
+
+;-------------------------------------------------
+;텐시さま大만족
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;상냥하게 응답한다
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 3
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;쾌감을 받아들인다
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 15
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;안에 내!
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 21
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;비명지른다
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 31
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;애정을 담아 한다
+	;記入チェック
+	LOCAL:1 = 1
+	;-------------------------------------------------
+	IF LOCAL:1 && SELECTCOM == 43
+;OriginalString : 「あはは…　今の私、すっごく幸せ…！」
+		PRINTFORMW 「아하하… 지금의 나, 대단히 행복…！」
+;OriginalString : 「%CALLNAME:MASTER%、好き…　大好き…！」
+		PRINTFORMW 「%CALLNAME:MASTER%, 좋아… 너무 좋아…！」
+;OriginalString : 텐시は、幸せのあまり潤んだ瞳でじーっと見つめてきた…
+		PRINTFORMDW 천자는, 행복의 너무 물기를 띤 눈동자로 가만히 응시해 왔다…
+		RETURN 2
+	ENDIF
+	
+	;-------------------------------------------------
+	;적극적으로 한다(적극적으로 한다、이루는대로等)
+	;記入チェック
+	LOCAL:1 = 0
+	;-------------------------------------------------
+	IF LOCAL:1 && IS_COMGRONAME("태연하게 한다/적극적으로 한다/受け入れる")
+;OriginalString : 
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+	
+;一般
+	;상사상애
+	IF KFLAG:0 == 1
+;OriginalString : 「あはは…　幸せ過ぎてどうにかなりそうだわ…！」
+		PRINTFORMW 「아하하… 너무 행복해 어떻게든 될 것 같구나…！」
+;OriginalString : 텐시の笑顔は、もはやお日さまよりも眩しく見える
+		PRINTFORMDW 천자의 웃는 얼굴은, 이미 일님보다 눈부시게 보인다
+;OriginalString : 感極まったのか、텐시は思いっ切り抱きついて顔を覗き込んできた
+		PRINTFORMDW 감극했는지, 천자는 마음껏 안아 붙어 얼굴을 들여다 봐 붐비어 왔다
+;OriginalString : 「ふふ、これまでも、そしてこれからも大好きよ、%CALLNAME:MASTER%！」
+		PRINTFORMW 「후후, 지금까지도, 그리고 앞으로도 정말 좋아해요,%CALLNAME:MASTER%！」
+		;それ以外
+	ELSE
+;OriginalString : 「あはは、何だか満たされてるって感じがするわ！」
+		PRINTFORMW 「아하하, 무엇인가 채워지고 있다고 느낌이 들어요！」
+;OriginalString : 「こんな私でも、いつも受け入れてくれてありがとうね？」
+		PRINTFORMW 「이런 나라도, 언제나 받아들여 주어 고마워요？」
+;OriginalString : 幸せそうな텐시の笑顔は、もはや兵器級の破壊力を持っていると思う…
+		PRINTFORMDW 행복한 천자의 웃는 얼굴은, 이미 병기급의 파괴력을 가지고 있다고 생각한다…
+	RETURN 2
+	ENDIF
+ENDIF
+
+
+;=================================================
+;EV22, 상태변화구상 FIRSTTIME(530～549)
+;=================================================
+;・상태이상が付いたときに表示
+;・TCVAR:상태변화が죠교자、61が죠교대상
+;・テンプレは죠교자の分しか用意していない
+;-------------------------------------------------
+@KOJO_EVENT_K52_22(ARG)
+
+;-------------------------------------------------
+;죠교자[피폐]化 FIRSTTIME(530)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 1
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「ごめん、もう疲れてクタクタだわ…」
+		PRINTFORMW 「미안, 이제 지쳐 쿠타크타예요…」
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;죠교자[쇠약]化 FIRSTTIME(531)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 2
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「はぁっ…　はぁっ…」
+		PRINTFORMW 「후~… 후~…」
+;OriginalString : 「うーん、もう、もう駄目…」
+		PRINTFORMW 「응, 이제, 이제 타목…」
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;죠교자[무기력]化 FIRSTTIME(532)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 3
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「何だか上손くいかないわね…」
+		PRINTFORMW 「왠지 능숙하게 가지 않네요…」
+;OriginalString : 「もしかして私のせいなのかしら…？」
+		PRINTFORMW 「혹시 나의 탓인가 해들…？」
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;죠교자[몽롱]化 FIRSTTIME(533)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 4
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「まずい、疲労でめまいがするわ…」
+		PRINTFORMW 「맛이 없는, 피로로 현기증이 나요…」
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;죠교자[정욕]化 FIRSTTIME(534)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 5
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「ごめんなさい、もうシたくてシたくて참다できないわ…！」
+		PRINTFORMW 「미안해요, 이제 시 싶어서 시 싶어서 참을 수 없어요…！」
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;죠교자[분노]化 FIRSTTIME(535)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 6
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「何よ、そんなに私に喧嘩を売らなくったっていいじゃないのよ！」
+		PRINTFORMW 「뭐야, 그렇게 나에게 싸움을 팔지 않고 끊어도 좋지 않아！」
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;죠교자[싫증]化 FIRSTTIME(536)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 7
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「うーん、いい加減疲れてきたわ…」
+		PRINTFORMW 「응, 적당 지쳐 왔어요…」
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+;-------------------------------------------------
+;죠교자[울굴]化 FIRSTTIME(537)
+;-------------------------------------------------
+;記入チェック（=確率％, 入力했다数字の確率で구상を表示。漏れたら돌아가기）
+LOCAL = 30
+;-------------------------------------------------
+IF LOCAL && TCVAR:상태변화 == 8
+;一般
+	IF PERCENT(LOCAL)
+;OriginalString : 「ふふ、ふふ후후후…」
+		PRINTFORMW 「후후, 후후후 후후…」
+;OriginalString : 텐시は狂ったような不気味な笑い声を上げてこちらを見ている…
+		PRINTFORMW 천자는 미친 것 같은 기분 나쁜 웃음소리를 올려 이쪽을 보고 있다…
+		RETURN 2
+	ENDIF
+	RETURN 0
+ENDIF
+
+
+;=================================================
+;EV23, 죠교대상能力値アップ구상
+;=================================================
+;・조교중に죠교대상の能力値が上昇했다際に表示
+;・필요な分岐をコピペで増やして使用することを推奨
+;-------------------------------------------------
+@KOJO_EVENT_K52_23(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(今回上昇했다ABL번호)
+;-------------------------------------------------
+
+;-------------------------------------------------
+;죠교대상[순종]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 0
+	;見づらいので改行
+;OriginalString : 
+	PRINTL 
+;OriginalString : 「솔직になってくれたみたいね…」
+	PRINTFORMW 「솔직해져 준 것 같구나…」
+;OriginalString : 「ふふ、%CALLNAME:MASTER%ともっと仲良くなれたみたいで嬉しいわ！」
+	PRINTFORMW 「후후,%CALLNAME:MASTER%(와)과 좀 더 사이 좋게 될 수 있던 것 같고 기뻐요！」
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상[욕망]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 1
+;OriginalString : 
+	PRINTL 
+;OriginalString : 「ふふ、そんなに気持ち良くなりたいのかしら？」
+	PRINTFORMW 「후후, 그렇게 기분 좋아지고 싶은 것일까？」
+;OriginalString : 「分かったわ、二人で一緒にもっともっと気持ち良くなりましょう？」
+	PRINTFORMW 「알았어요, 둘이서 함께 좀더 좀더 기분 좋아집시다？」
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상[기교]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 2
+;OriginalString : 
+	PRINTL 
+;OriginalString : 「色々と慣れてきたみたいね…」
+	PRINTFORMW 「다양하게 익숙해져 온 것 같구나…」
+;OriginalString : 「ふふ、%CALLNAME:MASTER%의 손でもっと私を気持ち良くさせて頂戴？」
+	PRINTFORMW 「후후,%CALLNAME:MASTER%의 손에서 좀 더 나를 기분 좋게 시켜 주세요？」
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상[Ｃ감각]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 3
+;OriginalString : 
+	PRINTL 
+	;페니스有り
+	IF TALENT:MASTER:후타나리 || TALENT:MASTER:남자
+;OriginalString : 「おちんちんが민감になるって、普通は逆だと思うのだけれど…」
+		PRINTFORMW 「자지가 민감하게 된다 라고, 보통은 역이라고 생각한다 하지만…」
+;OriginalString : 「ほら、何度も애무して刺激に慣れると普通は둔감になる物じゃない？」
+		PRINTFORMW 「이봐요, 몇번이나 애무해 자극에 익숙하면(자) 보통은 둔하게 되는 것이 아니다？」
+;OriginalString : 「조루ってそうやって治す物じゃない？　どうして逆に민감になるのかしら？」
+		PRINTFORMW 「조루는 그렇게 고치는 것이 아니다？ 어째서 반대로 민감하게 될까？」
+	;페니스無し
+	ELSE
+;OriginalString : 「ふふ、前よりクリが大きくなっているわね…」
+		PRINTFORMW 「후후, 전보다 구리가 커지고 있어요…」
+;OriginalString : 「クリが大きくなると皮が剥けやすくなって、より刺激に민감になるらしいわ…」
+		PRINTFORMW 「구리가 커지면(자) 가죽이 벗겨지기 쉬워져, 보다 자극에 민감하게 되는 것 같아요…」
+;OriginalString : 「良いわ、どんどん大きくなって민감になって頂戴？」
+		PRINTFORMW 「좋아요, 자꾸자꾸 커져 민감하게 되어 주세요？」
+	ENDIF
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상[Ｖ감각]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 4
+;OriginalString : 
+	PRINTL 
+;OriginalString : 「膣は元々赤ちゃんが通る所だから、刺激には둔감な方らしいわね」
+	PRINTFORMW 「질은 원래 아기가 통과하는 곳이니까, 자극에는 둔한 (분)편답네요」
+;OriginalString : 「そんな膣が민감になってきたと言う事は、開発が進んできていると言う事ね」
+	PRINTFORMW 「그런 질이 민감하게 되었다고 하는 일은, 개발이 진행되어 오고 있다고 하는 일이군요」
+;OriginalString : 「질내でイくのって意外と大変な事らしいから…　ほら、もっと민감になってしまった方が良いわよ？」
+	PRINTFORMW 「질내에서 이구의 것은 의외로 대단한 일인것 같으니까… 이봐요, 좀 더 민감하게 되어 버리는 것이 좋아요？」
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상[Ａ감각]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 5
+;OriginalString : 
+	PRINTL 
+;OriginalString : 「ふふ、お尻で気持ち良くなってしまうなんて、開発が進んできたのかしら？」
+	PRINTFORMW 「후후, 엉덩이로 기분 좋아져 버리다니 개발이 진행되어 왔는지 해들？」
+;OriginalString : 「本来は性感帯でも何でも無いのにね…　どうしてこんなに気持ち良くなれるのかしら？」
+	PRINTFORMW 「본래는 성감대라도 뭐든지 없는데… 어째서 이렇게 기분 좋아질 수 있을까？」
+	RETURN 2
+ENDIF
+
+;-------------------------------------------------
+;죠교대상[Ｂ감각]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 6
+;OriginalString : 
+	PRINTL 
+;OriginalString : 「가슴で感じるようになってきたみたいね…」
+	PRINTFORMW 「가슴으로 느끼게 된 것 같구나…」
+;OriginalString : 「世の中には服に擦れただけでイッてしまうくらいに민감な人がいるらしいけれど…」
+	PRINTFORMW 「세상에는 옷에 스친 것만으로 익이라고 끝낼 정도로에 민감한 사람이 있는 것 같지만…」
+;OriginalString : 「そこまで민감になってしまったら、一体どんな世界が見えるのかしら？」
+	PRINTFORMW 「거기까지 민감하게 되어 버리면(자), 도대체 어떤 세계가 보일까？」
+	RETURN 2
+ENDIF
+
+
+;=================================================
+;EV24, 죠교자能力値アップ구상
+;=================================================
+;・조교중に죠교자の能力値が上昇했다際に表示
+;・필요な分岐をコピペで増やして使用することを推奨
+;-------------------------------------------------
+@KOJO_EVENT_K52_24(ARG)
+;-------------------------------------------------
+;引数内訳…
+;ARG=(今回上昇했다ABL번호)
+;-------------------------------------------------
+
+;-------------------------------------------------
+;죠교자[욕망]アップ
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG == 1
+	;見づらいので改行
+;OriginalString : 
+	PRINTL 
+;OriginalString : 「うう、%CALLNAME:MASTER%がもっと欲しくなってきたわ…」
+	PRINTFORMW 「우우,%CALLNAME:MASTER%(은)는 지만 좀 더 갖고 싶어졌어요…」
+;OriginalString : 「お願い、私をもっと기분좋게 해頂戴…？」
+	PRINTFORMW 「부탁해요, 나를 좀 더 기분 좋게 해 주세요…？」
+	RETURN 2
+ENDIF
+
+
+;*************************************************
+;각인취득구상
+;*************************************************
+;・조교중に각인を취득시켰다場合に表示。どのレベルで구상表示するかは加減자유なので個々で調整するのが望ましい
+;・記入チェックが=1の場合、同時に複数취득했다ときはこのファイルで一番上のものだけを表示する
+;・=2の場合、취득했다각인の구상すべてを上から順に表示する
+;・각인취득による素質変動の前に表示するため、素質취득/喪失するかはこの時点でのTALENTの有無で判定できる
+;-------------------------------------------------
+@KOJO_MARK_K52(ARG:0, ARG:1, ARG:2, ARG:3, ARG:4)
+;-------------------------------------------------
+;引数内訳…
+;ARG:(각인번호)=(今回취득했다レベル)
+;-------------------------------------------------
+;각인취득구상「すべて順に表示」のための初期化処理
+LOCAL:1 = 0
+
+;-------------------------------------------------
+;[트라우마]취득
+;-------------------------------------------------
+;記入チェック（0, 非表示、1, 同時に취득했다각인をこれ以下表示しない、2, すべて順に表示する）
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG:4
+	SETBIT LOCAL:1, 4
+	SELECTCASE ARG:4
+		;트라우마Lv2
+		CASE 2
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;트라우마Lv5
+		CASE 5
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;트라우마Lv7
+		CASE 7
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;트라우마Lv10…[겁쟁이]がない場合、それを得る
+		;              既に[겁쟁이]があり[광기]がない場合、[유치]がある場合は100%、ない場合は1/3の確率で[광기]を得る
+		;              [광기]の취득判定に漏れ、かつ[유치]を持たない場合、[유치]を得る(幼児退行する)
+		;              現状、[광기]と[유치]はどちらに転ぶか先に判定する術は無い(要望があれば…)。とりあえず頭がおかしくなると解釈してください
+		CASE 10
+;OriginalString : 「%CALLNAME:MASTER%…！？」
+			PRINTFORMW 「%CALLNAME:MASTER%…！？」
+;OriginalString : 「私は貴方を傷つけるつもりなんて無かったのに、まさかここまで트라우마になるなんて…」
+			PRINTFORMW 「 나는 당신을 상처 입힐 생각은 없었는데 , 설마 여기까지 트라우마가 되다니…」
+;OriginalString : 「返す言葉も無いわ…　本当に、本当にごめんなさい…」
+			PRINTFORMW 「돌려주는 말도 없어요… 정말로, 정말로 미안해요…」
+;OriginalString : 텐시の目から大粒の涙が流れている…
+			PRINTFORMDW 천자의 눈으로부터 굵은 눈물이 흐르고 있다…
+;OriginalString : しかし공포に怯え、震えが止まらない今の自分では、텐시にかける言葉は存在しなかった…
+			PRINTFORMDW 그러나 공포에 무서워해 흔들림이 멈추지 않는 지금의 스스로는, 천자에게 걸치는 말은 존재하지 않았다…
+		;表示しない
+		CASEELSE
+			CLEARBIT LOCAL:1, 4
+	ENDSELECT
+	SIF GETBIT(LOCAL:1, 4) && LOCAL == 1
+		RETURN LOCAL
+ENDIF
+
+;-------------------------------------------------
+;[고통각인]취득
+;-------------------------------------------------
+;記入チェック（0, 非表示、1, 同時に취득했다각인をこれ以下表示しない、2, すべて順に表示する）
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG:0
+	SETBIT LOCAL:1, 0
+	SELECTCASE ARG:0
+		;고통각인Lv2
+		CASE 2
+;OriginalString : 
+			PRINTFORMW 
+		;고통각인Lv5
+		CASE 5
+;OriginalString : 
+			PRINTFORMW 
+		;고통각인Lv7
+		CASE 7
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;고통각인Lv9…[굳셈]がある場合、それを失う
+		;CASE 9
+		;	PRINTFORMW 「%CALLNAME:MASTER%…！？」
+;OriginalString : 「私は貴方を傷つけるつもりなんて無かったのに、まさかこんな、心を折ってしまう事になるなんて…」
+			PRINTFORMW 「 나는 당신을 상처 입힐 생각은 없었는데 , 설마 이런, 마음을 꺾어 버리는 일이 되다니…」
+;OriginalString : 「返す言葉も無いわ…　本当に、本当にごめんなさい…」
+			PRINTFORMW 「돌려주는 말도 없어요… 정말로, 정말로 미안해요…」
+;OriginalString : 텐시の目から大粒の涙が流れている…
+			PRINTFORMDW 천자의 눈으로부터 굵은 눈물이 흐르고 있다…
+;OriginalString : しかし心が折れてしまった今の自分では、텐시にかける言葉は存在しなかった…
+			PRINTFORMDW 그러나 마음이 접혀 버린 지금의 스스로는, 천자에게 걸치는 말은 존재하지 않았다…
+		;고통각인Lv10
+		CASE 10
+;OriginalString : 
+			PRINTFORMW 
+		;表示しない
+		CASEELSE
+			CLEARBIT LOCAL:1, 0
+	ENDSELECT
+	SIF GETBIT(LOCAL:1, 0) && LOCAL == 1
+		RETURN LOCAL
+ENDIF
+
+;-------------------------------------------------
+;[반항각인]취득
+;-------------------------------------------------
+;記入チェック（0, 非表示、1, 同時に취득했다각인をこれ以下表示しない、2, すべて順に表示する）
+LOCAL = 0
+;-------------------------------------------------
+IF LOCAL && ARG:3
+	SETBIT LOCAL:1, 3
+	SELECTCASE ARG:3
+		;반항각인Lv2
+		CASE 2
+;OriginalString : 
+			PRINTFORMW 
+		;반항각인Lv5
+		CASE 5
+;OriginalString : 
+			PRINTFORMW 
+		;반항각인Lv7
+		CASE 7
+;OriginalString : 
+			PRINTFORMW 
+		;반항각인Lv10
+		CASE 10
+;OriginalString : 
+			PRINTFORMW 
+		;表示しない
+		CASEELSE
+			CLEARBIT LOCAL:1, 3
+	ENDSELECT
+	SIF GETBIT(LOCAL:1, 3) && LOCAL == 1
+		RETURN LOCAL
+ENDIF
+
+;-------------------------------------------------
+;[굴복각인]취득
+;-------------------------------------------------
+;記入チェック（0, 非表示、1, 同時に취득했다각인をこれ以下表示しない、2, すべて順に表示する）
+LOCAL = 0
+;-------------------------------------------------
+IF LOCAL && ARG:2
+	SETBIT LOCAL:1, 2
+	SELECTCASE ARG:2
+		;굴복각인Lv2
+		CASE 2
+;OriginalString : 
+			PRINTFORMW 
+		;굴복각인Lv5
+		CASE 5
+;OriginalString : 
+			PRINTFORMW 
+		;굴복각인Lv7…[반항적]がある場合、それを失う
+		CASE 7
+;OriginalString : 
+			PRINTFORMW 
+		;굴복각인Lv10…[프라이드높음]がある場合、それを失う
+		CASE 10
+;OriginalString : 
+			PRINTFORMW 
+		;表示しない
+		CASEELSE
+			CLEARBIT LOCAL:1, 2
+	ENDSELECT
+	SIF GETBIT(LOCAL:1, 2) && LOCAL == 1
+		RETURN LOCAL
+ENDIF
+
+;-------------------------------------------------
+;[쾌락각인]취득
+;-------------------------------------------------
+;記入チェック（0, 非表示、1, 同時に취득했다각인をこれ以下表示しない、2, すべて順に表示する）
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL && ARG:1
+	SETBIT LOCAL:1, 1
+	SELECTCASE ARG:1
+		;쾌락각인Lv2
+		CASE 2
+;OriginalString : 
+			PRINTFORMW 
+;OriginalString : 
+			PRINTFORMW 
+		;쾌락각인Lv5…[쾌감을부정]がある場合、それを失う
+		CASE 5
+;OriginalString : 「気持ち良い事を必死になって否定しても、それは何にもならないのよ」
+			PRINTFORMW 「기분 좋은 일을 필사적으로 부정해도, 그것은 아무것도 안 돼」
+;OriginalString : 「쾌락を受け入れ理解する事もまた、悟りを開く事の第一歩なのよね…」
+			PRINTFORMW 「쾌락을 수락 이해하는 일도 또, 깨달음을 여는 일의 제 일보야…」
+;OriginalString : 「…ってお父様とお母様が言っていたわ…　本当かどうかは私には分からないけれど」
+			PRINTFORMW 「…라는 아버님과 어머님이 말했어요… 사실인가 어떤가는 나는 모르지만」
+		;쾌락각인Lv7…[억압]がある場合、それを失う
+		CASE 7
+;OriginalString : 「躍起になって自分を抑えつけても、それは自分自身を苦しめる事にしかならないわ」
+			PRINTFORMW 「기를쓰고 되어 자신을 억제하고 붙여도, 그것은 자기 자신을 괴롭히는 일 밖에 되지 않아요」
+;OriginalString : 「何事も솔직になるのが一番なのよ」
+			PRINTFORMW 「무슨 일도 솔직해지는 것이 제일이야」
+;OriginalString : 「…ってお父様とお母様が言っていたわ…　多分、自分に솔직되었다からこそ、あの二人は結ばれたのよ」
+			PRINTFORMW 「…라는 아버님과 어머님이 말했어요… 아마, 자신에게 솔직해졌기 때문에, 그 두 명은 연결되었어요」
+		;쾌락각인Lv10…[쾌감에솔직]がない場合、それを得る
+		CASE 10
+;OriginalString : 「ほら、솔직になるって本当にいい事でしょう？」
+			PRINTFORMW 「이봐요, 솔직해진다 라고 정말로 좋은 일이지요？」
+;OriginalString : 「貴方も心から理解出来たみたいね…」
+			PRINTFORMW 「당신도 진심으로 이해 할 수 있던 것 같구나…」
+;OriginalString : 「さて、お父様達が羨むくらいに、二人でもっともっと気持ち良くなりましょう？」
+			PRINTFORMW 「그런데, 아버님들이 부러워할 정도로에, 둘이서 좀더 좀더 기분 좋아집시다？」
+		;表示しない
+		CASEELSE
+			CLEARBIT LOCAL:1, 1
+	ENDSELECT
+	SIF GETBIT(LOCAL:1, 1) && LOCAL == 1
+		RETURN LOCAL
+ENDIF
+
+;각인취득구상「すべて順に表示」のための終端処理
+RETURN LOCAL:1 != 0
+

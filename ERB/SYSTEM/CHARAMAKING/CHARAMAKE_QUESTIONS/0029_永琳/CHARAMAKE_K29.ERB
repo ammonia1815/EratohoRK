@@ -1,0 +1,67 @@
+﻿;에이린@Enter
+@CHARAMAKE_K29(ARG)
+;OriginalString : 「あら、目が覚めたのね。ちょうどいいわ、당신に聞きたいことがあるの」
+PRINTFORMW 「어머나, 깨어났군요. 딱 좋아요, 당신에게 (듣)묻고 싶은 것이 있어」
+;OriginalString : 
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+;OriginalString : 
+PRINTL 
+;OriginalString : 「もし、もしよ？　당신が私を殺했다くなった」
+PRINTFORMW 「만약, 만약？　당신이 나를 죽이고 싶어졌다」
+;OriginalString : 「そ했다ら、どんな死に方を私に望むかしら？」
+PRINTFORMW 「그랬더니, 어떤 죽는 방법을 나에게 바라는 것일까？」
+;OriginalString : 
+PRINTL 
+;OriginalString : [0] 答えない
+PRINTFORMDL [0] 대답하지 않는다
+;OriginalString : [1] 即死
+PRINTFORMDL [1] 즉사
+;OriginalString : [2] 窒息死
+PRINTFORMDL [2] 질식사
+;OriginalString : [3] 安楽死
+PRINTFORMDL [3] 안락사
+;OriginalString : [4] 死んでも生き返るから意味無いんじゃないんですか？
+PRINTFORMDL [4] 죽어도 소생하기 때문에 의미 없지 않습니까？
+CALL INPUTINTD(0, 1, 2, 3, 4)
+SELECTCASE RESULT
+	CASE 0
+;OriginalString : 「……変な質問しちゃってごめんなさいね」
+		PRINTFORML 「……이상한 질문해 버려서 미안해요」
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("호기심", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("神経質", 10)
+	CASE 1
+;OriginalString : 「まぁ、本当に嫌いなら今すぐ死んじゃえ、って感じよね」
+		PRINTFORML 「아무튼, 정말로 싫으면 금방 죽어 버려, 라는 느낌이군요」
+		CALLF CM_PROF("솔직さ", 20)
+		CALLF CM_PROF("호기심", 10)
+		CALLF CM_PROF("攻撃", 10)
+		CALLF CM_PROF("被虐", 10)
+	CASE 2
+;OriginalString : 「苦しむのを楽しむのかしら？」
+		PRINTFORML 「괴로워하는 것을 즐길까？」
+		CALLF CM_PROF("被虐", 20)
+		CALLF CM_PROF("攻撃", 10)
+		CALLF CM_PROF("衝動", 10)
+		CALLF CM_PROF("倒錯", 10)
+		CALLF CM_PROF("호기심", 20)
+	CASE 3
+;OriginalString : 「당신……優しいのね。死ぬけど」
+		PRINTFORML 「당신……상냥하구나. 죽는데」
+		CALLF CM_PROF("モラル", 20)
+		CALLF CM_PROF("衝動", -10)
+		CALLF CM_PROF("倒錯", -10)
+		CALLF CM_PROF("潔癖", 10)
+	CASE 4
+;OriginalString : 「そうよ。うん、そうよ。だから당신に私は殺せない。ふふふ」
+		PRINTFORML 「그래요. 응, 그래요. 그러니까 당신에게 나는 죽일 수 없다. 후후후」
+		CALLF CM_PROF("호기심", -20)
+		CALLF CM_PROF("被虐", -10)
+		CALLF CM_PROF("수치", 10)
+		CALLF CM_PROF("솔직さ", 10)
+ENDSELECT
+;OriginalString : 「付き合ってくれてありがとね。じゃ、おやすみ」
+PRINTFORMW 「교제해 주어 고마워. 그러면, 휴업(휴가)」
+RETURN 1

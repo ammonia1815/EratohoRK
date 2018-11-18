@@ -1,0 +1,1928 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	니토리구상 애무系個別リアクション구상ファイル
+;
+;	애무系リアクション구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;애무系 REACT10～19 & REACT27
+;========================================================================
+;・各REACT内の分け方としてTFLAG:REACT분류(IS_COMGRONAME)やSELECTCOM(IS_NOWCOMNAME)が考えられます
+;・ただ、範囲の広い条件で拾ってしまうのは基本的にお勧めしません
+;・ACT분류:애무系の場合、基本的に애무系COM(COM10~COM16)が선택肢となりますが
+;・状況によってはその회화系、고통系、その他のものが선택肢に含まれる可能性もあります
+;・リアクション(REACT)で処理されなかったものは汎用リアクション(COM)で補完されるので
+;・無理に全て埋める필요はありません
+;・필요と思うものを絞り込み、COMとの連携を考えて効率よく構築すべきです
+;-------------------------------------------------
+;・各REACT及びACT파생内は、&& IS_NOWCOMNAMEなり、&& IS_COMGRONAME等の条件で決めうちしましょう
+;・ここに条件無し分岐があると、リアクションに関わらず、全て拾ってしまって汎用リアクションに流れません
+;・要するに、想定당했다システムの破壊に繋がります
+;-------------------------------------------------
+;　基本的に地の文はTFLAG:REACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)で分岐し、
+;　各REACT분류内でTFLAG:REACT부하(自然な행동/無理のない행동/無理を했다행동)で派生
+;　ACT_MESSAGE.ERBを参照하면서の作業をお勧めします
+;-------------------------------------------------
+;　取り敢えずACT파생毎に枠を切り分けてありますが、一つに纏めた上で汎用的な記述で손間を減らすという손もあります
+;　正直、やり方はいくらでもあるので、以下に示す方法は一つの例と思ってください
+;-------------------------------------------------
+
+;────────────────────────────────────
+;REACT10, 손으로 애무・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=애무/1=수음/2=페니스밴드수음)
+;-------------------------------------------------
+;想定されるCOM…
+;회화系反応
+;	COM:더 하드하게 해
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_10
+;-------------------------------------------------
+;・ACTTION_APPLY2の処理なし
+;・地の文はACT파생毎にREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM6, 더 하드하게 해
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("더 하드하게 해")
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDREACT(3, 60)
+			CASE 0
+;OriginalString : 「ちょっと、物발りなかったのかな」
+				PRINTFORMW 「조금, 어딘지 부족했던 것일까」
+;OriginalString : 「もう少し、強くやってみるね……」
+				PRINTFORMW 「좀 더, 강하게 해 보는군……」
+			CASE 1
+;OriginalString : 「え？　そういう趣味だったの？」
+				PRINTFORMW 「네？ 그러한 취미였어요？」
+;OriginalString : 「付き合いきれるか、保証は出来ないねえ……」
+				PRINTFORMW 「다 교제할 수 있는지, 보증은 할 수 없구나……」
+			CASE 2
+;OriginalString : 「うん、わかった……」
+				PRINTFORMW 「응, 알았다……」
+;OriginalString : 「どこがいいか、ちゃんと言ってね？」
+				PRINTFORMW 「어디가 좋은가, 분명하게 말해？」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDREACT(3, 61)
+			CASE 0
+;OriginalString : 「何言い出してるんだろう……」
+				PRINTFORMW 「무엇 말하기 시작하는 것일까……」
+;OriginalString : 「ちょっと、よくわからないねえ」
+				PRINTFORMW 「조금, 잘 모르구나」
+			CASE 1
+;OriginalString : 「%CNAME(MASTER, TARGET)%はどう당했다いの？」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 어떻게 하시고 싶은거야？」
+;OriginalString : 「ちゃんと言ってくれないと、わからないんだけどさあ？」
+				PRINTFORMW 「분명하게 말해 주지 않으면, 모르지만 자？」
+			CASE 2
+;OriginalString : 「まだ、발りないの？」
+				PRINTFORMW 「 아직, 부족한거야？」
+;OriginalString : 「少し、欲張りすぎるんじゃあないかなあ」
+				PRINTFORMW 「조금, 너무 욕심장이이지 구멍 가고」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM10, 부끄러워한다(REACT분류"소극적으로 한다")
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("부끄러워한다")
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTREACT(0)
+;OriginalString : 「大丈夫だから、ね？」
+		PRINTFORMW 「괜찮기 때문에, 군요？」
+;OriginalString : 「私に任せて、気持ち良くなって……」
+		PRINTFORMW 「 나에게 맡겨, 기분 좋아져……」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 0)
+				CASE 0
+;OriginalString : 「ごめんね、恥ずかしかった……？」
+					PRINTFORMW 「미안해요, 부끄러웠다……？」
+;OriginalString : 「でも、気持ち良かったみたいで、嬉しいよ……」
+					PRINTFORMW 「 그렇지만, 기분 좋았다 같아, 기뻐……」
+				CASE 1
+;OriginalString : 「ふふ、顔、見せて……？」
+					PRINTFORMW 「후후, 얼굴, 보여 줘……？」
+;OriginalString : 「こんなにしちゃったんだから、恥ずかしがらないでよお」
+					PRINTFORMW 「이렇게 해버렸어로부터, 부끄러워하지 말아 」
+				CASE 2
+;OriginalString : 「うわ……出しすぎだってば……」
+					PRINTFORMW 「위……너무 내다니까……」
+;OriginalString : 「これが、恥ずかしかったの？」
+					PRINTFORMW 「이것이, 부끄러웠어？」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 1)
+				CASE 0
+;OriginalString : 「あはは……何その顔！」
+					PRINTFORMW 「아하하……무엇 그 얼굴！」
+;OriginalString : 「泣いちゃう？　顔真っ赤だよ？」
+					PRINTFORMW 「울어버린다？ 얼굴 새빨가？」
+				CASE 1
+;OriginalString : 「何、この量は……」
+					PRINTFORMW 「무엇, 이 양은……」
+;OriginalString : 「これじゃあ、恥ずかしいよねえ」
+					PRINTFORMW 「이래서야 아, 부끄럽지요」
+				CASE 2
+;OriginalString : 「恥ずかしいの？　こんなにして？」
+					PRINTFORMW 「부끄러운거야？ 이렇게 해？」
+;OriginalString : 「もっと、搾ってあげるからねっ……！」
+					PRINTFORMW 「 좀 더, 짜 준다……！」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 2)
+				CASE 0
+;OriginalString : 「참다、しないで……？」
+					PRINTFORMW 「인내, 하지 말아줘……？」
+;OriginalString : 「ほら、私に抱きついても、いいからねっ」
+					PRINTFORMW 「이봐요, 나에게 안아 붙어도, 좋으니까」
+				CASE 1
+;OriginalString : 「あ……震えて、る……」
+					PRINTFORMW 「아……떨려,……」
+;OriginalString : 「そんなに、気持ち良かったんだあ……」
+					PRINTFORMW 「그렇게, 기분 좋았다 아……」
+				CASE 2
+;OriginalString : 「私、気持ちよく出来た？」
+					PRINTFORMW 「 나, 기분 좋게 할 수 있었다？」
+;OriginalString : 「次はもっと、良くしてあげるから……」
+					PRINTFORMW 「다음은 좀 더, 자주(잘) 해 주기 때문에……」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 3)
+				CASE 0
+;OriginalString : 「顔、隠さないでよ……」
+					PRINTFORMW 「얼굴, 숨기지 말아……」
+;OriginalString : 「せっかく、%CNAME(MASTER, TARGET)%の안쓰러운顔が見れると思ったのに」
+					PRINTFORMW 「모처럼,%CNAME(MASTER, TARGET)%의 야무지지 못한 얼굴을 볼 수 있으면(자) 생각했는데」
+				CASE 1
+;OriginalString : 「どう？　今の気持ちは？」
+					PRINTFORMW 「어때？ 지금의 기분은？」
+;OriginalString : 「俯いてたら、わからないんだけどなあ」
+					PRINTFORMW 「숙이고 있으면(자), 모르지만」
+				CASE 2
+;OriginalString : 「次は、どう당했다い？」
+					PRINTFORMW 「다음은, 어떻게 하시고 싶다？」
+;OriginalString : 「もっと恥ずかしいこと、했다げるよ……」
+					PRINTFORMW 「 좀 더 부끄러운 일, 야……」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDREACT(3, 4)
+			CASE 0
+;OriginalString : 「ほら、顔見せてよっ」
+				PRINTFORMW 「이봐요, 얼굴 좀 보여주어」
+;OriginalString : 「悪いようにはしないって」
+				PRINTFORMW 「나쁘게는 하지 않는다고」
+			CASE 1
+;OriginalString : 「恥ずかしいの？」
+				PRINTFORMW 「부끄러운거야？」
+;OriginalString : 「そんなこと、気にしなくても良いのにねえ」
+				PRINTFORMW 「그런 일, 신경쓰지 않아도 좋은데 응」
+			CASE 2
+;OriginalString : 「あはは……ここは、そうでもないみたいだよ？」
+				PRINTFORMW 「아하하……여기는, 그렇지도 않은 것 같아？」
+;OriginalString : 「솔직になりなよ、ね？」
+				PRINTFORMW 「솔직해져, 군요？」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDREACT(3, 5)
+			CASE 0
+;OriginalString : 「うーん、困ったねえ」
+				PRINTFORMW 「응, 곤란했어요」
+;OriginalString : 「솔직になってくれれば、良いんだけどねえ」
+				PRINTFORMW 「솔직해져 준다면, 좋지만」
+			CASE 1
+;OriginalString : 「そんなに、恥ずかしい？」
+				PRINTFORMW 「그렇게, 부끄럽다？」
+;OriginalString : 「大丈夫だよ、私には関係ないし」
+				PRINTFORMW 「괜찮아, 나에게는 관계없고」
+			CASE 2
+;OriginalString : 「でも、気持ち良いんだよね？」
+				PRINTFORMW 「 그렇지만, 기분 좋아？」
+;OriginalString : 「強く했다ら、どうなるんだろうねえ？」
+				PRINTFORMW 「강하게 하면(자), 어떻게 될까 응？」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM11, 싫어한다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("싫어한다")
+	;=================================================
+	;嫌がって妨害했다			REACT분류"날뛴다"
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 10)
+				CASE 0
+;OriginalString : 「ひゃっ……」
+					PRINTFORMW 「……」
+;OriginalString : 「ちょっと、酷いんじゃないかなあ」
+					PRINTFORMW 「조금, 심하지 않을까」
+				CASE 1
+;OriginalString : 「おっと……」
+					PRINTFORMW 「남편……」
+;OriginalString : 「そんなに、嫌だった？」
+					PRINTFORMW 「그렇게, 싫었다？」
+				CASE 2
+;OriginalString : 「あ、ごめん……」
+					PRINTFORMW 「아, 미안……」
+;OriginalString : 「でも、言葉で言って欲しいなあ」
+					PRINTFORMW 「 그렇지만, 말로 말했으면 좋다」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 11)
+				CASE 0
+;OriginalString : 「あ……」
+					PRINTFORMW 「아……」
+;OriginalString : 「そう、協力は、してくれないんだあ」
+					PRINTFORMW 「그렇게, 협력은, 해 주지 않는다 아」
+				CASE 1
+;OriginalString : 「うあ……っ」
+					PRINTFORMW 「아……」
+;OriginalString : 「ちょっと、怒っちゃうかもねえ」
+					PRINTFORMW 「조금, 화나버릴까도 응」
+				CASE 2
+;OriginalString : 「え、何それ？」
+					PRINTFORMW 「네, 그게 뭐야？」
+;OriginalString : 「そんなに、嫌なの？」
+					PRINTFORMW 「그렇게, 싫어？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;싫어한다がACTは妨害せず
+	;=================================================
+	IF 구상記入チェック(100) && !TFLAG:REACT파생
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 12)
+				CASE 0
+;OriginalString : 「またまたぁ……」
+					PRINTFORMW 「또 다시……」
+;OriginalString : 「こっちは、そうでもないみたいだよ？」
+					PRINTFORMW 「여기는, 그렇지도 않은 것 같아？」
+				CASE 1
+;OriginalString : 「あ、ごめん……」
+					PRINTFORMW 「아, 미안……」
+;OriginalString : 「どうすれば、いいかな……？」
+					PRINTFORMW 「어떻게 하면, 좋을까……？」
+				CASE 2
+;OriginalString : 「もしかして、痛かった？」
+					PRINTFORMW 「혹시, 아팠다？」
+;OriginalString : 「注意はしてたんだけど……ごめんねっ」
+					PRINTFORMW 「주의는 하고 있었는데……미안해요」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 13)
+				CASE 0
+;OriginalString : 「입だけだよね、それ」
+					PRINTFORMW 「입 뿐이지요, 그것」
+;OriginalString : 「それが本心だったら、何でこんなになってるのさ？」
+					PRINTFORMW 「그것이 본심이라면, 무엇으로 이렇게 되어？」
+				CASE 1
+;OriginalString : 「ちょっと、痛かったかな？」
+					PRINTFORMW 「조금, 아팠지？」
+;OriginalString : 「もっと、強く했다げるからね？」
+					PRINTFORMW 「 좀 더, 강꼬치로부터？」
+				CASE 2
+;OriginalString : 「優しくして欲しい？」
+					PRINTFORMW 「상냥하고해 주었으면 한다？」
+;OriginalString : 「これからの態度次第で考えてもいいんだけどなあ」
+					PRINTFORMW 「앞으로의 태도 나름으로 생각해도 좋지만」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM12, 서투르다고 모욕한다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("서투르다고 모욕한다")
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		SELECTCASE RANDREACT(3, 20)
+			CASE 0
+;OriginalString : 「あははっ……嘘つきだあね」
+				PRINTFORMW 「아하하……거짓말쟁이다 언니(누나)」
+;OriginalString : 「솔직に言ってくれれば、可愛いのにねえ」
+				PRINTFORMW 「솔직하게 말해 준다면, 사랑스러운데 응」
+			CASE 1
+;OriginalString : 「うあっ……」
+				PRINTFORMW 「아……」
+;OriginalString : 「ちょっと、びっくりするじゃないかあ」
+				PRINTFORMW 「조금, 놀라잖아 아」
+			CASE 2
+;OriginalString : 「何で出してるのさ？」
+				PRINTFORMW 「무엇으로 내？」
+;OriginalString : 「次嘘ついたら、出しても止めないからね？」
+				PRINTFORMW 「다음 거짓말 하면(자), 내도 멈추지 않으니까？」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		SELECTCASE RANDREACT(3, 21)
+			CASE 0
+;OriginalString : 「って、体震わせて言わなくても……」
+				PRINTFORMW 「은, 몸 진동시켜 말하지 않아도……」
+;OriginalString : 「さっきの顔、すごく可愛かったよ？」
+				PRINTFORMW 「조금 전의 얼굴, 몹시 사랑스러웠어요？」
+			CASE 1
+;OriginalString : 「はいはい、私は下손ですねー」
+				PRINTFORMW 「네네, 나는 서투르네요―」
+;OriginalString : 「これ、どうよ？　顔真っ赤にしちゃってさあ？」
+				PRINTFORMW 「이것, 어떻게？ 얼굴 새빨갛게 해 버려서 자？」
+			CASE 2
+;OriginalString : 「え……ごめんね？」
+				PRINTFORMW 「네……미안해요？」
+;OriginalString : 「お詫びに손が動かなくなるまで、擦るからさあ」
+				PRINTFORMW 「사과에 손이 움직이지 못하게 될 때까지, 켜기 때문에 자」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;本当は感じている（強がって）
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+		SELECTCASE RANDREACT(3, 22)
+			CASE 0
+;OriginalString : 「あれ、体震えてるよ？　大丈夫？」
+				PRINTFORMW 「저것, 몸 떨리고 있어？ 괜찮아？」
+;OriginalString : 「そんな、無理しなくても……」
+				PRINTFORMW 「그런, 무리하지 않아도……」
+			CASE 1
+;OriginalString : 「えー？　ここ触ると腰が跳ねるのに？」
+				PRINTFORMW 「네―？ 여기 손대면(자) 허리가 뛰는데？」
+;OriginalString : 「%CNAME(MASTER, TARGET)%って本当に意地っ張りだよねえ……」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%라고 정말로 억지지요……」
+			CASE 2
+;OriginalString : 「そう、ごめんね……」
+				PRINTFORMW 「그렇게, 미안해요……」
+;OriginalString : 「もう少し、強くしてあげるから……」
+				PRINTFORMW 「좀 더, 강하게 해 주기 때문에……」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;実際に下손（こきおろす）
+	;=================================================
+	IF 구상記入チェック(100) && !TFLAG:REACT파생
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 23)
+				CASE 0
+;OriginalString : 「あ……ごめんね……」
+					PRINTFORMW 「아……미안해요……」
+;OriginalString : 「私こういうの、慣れてなくて……」
+					PRINTFORMW 「 나 이런 것, 익숙해지지 않아서……」
+				CASE 1
+;OriginalString : 「そうかあ……」
+					PRINTFORMW 「그런가 아……」
+;OriginalString : 「上손くなるからさあ、気持ち良いところ、教えてよ？」
+					PRINTFORMW 「능숙해지기 때문에 자, 기분 좋은 곳, 가르쳐？」
+				CASE 2
+;OriginalString : 「そうだねえ……」
+					PRINTFORMW 「글쎄……」
+;OriginalString : 「もう少し、練習させてよ、ね？」
+					PRINTFORMW 「좀 더, 연습시켜, 군요？」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 24)
+				CASE 0
+;OriginalString : 「えっ？　何か勘違いしてないかなあ」
+					PRINTFORMW 「어？ 무엇인가 착각 하지 않을까」
+;OriginalString : 「別に気持ちよく시켰다いわけじゃあ、なかったんだけど」
+					PRINTFORMW 「별로 기분 좋게 시키고 싶은 것 자, 없었지만」
+				CASE 1
+;OriginalString : 「気持ちよくなかった？」
+					PRINTFORMW 「기분 좋지 않았다？」
+;OriginalString : 「じゃあもう少し強く刺激してみようかねえ」
+					PRINTFORMW 「자 좀 더 강하게 자극해 볼까 응」
+				CASE 2
+;OriginalString : 「下손かあ……」
+					PRINTFORMW 「서투른가 아……」
+;OriginalString : 「まあ、そのための実験台だよねえ？」
+					PRINTFORMW 「뭐, 그 때문의 실험대지요？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM13, 겁없이 웃는다(REACT분류"태연하게 한다")
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("겁없이 웃는다")
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDREACT(3, 30)
+			CASE 0
+;OriginalString : 「っと、何、いきなり……」
+				PRINTFORMW 「와 무엇, 갑자기……」
+;OriginalString : 「何か悪いものでも食べさせちゃったかなあ？」
+				PRINTFORMW 「무엇인가 나쁜 것이라도 먹여 버렸다일까？」
+			CASE 1
+;OriginalString : 「あれ、どう했다の？」
+				PRINTFORMW 「저것, 왜？」
+;OriginalString : 「そんなに、微妙だった？」
+				PRINTFORMW 「그렇게, 미묘했다？」
+			CASE 2
+;OriginalString : 「なかなか、面白い顔してるねえ」
+				PRINTFORMW 「꽤, 재미있는 얼굴 하고 있구나」
+;OriginalString : 「その反応はちょっと想定してなかったよ……」
+				PRINTFORMW 「그 반응은 조금 상정하고 있지 않았어요……」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDREACT(3, 31)
+			CASE 0
+;OriginalString : 「いきなり、どう했다の？」
+				PRINTFORMW 「갑자기, 왜？」
+;OriginalString : 「ついに気でも触れちゃったかと思って、びっくり했다よ……」
+				PRINTFORMW 「마침내 기분에서도 접해 버렸다라고 생각해, 놀랐어……」
+			CASE 1
+;OriginalString : 「何、それ？」
+				PRINTFORMW 「무엇, 그것？」
+;OriginalString : 「そんなに私が気に入らないのかなあ」
+				PRINTFORMW 「그렇게 내가 마음에 들지 않는 것인지」
+			CASE 2
+;OriginalString : 「特に抵抗するわけじゃあ、ないんだね」
+				PRINTFORMW 「특히 저항하는 것 자, 없다」
+;OriginalString : 「じゃあ、私の자유にさせてもらおうかな？」
+				PRINTFORMW 「자, 나의 자유에 시켜 줄까？」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM14, 쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("쾌감을 참는다")
+	;EV20への移設を検討する필요アリ
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		SELECTCASE RANDREACT(3, 40)
+			CASE 0
+;OriginalString : 「あ……참다、してたんだね……」
+				PRINTFORMW 「아……인내, 하고 있었어……」
+;OriginalString : 「凄い、勢いだあ……」
+				PRINTFORMW 「굉장한, 기세다……」
+			CASE 1
+;OriginalString : 「ね？　こっち、向いて？」
+				PRINTFORMW 「이군요？ 여기, 향해？」
+;OriginalString : 「出す瞬間の顔、見たいなあ」
+				PRINTFORMW 「내는 순간의 얼굴, 보고 싶다」
+			CASE 2
+;OriginalString : 「ちょっと、出し過ぎだよ……」
+				PRINTFORMW 「조금, 너무 내……」
+;OriginalString : 「でも、気持ち良かったんだねえ」
+				PRINTFORMW 「 그렇지만, 기분 좋았다 응」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		SELECTCASE RANDREACT(3, 41)
+			CASE 0
+;OriginalString : 「そんな、歯食い縛らなくても……」
+				PRINTFORMW 「그런, 이빨 이를 악물지 않아도……」
+;OriginalString : 「솔직に気持ちよくなれば、いいのに……」
+				PRINTFORMW 「솔직하게 기분 좋아지면, 좋은데……」
+			CASE 1
+;OriginalString : 「あっ、体、震えてるよ？」
+				PRINTFORMW 「아, 몸, 떨리고 있어？」
+;OriginalString : 「ほら、抱きしめてあげるからさっ」
+				PRINTFORMW 「이봐요, 꼭 껴안아 주기 때문에」
+			CASE 2
+;OriginalString : 「顔、私に見せて？」
+				PRINTFORMW 「얼굴, 나에게 보이게 해 줘？」
+;OriginalString : 「凄く、幸せそうな顔してるねえ」
+				PRINTFORMW 「굉장히, 행복한 얼굴 하고 있구나」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+
+	;=================================================
+	;派生:애원					REACT분류"용서를 빌다"
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+		SELECTCASE RANDREACT(3, 42)
+			CASE 0
+;OriginalString : 「それは、本心かなあ？」
+				PRINTFORMW 「그것은, 본심일까？」
+;OriginalString : 「止めて欲しい？　本当に？」
+				PRINTFORMW 「멈추었으면 좋겠다？ 정말로？」
+			CASE 1
+;OriginalString : 「でも、%CNAME(MASTER, TARGET)%は腰、押し付けてるんだけどさあ？」
+				PRINTFORMW 「 그렇지만,%CNAME(MASTER, TARGET)%(은)는 허리, 꽉 누르고 있었지만 자？」
+;OriginalString : 「もう少しだけ、참다してみよっか？」
+				PRINTFORMW 「좀 더만, 참아 봐라 인가？」
+			CASE 2
+;OriginalString : 「私はやめたくないんだけどねえ」
+				PRINTFORMW 「 나는 그만두고 싶지 않지만」
+;OriginalString : 「ということで、続けようか？」
+				PRINTFORMW 「이라고 하는 것으로, 계속할까？」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生：耐久
+	;=================================================
+	IF 구상記入チェック(100) && !TFLAG:REACT파생
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 43)
+				CASE 0
+;OriginalString : 「苦しそうだよ……？」
+					PRINTFORMW 「괴로운 듯해……？」
+;OriginalString : 「お願いだから、솔직になってよお……っ」
+					PRINTFORMW 「부탁이니까, 솔직해져……」
+				CASE 1
+;OriginalString : 「もしかして、痛かった……？」
+					PRINTFORMW 「혹시, 아팠다……？」
+;OriginalString : 「苦しそうな顔、してたから……」
+					PRINTFORMW 「괴로운 듯한 얼굴, 하고 있었기 때문에……」
+				CASE 2
+;OriginalString : 「気持ち、良いんだよね？」
+					PRINTFORMW 「기분, 좋아？」
+;OriginalString : 「참다しないでほしいなあ」
+					PRINTFORMW 「참지 말아 주었으면 한다」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 44)
+				CASE 0
+;OriginalString : 「何で、솔직になってくれないのかなあ」
+					PRINTFORMW 「왜, 솔직해져 주지 않는 것인지」
+;OriginalString : 「痛いほうが好きだったりするの？」
+					PRINTFORMW 「아픈 편을 좋아하기도 하다의？」
+				CASE 1
+;OriginalString : 「참다、してるんだ……」
+					PRINTFORMW 「인내, 하고 있어……」
+;OriginalString : 「一体いつまで、持つんだろうねえ」
+					PRINTFORMW 「도대체 언제까지, 가질까 응」
+				CASE 2
+;OriginalString : 「そんなに気持ち良いの、嫌い？」
+					PRINTFORMW 「그렇게 기분 좋은 것, 싫다？」
+;OriginalString : 「別に、悪いことじゃあないと思うんだけどさあ」
+					PRINTFORMW 「별로, 나쁜 일자 없다고 생각하는데 말이야 아」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;COM15,16を並列処理するようにします@/L
+;=================================================
+;COM15, 쾌감을 받아들인다
+;=================================================
+IF 구상記入チェック(100) && IS_NOWCOMNAME("쾌감을 받아들인다/기분 좋다!")
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		SELECTCASE RANDREACT(3, 50)
+			CASE 0
+;OriginalString : 「あ……声、聞かせてくれたねっ」
+				PRINTFORMW 「아……소리, 들려주었다」
+;OriginalString : 「凄く、嬉しいよお……！」
+				PRINTFORMW 「굉장히, 기뻐……！」
+			CASE 1
+;OriginalString : 「うん……気持ち、良いんだね？」
+				PRINTFORMW 「응……기분, 좋다？」
+;OriginalString : 「全部、出しちゃっていいからねっ」
+				PRINTFORMW 「전부, 내 버려서 좋으니까」
+			CASE 2
+;OriginalString : 「ふふっ……凄く、気持ち良さそう……」
+				PRINTFORMW 「후후……굉장히, 기분 좋음 그렇게……」
+;OriginalString : 「もっと凄く、してあげる……」
+				PRINTFORMW 「 좀 더 굉장히, 해 준다……」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		SELECTCASE RANDREACT(3, 51)
+			CASE 0
+;OriginalString : 「あ……大丈夫？」
+				PRINTFORMW 「아……괜찮아？」
+;OriginalString : 「私、기분좋게 해あげられた……」
+				PRINTFORMW 「 나, 기분 좋게 해 줄 수 있었다……」
+			CASE 1
+;OriginalString : 「顔、見せて欲しいな……」
+				PRINTFORMW 「얼굴, 보였으면 좋은데……」
+;OriginalString : 「凄く、可愛かったよ？」
+				PRINTFORMW 「굉장히, 사랑스러웠어요？」
+			CASE 2
+;OriginalString : 「そんなに、気持ち良かったんだあ」
+				PRINTFORMW 「그렇게, 기분 좋았다 아」
+;OriginalString : 「私、もっと頑張るからねっ」
+				PRINTFORMW 「 나, 좀 더 노력한다」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;その他
+	SELECTCASE RANDREACT(3, 52)
+		CASE 0
+;OriginalString : 「うん、気持ち良いねっ……」
+			PRINTFORMW 「응, 기분 좋다……」
+;OriginalString : 「少し激しくするけど、痛かったら言ってね？」
+			PRINTFORMW 「조금 격렬하게 하지만, 아팠으면 말해？」
+		CASE 1
+;OriginalString : 「そんなに、良かったの？」
+			PRINTFORMW 「그렇게, 좋았어？」
+;OriginalString : 「솔직になってくれて、嬉しいよお……」
+			PRINTFORMW 「솔직해져 주어, 기뻐……」
+		CASE 2
+;OriginalString : 「気持ち良さそうだねえ、%CNAME(MASTER, TARGET)%」
+			PRINTFORMW 「기분 좋음 글쎄,%CNAME(MASTER, TARGET)%」
+;OriginalString : 「もっと声上げても、大丈夫だからね？」
+			PRINTFORMW 「 좀 더 소리 올려도, 괜찮으니까？」
+	ENDSELECT
+	RETURN 1
+ENDIF
+;REACT10, 손으로 애무
+
+;────────────────────────────────────
+;REACT11, 가슴애무・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=가슴애무/1=乳首吸い/2=揉み合い/3=乳首責め)
+;-------------------------------------------------
+;想定されるCOM
+;회화系反応
+;	COM:더 하드하게 해
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:고통을 참는다/비명지른다/날뛴다
+;-------------------------------------------------
+;・地の文はACT파생2, 揉み合いとその他で分岐
+;・ACTION_APPLY2に於いて、ACT파생2の場合は受容、거부の判定処理あり
+;・ACT파생2, 揉み合いにおいてREACT분류(소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる)以外は"거부"扱い
+;-------------------------------------------------
+;　派生毎にまともにやると손間が尋常ではないので、ACT파생分岐の上層で汎用処理했다り
+;　各ACT파생内のCOM分岐等は一部のものに絞ってしまうのが良いと思います
+;　またACT파생で区切らずに、大分岐でまとめてしまう손もありますが、손の込んだ事をやるには不向きであると考えます
+;-------------------------------------------------
+@KOJO_REACT_K40_11
+;-------------------------------------------------
+;決まったやりかたなどというものはないので、以下に示すものはあくまで一つの例ということで
+;分岐の増減、COMに流すのか否かの判断は作者の判断に委ねます
+;-------------------------------------------------
+RETURN 0
+;REACT11, 가슴애무
+
+;────────────────────────────────────
+;REACT12, 입으로 애무・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=クンニ/1=펠라)
+;-------------------------------------------------
+;想定されるCOM…
+;회화系反応
+;	COM:더 하드하게 해
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:고통을 참는다/비명지른다/날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_12
+;-------------------------------------------------
+;・地の文はACT파생毎にREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+;・派生毎に区切ってありますが、例えばACT파생1のみ書いてあとは汎用に投げるという事もできます
+;-------------------------------------------------
+
+;「この恥知らずの豚め！」に派生했다ら弾くように修正@/L
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM6, 더 하드하게 해(REACT분류:受け入れる)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("더 하드하게 해") && !TFLAG:REACT파생
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDREACT(3, 0)
+			CASE 0
+;OriginalString : 「えっ、これ以上……？」
+				PRINTFORMW 「어, 더 이상……？」
+;OriginalString : 「ちょっと、考えてみるね……」
+				PRINTFORMW 「조금, 생각해 보는군……」
+			CASE 1
+;OriginalString : 「欲張りだなあ、もう」
+				PRINTFORMW 「욕심장이이다 , 이제」
+;OriginalString : 「%CNAME(MASTER, TARGET)%だけ、だからね……？」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%만, 이니까……？」
+			CASE 2
+;OriginalString : 「ちょっと、驚いたよ……」
+				PRINTFORMW 「조금, 놀랐어……」
+;OriginalString : 「まさか、そんなこと言うなんてさあ」
+				PRINTFORMW 「설마, 그런 일 말하다니 자」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDREACT(3, 1)
+			CASE 0
+;OriginalString : 「ほんと、どうしようもないねえ」
+				PRINTFORMW 「정말, 어쩔 수 없구나」
+;OriginalString : 「一応、付き合ってあげるけど……さ」
+				PRINTFORMW 「일단, 교제해 주는데……」
+			CASE 1
+;OriginalString : 「もっと、당했다いんだ？」
+				PRINTFORMW 「 좀 더, 되고 싶다？」
+;OriginalString : 「私の입で、どう당했다いのかな？」
+				PRINTFORMW 「 나의 입으로, 어떻게 하시고 싶은 것인지？」
+			CASE 2
+;OriginalString : 「恥とか、無いのかなあ」
+				PRINTFORMW 「수치라든지, 없는 것인지」
+;OriginalString : 「その辺り、どう思ってるの？」
+				PRINTFORMW 「그 근처, 어떻게 생각해？」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM10, 부끄러워한다(REACT분류"소극적으로 한다")
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("부끄러워한다")
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTREACT(0)
+;OriginalString : 「確かに、これは恥ずかしいかもねえ」
+		PRINTFORMW 「확실히, 이것은 부끄러울지도 응」
+;OriginalString : 「私もちょっと、恥ずかしいかな……」
+		PRINTFORMW 「 나도 조금, 부끄러울까……」
+		RETURN 1
+	ENDIF
+	
+	;この箇所はEV20への移設が望ましい気がする@/L
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 10)
+				CASE 0
+;OriginalString : 「あぅ……っ、凄っ……」
+					PRINTFORMW 「아……, 처……」
+;OriginalString : 「これが恥ずかしかったのかなあ？」
+					PRINTFORMW 「이것이 부끄러웠던 것일까？」
+				CASE 1
+;OriginalString : 「顔、見せてよお……」
+					PRINTFORMW 「얼굴, 보여……」
+;OriginalString : 「どんな顔するか、楽しみだったんだけどなあ」
+					PRINTFORMW 「어떤 얼굴 하는지, 기다려졌었어지만」
+				CASE 2
+;OriginalString : 「ほら、そろそろ、限界？」
+					PRINTFORMW 「이봐요, 이제, 한계？」
+;OriginalString : 「あ……出しちゃったねえ……」
+					PRINTFORMW 「아……내 버렸다 응……」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 11)
+				CASE 0
+;OriginalString : 「何？　今更恥ずかしがっちゃって……」
+					PRINTFORMW 「무엇？ 이제 와서 부끄러워해 버려서……」
+;OriginalString : 「こんなの、誰も気にしてないからね？」
+					PRINTFORMW 「이런 건, 아무도 신경쓰지 않으니까？」
+				CASE 1
+;OriginalString : 「あ……何出してるのさ？」
+					PRINTFORMW 「아……무엇 내？」
+;OriginalString : 「부끄러워한다前に、참다するべきじゃあないかなあ」
+					PRINTFORMW 「부끄러워하기 전에, 참아야 할 자 없을까」
+				CASE 2
+;OriginalString : 「こんなに出して……」
+					PRINTFORMW 「이렇게 내……」
+;OriginalString : 「無理やりやられて、惨めだよねえ」
+					PRINTFORMW 「억지로 당해, 비참하지」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここも同様
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 12)
+				CASE 0
+;OriginalString : 「あは……腰、震えてるよ？」
+					PRINTFORMW 「아는……허리, 떨리고 있어？」
+;OriginalString : 「恥ずかしがらないで、ね？」
+					PRINTFORMW 「부끄러워하지 말고, 군요？」
+				CASE 1
+;OriginalString : 「気持ち、良かったねえ」
+					PRINTFORMW 「기분, 좋았지요」
+;OriginalString : 「솔직되었다ら、もっと良くしてあげるからね？」
+					PRINTFORMW 「솔직해지면, 좀 더 자주(잘) 해 주니까요？」
+				CASE 2
+;OriginalString : 「可愛い顔だったよお……」
+					PRINTFORMW 「사랑스러운 얼굴이었다……」
+;OriginalString : 「もっと、その顔見せて？」
+					PRINTFORMW 「 좀 더, 그 얼굴 좀 보여줘？」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 13)
+				CASE 0
+;OriginalString : 「可愛い顔してたんだけどねえ」
+					PRINTFORMW 「사랑스러운 얼굴 하고 있었는데 응」
+;OriginalString : 「いつもあんな顔ならいいんだけどさあ」
+					PRINTFORMW 「언제나 저런 얼굴이라면 좋지만 자」
+				CASE 1
+;OriginalString : 「腰、震えてるよ？」
+					PRINTFORMW 「허리, 떨리고 있어？」
+;OriginalString : 「恥ずかしがっても、抑えられないと思うけどねえ」
+					PRINTFORMW 「부끄러워해도, 억제할 수 없다고 생각하지만요」
+				CASE 2
+;OriginalString : 「どう했다の？　唇噛みしめちゃって？」
+					PRINTFORMW 「왜？ 입술 씹어 닫아 버려서？」
+;OriginalString : 「あ、もっと強くして欲しい、ってことかな？」
+					PRINTFORMW 「아, 좀 더 강하고해 주었으면 한, 이라는 일일까？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDREACT(3, 14)
+			CASE 0
+;OriginalString : 「もう、こんなことしてるのに……」
+				PRINTFORMW 「 이제, 이런 금년 비치는데……」
+;OriginalString : 「私まで恥ずかしくなっちゃうじゃないかあ」
+				PRINTFORMW 「 나까지 부끄러워져버린다가 아닌가」
+			CASE 1
+;OriginalString : 「あれ、気持ち良くなかった？」
+				PRINTFORMW 「저것, 기분 좋지 않았다？」
+;OriginalString : 「気持ち良いんなら、言ってくれると嬉しいねえ」
+				PRINTFORMW 「기분 좋은다면, 말해 주면(자) 기쁘구나」
+			CASE 2
+;OriginalString : 「これ、どうよ？　この筋突付くの」
+				PRINTFORMW 「이것, 어떻게？ 이 근돌 붙어」
+;OriginalString : 「恥ずかしがりの%CNAME(MASTER, TARGET)%にも、喜んでもらえると思ってね？」
+				PRINTFORMW 「부끄럽게 여기기의%CNAME(MASTER, TARGET)%에도, 기뻐하실 수 있다고 생각해？」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDREACT(3, 15)
+			CASE 0
+;OriginalString : 「何カマトトぶってるのさ？」
+				PRINTFORMW 「무엇 새침데기인 체해？」
+;OriginalString : 「気持ち良いなら、솔직になればいいのに」
+				PRINTFORMW 「기분 좋으면, 솔직해지면 좋은데」
+			CASE 1
+;OriginalString : 「これじゃあ、발りないのかな？」
+				PRINTFORMW 「이래서야 아, 부족한 것인지？」
+;OriginalString : 「どうすればいいのかねえ？」
+				PRINTFORMW 「어떻게 하면 좋은 것인지 응？」
+			CASE 2
+;OriginalString : 「そんなにこれ嫌？」
+				PRINTFORMW 「그렇게 이것혐？」
+;OriginalString : 「でも、声、漏れてるよ？」
+				PRINTFORMW 「 그렇지만, 소리, 새고 있어？」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM11, 싫어한다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("싫어한다")
+	;=================================================
+	;嫌がって妨害했다
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 20)
+				CASE 0
+;OriginalString : 「きゃ……っ、そんな……」
+					PRINTFORMW 「꺄……, 그런……」
+;OriginalString : 「いきなり、酷いよお……」
+					PRINTFORMW 「갑자기, 심해……」
+				CASE 1
+;OriginalString : 「あれ、気に障ったかなあ」
+					PRINTFORMW 「저것, 비위에 거슬렸는지」
+;OriginalString : 「ごめんね、次は言ってね？」
+					PRINTFORMW 「미안해요, 다음은 말해？」
+				CASE 2
+;OriginalString : 「もしかして、歯、当たっちゃった？」
+					PRINTFORMW 「혹시, 이빨, 맞아 버렸다？」
+;OriginalString : 「気を付けてたんだけど……」
+					PRINTFORMW 「조심하고 있었는데……」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 21)
+				CASE 0
+;OriginalString : 「おっと……」
+					PRINTFORMW 「남편……」
+;OriginalString : 「そんなにこれ嫌だった？　もう少しやろうか？」
+					PRINTFORMW 「그렇게 이것 싫었다？ 좀 더 할까？」
+				CASE 1
+;OriginalString : 「ひゃっ……」
+					PRINTFORMW 「……」
+;OriginalString : 「もっと優しくしてくれると嬉しいなあ」
+					PRINTFORMW 「 좀 더 상냥하게 해 주면(자) 기쁘다」
+				CASE 2
+;OriginalString : 「あれ、嫌だった？」
+					PRINTFORMW 「저것, 싫었다？」
+;OriginalString : 「기분좋게 해あげてるんだけどねえ」
+					PRINTFORMW 「기분 좋게 해 주고 있었지만 응」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;嫌がった
+	;=================================================
+	IF 구상記入チェック(100) && !TFLAG:REACT파생
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 22)
+				CASE 0
+;OriginalString : 「ありゃ、お気に召さなかったかあ」
+					PRINTFORMW 「, 마음에 드시지 않았는지 아」
+;OriginalString : 「大分練習했다んだけどなあ」
+					PRINTFORMW 「상당히 연습했지만」
+				CASE 1
+;OriginalString : 「気持ち良くなかった？」
+					PRINTFORMW 「기분 좋지 않았다？」
+;OriginalString : 「もう少し頑張るからさあ、ちょっと、참다してくれないかな」
+					PRINTFORMW 「좀 더 노력하기 때문에 자, 조금, 참아 주지 않을까」
+				CASE 2
+;OriginalString : 「もしかして、痛かった？」
+					PRINTFORMW 「혹시, 아팠다？」
+;OriginalString : 「そうだったら、ごめんね……」
+					PRINTFORMW 「그러면, 미안해요……」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 23)
+				CASE 0
+;OriginalString : 「ふーん……そうかあ……」
+					PRINTFORMW 「-응……그런가 아……」
+;OriginalString : 「あんまり、賢明な判断じゃあないね？」
+					PRINTFORMW 「너무, 현명한 판단 자 없다？」
+				CASE 1
+;OriginalString : 「これは嫌？」
+					PRINTFORMW 「이것은 혐？」
+;OriginalString : 「別に、不利益被るわけじゃあないと思うんだけどねえ」
+					PRINTFORMW 「별로, 불이익 입는 것 자 없다고 생각하지만 응」
+				CASE 2
+;OriginalString : 「我侭だねえ……」
+					PRINTFORMW 「아진이구나……」
+;OriginalString : 「ちょっと、立場をわきまえてほしいかなあ」
+					PRINTFORMW 「조금, 입장을 분별하기를 원할까」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM12, 서투르다고 모욕한다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("서투르다고 모욕한다")
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		SELECTCASE RANDREACT(3, 30)
+			CASE 0
+;OriginalString : 「え……？」
+				PRINTFORMW 「네……？」
+;OriginalString : 「じゃあ、これは何だろうねえ？」
+				PRINTFORMW 「자, 이것은 무엇일까 응？」
+			CASE 1
+;OriginalString : 「嘘つきー」
+				PRINTFORMW 「거짓말쟁이―」
+;OriginalString : 「気持ち良いんなら、솔직に言えばいいのに」
+				PRINTFORMW 「기분 좋은다면, 솔직하게 말하면 좋은데」
+			CASE 2
+;OriginalString : 「もう、不安になっちゃうじゃあないか」
+				PRINTFORMW 「 이제, 불안하게 되어버리는 자 없는가」
+;OriginalString : 「でも、気持ちよくなったみたいで、よかったよ……」
+				PRINTFORMW 「 그렇지만, 기분 좋아진 것 같아, 좋았어요……」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		SELECTCASE RANDREACT(3, 31)
+			CASE 0
+;OriginalString : 「あは……震えちゃって……」
+				PRINTFORMW 「아는……떨려 버려서……」
+;OriginalString : 「説得力、全く無いよ？」
+				PRINTFORMW 「설득력, 전혀 없어？」
+			CASE 1
+;OriginalString : 「そんな顔하면서言われてもねえ？」
+				PRINTFORMW 「그런 얼굴 하면서 말해져도 응？」
+;OriginalString : 「ほらっ、もっと虐めてあげるよっ！」
+				PRINTFORMW 「이봐요 , 좀 더 학째라고 준다！」
+			CASE 2
+;OriginalString : 「また訳わからないこと言ってるねえ……」
+				PRINTFORMW 「또 (뜻)이유 모르는 것 말하고 있구나……」
+;OriginalString : 「솔직になれば、可愛いのに」
+				PRINTFORMW 「솔직해지면, 사랑스러운데」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;強がる（本当は感じている）
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+		SELECTCASE RANDREACT(3, 32)
+			CASE 0
+;OriginalString : 「あれ、気持ち良くない？」
+				PRINTFORMW 「저것, 기분 좋지 않다？」
+;OriginalString : 「舐めるたびに、腰動いてるのに？」
+				PRINTFORMW 「빨 때마다, 허리 움직여？」
+			CASE 1
+;OriginalString : 「声、漏れてるよ？」
+				PRINTFORMW 「소리, 새고 있어？」
+;OriginalString : 「今更입塞いでも、もう遅いって……」
+				PRINTFORMW 「이제 와서 입 차지해도, 이미 늦다고……」
+			CASE 2
+;OriginalString : 「そう、じゃあもっと激しくしようか」
+				PRINTFORMW 「그렇게, 자 좀 더 격렬하게 할까」
+;OriginalString : 「早く솔직되었다ほうが、いいんじゃないかなあ」
+				PRINTFORMW 「빨리 솔직해지는 편이, 좋지 않을까」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;こきおろす（実際に下손）
+	;=================================================
+	IF 구상記入チェック(100) && !TFLAG:REACT파생
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 33)
+				CASE 0
+;OriginalString : 「え……ごめんね……」
+					PRINTFORMW 「네……미안해요……」
+;OriginalString : 「もうちょっと、頑張らせて？」
+					PRINTFORMW 「좀 더, 노력하게 해？」
+				CASE 1
+;OriginalString : 「舌遣いって難しいねえ……」
+					PRINTFORMW 「혀 써는 어렵구나……」
+;OriginalString : 「自在に動かせるまで、待っててくれるかなあ」
+					PRINTFORMW 「자재로 움직일 수 없을지, 기다리고 있어 줄까」
+				CASE 2
+;OriginalString : 「どこが気持ちいいの？」
+					PRINTFORMW 「어디가 기분이 좋은거야？」
+;OriginalString : 「言ってくれたら、もうちょっと、良くなるよ」
+					PRINTFORMW 「말해 주었으면, 좀 더, 좋아져」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 34)
+				CASE 0
+;OriginalString : 「そう、それは申し訳ないねえ」
+					PRINTFORMW 「그렇게, 그것은 미안하구나」
+;OriginalString : 「でも、実験台だからねえ」
+					PRINTFORMW 「 그렇지만, 실험대니까 」
+				CASE 1
+;OriginalString : 「%CNAME(MASTER, TARGET)%はどう당했다いの？」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 어떻게 하시고 싶은거야？」
+;OriginalString : 「期待には添えないと思うけど、一応ね」
+					PRINTFORMW 「기대에는 더하지 않는다고 생각하지만, 일단」
+				CASE 2
+;OriginalString : 「もう少し、強く噛んだほうが良い？」
+					PRINTFORMW 「좀 더, 강하게 씹는 편이 좋다？」
+;OriginalString : 「それとも、これ握り潰そうか？」
+					PRINTFORMW 「그렇지 않으면, 이것 잡을까？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM13, 겁없이 웃는다(REACT분류"태연하게 한다")
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("겁없이 웃는다")
+	;아라이멘도正
+	IF ALI(0)
+		SELECTCASE RANDREACT(3, 40)
+			CASE 0
+;OriginalString : 「なんだよぉ……」
+				PRINTFORMW 「뭐야……」
+;OriginalString : 「はっきり言ってくれないと、わからないんだけどさあ」
+				PRINTFORMW 「분명히 말해 주지 않으면, 모르지만 자」
+			CASE 1
+;OriginalString : 「気持ち良いの？」
+				PRINTFORMW 「기분 좋은거야？」
+;OriginalString : 「それとも、気持ちよくなかったの？　どっち？」
+				PRINTFORMW 「그렇지 않으면, 기분 좋지 않았어？ 어느 쪽？」
+			CASE 2
+;OriginalString : 「ちょっと、そういうの、困るんだけどねえ」
+				PRINTFORMW 「조금, 그러한 것, 곤란하지만 응」
+;OriginalString : 「솔직になって欲しいなあ」
+				PRINTFORMW 「솔직해졌으면 좋다」
+		ENDSELECT
+	;아라이멘도負
+	ELSE
+		SELECTCASE RANDREACT(3, 41)
+			CASE 0
+;OriginalString : 「笑われてもねえ……」
+				PRINTFORMW 「웃어져도 응……」
+;OriginalString : 「この状況じゃあ、あまり格好良くないよ？」
+				PRINTFORMW 「이 상황 자, 그다지 근사하지 않아？」
+			CASE 1
+;OriginalString : 「どうして欲しいの？」
+				PRINTFORMW 「어째서 갖고 싶은거야？」
+;OriginalString : 「なるべく聞いたげるよ？」
+				PRINTFORMW 「될 수 있도록 문야？」
+			CASE 2
+;OriginalString : 「ありゃ、良くなかった？」
+				PRINTFORMW 「, 좋지 않았다？」
+;OriginalString : 「ちょっと良くわからない反応だけどねえ」
+				PRINTFORMW 「조금 자주(잘) 모르는 반응이지만 」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM14, 쾌감을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("쾌감을 참는다")
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		SELECTCASE RANDREACT(3, 50)
+			CASE 0
+;OriginalString : 「あ……凄い、勢いだあ……」
+				PRINTFORMW 「아……굉장한, 기세다……」
+;OriginalString : 「そんなに、참다してたんだね……」
+				PRINTFORMW 「그렇게, 참고 있었어……」
+			CASE 1
+;OriginalString : 「んふっ……歯、食い縛っちゃって……」
+				PRINTFORMW 「……이빨, 이를 악물어 버려서……」
+;OriginalString : 「こっちは、솔직なのにねえ」
+				PRINTFORMW 「여기는, 솔직한데 응」
+			CASE 2
+;OriginalString : 「これ、気持ちいい？」
+				PRINTFORMW 「이것, 기분이 좋다？」
+;OriginalString : 「참다しないで欲しいなあ」
+				PRINTFORMW 「참지 않으면 좋다」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		SELECTCASE RANDREACT(3, 51)
+			CASE 0
+;OriginalString : 「体、震えてるよ……」
+				PRINTFORMW 「몸, 떨리고 있어……」
+;OriginalString : 「참다しないで、ね？」
+				PRINTFORMW 「참지 말고, 군요？」
+			CASE 1
+;OriginalString : 「もっと、良く했다げるからさあ」
+				PRINTFORMW 「 좀 더, 자주(잘) 매움 아」
+;OriginalString : 「솔직に、気持ち良くなってよ？」
+				PRINTFORMW 「솔직하게, 기분 좋아져？」
+			CASE 2
+;OriginalString : 「もう、可愛いなあ！」
+				PRINTFORMW 「 이제, 사랑스럽다！」
+;OriginalString : 「声も聞かせて欲しいねえ」
+				PRINTFORMW 「목소리도 들을만했으면 좋구나」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生：애원「もうこんなことやめて」
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+		SELECTCASE RANDREACT(3, 52)
+			CASE 0
+;OriginalString : 「どうしよっかな……」
+				PRINTFORMW 「끼리야 일까……」
+;OriginalString : 「ほんとに、やめて欲しい？」
+				PRINTFORMW 「정말, 그만두었으면 좋겠다？」
+			CASE 1
+;OriginalString : 「そんな、必死に頼まれてもねえ」
+				PRINTFORMW 「그런, 필사적으로 부탁받아도 응」
+;OriginalString : 「気持ち良いんだから、いいじゃんか」
+				PRINTFORMW 「기분 좋기 때문에, 좋잖아인가」
+			CASE 2
+;OriginalString : 「じゃ、やめちゃおっかなあ？」
+				PRINTFORMW 「그러면, 그만두면 일까？」
+;OriginalString : 「なんて、嘘だよっ……」
+				PRINTFORMW 「은, 거짓말이야……」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;派生：耐久
+	;=================================================
+	IF 구상記入チェック(100) && !TFLAG:REACT파생
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 53)
+				CASE 0
+;OriginalString : 「ここ舐めると、震えるねえ」
+					PRINTFORMW 「여기 빨면(자), 떨리군요」
+;OriginalString : 「いい加減、참다の限界じゃない……？」
+					PRINTFORMW 「적당, 인내의 한계가 아니다……？」
+				CASE 1
+;OriginalString : 「솔직に気持ち良くなればいいのに……」
+					PRINTFORMW 「솔직하게 기분 좋아지면 좋은데……」
+;OriginalString : 「よくわからないなあ」
+					PRINTFORMW 「잘 모른다」
+				CASE 2
+;OriginalString : 「顔、赤くなってるよ？」
+					PRINTFORMW 「얼굴, 붉어지고 있어？」
+;OriginalString : 「……え？　私も？」
+					PRINTFORMW 「……네？ 나도？」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 54)
+				CASE 0
+;OriginalString : 「気持ち良くされちゃって、どう？」
+					PRINTFORMW 「기분 좋게 되어 버려서, 어때？」
+;OriginalString : 「悔しい？」
+					PRINTFORMW 「분하다？」
+				CASE 1
+;OriginalString : 「声も出せない、って感じかなあ」
+					PRINTFORMW 「소리도 낼 수 없는, 이라는 느낌일까 」
+;OriginalString : 「本当、強情だよねえ……」
+					PRINTFORMW 「사실, 고집이 있지……」
+				CASE 2
+;OriginalString : 「おっと……危なかった」
+					PRINTFORMW 「남편……위험했다」
+;OriginalString : 「少し良くしすぎちゃうとこだったよ」
+					PRINTFORMW 「조금 자주(잘) 너무 자주(잘) 해버리자(면) 개였다」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM15, 쾌감을 받아들인다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && IS_NOWCOMNAME("쾌감을 받아들인다/기분 좋다!")
+	;=================================================
+	;죠교대상が사정する
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:사정
+		SELECTCASE RANDREACT(3, 60)
+			CASE 0
+;OriginalString : 「あ……凄、っ……」
+				PRINTFORMW 「아……처,……」
+;OriginalString : 「一杯、出했다ねえ……」
+				PRINTFORMW 「한 잔, 냈어요……」
+			CASE 1
+;OriginalString : 「顔、汚れちゃったよ」
+				PRINTFORMW 「얼굴, 더러워져 버렸다」
+;OriginalString : 「全く、元気だねえ？」
+				PRINTFORMW 「완전히, 건강하구나？」
+			CASE 2
+;OriginalString : 「そう、私に任せて……」
+				PRINTFORMW 「그렇게, 나에게 맡겨……」
+;OriginalString : 「凄く、気持ち良さそうだあね……」
+				PRINTFORMW 「굉장히, 기분 좋음 그렇다 언니(누나)……」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がＣ절정
+	;=================================================
+	IF 구상記入チェック(100) && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
+		SELECTCASE RANDREACT(3, 61)
+			CASE 0
+;OriginalString : 「あはっ……力、篭ってる……」
+				PRINTFORMW 「아는……힘, 깃들이고 있다……」
+;OriginalString : 「ほら、握ってて、いいよ……」
+				PRINTFORMW 「이봐요, 잡고 있어, 좋아……」
+			CASE 1
+;OriginalString : 「何だか、妬いちゃうなあ」
+				PRINTFORMW 「무엇인가, 질투해버린다」
+;OriginalString : 「もっと、責めちゃおう」
+				PRINTFORMW 「 좀 더, 꾸짖어 버리자」
+			CASE 2
+;OriginalString : 「そんなに、良かった？」
+				PRINTFORMW 「그렇게, 좋았다？」
+;OriginalString : 「だって、凄い顔してたからさあ」
+				PRINTFORMW 「이래, 굉장한 얼굴 하고 있었기 때문에 자」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	SELECTCASE RANDREACT(3, 62)
+		CASE 0
+;OriginalString : 「良くなってくれてるんだね……」
+			PRINTFORMW 「좋아져 주고 있어……」
+;OriginalString : 「もっと、頑張るからっ！」
+			PRINTFORMW 「 좀 더, 노력한다！」
+		CASE 1
+;OriginalString : 「大分、솔직だねえ」
+			PRINTFORMW 「상당히, 솔직하구나」
+;OriginalString : 「うん、嬉しいよ……」
+			PRINTFORMW 「응, 기뻐……」
+		CASE 2
+;OriginalString : 「ここ、そんなに良い？」
+			PRINTFORMW 「여기, 그렇게 좋다？」
+;OriginalString : 「弱点発見했다みたいだあね……」
+			PRINTFORMW 「약점 발견한 것 같다 언니(누나)……」
+	ENDSELECT
+	RETURN 1
+ENDIF
+;REACT12, 입으로 애무
+
+;────────────────────────────────────
+;REACT13, 항문애무・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생（0=항문애무/1=전립선자극/2=항문바이브出し入れ）
+;-------------------------------------------------
+;想定されるCOM
+;회화系反応
+;	COM:용서를 빌다
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:고통을 참는다/비명지른다/날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_13
+;-------------------------------------------------
+;・地の文はACT파생で分岐。ACT파생1, 2分岐内の派生なし
+;・ACT파생0, 항문애무のみREACT분류(受け入れる/적극적으로 한다, 태연하게 한다/용서를 빌다/소극적으로 한다)で派生処理される
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT파생0, 항문애무
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;COM10, 부끄러워한다(REACT분류"소극적으로 한다")
+	;=================================================
+	IF 구상記入チェック(100) && IS_NOWCOMNAME("부끄러워한다")
+		;-------------------------------------------------
+		;初回
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && FIRSTREACT(0)
+;OriginalString : 「そうだね、恥ずかしいだろうねえ」
+			PRINTFORMW 「그렇다, 부끄럽겠지」
+;OriginalString : 「でも、大丈夫だよ……」
+			PRINTFORMW 「 그렇지만, 괜찮아……」
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;죠교대상がＡ절정
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && NOWEX:MASTER:Ａ절정
+			SELECTCASE RANDREACT(3, 0)
+				CASE 0
+;OriginalString : 「お尻で、良くなっちゃったね？」
+					PRINTFORMW 「엉덩이로, 좋아져 버렸다？」
+;OriginalString : 「恥ずかしがらなくても、いいのにさ」
+					PRINTFORMW 「부끄러워하지 않아도, 좋은데」
+				CASE 1
+;OriginalString : 「顔、真っ赤になってるよ……」
+					PRINTFORMW 「얼굴, 새빨갛게 되어 있어……」
+;OriginalString : 「声くらい出しても、いいんじゃない？」
+					PRINTFORMW 「소리 정도 내도, 좋지 않아？」
+				CASE 2
+;OriginalString : 「中が、うねって……」
+					PRINTFORMW 「안이, 꾸불꾸불해……」
+;OriginalString : 「私の指、絡めとられちゃいそうだあ……」
+					PRINTFORMW 「 나의 손가락, 관련되고 빼앗겨버릴 것 같다 아……」
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+		SELECTCASE RANDREACT(3, 1)
+			CASE 0
+;OriginalString : 「まだ、恥ずかしい？」
+				PRINTFORMW 「 아직, 부끄럽다？」
+;OriginalString : 「こんなこと、されてるもんねえ……」
+				PRINTFORMW 「이런 일, 되고 있는 것 응……」
+			CASE 1
+;OriginalString : 「お尻弄られて、恥ずかしい？」
+				PRINTFORMW 「엉덩이 만지작거려져, 부끄럽다？」
+;OriginalString : 「何も感じなくなるまで、弄ってあげるよ……」
+				PRINTFORMW 「아무것도 느끼지 않게 될 때까지, 만지작거려 줄게……」
+			CASE 2
+;OriginalString : 「そろそろ、良さがわかってきたんじゃない？」
+				PRINTFORMW 「이제, 좋은 점을 알 수 있어 왔지 않는다？」
+;OriginalString : 「抜く時、なかなか離してくれないからさあ」
+				PRINTFORMW 「뽑을 때, 좀처럼 떼어 놓아 주지 않기 때문에 자」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;COM11, 싫어한다
+	;=================================================
+	IF 구상記入チェック(100) && IS_NOWCOMNAME("싫어한다")
+		;-------------------------------------------------
+		;嫌がって妨害했다
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+			;아라이멘도正
+			IF ALI(0)
+				SELECTCASE RANDREACT(3, 10)
+					CASE 0
+;OriginalString : 「もしかして、怖かった……？」
+						PRINTFORMW 「혹시, 무서웠다……？」
+;OriginalString : 「でも、暴れないで欲しいなあ」
+						PRINTFORMW 「 그렇지만, 날뛰지 않으면 좋다」
+					CASE 1
+;OriginalString : 「そんな、いきなり動くと……」
+						PRINTFORMW 「그런, 갑자기 움직이면(자)……」
+;OriginalString : 「傷ついて危ないから、次からはやめてね？」
+						PRINTFORMW 「다쳐 위험하기 때문에, 다음으로부터는 그만두어？」
+					CASE 2
+;OriginalString : 「痛かったかな？」
+						PRINTFORMW 「아팠지？」
+;OriginalString : 「上손くなくて、ごめんね……」
+						PRINTFORMW 「능숙하지 않아서, 미안해요……」
+				ENDSELECT
+			;아라이멘도負
+			ELSE
+				SELECTCASE RANDREACT(3, 11)
+					CASE 0
+;OriginalString : 「あんまり、怪我は시켰다くないんだけど」
+						PRINTFORMW 「너무, 상처는 시키고 싶지 않지만」
+;OriginalString : 「まだわかってくれないのかなあ」
+						PRINTFORMW 「 아직 알아 주지 않는 것인지」
+					CASE 1
+;OriginalString : 「いくら嫌だからって、その態度は感心しないねえ」
+						PRINTFORMW 「아무리 싫기 때문에는, 그 태도는 감탄하지 않구나」
+;OriginalString : 「もっと、酷くなっちゃうよ？」
+						PRINTFORMW 「 좀 더, 심해져버린다？」
+					CASE 2
+;OriginalString : 「お尻は、そんなに嫌なのかな？」
+						PRINTFORMW 「엉덩이는, 그렇게 싫은가？」
+;OriginalString : 「生憎、私河童なんだよねえ」
+						PRINTFORMW 「생증, 나갓빠야 」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;싫어한다がACTは妨害せず
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && !TFLAG:REACT파생
+			;아라이멘도正
+			IF ALI(0)
+				SELECTCASE RANDREACT(3, 12)
+					CASE 0
+;OriginalString : 「まあ、そのうち良くなるよ」
+						PRINTFORMW 「뭐, 그 중 좋아져」
+;OriginalString : 「ちょっとの間、참다してね？」
+						PRINTFORMW 「조금의 사이, 참아？」
+					CASE 1
+;OriginalString : 「もうちょっと、解했다ほうが良かったかな？」
+						PRINTFORMW 「좀 더, 푸는 편이 좋았지？」
+;OriginalString : 「なるべく、気を付けるよ……」
+						PRINTFORMW 「가능한 한, 조심해……」
+					CASE 2
+;OriginalString : 「お尻は、駄目かな……？」
+						PRINTFORMW 「엉덩이는, 안된가……？」
+;OriginalString : 「きっと気持ち良いから、ね？」
+						PRINTFORMW 「반드시 기분 좋기 때문에, 군요？」
+				ENDSELECT
+			;아라이멘도負
+			ELSE
+				SELECTCASE RANDREACT(3, 13)
+					CASE 0
+;OriginalString : 「こんなに緩いのに、問題でもあるのかな？」
+						PRINTFORMW 「이렇게 느슨한데, 문제라도 있는 것일까？」
+;OriginalString : 「全く、贅沢だねえ」
+						PRINTFORMW 「완전히, 사치구나 」
+					CASE 1
+;OriginalString : 「お尻は、嫌なのかあ」
+						PRINTFORMW 「엉덩이는, 싫은가 아」
+;OriginalString : 「私は好きなんだけどねえ」
+						PRINTFORMW 「 나는 좋아하지만 응」
+					CASE 2
+;OriginalString : 「大人しくしてたほうがいいよ？」
+						PRINTFORMW 「얌전하게 하고 있었던 편이 좋아？」
+;OriginalString : 「お尻は繊細だからさあ」
+						PRINTFORMW 「엉덩이는 섬세하기 때문에 자」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+	;=================================================
+	;COM13, 겁없이 웃는다(REACT분류"태연하게 한다")
+	;=================================================
+	IF 구상記入チェック(100) && IS_NOWCOMNAME("겁없이 웃는다")
+		;아라이멘도正
+		IF ALI(0)
+			SELECTCASE RANDREACT(3, 20)
+				CASE 0
+;OriginalString : 「変わった反応だね……」
+					PRINTFORMW 「바뀐 반응이구나……」
+;OriginalString : 「わかりやすい反応だと、嬉しいなー……」
+					PRINTFORMW 「알기 쉬운 반응이라고, 기쁜데―……」
+				CASE 1
+;OriginalString : 「何か、気に入らなかったかなあ？」
+					PRINTFORMW 「무엇인가, 마음에 들지 않았지？」
+;OriginalString : 「言ってくれないと、わからないよ」
+					PRINTFORMW 「말해 주지 않으면, 몰라」
+				CASE 2
+;OriginalString : 「その余裕、無くすまで弄ってあげるよ」
+					PRINTFORMW 「그 나머지히로시, 잃을 때까지 만지작거려 줄게」
+;OriginalString : 「後で謝っても、許さないからねっ」
+					PRINTFORMW 「다음에 사과해도, 허락하지 않으니까」
+			ENDSELECT
+		;아라이멘도負
+		ELSE
+			SELECTCASE RANDREACT(3, 21)
+				CASE 0
+;OriginalString : 「お尻弄られながら、笑われてもねえ」
+					PRINTFORMW 「엉덩이 만지작거려지고면서, 웃어져도 응」
+;OriginalString : 「凄く、間抜けな感じだよね……」
+					PRINTFORMW 「굉장히, 얼간이인 느낌이지요……」
+				CASE 1
+;OriginalString : 「その内、笑えなくなっちゃうよ？」
+					PRINTFORMW 「그 안, 웃을 수 있지 않게 되어버린다？」
+;OriginalString : 「고통か快感のどっちが原因かは、わからないけどさあ」
+					PRINTFORMW 「아픔이나 쾌감의 어느 쪽이 원인인가는, 모르지만 아」
+				CASE 2
+;OriginalString : 「もっと強く刺激했다ら、どうなるんだろ？」
+					PRINTFORMW 「 좀 더 강하게 자극하면(자), 응이겠지？」
+;OriginalString : 「大声で笑うのかな？」
+					PRINTFORMW 「큰 소리로 웃는 것일까？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;COM14, 쾌감을 참는다
+	;=================================================
+	IF 구상記入チェック(100) && IS_NOWCOMNAME("쾌감을 참는다")
+		;-------------------------------------------------
+		;죠교대상がＡ절정
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && NOWEX:MASTER:Ａ절정
+			SELECTCASE RANDREACT(3, 30)
+				CASE 0
+;OriginalString : 「力、入れないでよお」
+					PRINTFORMW 「힘, 넣지 말아 」
+;OriginalString : 「指、動かせないじゃんか」
+					PRINTFORMW 「손가락, 움직일 수 없잖아인가」
+				CASE 1
+;OriginalString : 「お尻は、솔직だねえ」
+					PRINTFORMW 「엉덩이는, 솔직하구나」
+;OriginalString : 「入입が、こんなに膨らんじゃって……」
+					PRINTFORMW 「입구가, 이렇게 부풀어 올라 버려서……」
+				CASE 2
+;OriginalString : 「声、聞かせて欲しいなあ」
+					PRINTFORMW 「소리, 들려주었으면 좋다」
+;OriginalString : 「せっかく気持ち良くなってるんだからさ……」
+					PRINTFORMW 「모처럼 기분 좋아지고 있기 때문에……」
+			ENDSELECT
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;派生：애원「もうこんなことやめて」
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+			SELECTCASE RANDREACT(3, 31)
+				CASE 0
+;OriginalString : 「そんなこと言う割りに、お尻はどうなんだろうね？」
+					PRINTFORMW 「그런 일 말하는데 비해서, 엉덩이는 어떻게일까？」
+;OriginalString : 「さっきから凄い音立ててるよ？」
+					PRINTFORMW 「조금 전부터 굉장한 소리내고 있어？」
+				CASE 1
+;OriginalString : 「お尻弄るの、やめて欲しい？」
+					PRINTFORMW 「엉덩이 만지작거리는 것, 그만두었으면 좋겠다？」
+;OriginalString : 「そんな気持ち良さそうな顔してるのに？」
+					PRINTFORMW 「그런 기분 좋음 그런 얼굴 해？」
+				CASE 2
+;OriginalString : 「솔직になって欲しいなあ」
+					PRINTFORMW 「솔직해졌으면 좋다」
+;OriginalString : 「もっと、気持ち良くなるのにさ」
+					PRINTFORMW 「 좀 더, 기분 좋아지는데」
+			ENDSELECT
+			RETURN 1
+		ENDIF
+		
+		;-------------------------------------------------
+		;派生：耐久
+		;-------------------------------------------------
+		IF 구상記入チェック(100) && !TFLAG:REACT파생
+			;아라이멘도正
+			IF ALI(0)
+				SELECTCASE RANDREACT(3, 32)
+					CASE 0
+;OriginalString : 「大丈夫？　痛いとかじゃ、ないよね？」
+						PRINTFORMW 「괜찮아？ 아프다든가는, 없지요？」
+;OriginalString : 「気持ち良いのなら、いいんだけど」
+						PRINTFORMW 「기분 좋다면, 좋지만」
+					CASE 1
+;OriginalString : 「お尻、締め付けてるよ……」
+						PRINTFORMW 「엉덩이, 단단히 조이고 있어……」
+;OriginalString : 「ほら、力抜いて……」
+						PRINTFORMW 「이봐요, 힘 뽑아……」
+					CASE 2
+;OriginalString : 「気持ち良過ぎるのかな？」
+						PRINTFORMW 「기분 너무 좋은 것일까？」
+;OriginalString : 「辛かったら、言ってね」
+						PRINTFORMW 「괴로웠으면, 말해」
+				ENDSELECT
+			;아라이멘도負
+			ELSE
+				SELECTCASE RANDREACT(3, 33)
+					CASE 0
+;OriginalString : 「お尻で気持ち良くなるなんてねえ」
+						PRINTFORMW 「엉덩이로 기분 좋아지다니 응」
+;OriginalString : 「いつまで、참다できるかな？」
+						PRINTFORMW 「언제까지, 참을 수 있을까？」
+					CASE 1
+;OriginalString : 「こんないやらしく腰振って、참다してるつもりかな？」
+						PRINTFORMW 「이런 불쾌하고 허리 털어, 참고 있는 작정(생각)일까？」
+;OriginalString : 「もっと、抉ってみようかねえ」
+						PRINTFORMW 「 좀 더, 떠 볼까 응」
+					CASE 2
+;OriginalString : 「もうそろそろ、限界かな？」
+						PRINTFORMW 「이제 슬슬, 한계일까？」
+;OriginalString : 「どんな顔するのか、楽しみだあ……」
+						PRINTFORMW 「어떤 얼굴 하는지, 기다려진다 아……」
+				ENDSELECT
+			ENDIF
+			RETURN 1
+		ENDIF
+	ENDIF
+;条件にヒットしなければ汎用リアクションに流す
+RETURN 0
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT파생1, 전립선자극
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が남자の場合のみに派生。地の文の派生なし
+;ACT파생0を参考に拡張するなり、統合するなり
+;そんな訳でここは最小限にしておきます
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TFLAG:ACT파생 == 1
+;ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT파생2, 항문바이브出し入れ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;地の文はTALENT:MASTER:남자か否かで分岐
+;ACT파생0を参考に拡張するなり、統合するなり
+;そんな訳でここは最小限にしておきます
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TFLAG:ACT파생 == 2
+;ENDIF
+;REACT13, 항문애무
+
+;────────────────────────────────────
+;REACT14, 항문펠라・個別リアクション
+;────────────────────────────────────
+;・ACT파생なし。ACTION_APPLY2の処理なし
+;-------------------------------------------------
+;想定されるCOM
+;회화系反応
+;	COM:용서를 빌다
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:고통을 참는다/비명지른다/날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_14
+;-------------------------------------------------
+RETURN 0
+;REACT14, 항문펠라
+
+;────────────────────────────────────
+;REACT15, 키스・個別リアクション
+;────────────────────────────────────
+;・ACT파생なし。ACTION_APPLY2の処理なし
+;-------------------------------------------------
+;想定されるCOM
+;회화系反応
+;	COM:더 하드하게 해
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:고통을 참는다/비명지른다/날뛴다
+;その他反応
+;	COM:자위를 시작한다
+;-------------------------------------------------
+@KOJO_REACT_K40_15
+;-------------------------------------------------
+;・地の文はREACT분류(적극적으로 한다/受け入れる/태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+;・TEQUIP:성교중は体位毎、TEQUIP:성교봉사중はTCVAR:MASTER:애태움도で派生する
+;・可能性のあるものを一通り置いておきます。필요に応じて分岐を増減して下さい
+;-------------------------------------------------
+RETURN 0
+;REACT15, 키스
+
+;────────────────────────────────────
+;REACT16, 성기마찰한다・個別リアクション
+;────────────────────────────────────
+;・TFLAG:ACT파생（=0,貝あわせ/=1,스마타/=2,페니스밴드스마타）
+;-------------------------------------------------
+;想定されるCOM
+;회화系反応
+;	COM:더 하드하게 해
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_16
+;-------------------------------------------------
+;・地の文はACT파생毎にREACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다, 소극적으로 한다)で分岐
+;・필요に応じて分岐を増減して使用して下さい
+;-------------------------------------------------
+RETURN 0
+;REACT16, 성기마찰한다
+
+;────────────────────────────────────
+;REACT17, 파이즈리한다・個別リアクション
+;────────────────────────────────────
+;・ACT파생なし
+;-------------------------------------------------
+;想定されるCOM
+;회화系反応
+;	COM:더 하드하게 해
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:고통을 참는다/비명지른다/날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_17
+;-------------------------------------------------
+;・地の文はCOM:허리를 흔든다、REACT분류(受け入れる/적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+;・애무系COMを網羅。필요に応じて分岐を増減して使用して下さい
+;-------------------------------------------------
+RETURN 0
+;REACT17, 파이즈리한다
+
+;────────────────────────────────────
+;REACT18, 풋잡하기・個別リアクション
+;────────────────────────────────────
+;・ACT파생なし
+;-------------------------------------------------
+;想定されるCOM
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_18
+;-------------------------------------------------
+;・ACTの派生なし
+;-------------------------------------------------
+;・地の文はREACT분류(受け入れる/적극적으로 한다, 태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+;・필요に応じて分岐を増減して使用して下さい
+;-------------------------------------------------
+RETURN 0
+;REACT18, 풋잡하기
+
+;────────────────────────────────────
+;REACT19, 손가락삽입한다
+;────────────────────────────────────
+;・TFLAG:ACT파생(0=손가락삽입한다/1=Ｇスポット刺激/2=바이브出し入れ)
+;-------------------------------------------------
+;想定されるCOM
+;애무系反応
+;	COM:부끄러워한다/싫어한다/서투르다고 모욕한다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+;고통系反応
+;	COM:날뛴다
+;-------------------------------------------------
+@KOJO_REACT_K40_19
+;-------------------------------------------------
+;地の文はACT파생0のみREACT분류で分岐
+;その他はTALENT:MASTER:후타나리であるか否かで派生するのみ
+;-------------------------------------------------
+RETURN 0
+
+;────────────────────────────────────
+;REACT27, 밀어 넘어트린다・個別リアクション
+;────────────────────────────────────
+;TFLAG:ACT파생（=0,밀어 넘어트린다/=1,밀어넘어짐終了）
+;-------------------------------------------------
+;想定されるCOM
+;회화系反応
+;	COM:마음 약하게 응답한다/무뚝뚝하게 응답한다/상냥하게 응답한다/강하게 응답한다/용서를 빌다/기분좋게 해
+;고통系反応
+;	COM:무서워한다
+;-------------------------------------------------
+@KOJO_REACT_K40_27
+;-------------------------------------------------
+;地の文はREACT분류(受け入れる/적극적으로 한다, 태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+;ACT파생毎の分岐はなしかつ、内容的にはACT파생0のもの
+;ACT파생1の場合は整合性が崩れると思われる
+;-------------------------------------------------
+RETURN 0
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT파생0, 밀어 넘어트린다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;この箇所は個別のCOM毎に記述するには適さないと思われるので
+;REACT분류で分けておきます
+;-------------------------------------------------
+;IF 구상記入チェック(0) && !TFLAG:ACT파생
+;ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT파생0, 밀어넘어짐終了
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT파생1,밀어넘어짐と処理が共通なのでちょっとアレな感じの箇所
+;何もせずにRETURN 1だけ返すのもアリな気もします
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TFLAG:ACT파생 == 1
+;ENDIF

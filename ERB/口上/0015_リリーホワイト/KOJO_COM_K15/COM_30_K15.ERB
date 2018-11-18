@@ -1,0 +1,1312 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;		릴리 화이트구상 고통系汎用リアクション구상ファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;=====================================================================
+;고통系反応
+;=====================================================================
+;──────────────────────────────────
+;COM30, 고통을 참는다
+;──────────────────────────────────
+;・REACT분류:소극적으로 한다
+;・REACT인상:好印象小
+;・SOURCE:고통が無い場合は弾かれる
+;-------------------------------------------------
+;・トリガーとなる행동、ソース、パラメーター
+;・SOURCE:고통/구속
+;-------------------------------------------------
+;-------------------------------------------------
+;・TFLAG:REACT파생(0=고통を참다/1=痛いけど기분 좋다!)
+;-------------------------------------------------
+;=================================================
+@KOJO_COM_K15_30
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM30_0, 派生：고통을 참는다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:REACT파생
+	;=================================================
+	;항문애무
+	;=================================================
+	;//このような場合はIS_NOWACTNAMEを使ってください。マジックナンバーは極力使わない方向でひとつ@/L
+	IF 구상記入チェック(100) && IS_NOWACTNAME("항문애무/항문펠라/항문바이브/항문비즈/항문섹스")
+	
+	;//GROUPMATCHを使うと"||"を使うよりシンプルでスマートな記述になります。評価順絡みの不具合とも無縁です
+	;//GET_ACTNAMEを使うことで、IS_NOWACTNAMEと同様に文字列で参照する事も可能になります
+	;IF 구상記入チェック(100) && GROUPMATCH(TFLAG:ACT, 13, 14, 22, 23, 35)
+
+	;//()で囲まない場合、評価順の関係で想定했다通りの動作にはなりません
+	;//そしてこういった記述はGROUPMATCHが実装される以前のやり方で、今となってはかなり古めかしい望ましくないやり方です
+	;IF 구상記入チェック(100) && (TFLAG:ACT == 13 || TFLAG:ACT == 14 || TFLAG:ACT == 23 || TFLAG:ACT == 22 || TFLAG:ACT == 35)
+		SELECTCASE RANDCOM(2, 11)
+			CASE 0
+;OriginalString : 「んっ……ちゃんと痛いの참다できたね…%RAND_SPLIT("いい子いい子/えらいぞ/よく頑張りま했다ね")%っ
+				PRINTFORM 「응……분명하게 아픈 것 참을 수 있었군요…%RAND_SPLIT("좋은 아이 좋은 아이/대단해/자주(잘) 분발함했다저기")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「ゆっくりお尻も慣らしていって……민감な성기にしてあげますからね
+				PRINTFORM 「천천히 엉덩이도 길들여 가……민감한 성기로 해 주니까요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「まだ고통ますか？……もう少し、頑張ってくださいね」
+				PRINTFORMW 「 아직 상합니까？……좀 더, 노력해 주세요」
+;OriginalString : 「おしりアクメが癖になっちゃうくらい……えっちな성기に変えてあげますからね
+				PRINTFORM 「엉덩이 극치가 버릇이 되어 버릴 정도……인 성기로 바꾸어 주니까요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;無理を했다행동
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+			;%CALLNAME:MASTER%は고통を堪えながら、%CALLNAME%の行為を受け入れた…
+		;実はまんざらでもない
+		IF COMCOR_POSI()
+			SELECTCASE RANDCOM(2, 0)
+				CASE 0
+;OriginalString : 「痛いのにちゃんと참다できま했다ね…%RAND_SPLIT("いい子いい子/えらいぞ")%っ♪」
+					PRINTFORMW 「아픈데 제대로 참을 수 있었어요…%RAND_SPLIT("좋은 아이 좋은 아이/대단해")%♪」
+;OriginalString : 「ほら、今度はもう少し激しくしますから……無理ならちゃんと言うんですよ？」
+					PRINTFORMW 「이봐요, 이번은 좀 더 격렬하게 할테니까……무리이면 분명하게 말합니다？」
+				CASE 1
+;OriginalString : 「고통も受け入れてくれるなんて……ほんとに健気な子ですね」
+					PRINTFORMW 「아픔도 받아들여 주다니……정말 기특한 아이군요」
+;OriginalString : 「ちゃんと기분좋게 해あげますから、もう少し참다してくださいね」
+					PRINTFORMW 「분명하게 기분 좋게 해 주기 때문에, 좀 더 참아 주세요」
+			ENDSELECT
+			;%CALLNAME:MASTER%は苦悶の신음を漏ら하면서고통を참다했다…
+		;実は嫌
+		ELSE
+			SELECTCASE RANDCOM(2, 1)
+				CASE 0
+;OriginalString : 「んっ…声、ちょっと漏れちゃいま했다ね？」
+					PRINTFORMW 「응…소리, 조금 새어 버렸습니다？」
+;OriginalString : 「ちゃんと참다しなきゃダメじゃないですかぁ
+					PRINTFORM 「분명하게 참지 않으면 안되지 않습니까
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 1
+;OriginalString : 「泣かないなんて、強い子ですね……%RAND_SPLIT("いい子いい子/えらいぞ")%っ♪」
+					PRINTFORMW 「울지 않는다니, 강한 아이군요……%RAND_SPLIT("좋은 아이 좋은 아이/대단해")%♪」
+;OriginalString : 「これなら、もう少し격렬하게も大丈夫かな？ くすっ♪」
+					PRINTFORMW 「이것이라면, 좀 더 격렬하게 해도 괜찮은가？ 키득♪」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;無理のない행동
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理のない행동"
+		;%CALLNAME:MASTER%は고통を참다했다…
+		;2/3の確立で真
+		IF RAND:3
+			SELECTCASE RANDCOM(3, 2)
+				CASE 0
+;OriginalString : 「んっ……このくらいはもう大丈夫そうですね」
+					PRINTFORMW 「응……이 정도는 이제 괜찮아 그렇네요」
+;OriginalString : 「それとも、これじゃ少し物발りないかな？……くすっ♪」
+					PRINTFORMW 「그렇지 않으면, 이래서야 조금 어딘지 부족할까？……키득♪」
+				CASE 1
+;OriginalString : 「痛いのも참다できるようになってきま했다ね♪」
+					PRINTFORMW 「아픈 것도 참을 수 있게 되었어요♪」
+;OriginalString : 「고통が快感に変わる瞬間まで……あと少しですよっ
+					PRINTFORM 「아픔이 쾌감으로 바뀌는 순간까지……앞으로 조금이에요
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 2
+;OriginalString : 「ほら、ゆっくり息をしてみて？」
+					PRINTFORMW 「이봐요, 천천히 숨을 쉬어 봐？」
+;OriginalString : 「すぅ～、はぁ～……はい、今度はもう少し激しくしますからねっ♪」
+					PRINTFORMW 「～, 후~～……네, 이번은 좀 더 격렬하게 하니까요♪」
+			ENDSELECT
+		;1/3の確立で真
+		ELSE
+			IF 0
+			ELSEIF AFFECTION("상사상애") && PERCENT(80)
+;OriginalString : 「痛いの、참다してくれるんですね……嬉しいです……」
+				PRINTFORMW 「아픈 것, 참아 줍니다……기쁩니다……」
+;OriginalString : 「もっと痛くしても、苦しくしても……リリーを受け入れてくれますか？」
+				PRINTFORMW 「 좀 더 아프게 해도, 괴롭게 해도……릴리를 받아들여 주겠습니까？」
+			ELSEIF AFFECTION("익애") && PERCENT(70)
+;OriginalString : 「痛いですか？ もう少し頑張ってくださいね」
+				PRINTFORMW 「아픕니까？ 좀 더 노력해 주세요」
+;OriginalString : 「고통の後には、気持ちい事が待ってますからね♪」
+				PRINTFORMW 「아픔의 뒤에는, 기분 있고 일이 기다리고 있으니까♪」
+			ELSEIF AFFECTION("권애") && PERCENT(60)
+;OriginalString : 「苦しいですか？ ふふっ、とってもいい表情ですよ♪」
+				PRINTFORMW 「괴롭습니까？ 후후, 매우 좋은 표정이에요♪」
+;OriginalString : 「リリーを만족させてくれたら、ちゃんとご褒美あげますからね♪」
+				PRINTFORMW 「릴리를 만족시켜 주면(자), 분명하게 포상 주니까요♪」
+			ELSEIF AFFECTION("공포") || (!ALI(0) && !RAND:3) || T_COND("분노")
+;OriginalString : 「あれ？ もっといい声で鳴いてくれると思ったんですけど……」
+				PRINTFORMW 「어？ 좀 더 좋은 소리로 울어 준다고 생각했습니다만……」
+;OriginalString : 「도Ｍ豚さんには、もっと激しくしないとダメみたいですね♪」
+				PRINTFORMW 「드Ｍ돼지씨에게는, 좀 더 격렬하게 하지 않으면 안 됨같네요♪」
+			ELSE
+;OriginalString : 「痛いの、참다してくれるんですね……嬉しいです……」
+				PRINTFORMW 「아픈 것, 참아 줍니다……기쁩니다……」
+;OriginalString : 「次はもう少し強くしますけど……%CNAME(MASTER)%なら大丈夫そうですね
+				PRINTFORM 「다음은 좀 더 강하게 합니다만……%CNAME(MASTER)%(이)라면 괜찮아 그렇네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;自然な행동
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "自然な행동"
+		;-------------------------------------------------
+		;ACTが이라마치오
+		;-------------------------------------------------
+		;%CALLNAME:MASTER%は喉奥まで抉られる苦しみに嗚咽を漏ら하면서も、%CALLNAME%の行為を受け入れた
+		IF 구상記入チェック(100) && IS_NOWACTNAME("이라마치오")
+;OriginalString : 「ほらっ♪ もっと苦しそうにしてっ
+			PRINTFORM 「이봐요♪ 좀 더 괴로운 듯하게 해
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+;OriginalString : 「喉の奥で……リリーのおちんちん、しっかり味わってくださいねっ
+			PRINTFORM 「목의 안쪽에서……릴리의 자지, 확실히 맛봐 주세요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+		SELECTCASE RANDCOM(3, 10)
+			CASE 0
+;OriginalString : 「んっ……ちゃんと痛いの참다できま했다ね」
+				PRINTFORMW 「응……분명하게 아픈 것 참을 수 있었어요」
+;OriginalString : 「ほら、おいで……はい、%RAND_SPLIT("いい子いい子/えらいぞ/よく頑張りま했다ね")%っ
+				PRINTFORMW 「이봐요, 와……네,%RAND_SPLIT("좋은 아이 좋은 아이/대단해/자주(잘) 분발함했다저기")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「声、ちょっと漏れちゃいま했다ね」
+				PRINTFORMW 「소리, 조금 새어 버렸습니다」
+;OriginalString : 「もうっ……ちゃんと참다しなきゃメっですよ？」
+				PRINTFORMW 「 이제……분명하게 참지 않으면 메예요？」
+			CASE 2
+;OriginalString : 「泣かないなんて、強い子ですねっ♪」
+				PRINTFORMW 「울지 않는다니, 강한 아이군요♪」
+;OriginalString : 「これなら、もう少し격렬하게も大丈夫かな？ くすっ♪」
+				PRINTFORMW 「이것이라면, 좀 더 격렬하게 해도 괜찮은가？ 키득♪」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM30_1, 派生：痛いけど기분 좋다!
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+	;=================================================
+	;항문애무
+	;=================================================
+	IF 구상記入チェック(100) && IS_NOWACTNAME("항문애무/항문펠라/항문바이브/항문비즈/항문섹스")
+		SELECTCASE RANDCOM(2, 22)
+			CASE 0
+;OriginalString : 「んっ……ちゃんと痛いの참다できたね…%RAND_SPLIT("えらいぞぉ/よく頑張りま했다ね")%っ
+				PRINTFORM 「응……분명하게 아픈 것 참을 수 있었군요…%RAND_SPLIT("대단해/자주(잘) 분발함했다저기")%
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「でも、おしりで感じちゃうエッチな豚さんには『おしおき』が필요かな
+				PRINTFORM 「 그렇지만, 엉덩이로 느껴버린다 음란한 돼지씨에게는 「사형」이 필요한가
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+;OriginalString : 「まぁ、『おしおき』って言っても%CNAME(MASTER)%にとっては『ごほーび』かもしれませんけどね♪」
+				PRINTFORMW 「아무튼, 「사형」이라고 말해도%CNAME(MASTER)%에 있어 「-」일지도 모르지만♪」
+			CASE 1
+;OriginalString : 「まだ고통ますか？……もう少し、頑張ってくださいね♪」
+				PRINTFORMW 「 아직 상합니까？……좀 더, 노력해 주세요♪」
+;OriginalString : 「ほら……おしり『ぐりぐり』ってしますから、は했다なく喘いでくださいねっ
+				PRINTFORM 「이봐요……엉덩이 「때굴때굴」은 하기 때문에, 상스럽게 허덕여 주세요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;無理を했다행동
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+			;%CALLNAME:MASTER%は様々な感情を飲み込み、快感と고통を同時にこらえた…
+		;実はまんざらでもない
+		IF COMCOR_POSI()
+			SELECTCASE RANDCOM(2, 20)
+				CASE 0
+;OriginalString : 「あれ？　もしかして、고통とは違う감각に気付いちゃいま했다？」
+					PRINTFORMW 「어？ 혹시, 아픔과는 다른 감각을 알아차려 버렸습니다？」
+;OriginalString : 「それはね……『快感』って言うんですよっ♪ 도Ｍの ブ タ さんっ♪」
+					PRINTFORMW 「그것은요……「쾌감」이라고 말한다♪ 드Ｍ의 브 타 씨♪」
+				CASE 1
+;OriginalString : 「고통を참다してる、ってだけじゃなさそうですね……表情に戸惑いが見えますよ？」
+					PRINTFORMW 「아픔을 참고 있다, 는 만일 수 있는은 없을 것 같네요……표정에 당황스러움이 보여요？」
+;OriginalString : 「ねぇ……もしかして、こんなので感じちゃってるんですか？ 쿠쿡っ♪」
+					PRINTFORMW 「응……혹시, 이런 건으로 느껴 버린다 입니까？ 킥킥♪」
+			ENDSELECT
+			;%CALLNAME:MASTER%は고통の中に快感を意識し、怯えながら両方を참다했다…
+		;実は嫌
+		ELSE
+			SELECTCASE RANDCOM(2, 21)
+				CASE 0
+;OriginalString : 「リリーが言うのもなんですけど……%CNAME(MASTER)%、素質があると思うんですよね」
+					PRINTFORMW 「릴리가 말하는 것도입니다만……%CNAME(MASTER)%, 소질이 있다고 생각합니다」
+;OriginalString : 「ほら、ここ……ほんとは少し『気持ちいい』って思ってませんか？」
+					PRINTFORMW 「이봐요, 여기……사실은 조금 「기분이 좋다」라고 생각하지 않습니까？」
+;OriginalString : 「自分に솔직になって、リリーと一緒に堕ちちゃいましょうよ……ねっ
+					PRINTFORM 「자신에게 솔직해져, 릴리와 함께 타있읍시다……그런데
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 1
+;OriginalString : 「고통に、リリーに怯えてるだけじゃないですよね？」
+					PRINTFORMW 「아픔에, 릴리에 무서워하는 것만이 아니지요？」
+;OriginalString : 「痛いのに感じてしまう、自分の身体の변화に戸惑ってるんですね……」
+					PRINTFORMW 「아픈데 느껴 버리는, 자신의 신체의 변화에 당황하고 있어요……」
+;OriginalString : 「大丈夫ですよ……リリーに身を任せて、あるがままの自分を受け入れてくださいね
+					PRINTFORM 「괜찮아요……릴리에 몸을 맡겨, 있는 그대로의 자신을 받아들여 주세요
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;消費기력による派生
+	SELECTCASE GET_COM_RANK()
+		;%CALLNAME:MASTER%は고통を紛らわすため、同時にこみ上げる快感にすがりついた…
+		CASE "自然な행동"
+			SELECTCASE RANDCOM(3, 20)
+				CASE 0
+;OriginalString : 「고통の奥の、痺れる様な快感……%CNAME(MASTER)%も見つけちゃいま했다ね」
+					PRINTFORMW 「아픔의 안쪽의, 저리는 것 같은 쾌감……%CNAME(MASTER)%도 찾아내 버렸습니다」
+;OriginalString : 「これからもっと痛くしてあげますから、ちゃんと集中して感じるんですよ？」
+					PRINTFORMW 「지금부터 좀 더 아프게 해 주기 때문에, 분명하게 집중하고 느낍니다？」
+;OriginalString : 「大丈夫……%CNAME(MASTER)%なら、とっても気持ち良くなれますよ
+					PRINTFORM 「괜찮아……%CNAME(MASTER)%(이)라면, 매우 기분 좋아질 수 있어요
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 1
+;OriginalString : 「こんな事で感じちゃうなんて……ほんとに%RAND_SPLIT("ヘンタイ/도Ｍ")%さんなんですねぇ……」
+					PRINTFORMW 「이런 일로 느껴버린다는……정말%RAND_SPLIT("변태/도Ｍ")%씨이군요……」
+;OriginalString : 「でも安心してくださいね？ リリーはそんな%CNAME(MASTER)%が大好きですからっ♪」
+					PRINTFORMW 「 그렇지만 안심해 주세요？ 릴리는 그런%CNAME(MASTER)%(을)를 아주 좋아하는♪」
+				CASE 2
+;OriginalString : 「ほんとうに、쾌락に貪欲な豚さんですね……」
+					PRINTFORMW 「정말로, 쾌락에 탐욕인 돼지씨군요……」
+;OriginalString : 「ほら、体裁なんか気にしないで？ リリーだけしか見てませんから、ね？」
+					PRINTFORMW 「이봐요, 체재는 신경쓰지 마？ 릴리밖에 보지 않기 때문에 , 군요？」
+;OriginalString : 「痛いのなんか忘れて、快感で頭いっぱいにしてくださいね
+					PRINTFORM 「아픈 것무슨 잊어, 쾌감으로 머리 가득 해 주세요
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+			ENDSELECT
+		;快感と고통が同時に襲い、%CALLNAME:MASTER%はくぐもった声내질렀다…
+		CASE "無理のない행동"
+			SELECTCASE RANDCOM(3, 21)
+				CASE 0
+;OriginalString : 「あれ？ 今ちょっとえっちな声が聴こえたような……」
+					PRINTFORMW 「어？ 지금 조금 인 소리가 들린 것 같은……」
+;OriginalString : 「もしかして、感じちゃってるんですか？」
+					PRINTFORMW 「혹시, 느껴 버린다 입니까？」
+;OriginalString : 「くすっ♪ ほんとうに、%CNAME(MASTER)%って可愛いですねっ♪」
+					PRINTFORMW 「키득♪ 정말로,%CNAME(MASTER)%라고 사랑스럽네요♪」
+				CASE 1
+;OriginalString : 「えっちな声、漏れちゃってますよ？」
+					PRINTFORMW 「인 소리, 새어 버리고 있습니다？」
+;OriginalString : 「あれ？ もしかして、気が付いてなかったんですか？ くすっ♪」
+					PRINTFORMW 「어？ 혹시, 깨닫지 않았습니까？ 키득♪」
+				CASE 2
+;OriginalString : 「痛いのに、なんでそんなに甘い声が出せるんでしょうか？？」
+					PRINTFORMW 「아픈데, 어째서 그렇게 단 소리를 낼 수 있는 것입니까？？」
+;OriginalString : 「……答えは『感じてるから』、ですよね♪」
+					PRINTFORMW 「……대답은 「느끼고 있으니」, 이군요♪」
+;OriginalString : 「ほら、体裁なんか気にしないで？」
+					PRINTFORMW 「이봐요, 체재는 신경쓰지 마？」
+;OriginalString : 「痛いのなんか忘れて、もっと感じていいんですよ
+					PRINTFORM 「아픈 것무슨 잊어, 좀 더 느끼고 있지 않습니다
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+			ENDSELECT
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;──────────────────────────────────
+;COM31, 비명지른다
+;──────────────────────────────────
+;・REACT분류:소극적으로 한다
+;・REACT인상:0から遠ざかる
+;-------------------------------------------------
+;・TFLAG:REACT파생(0=고통による悲鳴/1=공포による悲鳴)
+;-------------------------------------------------
+;=================================================
+@KOJO_COM_K15_31
+;=================================================
+;派生で別けるのが面倒なので、どちらでも違和感でない程度にしてまとめてしまう
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;無理を했다행동
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+			;%CALLNAME:MASTER%は媚びるような悲鳴を上げた…
+			;%CALLNAME:MASTER%は%CALLNAME%の好む고통の悲鳴を自然に声に出했다…
+	;実はまんざらでもないかつ、죠교자が분노ではない
+	IF COMCOR_POSI() && !T_COND("분노")
+		SELECTCASE RANDCOM(3, 0)
+			CASE 0
+;OriginalString : 「%CNAME(MASTER)%の悲鳴、まるで誘ってるみたいですね……くすっ♪」
+				PRINTFORMW 「%CNAME(MASTER)%의 비명, 마치 권하고 있는 것 같네요……키득♪」
+;OriginalString : 「まだまだ余裕そうで安心しま했다♪」
+				PRINTFORMW 「아직도 여유 그래 안심했습니다♪」
+			CASE 1
+;OriginalString : 「%CNAME(MASTER)%って意外に演技派なんですね♪」
+				PRINTFORMW 「%CNAME(MASTER)%라고 의외로 연기파이군요♪」
+;OriginalString : 「もしかして『ＳＭごっこ』がご希望ですか？ くすっ♪」
+				PRINTFORMW 「혹시 「ＳＭ짓거리」가 희망입니까？ 키득♪」
+			CASE 2
+;OriginalString : 「うーん、ちょっとわざとらしいかな……うふふっ♪」
+				PRINTFORMW 「응, 조금 일부러인것 같을까……후후♪」
+;OriginalString : 「無理して悲鳴を上げなくても大丈夫ですからねっ♪」
+				PRINTFORMW 「무리해 비명을 올리지 않아도 괜찮기 때문에♪」
+		ENDSELECT
+			;%CALLNAME:MASTER%は怯えたように悲鳴を上げてみせた…
+			;%CALLNAME:MASTER%は悲鳴を上げて고통に悶えてみせた…
+	;その他
+	ELSE
+		SELECTCASE RANDCOM(3, 1)
+			CASE 0
+;OriginalString : 「%CNAME(MASTER)%の悲鳴、まるで誘ってるみたいですね……くすっ♪」
+				PRINTFORMW 「%CNAME(MASTER)%의 비명, 마치 권하고 있는 것 같네요……키득♪」
+;OriginalString : 「ほら、次はどうして欲しいんですか？」
+				PRINTFORMW 「이봐요, 다음은 어째서 갖고 싶습니까？」
+			CASE 1
+;OriginalString : 「%CNAME(MASTER)%って意外に演技派なんですね♪」
+				PRINTFORMW 「%CNAME(MASTER)%라고 의외로 연기파이군요♪」
+;OriginalString : 「もっと余裕をなくさないと、本当の悲鳴は聴けないって事でしょうか？」
+				PRINTFORMW 「 좀 더 여유를 없애지 않으면 진정한 비명은 들을 수 없다는 것입니까？」
+			CASE 2
+;OriginalString : 「ちょっとわざとらしいですよっ」
+				PRINTFORMW 「조금 일부러인것 같아요」
+;OriginalString : 「もう少し激しく했다ら、本気の悲鳴も聴けるんでしょうか？」
+				PRINTFORMW 「좀 더 격렬하게 하면(자), 진심의 비명도 들을 수 있는 것입니까？」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;=================================================
+;항문系への刺激（A애무/舐め/A바이브/A비즈/A섹스/관장）
+;=================================================
+	IF 구상記入チェック(100) && IS_NOWACTNAME("항문애무/항문펠라/항문바이브/항문비즈/항문섹스/관장세트")
+		SELECTCASE RANDCOM(2, 2)
+			CASE 0
+;OriginalString : 「んっ……ちゃんと可愛い声で鳴けま했다ね♪」
+				PRINTFORMW 「응……분명하게 사랑스러운 소리로 울 수 있었어요♪」
+;OriginalString : 「もう少し했다ら、おしりでも感じられるようになりますから……」
+				PRINTFORMW 「좀 더 하면(자), 엉덩이에서도 느껴지게 될테니까……」
+;OriginalString : 「それまで、あとちょっとだけ頑張ってみましょうねっ
+				PRINTFORM 「그것까지, 나머지 조금 노력해 봐요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「おしり、まだ고통ますか？」
+				PRINTFORMW 「엉덩이, 아직 상합니까？」
+;OriginalString : 「むぅ……ゆ～っくりしますから、もう少しだけ頑張ってくださいね♪」
+				PRINTFORMW 「……～절의 부엌 하기 때문에, 좀 더만 노력해 주세요♪」
+;OriginalString : 「いきますよ……ぐりぐりぃ…ぐ～りぐ～りっ
+				PRINTFORM 「살아요……때굴때굴…～～
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM31_0, 派生：고통による悲鳴
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:REACT파생
+	;================================================
+	;ACT분류が회화（ACT:매도がここで処理される場合あり）
+	;================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "회화")
+		SELECTCASE RANDCOM(2, 9)
+			CASE 0
+;OriginalString : 「あっ、すみませんっ！」
+				PRINTFORMW 「아, 미안합니다！」
+;OriginalString : 「リリーったらお話に夢中になっちゃって……痛かったですか？」
+				PRINTFORMW 「릴리도 참 이야기에 열중해 버려서……아팠습니까？」
+			CASE 1
+;OriginalString : 「あっ、すみませんっ！　ちょっと刺激が強すぎま했다？」
+				PRINTFORMW 「아, 미안합니다！ 조금 자극이 너무 강했습니다？」
+;OriginalString : 「こんなに痛がるなんて……むむ、予想外です……」
+				PRINTFORMW 「이렇게 아파하다니……, 예상외입니다……」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;================================================
+	;ACT분류が애무
+	;================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "애무")
+		;=================================================
+		;죠교자の상태が분노
+		;=================================================
+		IF 구상記入チェック(100) && T_COND("분노")
+			SELECTCASE RANDCOM(2, 10)
+				CASE 0
+;OriginalString : 「민감な場所ですもんね……ふふっ♪」
+					PRINTFORMW 「민감한 장소이지요……후후♪」
+;OriginalString : 「大丈夫ですよ、そう簡単に壊했다りはしませんから……ね
+					PRINTFORM 「괜찮아요, 그렇게 간단하게 부수거나는 하지 않기 때문에……그런데
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 1
+;OriginalString : 「かわいい声ですね……でもこれで、今の状況がわかりま했다か？」
+					PRINTFORMW 「귀여운 소리군요……그렇지만 이것으로, 지금의 상황을 알 수 있었습니까？」
+;OriginalString : 「%CNAME(MASTER)%を気持ち良くするのも、痛くするのも、全部リリーの자유なんですよ♪」
+					PRINTFORMW 「%CNAME(MASTER)%(을)를 기분 좋게 하는 것도, 아프게 하는 것도, 전부 릴리의 자유로운 응이에요♪」
+			ENDSELECT
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは優し気な笑みを浮かべているが、その声色は確かな怒気を孕んでいる…
+			PRINTFORMDW 릴리는 스구루 해 기분인 미소를 띄우고 있지만, 그 음색은 확실한 노기를 잉응으로 있다…
+			RETURN 1
+		ENDIF
+		
+		;=================================================
+		;ACT18, 풋잡하기の場合
+		;=================================================
+		IF 구상記入チェック(100) && IS_NOWACTNAME("풋잡하기")
+			SELECTCASE RANDCOM(3, 11)
+				CASE 0
+;OriginalString : 「쿠쿡っ♪　%CNAME(MASTER)%が痛がってくれて、リリーも少し安心しま했다♪」
+					PRINTFORMW 「킥킥♪ %CNAME(MASTER)%하지만 아파해 주어, 릴리도 조금 안심했습니다♪」
+;OriginalString : 「だってこれで感じちゃったら、もうただのブタさんですもん……ねっ
+					PRINTFORM 「이래 이것으로 느껴 버렸다들 , 이제 단순한 돼지씨인거야……그런데
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 1
+;OriginalString : 「優しく踏んでるんですけど、なかなか力加減が難しいですね……」
+					PRINTFORMW 「상냥하게 밟고 있습니다만, 꽤 힘조절이 어렵네요……」
+;OriginalString : 「でも%CNAME(MASTER)%……痛がってる割りに、おちんちん元気になってませんか？」
+					PRINTFORMW 「 그렇지만%CNAME(MASTER)%……아파하고 있는 나누기에, 자지 건강하게 되지 않습니까？」
+				CASE 2
+;OriginalString : 「リリーの발の裏で、硬くて熱いのが脈打ってて……」
+					PRINTFORMW 「릴리의 다리의 뒤에서, 딱딱하고 뜨거운 것이 맥박치고 있어……」
+;OriginalString : 「踏む度に비명지른다%CNAME(MASTER)%の%RAND_SPLIT("は했다ない/えっちな/可愛い")%顔を見てると……んっ
+					PRINTFORM 「밟을 때에 비명을 올린다%CNAME(MASTER)%의 %RAND_SPLIT("하했다없다/엣치한/사랑스럽다")%얼굴을 보고 있다고(면)……응
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+;OriginalString : 「これは……なんだかゾクゾクしちゃいますっ
+					PRINTFORM 「이것은……어쩐지 조크조크있습니다
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+			ENDSELECT
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは%CALLNAME:MASTER%의 股間を짓밟아ながら、%RAND_SPLIT("サディスティック/嗜虐的")%な喜びを感じ始めているようだ……
+			PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 고간을 짓밟으면서,%RAND_SPLIT("가학적/기학적")%기쁨을 느끼기 시작하고 있는 것 같다……
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+		IF AFFECTION("상사상애") && PERCENT(60)
+;OriginalString : 「%RAND_SPLIT("すっすみませんっ……/あわっあわわわわ……")%」
+			PRINTFORMW 「%RAND_SPLIT("입니다 보지 않습니다……/조조원원원……")%」
+;OriginalString : 「あの……痛かった、ですか？　うぅ……」
+			PRINTFORMW 「그……아팠다, 입니까？ ……」
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは申し訳なさそうな表情で%CALLNAME:MASTER%を見つめている…
+			PRINTFORMDW 릴리는 변명 없을 것 같은 표정으로 %CALLNAME:MASTER%(을)를 응시하고 있다…
+		ELSEIF AFFECTION("공포")
+;OriginalString : 「せっかくリリーがしてあげてるのに」
+			PRINTFORMW 「모처럼 릴리가 해 주어 」
+;OriginalString : 「その反応は失礼ですよ……もう……」
+			PRINTFORMW 「그 반응은 실례예요……이제……」
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは不満げな表情で%CALLNAME:MASTER%を見つめている…
+			PRINTFORMDW 릴리는 불만인 표정으로 %CALLNAME:MASTER%(을)를 응시하고 있다…
+		ELSE
+;OriginalString : 「あぅ…痛かったですか？」
+			PRINTFORMW 「아…아팠습니까？」
+;OriginalString : 「頑張ってるんですけど……%RAND_SPLIT("へたっぴで/拙くて")%すみません……」
+			PRINTFORMW 「노력하고 있습니다만……%RAND_SPLIT("로/변변치않아서")%미안합니다……」
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは申し訳なさそうな表情で%CALLNAME:MASTER%を見つめている…
+			PRINTFORMDW 릴리는 변명 없을 것 같은 표정으로 %CALLNAME:MASTER%(을)를 응시하고 있다…
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;================================================
+	;ACT분류が도구
+	;================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "도구")
+		SELECTCASE TENSION(TARGET, 8)
+			CASE "高い"
+;OriginalString : 「これ、気持ちイイかなって思ったんですけど……」
+				PRINTFORMW 「이것, 기분 이이일까라고 생각했습니다만……」
+;OriginalString : 「%RAND_SPLIT("やっぱり/まだ/")%ダメ……みたいですね……」
+				PRINTFORMW 「%RAND_SPLIT("역시/아직/")%안 됨……같네요……」
+			CASE "一般"
+;OriginalString : 「うぅ……せっかく손に入れたのにぃ……」
+				PRINTFORMW 「……모처럼 손에 넣었는데……」
+;OriginalString : 「…あの、도구は使うほど馴染むって言いますし…もう少しだけ試してみませんか？」
+				PRINTFORMW 「…저, 도구는 사용하는 만큼 친숙해 진다 라고 하고…좀 더만 시험해 보지 않겠습니까？」
+			CASE "低い"
+;OriginalString : 「刺激が強いので、最初はビックリしちゃうかもしれませんね」
+				PRINTFORMW 「자극이 강하기 때문에, 처음은 깜짝 놀라버릴까도 알려지겠네요」
+;OriginalString : 「でもゆっくり慣らしていけば、きっとこの도구が손放せなくなりますよ
+				PRINTFORM 「 그렇지만 천천히 길들여 가면, 반드시 이 도구가 놓을 수 없게 되어요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;================================================
+	;ACT분류が성교
+	;================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "성교")
+		;膣系성교（항문は上で処理）
+		IF AFFECTION("상사상애") && PERCENT(60)
+;OriginalString : 「%RAND_SPLIT("すっすみませんっ！！/あわっあわわわわ……")%」
+			PRINTFORMW 「%RAND_SPLIT("입니다 보지 않습니다！！/조조원원원……")%」
+;OriginalString : 「いきなりじゃ……痛いですよね？」
+			PRINTFORMW 「갑자기는……아프지요？」
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは申し訳なさそうな表情で%CALLNAME:MASTER%を見つめている…
+			PRINTFORMDW 릴리는 변명 없을 것 같은 표정으로 %CALLNAME:MASTER%(을)를 응시하고 있다…
+		ELSEIF AFFECTION("공포")
+;OriginalString : 「ほらっ、%CNAME(MASTER)%のおまんこにっ…おちんちん、入っちゃいま했다ねぇ
+			PRINTFORM 「이봐요,%CNAME(MASTER)%의 보지에…자지, 들어가 버렸습니다
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+;OriginalString : 「싫어한다%CNAME(MASTER)%をっ！ んっ、はぁっ！」
+			PRINTFORMW 「싫어한다%CNAME(MASTER)%(을)를！ 응, 후~！」
+;OriginalString : 「無理矢理犯すのっ……癖になっちゃいそうですっ
+			PRINTFORM 「무리하게 범한다……버릇이 되어 버릴 것 같습니다
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTFORMW 」
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは乱暴に腰を打ち付けながら、%RAND_SPLIT("サディスティック/嗜虐的")%な笑みを浮かべている……
+			PRINTFORMDW 릴리는 난폭하게 허리를 부딪히면서,%RAND_SPLIT("가학적/기학적")%미소를 띄우고 있다……
+		ELSE
+;OriginalString : 「あぅ…痛かった、ですよね？」
+			PRINTFORMW 「아…아팠다, 군요？」
+;OriginalString : 「%RAND_SPLIT("へたっぴで/拙くて")%すみません……」
+			PRINTFORMW 「%RAND_SPLIT("로/변변치않아서")%미안합니다……」
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは申し訳なさそうな表情で%CALLNAME:MASTER%を見つめている…
+			PRINTFORMDW 릴리는 변명 없을 것 같은 표정으로 %CALLNAME:MASTER%(을)를 응시하고 있다…
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;================================================
+	;ACT분류が봉사
+	;================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "봉사")
+		;ACTが이라마치오
+		IF IS_NOWACTNAME("이라마치오")
+			SELECTCASE RANDCOM(3, 12)
+				CASE 0
+;OriginalString : 「あっ
+					PRINTFORM 「아
+					CALL HEARTCB
+;OriginalString :  喉がぶるぶるって震えてっ――っんぅ
+					PRINTFORM  목이 부들부들은 떨려――응
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+;OriginalString : 「今の……とっても気持ち良かったですよ
+					PRINTFORM 「지금의……매우 기분 좋았어요
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 1
+;OriginalString : 「喉っ、震えてっ！？ すごいですっ―――あっんんっ！！」
+					PRINTFORMW 「목, 떨려！？ 대단합니다―――아응응！！」
+;OriginalString : 「はぁ、はぁ……ねぇ、もう一回…今のシてくれますか
+					PRINTFORM 「후~, 후~……응, 다시 한번…지금의 시라고 줍니까
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+				CASE 2
+;OriginalString : 「喉の奥がキュキュッて締まって…おちんちんに絡みついてきますっ」
+					PRINTFORMW 「목의 안쪽이 큐쿤이라고 꼭 죄여…자지에 관련되어 따라 오는」
+;OriginalString : 「これ……癖になっちゃいそうです
+					PRINTFORM 「이것……버릇이 되어 버릴 것 같습니다
+					CALL HEARTCB
+;OriginalString : 」
+					PRINTFORMW 」
+			ENDSELECT
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは%CALLNAME:MASTER%의 喉奥を乱暴に犯하면서、%RAND_SPLIT("サディスティック/嗜虐的")%な笑みを浮かべている……
+			PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 후오를 난폭하게 범하면서,%RAND_SPLIT("가학적/기학적")%미소를 띄우고 있다……
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;================================================
+	;ACT분류が가학
+	;================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "가학")
+		;ACTが스펭킹/채찍/바늘/삼각목마のいずれか
+		IF IS_NOWACTNAME("스펭킹/채찍/바늘/삼각목마")
+			;70%で真
+			IF PERCENT(70)
+				SELECTCASE TENSION(TARGET, 8)
+					CASE "高い"
+;OriginalString : 「んぅっ
+						PRINTFORM 「응
+						CALL HEARTCB
+;OriginalString :  可愛い声……癖になっちゃいそうですっ」
+						PRINTFORMW  사랑스러운 소리……버릇이 되어 버릴 것 같습니다」
+;OriginalString : 「安心してくださいね？ 壊れない程度に、たっぷりと虐めてあげますから
+						PRINTFORM 「안심해 주세요？ 망가지지 않는 정도로, 충분히학째라고 줄테니까
+						CALL HEARTCB
+;OriginalString : 」
+						PRINTFORMW 」
+					CASE "一般"
+;OriginalString : 「もう限界ですか？ くすっ」
+						PRINTFORMW 「이제 한계입니까？ 키득」
+;OriginalString : 「まだまだ、もっとリリーを愉しませてくださいねっ」
+						PRINTFORMW 「아직도, 좀 더 릴리를 즐기게 해 주세요」
+					CASE "低い"
+;OriginalString : 「痛いんですか？　ふーん……」
+						PRINTFORMW 「아픕니까？ -응……」
+;OriginalString : 「でも、やめてあげませんからねっ♪」
+						PRINTFORMW 「 그렇지만, 그만두어 주지 않기 때문에♪」
+				ENDSELECT
+			;漏れた場合の処理
+			ELSE
+				IF 0
+				ELSEIF AFFECTION("상사상애") && !T_COND("분노") && PERCENT(60)
+;OriginalString : 「痛いですか？　でも、『コレ』が好きなんですよね♪」
+					PRINTFORMW 「아픕니까？ 그렇지만, 「코레」를 좋아하네요♪」
+;OriginalString : 「えっちな悲鳴……もっと聞かせて欲しいな……」
+					PRINTFORMW 「인 비명……좀 더 들려주었으면 좋은데……」
+				ELSEIF AFFECTION("익애") && !T_COND("분노") && PERCENT(60)
+;OriginalString : 「恥ずかしい格好ですね」
+					PRINTFORMW 「부끄러운 모습이군요」
+;OriginalString : 「ほら、もっと可愛く鳴いてみてください♪」
+					PRINTFORMW 「이봐요, 좀 더 사랑스럽게 울어 보세요♪」
+				ELSEIF AFFECTION("권애") && !T_COND("분노")
+;OriginalString : 「ねぇ、こんな事されても感じちゃうんですか？」
+					PRINTFORMW 「응, 이런 일 되어도 느껴 버립니다인가？」
+;OriginalString : 「ヘンタイ……ですね♪」
+					PRINTFORMW 「헨타이……(이)군요♪」
+				ELSEIF AFFECTION("공포") || (!ALI(0) && !RAND:3) || T_COND("분노")
+;OriginalString : 「確認しますけど、これは『ごほーび』じゃないですからね？」
+					PRINTFORMW 「확인합니다만, 이것은 「-」가 아니니까？」
+;OriginalString : 「ちゃんと理解してますか？」
+					PRINTFORMW 「제대로 이해합니까？」
+				ELSE
+;OriginalString : 「%CNAME(MASTER)%の悲鳴……なんだか癖になっちゃいそうですっ♪」
+					PRINTFORMW 「%CNAME(MASTER)%의 비명……어쩐지 버릇이 되어 버릴 것 같습니다♪」
+;OriginalString : 「ほら、いきますよ？　もっと%RAND_SPLIT("可愛い/いい")%声で鳴いてくださいね♪」
+					PRINTFORMW 「이봐요, 살아요？ 좀 더%RAND_SPLIT("사랑스럽다/좋다")%소리로 울어 주세요♪」
+				ENDIF
+			ENDIF
+;OriginalString :  
+			PRINTL  
+;OriginalString : リリーは%RAND_SPLIT("サディスティック/嗜虐的")%な笑みを浮かべて、%CALLNAME:MASTER%의 痴態を眺めている……
+			PRINTFORMDW 릴리는%RAND_SPLIT("가학적/기학적")%미소를 띄워,%CALLNAME:MASTER%의 치태를 바라보고 있다……
+		;ACTが밧줄/눈가리개/볼개그/매도のいずれか、관장は上で処理
+		ELSE
+			IF PERCENT(70)
+				;ACTが볼개그
+				IF IS_NOWACTNAME("볼개그") && TFLAG:ACT파생 == 1
+;OriginalString : 「はいはい、どうしま했다か～」
+					PRINTFORMW 「네네, 무슨 일입니까～」
+;OriginalString : 「ほら、ちゃんとリリーにもわかる様に話してくださいねっ♪」
+					PRINTFORMW 「이봐요, 분명하게 릴리에도 아는 것처럼 이야기해 주세요♪」
+				;매도
+				ELSEIF IS_NOWACTNAME("매도")
+;OriginalString : 「こんなのが痛いんですか？」
+					PRINTFORMW 「이런 건이 아픕니까？」
+;OriginalString : 「ほんと、ダメダメですね……くすっ♪」
+					PRINTFORMW 「정말, 안 됨 안되네요……키득♪」
+				;밧줄
+				ELSEIF IS_NOWACTNAME("밧줄")
+;OriginalString : 「んっ……ちょっとキツく縛り過ぎま했다か？」
+					PRINTFORMW 「응……조금 귤나무구 너무 묶었습니까？」
+;OriginalString : 「ほらほらっ、날뛴다ともっと食い込んじゃいますよっ♪」
+					PRINTFORMW 「이봐요 이봐요 , 날뛰면(자) 좀 더 밥 있고 붐비어버릴 야♪」
+				;눈가리개
+				ELSE
+;OriginalString : 「見えないぶん민감になってるんでしょうか」
+					PRINTFORMW 「안보이는 만큼 민감하게 되어있는 입니까」
+;OriginalString : 「ほら、そんなに痛くない筈ですよ？　ふふっ♪」
+					PRINTFORMW 「이봐요, 그렇게 아프지 않은 괄이에요？ 후후♪」
+				ENDIF
+			ELSE
+;OriginalString : 「ねぇ、そんなに%RAND_SPLIT("怖がら/怯え")%ないで……」
+				PRINTFORMW 「응, 그렇게%RAND_SPLIT("포무늬/두려움")%없고……」
+;OriginalString : 「大切な%CNAME(MASTER)%を、簡単に壊했다りはしませんから♪」
+				PRINTFORMW 「중요한%CNAME(MASTER)%(을)를, 간단하게 부수거나는 하지 않기 때문에♪」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;================================================
+	;ACT분류が이상
+	;================================================
+	;IF 구상記入チェック(0) && MENUMATCH(TFLAG:ACT, "이상")
+	;ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;無理のない행동
+	;%CALLNAME:MASTER%は고통を耐えられずに悲鳴を上げた…
+	IF GET_COM_RANK() == "無理のない행동"
+		SELECTCASE RANDCOM(3, 20)
+			CASE 0
+;OriginalString : 「可愛い声……くすっ♪」
+				PRINTFORMW 「사랑스러운 소리……키득♪」
+;OriginalString : 「もっと聴かせてくださいね」
+				PRINTFORMW 「 좀 더 듣게 해 주세요」
+			CASE 1
+;OriginalString : 「ねぇ、そんなに%RAND_SPLIT("怖がら/怯え")%ないで……」
+				PRINTFORMW 「응, 그렇게%RAND_SPLIT("포무늬/두려움")%없고……」
+;OriginalString : 「大切な%CNAME(MASTER)%を、簡単に壊했다りはしませんから♪」
+				PRINTFORMW 「중요한%CNAME(MASTER)%(을)를, 간단하게 부수거나는 하지 않기 때문에♪」
+			CASE 2
+;OriginalString : 「%CNAME(MASTER)%の悲鳴……なんだか癖になっちゃいそうですっ♪」
+				PRINTFORMW 「%CNAME(MASTER)%의 비명……어쩐지 버릇이 되어 버릴 것 같습니다♪」
+;OriginalString : 「ほら、いきますよ？　もっと%RAND_SPLIT("可愛い/いい")%声で鳴いてくださいね♪」
+				PRINTFORMW 「이봐요, 살아요？ 좀 더%RAND_SPLIT("사랑스럽다/좋다")%소리로 울어 주세요♪」
+		ENDSELECT
+	;自然な행동
+	;%CALLNAME:MASTER%は고통のあまり悲痛な叫び声を上げた…
+	ELSE
+		SELECTCASE RANDCOM(3, 21)
+			CASE 0
+;OriginalString : 「%RAND_SPLIT("すっすみませんっ！！/あわっあわわわわ……")%」
+				PRINTFORMW 「%RAND_SPLIT("입니다 보지 않습니다！！/조조원원원……")%」
+;OriginalString : 「こんなに痛がるなんて思ってなくて……うぅ…」
+				PRINTFORMW 「이렇게 아파한다고 생각하지 않아서………」
+			CASE 1
+;OriginalString : 「あぅ……痛かったですか？」
+				PRINTFORMW 「아……아팠습니까？」
+;OriginalString : 「頑張ってるんですけど……%RAND_SPLIT("へたっぴで/拙くて")%すみません……」
+				PRINTFORMW 「노력하고 있습니다만……%RAND_SPLIT("로/변변치않아서")%미안합니다……」
+			CASE 2
+;OriginalString : 「もう限界ですか？ くすっ」
+				PRINTFORMW 「이제 한계입니까？ 키득」
+;OriginalString : 「まだまだ、もっとリリーを愉しませてくださいねっ」
+				PRINTFORMW 「아직도, 좀 더 릴리를 즐기게 해 주세요」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM31_1, 派生：공포による悲鳴
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+	;================================================
+	;ACT분류が회화
+	;================================================
+	IF 구상記入チェック(100) && MENUMATCH(TFLAG:ACT, "회화")
+		IF IS_NOWACTNAME("엄하게 위협한다/징계한다고 위협한다/고함치다/기분나쁘게 웃다")
+;OriginalString : 「%RAND_SPLIT("そんなにリリーが怖いんですか？/可愛らしい反応ですね")%……%RAND_SPLIT("くすっ♪/ふふっ♪")%」
+			PRINTFORMW 「%RAND_SPLIT("그렇게 릴리가 무섭습니까？/사랑스러운 반응이군요")%……%RAND_SPLIT("くすっ♪/ふふっ♪")%」
+;OriginalString : 「でも、やめてあげませんよっ」
+			PRINTFORMW 「 그렇지만, 그만두어 주지 않아요」
+		ELSE
+			SELECTCASE TENSION(TARGET, 8)
+				CASE "高い"
+					SELECTCASE RANDCOM(2, 30)
+						CASE 0
+;OriginalString : 「ほら、リリーは怖くないですよ～」
+							PRINTFORMW 「이봐요, 릴리는 두렵지 않아요～」
+;OriginalString : 「…なんて言っても、信じられないですよね……」
+							PRINTFORMW 「…뭐라고 말해도, 믿을 수 없지요……」
+						CASE 1
+;OriginalString : 「リリー、そんなに怖い顔してるんでしょうか」
+							PRINTFORMW 「릴리, 그렇게 무서운 얼굴 하고 있는 입니까」
+;OriginalString : 「ちょっとショックですね……」
+							PRINTFORMW 「조금 쇼크군요……」
+					ENDSELECT
+				CASE "一般/低い"
+					SELECTCASE RANDCOM(2, 31)
+						CASE 0
+;OriginalString : 「リリーの事……怖いんですか？」
+							PRINTFORMW 「릴리의 일……무섭습니까？」
+;OriginalString : 「わかってま했다けど、やっぱりちょっと悲しいですね……」
+							PRINTFORMW 「알고 있었습니다만, 역시 조금 슬프네요……」
+						CASE 1
+;OriginalString : 「そんなに怯えないで、ね？」
+							PRINTFORMW 「그렇게 무서워하지 말고, 군요？」
+;OriginalString : 「やっぱり、%CNAME(MASTER)%に嫌われちゃってるんでしょうか……」
+							PRINTFORMW 「역시,%CNAME(MASTER)%에 미움받아 버린다 입니까……」
+;OriginalString : 「仕方ないですけど、やっぱり悲しいですね……」
+							PRINTFORMW 「어쩔 수 없지만, 역시 슬프네요……」
+					ENDSELECT
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;無理のない행동
+	;%CALLNAME:MASTER%は공포を感じて悲鳴を上げた…
+	IF GET_COM_RANK() == "無理のない행동"
+		SELECTCASE RANDCOM(3, 32)
+			CASE 0
+;OriginalString : 「怖いですか？……くすっ」
+				PRINTFORMW 「무섭습니까？……키득」
+;OriginalString : 「大丈夫ですよ、優しくシてあげますから♪」
+				PRINTFORMW 「괜찮아요, 상냥하게 시라고 줄테니까♪」
+			CASE 1
+;OriginalString : 「%RAND_SPLIT("すっすみませんっ！！/あわっあわわわわ……")%」
+				PRINTFORMW 「%RAND_SPLIT("입니다 보지 않습니다！！/조조원원원……")%」
+;OriginalString : 「こんなに싫어한다なんて思ってなくて……うぅ…」
+				PRINTFORMW 「이렇게 싫어한다고 생각하지 않아서………」
+			CASE 2
+;OriginalString : 「공포と快感って表裏一体の感情なんですよね」
+				PRINTFORMW 「공포와 쾌감은 표리 일체의 감정이예요」
+;OriginalString : 「安全が保障されていれば、공포は快感に変わる……ほら、絶叫系って人気ですもんね？」
+				PRINTFORMW 「안전이 보장되고 있으면, 공포는 쾌감으로 바뀐다……이봐요, 절규계는 인기이지요？」
+;OriginalString : 「大切な%CNAME(MASTER)%を簡単に壊했다りはしませんから、安心して叫んでくださいねっ♪」
+				PRINTFORMW 「중요한%CNAME(MASTER)%(을)를 간단하게 부수거나는 하지 않기 때문에, 안심하고 외쳐 주세요♪」
+		ENDSELECT
+	;自然な행동
+	;%CALLNAME:MASTER%は異様な공포を感じ、悲鳴を上げた…
+	ELSE
+		SELECTCASE RANDCOM(3, 33)
+			CASE 0
+;OriginalString : 「ん、どう했다んですか？」
+				PRINTFORMW 「응, 어떻게 했습니까？」
+;OriginalString : 「お顔が真っ青じゃないですか……くすっ♪」
+				PRINTFORMW 「얼굴이 시퍼렇지 않습니까……키득♪」
+			CASE 1
+;OriginalString : 「せっかくリリーがしてあげてるのに」
+				PRINTFORMW 「모처럼 릴리가 해 주어 」
+;OriginalString : 「その反応は失礼ですよ……もう……」
+				PRINTFORMW 「그 반응은 실례예요……이제……」
+;OriginalString :  
+				PRINTL  
+;OriginalString : リリーは不満げな表情で%CALLNAME:MASTER%を見つめている…
+				PRINTFORMDW 릴리는 불만인 표정으로 %CALLNAME:MASTER%(을)를 응시하고 있다…
+			CASE 2
+;OriginalString : 「そんなに怯えなくても大丈夫ですよ？」
+				PRINTFORMW 「그렇게 무서워하지 않아도 괜찮아요？」
+;OriginalString : 「別に取って食おうって訳じゃないですし……あぁ、でも――」
+				PRINTFORMW 「따로 잡아먹자는 (뜻)이유가 아니며……아, 그렇지만――」
+;OriginalString :  
+				PRINTL  
+;OriginalString : 「違う意味で『食べちゃう』かもしれませんけどね……ふふっ♪」
+				PRINTFORMW 「다른 의미로 「먹어버린다」일지도 모르지만……후후♪」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;COM32, 날뛴다
+;────────────────────────────────────
+;・派生によって暴れ成功(REACT분류:날뛴다)、暴れ失敗(REACT분류:소극적으로 한다)に分かれる
+;・暴れが通ると도구系/성교系/성교봉사系コマンドを妨害했다扱いになる
+;・징계・포인트追加
+;・REACT인상:悪印象大
+;-------------------------------------------------
+;・TFLAG:REACT파생(0=暴れ成功/1=밧줄구속による暴れ失敗/2=制止による暴れ失敗)
+;=================================================
+@KOJO_COM_K15_32
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM32_0, 派生：暴れ成功
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:REACT파생
+	IF PERCENT(60)
+		IF AFFECTION("상사상애") && !T_COND("분노")
+;OriginalString : 「%RAND_SPLIT("あわわ/きゃっ/ひぅっ")%！？　急にどう했다んですか！？」
+			PRINTFORMW 「%RAND_SPLIT("아와와/꺗/히웃")%！？　갑자기 어떻게 했습니까！？」
+;OriginalString : 「もしかして……これ、そんなに嫌だったんですか？」
+			PRINTFORMW 「혹시……이것, 그렇게 싫었습니까？」
+		ELSEIF AFFECTION("공포") || T_COND("분노")
+;OriginalString : 「確認しますけど……自分の置かれてる状況、ちゃんと理解してますか？」
+			PRINTFORMW 「확인합니다만……자신이 놓여져있는 상황, 제대로 이해합니까？」
+;OriginalString : 「……わからないなら、リリーが教えてあげますっ」
+			PRINTFORMW 「……모르면, 릴리가 가르쳐 주는」
+		ENDIF
+	ELSE
+		SELECTCASE RANDCOM(3, 0)
+			CASE 0
+;OriginalString : 「%RAND_SPLIT("きゃんっ/きゃっ/痛ぅっ")%！？……むぅ、やりま했다ね」
+				PRINTFORMW 「%RAND_SPLIT("꺄읏/꺗/통")%！？……, 했어요」
+;OriginalString : 「そんなにリリーを怒らせたいんですか？」
+				PRINTFORMW 「그렇게 릴리를 화나게 하고 싶습니까？」
+			CASE 1
+;OriginalString : 「いけない子ですね……」
+				PRINTFORMW 「안 되는 아이군요……」
+;OriginalString : 「あんまり言うこと聞かないならオシオキですよ？」
+				PRINTFORMW 「별로 말하는 것 (듣)묻지 않으면 오시오키예요？」
+			CASE 2
+;OriginalString : 「%RAND_SPLIT("あわわ/きゃっ/ひぅっ")%！？　なんですかっ急に暴れて！」
+				PRINTFORMW 「%RAND_SPLIT("아와와/꺗/히웃")%！？　입니까 갑자기 날뛰어！」
+;OriginalString : 「そんなに嫌ならちゃんと言ってくださいよ……」
+				PRINTFORMW 「그렇게 싫으면 분명하게 말해 주세요……」
+		ENDSELECT
+	ENDIF
+	;☆暴れが通ったらインクリメント。FLAG:대상날뛴횟수というのも存在するけど、なんかアレなので
+	;KFLAG:TARGET:260++
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM32_1, 派生：밧줄구속による暴れ失敗
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+	;無理を했다행동
+	;縛られた%CALLNAME:MASTER%は暴れて抵抗しようと했다が、밧줄がさらに食い込んでただ痛いだけだ…
+	SELECTCASE RANDCOM(3, 6)
+		CASE 0
+;OriginalString : 「きつく縛ってありますから、%CNAME(MASTER)%が暴れた程度じゃ緩みませんよ？」
+			PRINTFORMW 「힘들게 묶어 있기 때문에,%CNAME(MASTER)%하지만 날뛰 정도는 느슨해지지 않아요？」
+;OriginalString : 「ほら、余計に밧줄が食い込んじゃって……大丈夫ですか？」
+			PRINTFORMW 「이봐요, 불필요하게 줄이 먹혀들어 버려서……괜찮습니까？」
+		CASE 1
+;OriginalString : 「あの……さっきより苦しそうに見えるんですが、大丈夫ですか？」
+			PRINTFORMW 「그……조금 전보다 괴로운 듯하게 보입니다만, 괜찮습니까？」
+;OriginalString : 「リリーも気を付けてますけど、긴박中に날뛴다と大怪我しちゃいますよ？」
+			PRINTFORMW 「릴리도 조심하고 있습니다만, 긴박중에 날뛰면(자) 큰 부상있어요？」
+		CASE 2
+;OriginalString : 「あっ！？　もうっ……暴れても밧줄が食い込んで痛いだけですよ？」
+			PRINTFORMW 「아！？ 이제……날뛰어도 줄이 먹혀들어 아픈 것뿐이에요？」
+;OriginalString : 「痛いのが好きって言うなら、リリーも止めないですけど……」
+			PRINTFORMW 「아픈 것이 좋아한다고 말한다면, 릴리도 멈추지 않지만……」
+	ENDSELECT
+;OriginalString :  
+	PRINTL  
+;OriginalString : リリーは%CALLNAME:MASTER%의 表情を確かめる様に、밧줄目をそっとなぞり上げた…
+	PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 표정을 확인하는 것처럼, 새끼줄을 살그머니 위를 덧썼다…
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;NO9_COM32_2, 派生：制止による暴れ失敗
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 2
+	;無理を했다행동
+	;%CALLNAME:MASTER%は暴れて抵抗しようと했다が、%CALLNAME:TARGET%に抑えられた…
+	IF GET_COM_RANK() == "無理を했다행동"
+		SELECTCASE RANDCOM(3, 10)
+			CASE 0
+;OriginalString : 「抵抗するならもっと力つけなきゃダメですよっ♪」
+				PRINTFORMW 「저항한다면 좀 더 힘 붙이지 않으면 안되어요♪」
+;OriginalString : 「リリーに抑えられるって相当ですもん」
+				PRINTFORMW 「릴리에 억제 당한다 라고 상당합니다 것」
+			CASE 1
+;OriginalString : 「날뛴다子はこうですよっ！　ぎゅうぅぅ～～……」
+				PRINTFORMW 「날뛰는 아이는 이러해요！ 소～～……」
+;OriginalString : 「……あの、息が荒いんですけど……これが목적で했다？」
+				PRINTFORMW 「……저, 숨이 난폭한데요……이것이 목적이었습니다？」
+			CASE 2
+;OriginalString : 「あれ？　全然力が入ってないですね……」
+				PRINTFORMW 「어？ 전혀 힘이 들어가지 않네요……」
+;OriginalString : 「금일はこういう플레이が했다いって事でしょうか？」
+				PRINTFORMW 「오늘은 이런 플레이를 하고 싶다는 일입니까？」
+		ENDSELECT
+	;その他
+	ELSE
+		SELECTCASE RANDCOM(3, 11)
+			CASE 0
+;OriginalString : 「ぎゅうぅぅ……あの、ちょっとは落ち着きま했다か？」
+				PRINTFORMW 「소……저, 조금은 침착했습니까？」
+;OriginalString : 「あんまり날뛴다と…めっ！ですからね」
+				PRINTFORMW 「너무 날뛰면(자)…째！(이)니까요」
+			CASE 1
+;OriginalString : 「もう、抵抗しても無駄だって言ったじゃないですか」
+				PRINTFORMW 「 이제, 저항해도 쓸데없다고 말했지 않습니까」
+;OriginalString : 「……これでも、%CNAME(MASTER)%のこと大切に想ってるんですよ？」
+				PRINTFORMW 「……이것이라도,%CNAME(MASTER)%소중히 생각하고 있는 거에요？」
+			CASE 2
+;OriginalString : 「ふふっ、これでもう動けませんね♪」
+				PRINTFORMW 「후후, 이것으로 이제 움직일 수 없어요♪」
+;OriginalString : 「ちゃんと『ごめんなさい』できたら離してあげますよ？」
+				PRINTFORMW 「분명하게 「미안해요」할 수 있으면(자) 떼어 놓아 주어요？」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;──────────────────────────────────
+;COM33, 무서워한다
+;──────────────────────────────────
+;・REACT분류:용서를 빌다
+;・一定条件で분노を買い、징계・포인트追加
+;-------------------------------------------------
+;・TFLAG:REACT파생(0=「ふーん」/1=怯えに対する초조함)
+;=================================================
+@KOJO_COM_K15_33
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM33_0, 派生：「ふーん」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:REACT파생
+	;=================================================
+	;無理を했다행동
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+		;実はまんざらでもない
+			;%CALLNAME:MASTER%は%CALLNAME%よりむしろ変になりそうな自分に怯えているようだ…
+		IF COMCOR_POSI()
+			SELECTCASE RANDCOM(2, 0)
+				CASE 0
+;OriginalString : 「変になりそうって……くすっ」
+					PRINTFORMW 「이상하게 될 것 같다는 것은……키득」
+;OriginalString : 「大丈夫、もう十分変になってますから♪」
+					PRINTFORMW 「괜찮아, 이제 충분히 이상하게 되고 있으니까♪」
+				CASE 1
+;OriginalString : 「%RAND_SPLIT("不思議な事を言うんですね/おかしくなっちゃえばいいのに")%……」
+					PRINTFORMW 「%RAND_SPLIT("이상한 일을 말하는군요/이상해져 버리면 좋은데")%……」
+;OriginalString : 「ねぇ、もっと自分に%RAND_SPLIT("솔직/正直")%になって……リリーと一緒に堕ちてみませんか？」
+					PRINTFORMW 「응, 좀 더 자신에게%RAND_SPLIT("솔직/정직")%(이)가 되어……릴리와 함께 저속해져 보지 않겠습니까？」
+			ENDSELECT
+		;実は嫌
+			;%CALLNAME:MASTER%は悔しい思いを飲み込み、大人しく畏怖の視線を向けた…
+		ELSE
+			SELECTCASE RANDCOM(2, 1)
+				CASE 0
+;OriginalString : 「ほら、もっと怖がってもいいんですよ……」
+					PRINTFORMW 「이봐요, 좀 더 무서워해도 괜찮아요……」
+;OriginalString : 「余計な感情は、ぜーんぶリリーが溶かしてあげますからっ♪」
+					PRINTFORMW 「불필요한 감정은, 전부 릴리가 녹여 주기 때문에♪」
+				CASE 1
+;OriginalString : 「そんなに%RAND_SPLIT("怯え/怖がら/震え")%なくても大丈夫ですよ？」
+					PRINTFORMW 「그렇게%RAND_SPLIT("두려움/포무늬/흔들려라")%없어도 괜찮아요？」
+;OriginalString : 「%CNAME(MASTER)%が本当に싫어한다事は、絶対にしませんから……ね？」
+					PRINTFORMW 「%CNAME(MASTER)%하지만 정말로 싫어하는 일은, 절대로 하지 않기 때문에……그런데？」
+			ENDSELECT
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;-------------------------
+	;その他
+	;-------------------------
+	;無理のない행동
+		;%CALLNAME:MASTER%は공포を感じ怯えている…
+	IF GET_COM_RANK() == "無理のない행동"
+		SELECTCASE RANDCOM(3, 2)
+			CASE 0
+;OriginalString : 「ほら、そんなに怖がらないで？」
+				PRINTFORMW 「이봐요, 그렇게 무서워하지 마？」
+;OriginalString : 「力を抜いて、リリーに身を任せてくださいね……」
+				PRINTFORMW 「힘을 빼, 릴리에 몸을 맡겨 주세요……」
+			CASE 1
+;OriginalString : 「ねぇ、お願いだからそんなに怯えないで欲しいです……」
+				PRINTFORMW 「응, 부탁이니까 그렇게 무서워하지 않으면 좋습니다……」
+;OriginalString : 「%CNAME(MASTER)%に優しく했다いのに、虐めたくなっちゃうじゃないですかっ♪」
+				PRINTFORMW 「%CNAME(MASTER)%에 상냥하게 하고 싶은데, 학째 싶어져버린다가 아닙니까♪」
+			CASE 2
+;OriginalString : 「あの……リリーを、誘ってるんですよね？」
+				PRINTFORMW 「그……릴리를, 권하고 있는 거에요？」
+;OriginalString : 「だって、そんな反応당했다ら…참다できなくなっちゃいますもん
+				PRINTFORM 「이래, 그런 반응되면(자)…참을 수 없고있는 걸
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	;自然な행동
+		;%CALLNAME:MASTER%は小動物のように怯えている…
+	ELSE
+		SELECTCASE RANDCOM(3, 3)
+			CASE 0
+;OriginalString : 「あぁ、こんなに怯えちゃって……」
+				PRINTFORMW 「아, 이렇게 무서워해 버려서……」
+;OriginalString : 「なんだか%RAND_SPLIT("子リス/子猫/子犬/迷子の子供")%みたいで、ちょっと可愛いかも……
+				PRINTFORM 「어쩐지%RAND_SPLIT("아이 리스/새끼 고양이/강아지/미아의 아이")%같아, 조금 사랑스러울지도……
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「プルプル震えちゃって可愛いです…♪」
+				PRINTFORMW 「프르풀 떨려 버려서 사랑스럽습니다…♪」
+;OriginalString : 「おいで？ 優しく%RAND_SPLIT("ぎゅっ/なでなでし/抱きしめ")%てあげますから……」
+				PRINTFORMW 「와？ 상냥하고%RAND_SPLIT("꾹/스윽스윽 해/껴안고")%여(어) 줄테니까……」
+			CASE 2
+;OriginalString : 「あぁっ…ほら、そんなに怯えないで？」
+				PRINTFORMW 「아…이봐요, 그렇게 무서워하지 마？」
+;OriginalString : 「そんな反応されると、リリーもちょっと悲しいです……」
+				PRINTFORMW 「그런 반응되면(자), 릴리도 조금 슬픕니다……」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;COM33_1, 派生：怯えに対し苛立つ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+	;=================================================
+	;無理を했다행동
+	;=================================================
+	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+		;実はまんざらでもない
+			;%CALLNAME:MASTER%は%CALLNAME%よりむしろ変になりそうな自分に怯えているようだ…
+		IF COMCOR_POSI()
+			SELECTCASE RANDCOM(3, 10)
+				CASE 0
+;OriginalString : 「おかしくなっちゃえばいいのに……」
+					PRINTFORMW 「이상해져버리면 좋은데……」
+;OriginalString : 「ほら、リリーが손伝ってあげましょうか？」
+					PRINTFORMW 「이봐요, 릴리가 도와 줄까요？」
+				CASE 1
+;OriginalString : 「それも含めて『%CNAME(MASTER)%』なんですから……」
+					PRINTFORMW 「그것도 포함해 「%CNAME(MASTER)%」이니까……」
+;OriginalString : 「意地を張ってないで、受け入れちゃいましょう？」
+					PRINTFORMW 「고집을 부리지 말고, 수락있읍시다？」
+				CASE 2
+;OriginalString : 「もう十分おかしな人だと思いますよ？」
+					PRINTFORMW 「 이제 충분히 이상한 사람이라고 생각해요？」
+;OriginalString : 「%CNAME(MASTER)%が認めたくないなら、それでもいいですけどね……くすっ♪」
+					PRINTFORMW 「%CNAME(MASTER)%하지만 인정하고 싶지 않으면, 그런데도 좋지만……키득♪」
+			ENDSELECT
+		;実は嫌
+			;%CALLNAME:MASTER%は悔しい思いを飲み込み、大人しく畏怖の視線を向けた…
+		ELSE
+			SELECTCASE RANDCOM(3, 11)
+				CASE 0
+;OriginalString : 「ぷるぷる震えるだけですか……%CNAME(MASTER)%にプライドはないんですか？」
+					PRINTFORMW 「떨릴 뿐입니다인가……%CNAME(MASTER)%에 프라이드는 없습니까？」
+;OriginalString : 「……反論もないなんて、本当に한심한人……くすっ♪」
+					PRINTFORMW 「……반론도 없다니, 정말로 한심한 사람……키득♪」
+				CASE 1
+;OriginalString : 「リリー、솔직じゃない子は嫌いなんですよね」
+					PRINTFORMW 「릴리, 솔직하지 않은 아이는 싫네요」
+;OriginalString : 「おいで…%RAND_SPLIT("당신のなけなしのプライド、へし折ってあげます/心の底から、굴복させてあげます")%っ♪」
+					PRINTFORMW 「와…%RAND_SPLIT("당신의 있을까 말까한 프라이드, 눌러꺾어 줍니다/마음속으로부터,굴복시켜 줍니다")%♪」
+				CASE 2
+;OriginalString : 「そんなに%RAND_SPLIT("怯え/怖がら/震え")%なくても大丈夫ですよ？」
+					PRINTFORMW 「그렇게%RAND_SPLIT("두려움/포무늬/흔들려라")%없어도 괜찮아요？」
+;OriginalString : 「%CNAME(MASTER)%が本当に싫어한다事は、絶対にしませんから……ね？」
+					PRINTFORMW 「%CNAME(MASTER)%하지만 정말로 싫어하는 일은, 절대로 하지 않기 때문에……그런데？」
+;OriginalString : 「……信用できませんか？ じゃあ、その通りにしちゃおうかなっ♪」
+					PRINTFORMW 「……신용할 수 없습니까？ 자, 그대로 해 버리자일까♪」
+			ENDSELECT
+		ENDIF
+;OriginalString :  
+		PRINTL  
+;OriginalString : リリーは%RAND_SPLIT("蠱惑的な/嗜虐的な/サディスティックな")%笑みを浮かべ、%RAND_SPLIT("ぺろりと舌なめずりを했다/じっと당신を見つめている/甘い吐息내질렀다")%…
+		PRINTFORMDW 릴리는%RAND_SPLIT("고혹적인/기학적인/가학적인")%미소를 띄워%RAND_SPLIT("ぺろりと舌なめずりを했다/じっと당신を見つめている/甘い吐息내질렀다")%…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;その他
+	;=================================================
+	;無理のない행동
+		;%CALLNAME:MASTER%は공포を感じ怯えている…
+	IF GET_COM_RANK() == "自然な행동"
+		SELECTCASE RANDCOM(2, 12)
+			CASE 0
+;OriginalString : 「%CNAME(MASTER)%も学ばない子ですね」
+				PRINTFORMW 「%CNAME(MASTER)%도 배우지 않는 아이군요」
+;OriginalString : 「リリーに虐められたいって事なら、話は別ですけど……ね？」
+				PRINTFORMW 「릴리에 학대받고 싶다는 일이라면, 이야기는 별도이지만……그런데？」
+			CASE 1
+;OriginalString : 「あの……リリーを、誘ってるんですよね？」
+				PRINTFORMW 「그……릴리를, 권하고 있는 거에요？」
+;OriginalString : 「だって、そんな反応당했다ら…虐めたくなっちゃいますもんっ
+				PRINTFORM 「이래, 그런 반응되면(자)…학째 싶고 있는 걸
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	;自然な행동
+		;%CALLNAME:MASTER%は小動物のように怯えている…
+	ELSE
+		SELECTCASE RANDCOM(3, 13)
+			CASE 0
+;OriginalString : 「あぁ、こんなに怯えちゃって……」
+				PRINTFORMW 「아, 이렇게 무서워해 버려서……」
+;OriginalString : 「いけない事だってわかってるんですけど……虐めたくなっちゃいますっ
+				PRINTFORM 「안 되는 것이라고 알고 있습니다만……학째 싶고 있습니다
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 1
+;OriginalString : 「プルプル震えちゃって可愛いです……」
+				PRINTFORMW 「프르풀 떨려 버려서 사랑스럽습니다……」
+;OriginalString : 「可愛いんだから、えっちな징계・했다くなるのは仕方ないですよねっ
+				PRINTFORM 「사랑스럽기 때문에, 더 처치하고 하고 싶어지는 것은 어쩔 수 없지요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+			CASE 2
+;OriginalString : 「あぁっ…ほら、そんなに怯えないで？」
+				PRINTFORMW 「아…이봐요, 그렇게 무서워하지 마？」
+;OriginalString : 「%CNAME(MASTER)%の不安そうな顔を見てると、ゾクゾクしちゃうんですもんっ
+				PRINTFORM 「%CNAME(MASTER)%의 불안한 듯한 얼굴을 보고 있으면, 조크조크 해 버립니다 것
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTFORMW 」
+		ENDSELECT
+	ENDIF
+;OriginalString :  
+	PRINTL  
+;OriginalString : リリーは%RAND_SPLIT("蠱惑的な/嗜虐的な/サディスティックな")%笑みを浮かべ、%RAND_SPLIT("ぺろりと舌なめずりを했다/じっと당신を見つめている/甘い吐息내질렀다")%…
+	PRINTFORMDW 릴리는%RAND_SPLIT("고혹적인/기학적인/가학적인")%미소를 띄워%RAND_SPLIT("ぺろりと舌なめずりを했다/じっと당신を見つめている/甘い吐息내질렀다")%…
+	RETURN 1
+ENDIF
+

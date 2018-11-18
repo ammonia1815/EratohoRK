@@ -1,0 +1,378 @@
+﻿;────────────────────────────────────
+;070,피스트퍽（Ｈ/Ａ）[罰]（쾌Ｖ、접촉、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_70
+;하반신全部강제탈의
+TFLAG:강제탈의 = 5
+;필요ならば로션を使用
+CALL LOTION_USE
+;애무보정値、마조끼に応じて쾌ＶSOURCE増加
+SOURCE:MASTER:쾌Ｖ = 200 + ACT_FROM(TARGET, 2) * (ABL:MASTER:마조끼 + 5) / 5
+;접촉SOURCE増加
+SOURCE:MASTER:접촉 = 300
+;Ｖ경험/Ｖ확장경험が少ないほど쾌ＶSOURCEが減衰し、고통、이탈SOURCEが増加する
+;고통SOURCEは体格差によっても増減する
+IF EXP:MASTER:Ｖ경험 < 20 || EXP:MASTER:Ｖ확장경험 < 1
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.10
+	SOURCE:MASTER:고통 = 3000 + TALENT:MASTER:작은체형 * 500 - TALENT:MASTER:장신 * 500 - TALENT:작은체형 * 250 + TALENT:장신 * 250
+	SOURCE:MASTER:이탈 = 2500
+ELSEIF EXP:MASTER:Ｖ경험 < 25 || EXP:MASTER:Ｖ확장경험 < 2
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.25
+	SOURCE:MASTER:고통 = 2500 + TALENT:MASTER:작은체형 * 400 - TALENT:MASTER:장신 * 400 - TALENT:작은체형 * 200 + TALENT:장신 * 200
+	SOURCE:MASTER:이탈 = 2000
+ELSEIF EXP:MASTER:Ｖ경험 < 30 || EXP:MASTER:Ｖ확장경험 < 4
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.45
+	SOURCE:MASTER:고통 = 1800 + TALENT:MASTER:작은체형 * 300 - TALENT:MASTER:장신 * 300 - TALENT:작은체형 * 150 + TALENT:장신 * 150
+	SOURCE:MASTER:이탈 = 1200
+ELSEIF EXP:MASTER:Ｖ확장경험 < 6
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.70
+	SOURCE:MASTER:고통 = 1000 + TALENT:MASTER:작은체형 * 200 - TALENT:MASTER:장신 * 200 - TALENT:작은체형 * 100 + TALENT:장신 * 100
+	SOURCE:MASTER:이탈 = 500
+ELSE
+	SOURCE:MASTER:고통 = 500 + TALENT:MASTER:작은체형 * 100 - TALENT:MASTER:장신 * 100 - TALENT:작은체형 * 50 + TALENT:장신 * 50
+	SOURCE:MASTER:이탈 = 150
+ENDIF
+;윤활不발時、쾌ＶSOURCEに減少보정、고통SOURCE増加
+CALL SHORTAGE_LUBRICATION("2000/M쾌Ｖ,T,40/M고통,A,1500")
+;쾌ＶSOURCEに応じて중독충족SOURCE増加、이탈SOURCEによって減少
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:쾌Ｖ - SOURCE:MASTER:이탈
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;고통、이탈SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 + SOURCE:MASTER:이탈
+;중독충족SOURCEが正であれば트라우마SOURCE抹消
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:중독충족 > 0 ? 0 # SOURCE:MASTER:트라우마
+;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+SIF CFLAG:MASTER:트라우마 == 70
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 20) * 4
+TFLAG:경과시간 += 4
+
+@ACTION_APPLY2_70
+;MASTERが처녀なら、처녀상실が起こる
+TCVAR:MASTER:처녀상실 = TALENT:MASTER:처녀
+
+;────────────────────────────────────
+;071,애널피스트（Ｈ/Ａ）[罰]（쾌Ａ、접촉、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_71
+;하반신全部강제탈의
+TFLAG:강제탈의 = 5
+;필요ならば로션を使用
+CALL LOTION_USE
+;애무보정値、마조끼に応じて쾌ＡSOURCE増加
+SOURCE:MASTER:쾌Ａ = 200 + ACT_FROM(TARGET, 3) * (ABL:MASTER:마조끼 + 5) / 5
+;접촉SOURCE増加
+SOURCE:MASTER:접촉 = 300
+;Ａ경험/Ａ확장경험が少ないほど쾌ＡSOURCEが減衰し、고통、이탈SOURCEが増加する
+;고통SOURCEは体格差によっても増減する
+IF EXP:MASTER:Ａ경험 < 20 || EXP:MASTER:Ａ확장경험 < 1
+	TIMES SOURCE:MASTER:쾌Ａ , 0.10
+	SOURCE:MASTER:고통 = 4000 + TALENT:MASTER:작은체형 * 700 - TALENT:MASTER:장신 * 700 - TALENT:작은체형 * 500 + TALENT:장신 * 500
+	SOURCE:MASTER:이탈 = 5000
+ELSEIF EXP:MASTER:Ａ경험 < 25 || EXP:MASTER:Ａ확장경험 < 2
+	TIMES SOURCE:MASTER:쾌Ａ , 0.20
+	SOURCE:MASTER:고통 = 3000 + TALENT:MASTER:작은체형 * 600 - TALENT:MASTER:장신 * 600 - TALENT:작은체형 * 420 + TALENT:장신 * 420
+	SOURCE:MASTER:이탈 = 4000
+ELSEIF EXP:MASTER:Ａ경험 < 30 || EXP:MASTER:Ａ확장경험 < 4
+	TIMES SOURCE:MASTER:쾌Ａ , 0.35
+	SOURCE:MASTER:고통 = 2000 + TALENT:MASTER:작은체형 * 500 - TALENT:MASTER:장신 * 500 - TALENT:작은체형 * 350 + TALENT:장신 * 350
+	SOURCE:MASTER:이탈 = 3000
+ELSEIF EXP:MASTER:Ａ확장경험 < 6
+	TIMES SOURCE:MASTER:쾌Ａ , 0.60
+	SOURCE:MASTER:고통 = 1000 + TALENT:MASTER:작은체형 * 380 - TALENT:MASTER:장신 * 380 - TALENT:작은체형 * 280 + TALENT:장신 * 280
+	SOURCE:MASTER:이탈 = 2000
+ELSE
+	SOURCE:MASTER:고통 = 500 + TALENT:MASTER:작은체형 * 250 - TALENT:MASTER:장신 * 250 - TALENT:작은체형 * 200 + TALENT:장신 * 200
+	SOURCE:MASTER:이탈 = 1000
+ENDIF
+;윤활不발時、쾌ＡSOURCEに減少보정、고통SOURCE増加
+CALL SHORTAGE_LUBRICATION("2000/M쾌Ａ,T,40/M고통,A,1500")
+;쾌ＡSOURCEに応じて중독충족SOURCE増加、이탈SOURCEによって減少
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:쾌Ａ - SOURCE:MASTER:이탈
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;고통、이탈SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 + SOURCE:MASTER:이탈
+;중독충족SOURCEが正であれば트라우마SOURCE抹消
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:중독충족 > 0 ? 0 # SOURCE:MASTER:트라우마
+;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+SIF CFLAG:MASTER:트라우마 == 71
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 20) * 4
+TFLAG:경과시간 += 4
+
+;────────────────────────────────────
+;072,양쪽피스트（Ａ）[罰]（쾌Ｖ、쾌Ａ、접촉、고통、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_72
+;하반신全部강제탈의
+TFLAG:강제탈의 = 5
+;필요ならば로션を使用
+CALL LOTION_USE
+;애무보정値、마조끼に応じて쾌Ｖ、쾌ＡSOURCE増加
+SOURCE:MASTER:쾌Ｖ = 200 + ACT_FROM(TARGET, 2) * (ABL:MASTER:마조끼 + 5) / 5
+SOURCE:MASTER:쾌Ａ = 200 + ACT_FROM(TARGET, 3) * (ABL:MASTER:마조끼 + 5) / 5
+;접촉SOURCE増加
+SOURCE:MASTER:접촉 = 500
+;Ｖ경험/Ｖ확장경험が少ないほど쾌ＶSOURCEが減衰し、고통、이탈SOURCEが増加する
+;고통SOURCEは体格差によっても増減する
+IF EXP:MASTER:Ｖ경험 < 20 || EXP:MASTER:Ｖ확장경험 < 1
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.10
+	SOURCE:MASTER:고통 = 3000 + TALENT:MASTER:작은체형 * 500 - TALENT:MASTER:장신 * 500 - TALENT:작은체형 * 250 + TALENT:장신 * 250
+	SOURCE:MASTER:이탈 = 2500
+ELSEIF EXP:MASTER:Ｖ경험 < 25 || EXP:MASTER:Ｖ확장경험 < 2
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.25
+	SOURCE:MASTER:고통 = 2500 + TALENT:MASTER:작은체형 * 400 - TALENT:MASTER:장신 * 400 - TALENT:작은체형 * 200 + TALENT:장신 * 200
+	SOURCE:MASTER:이탈 = 2000
+ELSEIF EXP:MASTER:Ｖ경험 < 30 || EXP:MASTER:Ｖ확장경험 < 4
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.45
+	SOURCE:MASTER:고통 = 1800 + TALENT:MASTER:작은체형 * 300 - TALENT:MASTER:장신 * 300 - TALENT:작은체형 * 150 + TALENT:장신 * 150
+	SOURCE:MASTER:이탈 = 1200
+ELSEIF EXP:MASTER:Ｖ확장경험 < 6
+	TIMES SOURCE:MASTER:쾌Ｖ , 0.70
+	SOURCE:MASTER:고통 = 1000 + TALENT:MASTER:작은체형 * 200 - TALENT:MASTER:장신 * 200 - TALENT:작은체형 * 100 + TALENT:장신 * 100
+	SOURCE:MASTER:이탈 = 500
+ELSE
+	SOURCE:MASTER:고통 = 500 + TALENT:MASTER:작은체형 * 100 - TALENT:MASTER:장신 * 100 - TALENT:작은체형 * 50 + TALENT:장신 * 50
+	SOURCE:MASTER:이탈 = 150
+ENDIF
+;Ａ경험/Ａ확장경험が少ないほど쾌ＡSOURCEが減衰し、고통、이탈SOURCEが増加する
+;고통SOURCEは体格差によっても増減する
+IF EXP:MASTER:Ａ경험 < 20 || EXP:MASTER:Ａ확장경험 < 1
+	TIMES SOURCE:MASTER:쾌Ａ , 0.10
+	SOURCE:MASTER:고통 += 4000 + TALENT:MASTER:작은체형 * 700 - TALENT:MASTER:장신 * 700 - TALENT:작은체형 * 500 + TALENT:장신 * 500
+	SOURCE:MASTER:이탈 += 5000
+ELSEIF EXP:MASTER:Ａ경험 < 25 || EXP:MASTER:Ａ확장경험 < 2
+	TIMES SOURCE:MASTER:쾌Ａ , 0.20
+	SOURCE:MASTER:고통 += 3000 + TALENT:MASTER:작은체형 * 600 - TALENT:MASTER:장신 * 600 - TALENT:작은체형 * 420 + TALENT:장신 * 420
+	SOURCE:MASTER:이탈 += 4000
+ELSEIF EXP:MASTER:Ａ경험 < 30 || EXP:MASTER:Ａ확장경험 < 4
+	TIMES SOURCE:MASTER:쾌Ａ , 0.35
+	SOURCE:MASTER:고통 += 2000 + TALENT:MASTER:작은체형 * 500 - TALENT:MASTER:장신 * 500 - TALENT:작은체형 * 350 + TALENT:장신 * 350
+	SOURCE:MASTER:이탈 += 3000
+ELSEIF EXP:MASTER:Ａ확장경험 < 6
+	TIMES SOURCE:MASTER:쾌Ａ , 0.60
+	SOURCE:MASTER:고통 += 1000 + TALENT:MASTER:작은체형 * 380 - TALENT:MASTER:장신 * 380 - TALENT:작은체형 * 280 + TALENT:장신 * 280
+	SOURCE:MASTER:이탈 += 2000
+ELSE
+	SOURCE:MASTER:고통 += 500 + TALENT:MASTER:작은체형 * 250 - TALENT:MASTER:장신 * 250 - TALENT:작은체형 * 200 + TALENT:장신 * 200
+	SOURCE:MASTER:이탈 += 1000
+ENDIF
+;윤활不발時、쾌Ｖ、쾌ＡSOURCEに減少보정、고통SOURCE増加
+CALL SHORTAGE_LUBRICATION("2000/M쾌Ｖ,T,40/M쾌Ａ,T,40/M고통,A,3000")
+;쾌Ｖ、쾌ＡSOURCEに応じて중독충족SOURCE増加、이탈SOURCEによって減少
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ - SOURCE:MASTER:이탈
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;고통、이탈SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 + SOURCE:MASTER:이탈
+;중독충족SOURCEが正であれば트라우마SOURCE抹消
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:중독충족 > 0 ? 0 # SOURCE:MASTER:트라우마
+;트라우마(각인)の元がフィスト系だった場合、트라우마SOURCEを1.5倍にする
+SIF CFLAG:MASTER:트라우마 == 70 || CFLAG:MASTER:트라우마 == 71 || CFLAG:MASTER:트라우마 == 72
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 30) * 6
+TFLAG:경과시간 += 4
+
+@ACTION_APPLY2_72
+;MASTERが처녀なら、처녀상실が起こる
+TCVAR:MASTER:처녀상실 = TALENT:MASTER:처녀
+
+;────────────────────────────────────
+;073,방치플레이（Ｈ/Ａ）[罰]（노출、이탈）
+;────────────────────────────────────
+@ACTION_APPLY_73
+;필요ならば미약を使用
+CALL LOVEPOTION_USE
+;이상、수치、죠교레벨に応じて노출SOURCE増加
+SOURCE:MASTER:노출 = 100 + (GET_ABL(TARGET, "이상") + 50) * (GET_ABL(TARGET, "수치") + 10) * GET_TRAINLV(TARGET) / 100
+;노출SOURCEに応じて이탈SOURCE増加、죠교대상죠교레벨、노출증によって減少
+SOURCE:MASTER:이탈 = 500 + SOURCE:MASTER:노출 - CFLAG:MASTER:죠교레벨 * 80 - GET_ABL(MASTER, "노출증") * 16
+;이탈SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
+;안면승마系解除
+CALL FACESITTING_SET(0)
+TFLAG:경과시간 += 2
+
+;────────────────────────────────────
+;074,공중육변기플레이
+;────────────────────────────────────
+;リアクション前（Ａ）[罰]（애정逆、구속、노출、이탈、트라우마）
+;용서를 빌다ことで취소できますので、ここでは죠교자が帰った後の処理を行いません
+@ACTION_APPLY_74
+;半々の確率で악세서리－まで、전라まで강제탈의
+TFLAG:강제탈의 = 7 + RAND:2
+;필요ならば미약を使用
+CALL LOVEPOTION_USE
+;죠교대상연모素質に応じて애정SOURCE増加、죠교대상음란、예속素質、죠교레벨によって減少
+SOURCE:MASTER:애정 -= 1500 + TALENT:MASTER:연모 * 500 - TALENT:MASTER:음란 * 750 - TALENT:MASTER:예속 * 250 - CFLAG:MASTER:죠교레벨 * 100
+;애정SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:애정 = SOURCE:MASTER:애정 < 0 ? 0 # SOURCE:MASTER:애정
+;반항각인、죠교자기교、긴박능숙素質に応じて구속SOURCE増加
+SOURCE:MASTER:구속 = 150 + (MARK:반항각인 + 1) * (GET_ABL(TARGET, "기교") + 10) * (TALENT:긴박능숙 + 1)
+;이상、수치、구속SOURCEに応じて노출SOURCE増加
+SOURCE:MASTER:노출 = 500 + (GET_ABL(TARGET, "이상") + 50) * (GET_ABL(TARGET, "수치") + 10) * SOURCE:MASTER:구속 / 10000
+;노출SOURCEに応じて이탈SOURCE増加、죠교대상죠교레벨、노출증、욕망、음란素質によって減少
+SOURCE:MASTER:이탈 = 5000 + SOURCE:MASTER:노출 - CFLAG:MASTER:죠교레벨 * 100 - GET_ABL(MASTER, "노출증") * 30 - GET_ABL(MASTER, "욕망") * 20 - TALENT:MASTER:음란 * 2000
+;이탈SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
+;이탈SOURCEをそのまま트라우마SOURCEとする
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:이탈
+;트라우마(각인)の元がこの죠교だった場合
+IF CFLAG:MASTER:트라우마 == 74
+	;트라우마(각인)に応じて트라우마SOURCEを増加
+	SOURCE:MASTER:트라우마 += 1000 + MARK:트라우마 * 100
+	;트라우마SOURCEを1.5倍にする
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+ENDIF
+;장착系を一括解除
+TEQUIP:바이브 = 0
+TEQUIP:항문바이브 = 0
+TEQUIP:항문비즈 = 0
+TEQUIP:관장그릇＋플러그 = 0
+TEQUIP:클리캡 = 0
+TEQUIP:오나홀 = 0
+TEQUIP:유두캡 = 0
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+TFLAG:경과시간 += 60
+
+;リアクション後（쾌Ｃ、쾌Ｖ、쾌Ａ、쾌Ｂ、애정逆、고통、구속、노출、불결、이탈、중독충족、트라우마）
+@ACTION_APPLY2_74
+;REACT분류が용서를 빌다だった場合취소
+IF IS_COMGRONAME("용서를 빌다")
+	;애정SOURCEを0以上まで加算
+	;구속、노출、이탈、트라우마SOURCEは減衰
+	SOURCE:MASTER:애정 = MAX(SOURCE:MASTER:애정, 0)
+	SOURCE:MASTER:구속 /= 3
+	SOURCE:MASTER:노출 /= 2
+	SOURCE:MASTER:이탈 /= 4
+	SOURCE:MASTER:트라우마 /= 4
+	;ACT파생に구속を解いて一緒に죠교部屋へ帰った(애원)をセット
+	TFLAG:ACT파생 = 1
+;その他の場合実行
+ELSE
+	;2/3の確率で発見される
+	IF RAND:3
+		;쾌Ｃ、쾌Ｖ、쾌Ａ、쾌Ｂ、고통、구속、불결SOURCE増加
+		;(남자であれば쾌Ｖ、쾌Ｂは発生しない)
+		SOURCE:MASTER:쾌Ｃ += 2000 + (RAND:100 + 1) * 10
+		SOURCE:MASTER:쾌Ｖ += TALENT:MASTER:남자 ? 0 # 3000 + (RAND:30 + 1) * 50
+		SOURCE:MASTER:쾌Ａ += 2500 + (RAND:100 + 1) * 10
+		SOURCE:MASTER:쾌Ｂ += TALENT:MASTER:남자 ? 0 # 2000 + (RAND:100 + 1) * 10
+		SOURCE:MASTER:고통 += 1000 + (RAND:150 + 1) * 15 + (ABL:MASTER:Ａ감각 < 2 ? SOURCE:MASTER:쾌Ａ / 3 # 0)
+		SOURCE:MASTER:구속 += 500 + (RAND:20 + 1) * 20
+		SOURCE:MASTER:불결 += 1500 + (RAND:10 + 1) * 50
+		;전신に정액汚れ追加
+		;(페니스、바기나は存在時のみ)
+		STAIN:MASTER:입 |= 4
+		STAIN:MASTER:손 |= 4
+		STAIN:MASTER:페니스 |= (TALENT:MASTER:후타나리 || TALENT:MASTER:남자) ? 4 # 0
+		STAIN:MASTER:바기나 |= TALENT:MASTER:남자 ? 0 # 4
+		STAIN:MASTER:항문 |= 4
+		STAIN:MASTER:가슴 |= 4
+		STAIN:MASTER:발 |= 4
+		;음란の場合
+		IF TALENT:MASTER:음란
+			;중독충족SOURCE増加
+			SOURCE:MASTER:중독충족 += 500 + (RAND:20 + 1) * 25
+			;ACT파생にまだ物발りない様子(興奮)をセット
+			TFLAG:ACT파생 = 3
+		ELSE
+			;애정SOURCE減少、이탈、트라우마SOURCE増加
+			SOURCE:MASTER:애정 -= 1000 + (RAND:6 + 1) * 50
+			SOURCE:MASTER:이탈 += 2500 + (RAND:6 + 1) * 500
+			SOURCE:MASTER:트라우마 += 2000 + (RAND:6 + 1) * 500
+			;ACT파생に心も体もボロボロ(陵辱)をセット
+			TFLAG:ACT파생 = 2
+		ENDIF
+		;MASTERが처녀なら、처녀상실が起こる
+		TCVAR:MASTER:처녀상실 = TALENT:MASTER:처녀
+		;동정は…どうするか悩んだけど、喪失させておく
+		TCVAR:MASTER:동정상실 = TALENT:MASTER:동정
+	;発見されなかった
+	ELSE
+		;이탈、트라우마SOURCE減衰
+		SOURCE:MASTER:이탈 /= 2
+		SOURCE:MASTER:트라우마 /= 2
+		;ACT파생に最後まで人は来なかった(無事)をセット
+		TFLAG:ACT파생 = 0
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;075,페니스밴드장착（Ｎ/Ｈ）[罰]（트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_75
+;트라우마(각인)に応じて트라우마SOURCE増加
+SOURCE:MASTER:트라우마 = 100 + MARK:MASTER:트라우마 * 50
+;트라우마(각인)の元がこの죠교だった場合트라우마SOURCE1.5倍
+SIF CFLAG:MASTER:트라우마 == 7
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;탈의の処理
+;착의플레이선호素質があり、하반신겉옷に妨害されない場合
+;죠교레벨、해방素質に応じて成功率上昇し、속옷だけ강제탈의
+IF TALENT:착의플레이선호 && (GET_TRAINLV(TARGET) + TALENT:해방 * 3 > 2 + RAND:3) && CLOTHESTYPE(0, 1) == 1
+	TFLAG:자주탈의 = 9
+ELSE
+	;하반신全部자주탈의
+	TFLAG:자주탈의 = 5
+ENDIF
+;죠교자욕망、죠교레벨、도구능숙素質、기교、도구強化に応じて쾌ＶSOURCE増加
+SOURCE:쾌Ｖ = 150 + GET_ABL(TARGET, "욕망") * (GET_TRAINLV(TARGET) + 1) * 5 / 10 + (TALENT:도구능숙 + 1) * GET_ABL(TARGET, "기교") * (ITEM:9 + 1) * 3
+;죠교대상죠교레벨と욕망を見て、どちらかが低ければSOURCE:쾌Ｖ軽減
+IF CFLAG:MASTER:죠교레벨 < 1 || ABL:MASTER:욕망 < 1
+	TIMES SOURCE:쾌Ｖ, 0.10
+ELSEIF CFLAG:MASTER:죠교레벨 < 3 || ABL:MASTER:욕망 < 2
+	TIMES SOURCE:쾌Ｖ, 0.25
+ELSEIF CFLAG:MASTER:죠교레벨 < 5 || ABL:MASTER:욕망 < 3
+	TIMES SOURCE:쾌Ｖ, 0.40
+ELSEIF CFLAG:MASTER:죠교레벨 < 8 || ABL:MASTER:욕망 < 4
+	TIMES SOURCE:쾌Ｖ, 0.60
+ELSEIF CFLAG:MASTER:죠교레벨 < 11 || ABL:MASTER:욕망 < 5
+	TIMES SOURCE:쾌Ｖ, 0.85
+ENDIF
+;SOURCE:쾌Ｖの1/5だけ죠교자욕정が増加
+CUP:MASTER:욕정 += SOURCE:쾌Ｖ / 5
+;SOURCE:쾌Ｖに応じて이탈SOURCE増加、죠교대상노출증、죠교레벨によって減少
+SOURCE:MASTER:이탈 = SOURCE:쾌Ｖ - GET_ABL(MASTER, "노출증") * 2 - CFLAG:MASTER:죠교레벨 * 5
+;이탈SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자욕망に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 100 + GET_ABL(TARGET, "욕망")
+
+;페니스밴드を装備
+IF TFLAG:ACT파생 == 0
+	TEQUIP:죠교자페니스밴드 = 1+ITEM:9
+;解除
+ELSE
+	TEQUIP:죠교자페니스밴드 = 0
+ENDIF
+
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+TFLAG:경과시간 += 2
+
+@ACTION_APPLY2_75
+;TARGETが처녀なら、처녀상실が起こる
+TCVAR:처녀상실 = TALENT:처녀

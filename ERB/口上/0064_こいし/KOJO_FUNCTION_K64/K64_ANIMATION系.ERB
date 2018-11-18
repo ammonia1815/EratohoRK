@@ -1,0 +1,171 @@
+﻿;-------------------------------------------------
+;코이시구상 ANIMATION系関数
+;-------------------------------------------------
+;・ぱにめーしょん的なノリの独自関数(?)
+;・ぱにめーしょん拡張？ こにめーしょん？ よくわからない
+;・ぱにめーしょんのコンフィグは参照している
+;-------------------------------------------------
+
+;-------------------------------------------------
+;関数名:K64_LIGHT
+;概　要:電球関数
+;引　数:なし
+;戻り値:なし(多分RESULT保護)
+;코이시ちゃんと言えば電球。電球表示するよ！ ﾋﾟｺｰﾝ
+;適当な作り。割と손抜き。具体的には左端にしか出てこない辺り
+;-------------------------------------------------
+@K64_LIGHT
+#LOCALSIZE 2
+#LOCALSSIZE 1
+;　　　　　 |
+;　　＼　　__　　／
+;　　＿　（ｍ）　＿
+;　　　　　|ミ|
+;　　 ／ 　｀´　 ＼
+LOCAL:0 = CURRENTREDRAW()
+LOCAL:1 = GETCOLOR()
+LOCALS:0 = %GETFONT()%
+SETFONT CHKFONT("ＭＳ Ｐゴシック") ? "ＭＳ Ｐゴシック" # LOCALS:0
+REDRAW 0
+IF ANIME_CONFIG("FLASH")	;発光可。何か違う気もする
+	;ズレを予防。表示しない部分は背景色(PRINT)、表示する場所をデフォルト色(PRINTD)で描画
+	SETCOLOR GETBGCOLOR()
+	PRINTL       |
+;OriginalString : 　　＼　　
+	PRINT   ＼  
+;OriginalString : __
+	PRINTD __
+	PRINTL   ／
+;OriginalString : 　　＿　
+	PRINT   ＿ 
+;OriginalString : （ｍ）
+	PRINTD （ｍ）
+	PRINTL  ＿
+;OriginalString : 　　　　　|ミ|
+	PRINTDL      |미|
+;OriginalString : 　　 ／ 　
+	PRINT    ／  
+;OriginalString : ｀´
+	PRINTD ｀´
+	PRINTL   ＼
+	REDRAW 2
+	TWAIT 700, 0
+	CLEARLINE 5
+ENDIF
+;発光する部分を黄色(PRINT)、発光しない部分をデフォルト色(PRINTD)で描画
+SETCOLOR 0xFFFF99
+PRINTL       |
+;OriginalString : 　　＼　　
+PRINT   ＼  
+;OriginalString : __
+PRINTD __
+PRINTL   ／
+;OriginalString : 　　＿　
+PRINT   ＿ 
+;OriginalString : （
+PRINTD （
+;OriginalString : ｍ
+PRINT ｍ
+;OriginalString : ）
+PRINTD ）
+PRINTL  ＿
+;OriginalString : 　　　　　|ミ|
+PRINTDL      |미|
+;OriginalString : 　　 ／ 　
+PRINT    ／  
+;OriginalString : ｀´
+PRINTD ｀´
+PRINTL   ＼
+REDRAW LOCAL:0
+SETFONT LOCALS:0
+SETCOLOR LOCAL:1
+WAIT
+RETURN RESULT
+
+
+;-------------------------------------------------
+;関数名:K64_SHOPWAIT
+;概　要:ボーナス취득時にそれっぽいWAITをかけてみる関数
+;引　数:ARGS:0…表示文字列(少女○○中とか)
+;　　　 ARGS:1…[省略可]使用するフォント。省略했다場合はHG創英ﾌﾟﾚｾﾞﾝｽEB
+;戻り値:なし(多分RESULT保護)
+;備　考:HG創英ﾌﾟﾚｾﾞﾝｽEBはWindows標準フォントではないので、あれば使う感じで
+;　　　 OfficeやらStarSuiteやら入れてるなら有るんじゃないかな、多分…
+;-------------------------------------------------
+@K64_SHOPWAIT(ARGS:0, ARGS:1 = "HG創英ﾌﾟﾚｾﾞﾝｽEB")
+#LOCALSIZE 5
+#LOCALSSIZE 1
+LOCAL:0 = STRLENS(ARGS:0) + 4	;文字列長+"..."+半角スペース分
+;元の設定保持
+LOCAL:1 = CURRENTREDRAW()
+LOCAL:2 = GETCOLOR()
+LOCAL:3 = GETSTYLE()
+LOCALS = %GETFONT()%
+
+;フォント/フォントスタイル設定
+IF CHKFONT(ARGS:1)
+	SETFONT ARGS:1
+ELSEIF CHKFONT("ＭＳ 明朝")
+	SETFONT "ＭＳ 明朝"
+	FONTSTYLE 1	;Bold
+ELSE
+	FONTSTYLE 1
+ENDIF
+;右寄せ
+ALIGNMENT RIGHT
+;地の文の色に
+RESETCOLOR
+
+;☆REDRAWは調整の余地あり？
+IF ANIME_CONFIG("FULLCUTIN")	;全画面カットイン可
+	;REDRAWでいろいろと制御しないとガクつく
+	REDRAW 0
+	CALL SAVELINE
+	FOR LOCAL:4, 0, 150
+		PRINTL 
+	NEXT
+	LOCAL:4 = 0
+	IF ANIME_CONFIG("FADE")	;フェード可(とりあえず挙動的にはフェードの亜種かと)
+		WHILE 1
+			PRINTFORML %ARGS:0, LOCAL:0, LEFT%
+			REDRAW 2
+			ARGS:0 += "."
+			TWAIT 700, 0
+			SIF ++(LOCAL:4) == 4
+				BREAK
+			CLEARLINE 1
+		WEND
+	ELSE					;フェード不可
+		PRINTFORML %ARGS:0%... 
+		REDRAW 2
+		TWAIT 1500, 0
+	ENDIF
+	CALL RETURNLINE
+ELSE							;全画面カットイン不可
+	PRINTL 
+	PRINTL 
+	IF ANIME_CONFIG("FADE")	;フェード可
+		WHILE 1
+			PRINTFORML %ARGS:0, LOCAL:0, LEFT%
+			REDRAW 2
+			ARGS:0 += "."
+			TWAIT 700, 0
+			SIF ++(LOCAL:4) == 4
+				BREAK
+			CLEARLINE 1
+		WEND
+	ELSE					;フェード不可
+		PRINTFORML %ARGS:0%... 
+		REDRAW 2
+		TWAIT 1500, 0
+	ENDIF
+	PRINTL 
+	PRINTL 
+ENDIF
+;元の設定に戻す
+REDRAW LOCAL:1
+SETCOLOR LOCAL:2
+ALIGNMENT LEFT
+FONTSTYLE LOCAL:3
+SETFONT LOCALS
+RETURN RESULT

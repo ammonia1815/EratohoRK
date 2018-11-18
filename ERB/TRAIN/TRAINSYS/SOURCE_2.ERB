@@ -1,0 +1,193 @@
+﻿;────────────────────────────────────
+;접촉のソース（공포ソース、욕정、공순、치정、불쾌、호감도）
+;────────────────────────────────────
+@CALC_SOURCE10
+#DIM 치정増減
+#DIM 욕정増減
+#DIM 공순増減
+#DIM 불쾌増減
+
+;変数初期化
+치정増減 = SOURCE:MASTER:접촉
+욕정増減 = SOURCE:MASTER:접촉
+공순増減 = SOURCE:MASTER:접촉
+불쾌増減 = SOURCE:MASTER:접촉
+
+;호감도基礎増減
+TFLAG:호감도업 += MIN(SOURCE:MASTER:접촉 / 100, 10)
+
+;순종と죠교度合いをみる
+LOCAL = ABL:MASTER:욕망 * 2 + CFLAG:MASTER:죠교레벨
+;치정、공순、호감도(M→T)増減
+치정増減 = 치정増減 * LINE_CALC(LOCAL, "0→150,18→0,LIMIT/1～150") / 100
+공순増減 = 공순増減 * LINE_CALC(LOCAL, "0→0,18→100,LIMIT/5～100") / 100
+TFLAG:호감도업 += LINE_CALC(LOCAL, "0→-200,18→200,LIMIT/-200～200") / 100
+
+;욕망をみる
+LOCAL = 0
+SIF TEQUIP:미약
+	LOCAL += 1
+SIF TCVAR:MASTER:상태변화 == 5
+	LOCAL += 2
+LOCAL += ABL:MASTER:욕망 * 2 + CFLAG:M호의 / 500
+;욕정、불쾌、호감도(M→T)増減
+욕정増減 = 욕정増減 * LINE_CALC(LOCAL, "0→10,15→125,LIMIT/10～125") / 100
+불쾌増減 = 불쾌増減 * LINE_CALC(LOCAL, "0→120,15→0,LIMIT/1～120") / 100
+TFLAG:호감도업 += LINE_CALC(LOCAL, "0→-2,15→2,LIMIT/-2～2")
+
+;同性の場合
+IF TALENT:MASTER:남자 && TALENT:남자
+	;ＢＬ끼/레즈끼を취득
+	LOCAL = TALENT:남자 ? ABL:MASTER:ＢＬ끼 # ABL:MASTER:레즈끼
+	;치정、욕정、공순、불쾌、호감도(M→T)増減
+	치정増減 = 치정増減 * LINE_CALC(LOCAL, "0→100,5→15,LIMIT/15～100")
+	욕정増減 = 욕정増減 * LINE_CALC(LOCAL, "0→0,5→120,LIMIT/0～120")
+	공순増減 = 공순増減 * LINE_CALC(LOCAL, "0→10,5→100,LIMIT/10～100")
+	불쾌増減 = 불쾌増減 * LINE_CALC(LOCAL, "0→200,5→0,LIMIT/1～200")
+	TFLAG:호감도업 += LINE_CALC(LOCAL, "0→-3,5→5,LIMIT/-3～5")
+	;レズの場合
+	IF !TALENT:남자
+		욕정増減 = 욕정増減 * (5 + ABL:MASTER:레즈중독) / 5
+		불쾌増減 = 불쾌増減 * (6 - ABL:MASTER:레즈중독) / 6
+	ENDIF
+ENDIF
+
+;実際の増減処理
+CUP:MASTER:치정 += 치정増減
+CUP:MASTER:욕정 += 욕정増減
+CUP:MASTER:공순 += 공순増減
+CUP:MASTER:불쾌 += 불쾌増減
+
+;치정増減量と同じだけ공포SOURCE増減
+SOURCE:MASTER:공포 += 치정増減
+
+;────────────────────────────────────
+;애정のソース（열락ソース、공순、욕정、호감도）
+;────────────────────────────────────
+@CALC_SOURCE11
+
+;性別、同性などの処理
+;남성혐오時애정SOURCE減衰
+SIF TALENT:MASTER:남자 && TALENT:남성혐오 && CFLAG:MASTER:죠교레벨 + CFLAG:죠교레벨 < 10
+	TIMES SOURCE:MASTER:애정 , 0.60
+;同性時、ABLにより애정SOURCE増減
+IF TALENT:MASTER:남자 && TALENT:남자
+	SOURCE:MASTER:애정 = SOURCE:MASTER:애정 * (ABL:MASTER:ＢＬ끼 + 1) / 5
+ELSEIF !TALENT:MASTER:남자 && !TALENT:남자
+	SOURCE:MASTER:애정 = SOURCE:MASTER:애정 * (ABL:MASTER:레즈끼 + 1) / 5
+	SOURCE:MASTER:애정 = SOURCE:MASTER:애정 * (ABL:MASTER:레즈중독 + 5) / 5
+ENDIF
+
+;욕정、공순、열락SOURCE増減
+CUP:MASTER:욕정 += SOURCE:MASTER:애정 * (ABL:MASTER:욕망 + 5) / 10
+CUP:MASTER:공순 += SOURCE:MASTER:애정 * (ABL:MASTER:순종 + 5) / 5
+SOURCE:MASTER:열락 += SOURCE:MASTER:애정 * (ABL:MASTER:욕망 + 5) / 10
+
+;호감도(M→T)増減
+TFLAG:호감도업 += LINE_CALC(SOURCE:MASTER:애정, "0→0,2500→10,LIMIT/0～10")
+
+;────────────────────────────────────
+;성행위のソース（불쾌、억울、체력、기력、호감도、경험치追加）
+;────────────────────────────────────
+@CALC_SOURCE12
+
+;욕망が低い場合はPALAM:MASTER:불쾌があがる
+SIF PALAM:MASTER:욕정 < 5000
+	CUP:MASTER:불쾌 += SOURCE:MASTER:성행위 / LINE_CALC(PALAM:MASTER:욕정, "0→1,5000→6,LIMIT/1～6")
+
+;억압か抵抗がある場合はPALAM:MASTER:억울が上がる
+;ABL:봉사정신をみる
+SIF TALENT:MASTER:억압 || TALENT:MASTER:반항적
+	CUP:MASTER:억울 += SOURCE:MASTER:성행위 * LINE_CALC(ABL:MASTER:봉사정신, "0→180,5→30,LIMIT/30～180") / 500
+
+;성행위SOURCEから보정値を作る
+LOCAL = SOURCE:MASTER:성행위 * (100 - CFLAG:MASTER:죠교레벨) * (100 - CFLAG:죠교레벨) / 20000
+LOCAL = LIMIT(LOCAL, 10, 500)
+
+;죠교대상체력、기력を消費
+DOWNBASE:MASTER:체력 += 50 + LOCAL * 2 / 3
+DOWNBASE:MASTER:기력 += LOCAL / 2
+
+;성행위が激しく、十分な순종ABLがあるとき호감도(M→T)上昇
+LOCAL = MIN(SOURCE:MASTER:성행위, ABL:MASTER:순종 * 750)
+TFLAG:호감도업 += LIMIT(LOCAL / 250, 0, 12)
+
+;경험치追加
+TFLAG:경험치업 += SOURCE:MASTER:성행위 / 200
+
+;────────────────────────────────────
+;고통のソース（달성ソース、공포ソース、욕정、고통、체력、기력、이성、出血）
+;────────────────────────────────────
+@CALC_SOURCE13
+
+;고통。작은체형体型や巨躯時、縛られている時に보정
+CUP:MASTER:고통 += SOURCE:MASTER:고통 * (5 + TALENT:MASTER:작은체형 - TALENT:MASTER:장신) * (SOURCE:MASTER:구속 + 10000) / 50000
+
+;달성ソース、징계・모드中なら痛めつけることで만족		SOURCE:MASTER:반항となっていたSQR由来の負の遺産をケジメ@/L
+SIF TFLAG:징계・플래그 > 0
+	SOURCE:MASTER:달성 += CUP:MASTER:고통 * (10 - ABL:MASTER:고통중독) / 50
+
+;공포のソース、고통에강함/弱いの영향を受け、마조끼と고통중독が上がればほとんど消えます
+SOURCE:MASTER:공포 += SOURCE:MASTER:고통 * (20 - ABL:MASTER:마조끼 - ABL:MASTER:고통중독 * 2 + TALENT:MASTER:고통에약함 * 5 - TALENT:MASTER:고통에강함 * 3) / 20
+
+;욕정、마조끼と고통중독、도Ｍ、そして죠교자の새드を見る
+CUP:MASTER:욕정 += SOURCE:MASTER:고통 * (ABL:MASTER:마조끼 + ABL:MASTER:고통중독 * 2 + TALENT:MASTER:도Ｍ * 5) * (3 + TALENT:새드) / 60
+
+;고통SOURCEから보정値を作る
+LOCAL = 50 + (SOURCE:MASTER:고통 - 50) * (50 - CFLAG:MASTER:죠교레벨 - ABL:MASTER:순종 * 2) / 200
+;500を突破すると上昇しにくくなる処理
+;필요かどうかを見極めるため試験的にコメントアウト@これみ
+;B = (A - 500) / 3
+;SIF B > 0
+;	A = 500 + RAND:B
+LOCAL = MAX(LOCAL, 10)
+
+DOWNBASE:MASTER:체력 += LOCAL
+DOWNBASE:MASTER:기력 += LOCAL / 2
+DOWNBASE:MASTER:이성 += LOCAL * (5 + TALENT:MASTER:고통에약함 - TALENT:MASTER:고통에강함 + TALENT:MASTER:정서적 - TALENT:MASTER:감정결여) * (900 + RAND:100 + 1) / 7000
+
+;고통에따른이성저하の플래그
+TFLAG:고통에따른이성저하 = 1
+
+;出血
+;고통が強いとどこかから出血する
+;適当すぎるのでとりあえず静かにしててもらう@これみ
+[SKIPSTART]
+SIF LOCAL > 500 && RAND:3 > 0
+	STAIN:MASTER:입 |= 32
+SIF LOCAL > 500 && RAND:4 > 0
+	STAIN:MASTER:발 |= 32
+SIF LOCAL > 750 && RAND:3 > 0
+	STAIN:MASTER:가슴 |= 32
+SIF LOCAL > 750 && RAND:4 > 0
+	STAIN:MASTER:손 |= 32
+[SKIPEND]
+
+;────────────────────────────────────
+;구속のソース（욕정、굴복、고통、불쾌、억울、체력、기력）
+;────────────────────────────────────
+@CALC_SOURCE14
+
+;욕정、마조끼と구속중독、도Ｍ、そして죠교자の새드を見る
+CUP:MASTER:욕정 += SOURCE:MASTER:구속 * (ABL:MASTER:마조끼 + ABL:MASTER:구속중독 * 2 + TALENT:MASTER:도Ｍ * 5) * (3 + TALENT:새드) / 60
+
+;굴복、순종をみる
+CUP:MASTER:굴복 += SOURCE:MASTER:구속 * (5 + ABL:MASTER:순종) / 25
+
+;고통、순종を見る
+CUP:MASTER:고통 += SOURCE:MASTER:구속 * (11 - ABL:MASTER:순종 * 2) / 50
+
+;불쾌
+CUP:MASTER:불쾌 += SOURCE:MASTER:구속 * (61 - ABL:MASTER:마조끼 - ABL:MASTER:구속중독 * 3 - CFLAG:MASTER:죠교레벨 - TALENT:MASTER:도Ｍ * 5) / 50
+;;불쾌上昇がマイナスなら0に差し替える
+SIF CUP:MASTER:불쾌 < 0
+	CUP:MASTER:불쾌 = 0
+
+;억울
+CUP:MASTER:억울 += SOURCE:MASTER:구속 * (2 + TALENT:MASTER:비관적 - TALENT:MASTER:낙관적) / (3 + CFLAG:MASTER:죠교레벨 + ABL:MASTER:구속중독 * 3 + TALENT:MASTER:도Ｍ * 10)
+
+;죠교대상체력、기력
+LOCAL = SOURCE:MASTER:구속 * (50 - CFLAG:MASTER:죠교레벨 - ABL:MASTER:순종 * 3) / 600
+DOWNBASE:MASTER:체력 += 30 + LOCAL * 2 / 3
+DOWNBASE:MASTER:기력 += LOCAL
+

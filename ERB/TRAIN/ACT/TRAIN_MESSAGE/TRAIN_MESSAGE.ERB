@@ -1,0 +1,74 @@
+﻿;────────────────────────────────────
+;죠교자행동 地の文(リアクション前)
+;
+;죠교자행동が決まったらここから地の文を呼び出します。
+;구상で指定することによって置換했다文章を表示し呼ばれないようにすることができます。
+;────────────────────────────────────
+@TRAIN_MESSAGE
+CALL KOJO_TRAIN_MESSAGE
+IF !RESULT
+	IF TFLAG:ＳＰ행동 >= 200
+		CALL SP_TRAIN_MESSAGE
+	ELSE
+		TRYCCALLFORM TRAIN_MESSAGE_{TFLAG:ACT}
+		CATCH
+			RETURN 0
+		ENDCATCH
+	ENDIF
+	WAIT
+ENDIF
+RETURN RESULT
+
+;────────────────────────────────────
+;죠교대상행동 地の文(リアクション後)
+;
+;죠교대상リアクションが決まったらここからメッセージを呼び出します。
+;구상で指定することによって置換했다文章を表示し呼ばれないようにすることができます。
+;────────────────────────────────────
+@TRAIN_MESSAGE2
+;COMが우선REACTのときは処理せずに戻す。ACTが방치플레이/휴식시킨다/영양제를 먹인다なら通す@/L
+SIF IS_NOWCOMNAME("이루는대로") && !IS_NOWACTNAME("방치플레이/휴식시킨다/영양제를 먹인다")
+	RETURN 0
+CALL KOJO_TRAIN_MESSAGE2
+IF !RESULT
+	;SHOW_USERCOM_COMにツールチップが仕込まれたので봉인。ここでREACT파생を表示するようにしてもいいのかも知れない
+	;IF !IS_NOWCOMNAME("이루는대로")					;COM:이루는대로なら弾く
+	;	PRINTFORML [%COM_RANK(TFLAG:REACT부하)%]
+	;	PRINTL
+	;ENDIF
+	;죠교項目毎の地の文を呼び出し
+	TRYCCALLFORM TRAIN_MESSAGE2_{TFLAG:ACT}
+		RETURN RESULT
+	CATCH
+		RETURN 0
+	ENDCATCH
+ENDIF
+RETURN RESULT
+
+;────────────────────────────────────
+;リアクション後の탈의애니메表示
+;────────────────────────────────────
+@TRAIN_MESSAGE2_5_ANIME
+;의상変更でない場合は돌아가기
+SIF !IS_NOWACTNAME("의상 변경을 요구한다") || !IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다")
+	RETURN RESULT
+;OriginalString : 
+PRINTL
+;服を脱いだ場合
+IF TFLAG:ACT파생 == 0 && IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다")
+	;죠교대상服装の表示
+	CALL CLOTHE_SHOW(MASTER)
+;服を着た場合
+ELSEIF  TFLAG:ACT파생 && IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다")
+	;죠교대상服装の表示
+	CALL CLOTHE_SHOW(MASTER, 1)
+ENDIF
+RETURN RESULT
+
+;────────────────────────────────────
+;죠교자행동地の文(행동毎)
+;
+;リアクション前、リアクション後の地の文を一箇所にまとめた
+;REACTION後、RESULT値が1以外の場合はREACTION_MESSAGEも呼び出される
+;────────────────────────────────────
+;ACT분류毎にファイルを切り分け。個別のファイルはACT_MESSAGEフォルダへ移設@/L

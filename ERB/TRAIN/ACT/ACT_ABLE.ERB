@@ -1,0 +1,3275 @@
+﻿
+;-----------------------------------------------------------
+;ACTABLE一括관리
+;-----------------------------------------------------------
+@GLOBAL_ACTABLE(ARG)
+#FUNCTION
+#LOCALSIZE 200
+#DIM 参照ターン, 200
+#DIM DAYTIME관리, 2
+
+;日時更新
+IF DAYTIME관리 != TIME || DAYTIME관리:1 != DAY
+	VARSET 参照ターン, -1
+	DAYTIME관리 = TIME
+	DAYTIME관리:1 = DAY
+ENDIF
+
+;ターン内初回
+IF 参照ターン:ARG != TFLAG:죠교시간
+	参照ターン:ARG = TFLAG:죠교시간
+	IF PERCENT(CFLAG:(1000+ARG))
+		LOCAL:ARG = 1
+	ELSE
+		LOCAL:ARG = 0
+	ENDIF
+ENDIF
+
+;CFLAG:1000～1199によるACT봉인判定
+ACTABLE_REASON:ARG = 봉인_ACT봉인
+IF LOCAL:ARG == 1
+	;採用不可
+	RESULT = 0
+	RETURNF 1
+ENDIF
+
+;휴식系ACT봉인
+;SANDBOX限定処理
+ACTABLE_REASON:ARG = 봉인_SANDBOX휴식봉인
+IF FLAG:모드 == 1 && GROUPMATCH(ARG, 90, 91, 92)
+	RESULT = 0
+	RETURNF 1
+ENDIF
+
+;-----------------------------------------------------------
+;지금 기분을 묻다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE0
+;一括관리
+SIF GLOBAL_ACTABLE(0)
+	RETURN RESULT
+;방침が이상
+ACTABLE_REASON:0 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;実行可能
+ACTABLE_REASON:0 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;자신에게의 마음을 묻다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE1
+;一括관리
+SIF GLOBAL_ACTABLE(1)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:1 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:1 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;実行可能
+ACTABLE_REASON:1 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;성에 관한 이야기를 하다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE2
+;一括관리
+SIF GLOBAL_ACTABLE(2)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:2 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:2 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;죠교자に성지식が無い
+SIF !EXP:성지식
+	RETURN 0
+;実行可能
+ACTABLE_REASON:2 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;상냥하게 위로한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE3
+;一括관리
+SIF GLOBAL_ACTABLE(3)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:3 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:3 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;実行可能
+ACTABLE_REASON:3 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;엄하게 위협한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE4
+;一括관리
+SIF GLOBAL_ACTABLE(4)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:4 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が소프트/이상
+ACTABLE_REASON:4 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/이상")
+	RETURN 0
+;実行可能
+ACTABLE_REASON:4 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;의상 변경을 요구한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE5
+;一括관리
+SIF GLOBAL_ACTABLE(5)
+	RETURN RESULT
+;밀어넘어짐
+ACTABLE_REASON:5 = 物理障害_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;성교중かつMASTERが코스프레中
+ACTABLE_REASON:5 = 解除規制_코스프레SEX
+SIF GETINSERT() && TEQUIP:MASTER:코스프레
+	RETURN 0
+;밧줄
+ACTABLE_REASON:5 = 物理障害_구속(밧줄)
+SIF TEQUIP:밧줄
+	RETURN 0
+;実行可能
+ACTABLE_REASON:5 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;합의를 요구한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE6
+;一括관리
+SIF GLOBAL_ACTABLE(6)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:6 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:6 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;합의を既に得ている
+ACTABLE_REASON:6 = 無意味_합의済
+SIF CFLAG:합의
+	RETURN 0
+;처녀でも동정でもない
+ACTABLE_REASON:6 = 無意味_합의不要
+SIF TALENT:MASTER:처녀 !| TALENT:MASTER:동정
+	RETURN 0
+;実行可能
+ACTABLE_REASON:6 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;징계한다고 위협한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE7
+;一括관리
+SIF GLOBAL_ACTABLE(7)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:7 = 状況不適合_非징계・中
+SIF !TFLAG:징계・플래그
+	RETURN 0
+;방침が소프트/이상
+ACTABLE_REASON:7 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/이상")
+	RETURN 0
+;밀어넘어짐
+ACTABLE_REASON:7 = 状況不適合_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:7 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;고함치다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE8
+;一括관리
+SIF GLOBAL_ACTABLE(8)
+	RETURN RESULT
+;징계・모드
+;制限解除@これみ
+;ACTABLE_REASON:8 = 状況不適合_징계・中
+;SIF TFLAG:징계・플래그
+;	RETURN 0
+;방침が소프트/노멀
+ACTABLE_REASON:8 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;実行可能
+ACTABLE_REASON:8 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;기분나쁘게 웃다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE9
+;一括관리
+SIF GLOBAL_ACTABLE(9)
+	RETURN RESULT
+;방침が소프트/노멀/하드
+ACTABLE_REASON:9 = 방침不適合_턴방침(%POLICY("今")%)
+SIF 2 <= TFLAG:턴방침 && TFLAG:턴방침 <= 4
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:9 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;実行可能
+ACTABLE_REASON:9 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;손으로 애무 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE10
+;一括관리
+SIF GLOBAL_ACTABLE(10)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:10 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:10 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:10 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자に벽통과がなく、죠교대상に페니스がない
+IF !TALENT:벽통과 && !PENIS(MASTER)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:10 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+ENDIF
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:10 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;구음継続中
+ACTABLE_REASON:10 = 解除規制_구음中
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	RETURN 0
+;実行可能
+ACTABLE_REASON:10 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;가슴애무 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE11
+;一括관리
+SIF GLOBAL_ACTABLE(11)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:11 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:11 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;죠교자に벽통과がなく、죠교대상が남자
+IF !TALENT:벽통과 && TALENT:MASTER:남자
+	;죠교대상の상반신겉옷で妨害される
+	ACTABLE_REASON:11 = 物理障害_着衣(受)(상반신겉옷)
+	;남자の상반신겉옷が戻り値2(도사복/원피스)になることは통상ではあり得ない
+	SIF CLOTHESTYPE(1, 3) == 2
+		RETURN 0
+	;죠교대상の상반신속옷で妨害される
+	ACTABLE_REASON:11 = 物理障害_着衣(受)(상반신속옷)
+	;남자の상반신속옷が戻り値2(브래지어/붕대)になることは통상であり得ない
+	SIF CLOTHESTYPE(1, 2) == 2
+		RETURN 0
+ENDIF
+;애태움中(페니스刺激を中断しないように)
+ACTABLE_REASON:11 = 状況不適合_애태움中
+SIF TCVAR:MASTER:애태움도
+	RETURN 0
+;성교중（후배위/배면좌위/Ａ섹스）
+ACTABLE_REASON:11 = 解除規制_성교(攻→受)(후배위/배면좌위/Ａ섹스)
+SIF GROUPMATCH(TEQUIP:성교중, 2, 5, 6) > 0
+	RETURN 0
+;성교봉사중（정상위/후배위/배면좌위/Ａ섹스）
+ACTABLE_REASON:11 = 解除規制_성교(受→攻)(정상위/후배위/배면좌위/Ａ섹스)
+SIF GROUPMATCH(TEQUIP:성교봉사중, 1, 2, 5, 6) > 0
+	RETURN 0
+;구음中
+ACTABLE_REASON:11 = 物理障害_자세(구음中)
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	RETURN 0
+;안면승마中
+ACTABLE_REASON:11 = 物理障害_자세(안면승마中)
+SIF TEQUIP:안면승마 || TEQUIP:안면승마항문
+	RETURN 0
+;実行可能
+ACTABLE_REASON:11 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;입으로 애무 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE12
+;一括관리
+SIF GLOBAL_ACTABLE(12)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:12 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:12 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;죠교대상が여자で바이브장착中
+ACTABLE_REASON:12 = 物理障害_장착(受)(바이브)
+SIF TEQUIP:바이브 && !TALENT:MASTER:후타나리
+	RETURN 0
+;오나홀
+ACTABLE_REASON:12 = 物理障害_장착(受)(오나홀)
+SIF TEQUIP:오나홀
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:12 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:12 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:12 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:12 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:12 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+ENDIF
+;実行可能
+ACTABLE_REASON:12 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;항문애무 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE13
+;一括관리
+SIF GLOBAL_ACTABLE(13)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:13 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が소프트/이상
+ACTABLE_REASON:13 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/이상")
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:13 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:13 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;항문비즈
+ACTABLE_REASON:13 = 物理障害_장착(受)(항문비즈)
+SIF TEQUIP:항문비즈
+	RETURN 0
+;항문섹스中
+ACTABLE_REASON:13 = 物理障害_성교(攻→受)(全)
+SIF TEQUIP:성교중 == 6
+	RETURN 0
+;삽입중
+ACTABLE_REASON:13 = 物理障害_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:13 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+ENDIF
+;애태움中(페니스刺激を中断しないように)
+ACTABLE_REASON:13 = 状況不適合_애태움中
+SIF TCVAR:MASTER:애태움도 && !TALENT:MASTER:남자
+	RETURN 0
+;実行可能
+ACTABLE_REASON:13 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;항문펠라 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE14
+;一括관리
+SIF GLOBAL_ACTABLE(14)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:14 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が소프트/이상
+ACTABLE_REASON:14 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/이상")
+	RETURN 0
+;항문装備
+ACTABLE_REASON:14 = 物理障害_장착(受)(A装備)
+SIF TEQUIP:항문바이브 || TEQUIP:항문비즈 || TEQUIP:관장그릇＋플러그
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:14 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:14 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:14 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:14 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;구음継続中
+ACTABLE_REASON:14 = 状況不適合_구음中
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:14 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で強く妨害される
+	ACTABLE_REASON:14 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0)
+		RETURN 0
+ENDIF
+;애태움中(페니스刺激を中断しないように)
+ACTABLE_REASON:14 = 状況不適合_애태움中
+SIF TCVAR:MASTER:애태움도
+	RETURN 0
+;実行可能
+ACTABLE_REASON:14 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;키스 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE15
+;一括관리
+SIF GLOBAL_ACTABLE(15)
+	RETURN RESULT
+;구음継続中
+ACTABLE_REASON:15 = 状況不適合_구음中
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:15 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:15 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;玩具は基本的に透過しないけど볼개그は벽통과効いてもいいかも
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;볼개그
+	ACTABLE_REASON:15 = 物理障害_구속(볼개그)
+	SIF TEQUIP:볼개그
+		RETURN 0
+ENDIF
+;애태움中(페니스刺激を中断しないように)
+;トドメ時にはＣ刺激に集中する
+;トドメ時に키스してもいいんじゃないかな@これみ
+;ACTABLE_REASON:15 = 状況不適合_애태움中
+;SIF TCVAR:MASTER:애태움도 == 1
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:15 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;성기마찰한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE16
+;一括관리
+SIF GLOBAL_ACTABLE(16)
+	RETURN RESULT
+;구음継続中
+ACTABLE_REASON:16 = 状況不適合_구음中
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:16 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:16 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;自分の服は벽통과があってもダメ
+;죠교자の하반신속옷に強く妨害される（팬티も不可）
+ACTABLE_REASON:16 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0)
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:16 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교대상が여자で바이브장착中
+ACTABLE_REASON:16 = 物理障害_장착(受)(바이브)
+SIF TEQUIP:바이브 && !TALENT:MASTER:후타나리
+	RETURN 0
+;오나홀
+ACTABLE_REASON:16 = 物理障害_장착(受)(오나홀)
+SIF TEQUIP:오나홀
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:16 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:16 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:16 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:16 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;貝合わせの場合、죠교대상の하반신속옷に強く妨害される（팬티も不可）
+	ACTABLE_REASON:16 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0) && !PENIS(MASTER)
+		RETURN 0
+ENDIF
+;스마타するの場合、죠교대상に발がないとダメ
+ACTABLE_REASON:16 = 物理障害_受다리없음
+SIF (PENIS(MASTER) || TEQUIP:페니스밴드) && TALENT:다리없음
+	RETURN 0
+;죠교자に페니스があるとダメ
+ACTABLE_REASON:16 = 物理障害_攻페니스
+SIF PENIS(TARGET)
+	RETURN 0
+;実行可能
+ACTABLE_REASON:16 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;파이즈리한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE17
+;一括관리
+SIF GLOBAL_ACTABLE(17)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:17 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:17 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;오나홀
+ACTABLE_REASON:17 = 物理障害_장착(受)(오나홀)
+SIF TEQUIP:오나홀
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:17 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:17 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:17 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:17 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+ENDIF
+;죠교자の상반신겉옷で妨害される
+ACTABLE_REASON:17 = 物理障害_着衣(攻)(상반신겉옷)
+SIF CLOTHESTYPE(0, 3) == 2
+	RETURN 0
+;죠교자の상반신속옷で妨害される
+ACTABLE_REASON:17 = 物理障害_着衣(攻)(상반신속옷)
+SIF CLOTHESTYPE(0, 2) == 2
+	RETURN 0
+;죠교자が남자
+ACTABLE_REASON:17 = 物理障害_攻男性
+SIF TALENT:남자
+	RETURN 0
+;죠교대상が여자
+ACTABLE_REASON:17 = 物理障害_受女性
+SIF TALENT:MASTER:후타나리 !| TALENT:MASTER:남자
+	RETURN 0
+;実行可能
+ACTABLE_REASON:17 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;풋잡하기 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE18
+;一括관리
+SIF GLOBAL_ACTABLE(18)
+	RETURN RESULT
+;구음継続中
+ACTABLE_REASON:18 = 状況不適合_구음中
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:18 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:18 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;오나홀
+ACTABLE_REASON:18 = 物理障害_장착(受)(오나홀)
+SIF TEQUIP:오나홀
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:18 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:18 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:18 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に발がない
+ACTABLE_REASON:18 = 物理障害_攻다리없음
+SIF TALENT:다리없음
+	RETURN 0
+;죠교대상が여자
+ACTABLE_REASON:18 = 物理障害_受女性
+SIF TALENT:MASTER:후타나리 !| TALENT:MASTER:남자
+	RETURN 0
+;実行可能
+ACTABLE_REASON:18 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;손가락삽입한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE19
+;一括관리
+SIF GLOBAL_ACTABLE(19)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:19 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:19 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:19 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:19 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;삽입중
+ACTABLE_REASON:19 = 物理障害_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:19 = 物理障害_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;촉수
+ACTABLE_REASON:19 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;남자
+ACTABLE_REASON:19 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:19 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+ENDIF
+;애태움中(페니스刺激を中断しないように)
+ACTABLE_REASON:19 = 状況不適合_애태움中
+SIF TCVAR:MASTER:애태움도 && !TALENT:MASTER:후타나리
+	RETURN 0
+;実行可能
+ACTABLE_REASON:19 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;로터 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE20
+;一括관리
+SIF GLOBAL_ACTABLE(20)
+	RETURN RESULT
+;로터が無い
+ACTABLE_REASON:20 = 未所持_로터
+SIF !ITEM:로터
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:20 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:20 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;Ｃに他の도구장착中
+ACTABLE_REASON:20 = 物理障害_장착(受)(Ｃキャップ)
+SIF TEQUIP:클리캡
+	RETURN 0
+ACTABLE_REASON:20 = 物理障害_장착(受)(Ｐホール)
+SIF TEQUIP:오나홀
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:20 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:20 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중
+ACTABLE_REASON:20 = 物理障害_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:20 = 物理障害_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;촉수
+ACTABLE_REASON:20 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が페니스有り
+ACTABLE_REASON:20 = 物理障害_受페니스
+SIF PENIS(MASTER)
+	RETURN 0
+;実行可能
+ACTABLE_REASON:20 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;바이브 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE21
+;一括관리
+SIF GLOBAL_ACTABLE(21)
+	RETURN RESULT
+;바이브が無い
+ACTABLE_REASON:21 = 未所持_바이브
+SIF !ITEM:바이브
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:21 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그 && TEQUIP:바이브
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:21 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:21 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:21 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;Ｖ삽입중
+ACTABLE_REASON:21 = 物理障害_성교(攻→受)(Ｖ)
+SIF V_SEX()
+	RETURN 0
+;さすがに바이브は벽통과しない
+;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:21 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:21 = 物理障害_着衣(受)(하반신속옷)
+SIF CLOTHESTYPE(1, 0) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:21 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;남자
+ACTABLE_REASON:21 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:21 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;항문바이브 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE22
+;一括관리
+SIF GLOBAL_ACTABLE(22)
+	RETURN RESULT
+;항문바이브が無い
+ACTABLE_REASON:22 = 未所持_Ａ바이브
+SIF !ITEM:항문바이브
+	RETURN 0
+;방침が소프트/이상
+ACTABLE_REASON:22 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/이상")
+	RETURN 0
+;Ａに他の도구장착中
+ACTABLE_REASON:22 = 物理障害_장착(受)(Ａ)
+SIF TEQUIP:항문비즈 || TEQUIP:관장그릇＋플러그
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:22 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:22 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;Ａ삽입중
+ACTABLE_REASON:22 = 物理障害_성교(攻→受)(Ａ)
+SIF TEQUIP:성교중 == 6
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:22 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:22 = 物理障害_着衣(受)(하반신속옷)
+SIF CLOTHESTYPE(1, 0) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:22 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:22 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;항문비즈 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE23
+;一括관리
+SIF GLOBAL_ACTABLE(23)
+	RETURN RESULT
+;항문비즈が無い
+ACTABLE_REASON:23 = 未所持_Ａ비즈
+SIF !ITEM:항문비즈
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:23 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그 && TEQUIP:항문비즈 == 0
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:23 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;Ａに他の도구장착中
+ACTABLE_REASON:23 = 物理障害_장착(受)(Ａ)
+SIF TEQUIP:항문바이브 || TEQUIP:관장그릇＋플러그
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:23 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:23 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;Ａ삽입중
+ACTABLE_REASON:23 = 物理障害_성교(攻→受)(Ａ)
+SIF TEQUIP:성교중 == 6
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:23 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교대상の하반신속옷で妨害される
+ACTABLE_REASON:23 = 物理障害_着衣(受)(하반신속옷)
+SIF CLOTHESTYPE(1, 0) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:23 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:23 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;Ｃ애무도구 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE24
+;一括관리
+SIF GLOBAL_ACTABLE(24)
+	RETURN RESULT
+;클리캡が無い
+ACTABLE_REASON:24 = 未所持_Ｃキャップ
+SIF (TALENT:MASTER:후타나리 !| TALENT:MASTER:남자) && !ITEM:클리캡
+	RETURN 0
+;오나홀が無い
+ACTABLE_REASON:24 = 未所持_Ｐホール
+SIF (TALENT:MASTER:후타나리 || TALENT:MASTER:남자) && !ITEM:오나홀
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:24 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:24 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;발기判定
+ACTABLE_REASON:24 = 物理障害_발기(受)(不발)
+SIF TCVAR:MASTER:발기도 < 1000 & (TALENT:MASTER:후타나리 || TALENT:MASTER:남자) && !TEQUIP:오나홀
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:24 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:24 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;오나홀の場合、죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:24 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2 && PENIS(MASTER)
+	RETURN 0
+;삽입중
+ACTABLE_REASON:24 = 物理障害_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;구음継続中
+ACTABLE_REASON:24 = 状況不適合_구음中
+SIF TEQUIP:죠교대상Ｃ사용 == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:24 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:24 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;유두캡 の実行判定
+;-----------------------------------------------------------
+;Revの場合はクリップ로터という扱い
+;男性用の代物も確認できるので、まぁ남자でも通して良いと考えることに@/L
+@ACT_ABLE25
+;一括관리
+SIF GLOBAL_ACTABLE(25)
+	RETURN RESULT
+;유두캡が無い
+ACTABLE_REASON:25 = 未所持_Ｂキャップ
+SIF !ITEM:유두캡
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:25 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:25 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;죠교대상の상반신겉옷で妨害される
+ACTABLE_REASON:25 = 物理障害_着衣(受)(상반신겉옷)
+SIF CLOTHESTYPE(1, 3) == 2
+	RETURN 0
+;죠교대상の상반신속옷で強く妨害される
+ACTABLE_REASON:25 = 物理障害_着衣(受)(상반신속옷)
+SIF CLOTHESTYPE(1, 2)
+	RETURN 0
+;촉수
+ACTABLE_REASON:25 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:25 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;페니스밴드 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE26
+;一括관리
+SIF GLOBAL_ACTABLE(26)
+	RETURN RESULT
+;페니스밴드が無い
+ACTABLE_REASON:26 = 未所持_Ｐバンド
+SIF !ITEM:페니스밴드 || TEQUIP:죠교자페니스밴드
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:26 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그 && TEQUIP:페니스밴드
+	RETURN 0
+;Ａに他の도구장착中
+ACTABLE_REASON:26 = 物理障害_장착(受)(Ａ)
+SIF TEQUIP:항문비즈 || TEQUIP:항문바이브 || TEQUIP:관장그릇＋플러그
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:26 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;Ｖ삽입중
+ACTABLE_REASON:26 = 物理障害_성교(攻→受)(Ｖ)
+SIF TEQUIP:성교중
+	RETURN 0
+;성교봉사중
+ACTABLE_REASON:26 = 物理障害_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:26 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교대상の하반신속옷で妨害される
+ACTABLE_REASON:26 = 物理障害_着衣(受)(하반신속옷)
+SIF CLOTHESTYPE(1, 0) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:26 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;페니스がある
+ACTABLE_REASON:26 = 物理障害_受페니스
+SIF PENIS(MASTER)
+	RETURN 0
+;実行可能
+ACTABLE_REASON:26 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;밀어 넘어트린다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE27
+;一括관리
+SIF GLOBAL_ACTABLE(27)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:27 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;本日の방침がイチャイチャ // 죠교자が정욕なら通す
+ACTABLE_REASON:27 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF IS_POLICY("금일", "イチャイチャ") && !IS_CONDITION(TARGET, "정욕")
+	RETURN 0
+;페니스밴드
+ACTABLE_REASON:27 = 物理障害_장착(受)(페니스밴드)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;밀어넘어지는중
+[SKIPSTART]
+ACTABLE_REASON:27 = 無意味_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+[SKIPEND]
+;애태움中(페니스刺激を中断しないように)
+ACTABLE_REASON:27 = 状況不適合_애태움中
+SIF TCVAR:MASTER:애태움도
+	RETURN 0
+;삽입중は밀어넘어짐が취소される
+;@EVENT_EQUIP関係で필요です@これみ
+ACTABLE_REASON:27 = 状況不適合_삽입중
+SIF TEQUIP:성교중 || TEQUIP:성교봉사중
+	RETURN 0
+[SKIPSTART]
+;만족度が50%以下
+ACTABLE_REASON:27 = 状況不適合_만족度
+SIF TENSION(TARGET, 8) != "高い" && !TEQUIP:밀어넘어지는중
+	RETURN 0
+[SKIPEND]
+;만족度が80%以下かつ밀어넘어지는중でない場合
+ACTABLE_REASON:27 = 状況不適合_만족度
+SIF !BASERATIO(TARGET, 8, 80) && !TEQUIP:밀어넘어지는중
+	RETURN 0
+;죠교자が정욕ではないかつ밀어넘어지는중でない場合
+ACTABLE_REASON:27 = 状況不適合_상태변화
+SIF !IS_CONDITION(TARGET, "정욕") && !TEQUIP:밀어넘어지는중
+	RETURN 0
+;밀어넘어짐終了に派生し得るのは만족度が非常に高い場合のみ
+ACTABLE_REASON:27 = 状況不適合_만족度(밀어넘어지는중)
+SIF !BASERATIO(TARGET, 8, 90) && TEQUIP:밀어넘어지는중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:27 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;정상위 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE30
+;一括관리
+SIF GLOBAL_ACTABLE(30)
+	RETURN RESULT
+;죠교자발기所要判定
+;죠교자페니스が存在し、かつ발기不발であれば
+ACTABLE_REASON:30 = 物理障害_발기不발(攻)
+SIF PENIS(TARGET) && TCVAR:발기 < 2
+	RETURN 0
+;죠교자に페니스がなく、페니스밴드がない
+ACTABLE_REASON:30 = 未所持_Ｐバンド
+SIF !PENIS(TARGET) && (TEQUIP:페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:30 = 物理障害_장착(受)(Ｖ)
+SIF TEQUIP:삼각목마 || TEQUIP:페니스밴드 || TEQUIP:바이브
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:30 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:30 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;남자
+ACTABLE_REASON:30 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:30 = 物理障害_성교(攻→受)(体位)
+SIF TEQUIP:성교중 == 5
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:30 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+ACTABLE_REASON:30 = 解除規制_성교(攻→受)(Ａ)
+SIF TEQUIP:성교중 == 6 && !TEQUIP:죠교자페니스밴드
+	RETURN 0
+;죠교자に벽통과がない（ペニバンも不可）
+IF !TALENT:벽통과 || !PENIS(TARGET)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:30 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:30 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0) == 2
+		RETURN 0
+ENDIF
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:30 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:30 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:30 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;후배위 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE31
+;一括관리
+SIF GLOBAL_ACTABLE(31)
+	RETURN RESULT
+;죠교자발기所要判定
+;죠교자페니스が存在し、かつ발기不발であれば
+ACTABLE_REASON:31 = 物理障害_발기不발(攻)
+SIF PENIS(TARGET) && TCVAR:발기 < 2
+	RETURN 0
+;죠교자に페니스がなく、페니스밴드がない
+ACTABLE_REASON:31 = 未所持_Ｐバンド
+SIF !PENIS(TARGET) && (TEQUIP:페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:31 = 物理障害_장착(受)(Ｖ)
+SIF TEQUIP:삼각목마 || TEQUIP:페니스밴드 || TEQUIP:바이브
+	RETURN 0
+;방침が소프트/이상
+ACTABLE_REASON:31 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/이상")
+	RETURN 0
+;남자
+ACTABLE_REASON:31 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:31 = 物理障害_성교(攻→受)(体位)
+SIF TEQUIP:성교중 == 4
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:31 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+ACTABLE_REASON:31 = 解除規制_성교(攻→受)(Ａ)
+SIF TEQUIP:성교중 == 6 && !TEQUIP:죠교자페니스밴드
+	RETURN 0
+;죠교자に벽통과がない（ペニバンも不可）
+IF !TALENT:벽통과 || !PENIS(TARGET)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:31 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:31 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0) == 2
+		RETURN 0
+ENDIF
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:31 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:31 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:31 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;기승위 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE32
+;一括관리
+SIF GLOBAL_ACTABLE(32)
+	RETURN RESULT
+;죠교자발기所要判定
+;죠교자페니스が存在し、かつ발기不발であれば
+ACTABLE_REASON:32 = 物理障害_발기不발(攻)
+SIF PENIS(TARGET) && TCVAR:발기 < 2
+	RETURN 0
+;죠교자に페니스がなく、페니스밴드がない
+ACTABLE_REASON:32 = 未所持_Ｐバンド
+SIF !PENIS(TARGET) && (TEQUIP:페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:32 = 物理障害_장착(受)(Ｖ)
+SIF TEQUIP:삼각목마 || TEQUIP:페니스밴드 || TEQUIP:바이브
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:32 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:32 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;남자
+ACTABLE_REASON:32 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:32 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:32 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+ACTABLE_REASON:32 = 解除規制_성교(攻→受)(Ａ)
+SIF TEQUIP:성교중 == 6 && !TEQUIP:죠교자페니스밴드
+	RETURN 0
+;죠교자に벽통과がない（ペニバンも不可）
+IF !TALENT:벽통과 || !PENIS(TARGET)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:32 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:32 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0) == 2
+		RETURN 0
+ENDIF
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:32 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:32 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:32 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;대면좌위 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE33
+;一括관리
+SIF GLOBAL_ACTABLE(33)
+	RETURN RESULT
+;죠교자발기所要判定
+;죠교자페니스が存在し、かつ발기不발であれば
+ACTABLE_REASON:33 = 物理障害_발기不발(攻)
+SIF PENIS(TARGET) && TCVAR:발기 < 2
+	RETURN 0
+;죠교자に페니스がなく、페니스밴드がない
+ACTABLE_REASON:33 = 未所持_Ｐバンド
+SIF !PENIS(TARGET) && (TEQUIP:페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:33 = 物理障害_장착(受)(Ｖ)
+SIF TEQUIP:삼각목마 || TEQUIP:페니스밴드 || TEQUIP:바이브
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:33 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:33 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;남자
+ACTABLE_REASON:33 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:33 = 物理障害_성교(攻→受)(体位)
+SIF TEQUIP:성교중 == 2 || TEQUIP:성교중 == 5
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:33 = 解除規制_성교(受→攻)(全)
+SIF (TEQUIP:성교봉사중)
+	RETURN 0
+ACTABLE_REASON:33 = 解除規制_성교(攻→受)(Ａ)
+SIF TEQUIP:성교중 == 6 && !TEQUIP:죠교자페니스밴드
+	RETURN 0
+;죠교자に벽통과がない（ペニバンも不可）
+IF !TALENT:벽통과 || !PENIS(TARGET)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:33 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:33 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0) == 2
+		RETURN 0
+ENDIF
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:33 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:33 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:33 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;배면좌위 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE34
+;一括관리
+SIF GLOBAL_ACTABLE(34)
+	RETURN RESULT
+;죠교자발기所要判定
+;죠교자페니스が存在し、かつ발기不발であれば
+ACTABLE_REASON:34 = 物理障害_발기不발(攻)
+SIF PENIS(TARGET) && TCVAR:발기 < 2
+	RETURN 0
+;죠교자に페니스がなく、페니스밴드がない
+ACTABLE_REASON:34 = 未所持_Ｐバンド
+SIF !PENIS(TARGET) && (TEQUIP:페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:34 = 物理障害_장착(受)(Ｖ)
+SIF TEQUIP:삼각목마 || TEQUIP:페니스밴드 || TEQUIP:바이브
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:34 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が소프트/이상
+ACTABLE_REASON:34 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/이상")
+	RETURN 0
+;남자
+ACTABLE_REASON:34 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:34 = 物理障害_성교(攻→受)(体位)
+SIF TEQUIP:성교중 == 1 || TEQUIP:성교중 == 4
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:34 = 解除規制_성교(受→攻)(全)
+SIF (TEQUIP:성교봉사중)
+	RETURN 0
+ACTABLE_REASON:34 = 解除規制_성교(攻→受)(Ａ)
+SIF TEQUIP:성교중 == 6 && !TEQUIP:죠교자페니스밴드
+	RETURN 0
+;죠교자に벽통과がない（ペニバンも不可）
+IF !TALENT:벽통과 || !PENIS(TARGET)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:34 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:34 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0) == 2
+		RETURN 0
+ENDIF
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:34 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:34 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:34 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;항문섹스 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE35
+;一括관리
+SIF GLOBAL_ACTABLE(35)
+	RETURN RESULT
+;죠교자발기所要判定
+;죠교자페니스が存在し、かつ발기不발であれば
+ACTABLE_REASON:35 = 物理障害_발기不발(攻)
+SIF PENIS(TARGET) && TCVAR:발기 < 2
+	RETURN 0
+;죠교자に페니스がなく、페니스밴드がない
+ACTABLE_REASON:35 = 未所持_Ｐバンド
+SIF !PENIS(TARGET) && (TEQUIP:페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:35 = 物理障害_장착(受)(Ｖ)
+SIF TEQUIP:삼각목마 ; || TEQUIP:페니스밴드 || TEQUIP:바이브
+	RETURN 0
+;Ａ사용중
+ACTABLE_REASON:35 = 物理障害_장착(受)(Ａ)
+SIF TEQUIP:항문바이브 || TEQUIP:항문비즈 || TEQUIP:관장그릇＋플러그
+	RETURN 0
+;방침が소프트
+ACTABLE_REASON:35 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트") && TEQUIP:성교중 < 6
+	RETURN 0
+;관장中
+ACTABLE_REASON:35 = 物理障害_관장
+SIF TEQUIP:관장그릇＋플러그
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:35 = 解除規制_성교(受→攻)(全)
+SIF (TEQUIP:성교봉사중)
+	RETURN 0
+ACTABLE_REASON:35 = 解除規制_성교(攻→受)(Ｖ)
+SIF V_SEX() && !TEQUIP:죠교자페니스밴드
+	RETURN 0
+;죠교자に벽통과がない（ペニバンも不可）
+IF !TALENT:벽통과 || !PENIS(TARGET)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:35 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で強く妨害される（항문섹스は팬티も不可）
+	ACTABLE_REASON:35 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0)
+		RETURN 0
+ENDIF
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:35 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:35 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상のＡ경험が2未満かつ、기교2未満
+ACTABLE_REASON:35 = 物理障害_Ａ경험不발
+SIF EXP:MASTER:Ａ경험 < 2 && ABL:MASTER:기교 < 2
+	RETURN 0
+;いきなり항문に突っ込まれないように
+;죠교대상のＡ감각が0、または죠교대상のＡ감각が1かつ방침が노멀
+ACTABLE_REASON:35 = 条件未達_Ａ감각不발
+SIF !ABL:MASTER:Ａ감각 || (ABL:MASTER:Ａ감각 == 1 && IS_POLICY("今", "노멀"))
+	RETURN 0
+;実行可能
+ACTABLE_REASON:35 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;자위 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE40
+;一括관리
+SIF GLOBAL_ACTABLE(40)
+	RETURN RESULT
+;방침が이상
+ACTABLE_REASON:40 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:40 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;すでに자위중
+ACTABLE_REASON:40 = 無意味_자위중
+SIF GETBIT(TEQUIP:자위중, 0)
+	RETURN 0
+;밧줄
+ACTABLE_REASON:40 = 物理障害_구속(밧줄)
+SIF TEQUIP:밧줄
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:40 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:40 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:40 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:40 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;비패개장 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE41
+;一括관리
+SIF GLOBAL_ACTABLE(41)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:41 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:41 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:41 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:41 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:41 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:41 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:41 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교대상の하반신속옷で妨害される
+ACTABLE_REASON:41 = 物理障害_着衣(受)(하반신속옷)
+SIF CLOTHESTYPE(1, 0) == 2
+	RETURN 0
+;죠교대상が남자
+ACTABLE_REASON:41 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;実行可能
+ACTABLE_REASON:41 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;자위과시 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE42
+;一括관리
+SIF GLOBAL_ACTABLE(42)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:42 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:42 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;すでに자위중
+ACTABLE_REASON:42 = 無意味_죠교자자위중
+SIF GETBIT(TEQUIP:자위중, 1)
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:42 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:42 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:42 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;수치플레이 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE43
+;一括관리
+SIF GLOBAL_ACTABLE(43)
+	RETURN RESULT
+;거울が無い
+ACTABLE_REASON:43 = 未所持_거울
+SIF !ITEM:거울
+	RETURN 0
+;야외플레이中
+ACTABLE_REASON:43 = 物理障害_야외플레이中
+SIF TEQUIP:야외플레이
+	RETURN 0
+[SKIPSTART]
+;눈가리개장착中		弾こうと思ったが保留@/L
+ACTABLE_REASON:43 = 状況不適合_目隠し中
+SIF TEQUIP:눈가리개
+	RETURN 0
+[SKIPEND]
+;징계・모드
+ACTABLE_REASON:43 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:43 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:43 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:43 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:43 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:43 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:43 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;야외플레이 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE44
+;一括관리
+SIF GLOBAL_ACTABLE(44)
+	RETURN RESULT
+;개목걸이が無い
+ACTABLE_REASON:44 = 未所持_개목걸이
+SIF !ITEM:개목걸이
+	RETURN 0
+;방침が소프트/노멀
+ACTABLE_REASON:44 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:44 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;밧줄
+ACTABLE_REASON:44 = 物理障害_구속(밧줄)
+SIF TEQUIP:밧줄
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:44 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;수치플레이中
+ACTABLE_REASON:44 = 状況不適合_수치플레이中
+SIF TEQUIP:거울
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:44 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:44 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:44 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;방뇨 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE45
+;一括관리
+SIF GLOBAL_ACTABLE(45)
+	RETURN RESULT
+;방침が소프트
+ACTABLE_REASON:45 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:45 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삼각목마・페니스밴드
+ACTABLE_REASON:45 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+ACTABLE_REASON:45 = 物理障害_장착(受)(Ｐバンド)
+SIF TEQUIP:페니스밴드
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:45 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:45 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교대상の소변が5000未満
+ACTABLE_REASON:45 = 物理障害_소변不발
+SIF BASE:MASTER:소변 < 5000
+	RETURN 0
+;実行可能
+ACTABLE_REASON:45 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;코스프레 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE46
+;一括관리
+SIF GLOBAL_ACTABLE(46)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:46 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:46 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;밧줄
+ACTABLE_REASON:46 = 物理障害_구속(밧줄)
+SIF TEQUIP:밧줄
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:46 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:46 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:46 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;코스프레は미구현
+ACTABLE_REASON:46 = 미구현
+RETURN 0
+
+;-----------------------------------------------------------
+;손으로 애무를 강요 の実行判定
+;죠교대상の벽통과は考慮しないことにします
+;-----------------------------------------------------------
+@ACT_ABLE50
+;一括관리
+SIF GLOBAL_ACTABLE(50)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:50 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が하드/이상
+ACTABLE_REASON:50 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "하드/이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:50 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;밧줄
+ACTABLE_REASON:50 = 物理障害_구속(밧줄)
+SIF TEQUIP:밧줄
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:50 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:50 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+;후배위/역강간/항문섹스시킨다なら問答無用でアウト
+ACTABLE_REASON:50 = 解除規制_성교(受→攻)(후배위/逆レ/Ａ섹스)
+SIF GROUPMATCH(TEQUIP:성교봉사중, 2, 3, 6)
+	RETURN 0
+;정상위/대면좌위/배면좌위中かつ죠교자が"정욕"かつTCVAR:가버려が立っていれば通す
+ACTABLE_REASON:50 = 解除規制_성교(受→攻)(条件不適合)
+SIF TEQUIP:성교봉사중 && !IS_CONDITION(TARGET, "정욕") && !TCVAR:가버려
+	RETURN 0
+;촉수
+ACTABLE_REASON:50 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:50 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;입으로 애무를 강요 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE51
+;一括관리
+SIF GLOBAL_ACTABLE(51)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:51 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:51 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:51 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;볼개그
+ACTABLE_REASON:51 = 物理障害_구속(볼개그)
+SIF TEQUIP:볼개그
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:51 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자페니스밴드
+ACTABLE_REASON:51 = 物理障害_장착(攻)(Ｐバンド)
+SIF TEQUIP:죠교자페니스밴드
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:51 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:51 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:51 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자の하반신속옷で妨害される
+ACTABLE_REASON:51 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:51 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:51 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;파이즈리 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE52
+;一括관리
+SIF GLOBAL_ACTABLE(52)
+	RETURN RESULT
+;징계・모드
+ACTABLE_REASON:52 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:52 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:52 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;밧줄
+ACTABLE_REASON:52 = 物理障害_구속(밧줄)
+SIF TEQUIP:밧줄
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:52 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:52 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:52 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:52 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교대상の상반신겉옷で妨害される
+ACTABLE_REASON:52 = 物理障害_着衣(受)(상반신겉옷)
+SIF CLOTHESTYPE(1, 3) == 2
+	RETURN 0
+;죠교대상の상반신속옷で強く妨害される
+ACTABLE_REASON:52 = 物理障害_着衣(受)(상반신속옷)
+SIF CLOTHESTYPE(1, 2)
+	RETURN 0
+;촉수
+ACTABLE_REASON:52 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교자が여자
+ACTABLE_REASON:52 = 物理障害_攻女性
+SIF TALENT:후타나리 !| TALENT:남자
+	RETURN 0
+;죠교대상が남자
+ACTABLE_REASON:52 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;実行可能
+ACTABLE_REASON:52 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;스마타 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE53
+;一括관리
+SIF GLOBAL_ACTABLE(53)
+	RETURN RESULT
+;죠교자に棒がついてない
+ACTABLE_REASON:53 = 物理障害_攻페니스無し
+SIF !PENIS(TARGET) && !TEQUIP:죠교자페니스밴드
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:53 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:53 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:53 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:53 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:53 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:53 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:53 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:53 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で強く妨害される
+	ACTABLE_REASON:53 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0)
+		RETURN 0
+ENDIF
+;촉수
+ACTABLE_REASON:53 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상に발がないとダメ
+ACTABLE_REASON:53 = 物理障害_受다리없음
+SIF TALENT:MASTER:다리없음
+	RETURN 0
+;죠교대상が페니스有り
+ACTABLE_REASON:53 = 物理障害_受페니스
+SIF PENIS(MASTER)
+	RETURN 0
+;実行可能
+ACTABLE_REASON:53 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;발핥기강제 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE55
+;一括관리
+SIF GLOBAL_ACTABLE(55)
+	RETURN RESULT
+;방침が소프트
+ACTABLE_REASON:55 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트")
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:55 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:55 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;볼개그
+ACTABLE_REASON:55 = 物理障害_구속(볼개그)
+SIF TEQUIP:볼개그
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:55 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:55 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:55 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に발がない
+ACTABLE_REASON:55 = 物理障害_攻다리없음
+SIF TALENT:다리없음
+	RETURN 0
+;촉수
+ACTABLE_REASON:55 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:55 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;이라마치오 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE56
+;一括관리
+SIF GLOBAL_ACTABLE(56)
+	RETURN RESULT
+;죠교자발기所要判定
+;죠교자페니스が存在し、かつ발기不발であれば
+ACTABLE_REASON:56 = 物理障害_발기不발(攻)
+SIF PENIS(TARGET) && TCVAR:발기 < 2
+	RETURN 0
+;방침が소프트/노멀
+ACTABLE_REASON:56 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:56 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;볼개그
+ACTABLE_REASON:56 = 物理障害_구속(볼개그)
+SIF TEQUIP:볼개그
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:56 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;성교중はいくまで抜かないように
+ACTABLE_REASON:56 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:56 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;촉수
+ACTABLE_REASON:56 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:56 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자が여자
+ACTABLE_REASON:56 = 物理障害_攻女性
+SIF TALENT:후타나리 !| TALENT:남자
+	RETURN 0
+;実行可能
+ACTABLE_REASON:56 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;가슴に봉사の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE57
+;一括관리
+SIF GLOBAL_ACTABLE(57)
+	RETURN RESULT
+;남자は不可
+ACTABLE_REASON:57 = 物理障害_攻男性
+SIF TALENT:남자
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:57 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그
+	RETURN 0
+;방침が이상
+ACTABLE_REASON:57 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "이상")
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:57 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;밧줄装備中は입限定になり制限を受ける
+IF TEQUIP:밧줄
+	;죠교자の상반신겉옷で妨害される
+	ACTABLE_REASON:57 = 物理障害_着衣(攻)(상반신겉옷)
+	SIF CLOTHESTYPE(0, 3) == 2
+		RETURN 0
+	;죠교자の상반신속옷で妨害される
+	ACTABLE_REASON:57 = 物理障害_着衣(攻)(상반신속옷)
+	SIF CLOTHESTYPE(0, 2) == 2
+		RETURN 0
+	;볼개그もあるとアウト
+	ACTABLE_REASON:57 = 物理障害_구속(볼개그)
+	SIF TEQUIP:볼개그
+		RETURN 0
+ENDIF
+;성교중（정상위/후배위/배면좌위/Ａ섹스）
+ACTABLE_REASON:11 = 解除規制_성교(攻→受)(정상위/후배위/배면좌위/Ａ섹스)
+SIF GROUPMATCH(TEQUIP:성교중, 1, 2, 5, 6) > 0
+	RETURN 0
+;성교봉사중（후배위/배면좌위/Ａ섹스）
+ACTABLE_REASON:11 = 解除規制_성교(受→攻)(후배위/배면좌위/Ａ섹스)
+SIF GROUPMATCH(TEQUIP:성교봉사중, 2, 5, 6) > 0
+	RETURN 0
+;촉수
+ACTABLE_REASON:57 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:57 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;스펭킹 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE60
+;一括관리
+SIF GLOBAL_ACTABLE(60)
+	RETURN RESULT
+;성봉中はいくまで抜かないように
+ACTABLE_REASON:60 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;후배위以外の성교중は規制
+ACTABLE_REASON:60 = 解除規制_성교(攻→受)(정상위/기승위/대면좌위/배면좌위/Ａ섹스)
+SIF GROUPMATCH(TEQUIP:성교중, 1, 3, 4, 5, 6)
+	RETURN 0
+;죠교대상の상반신겉옷で妨害される
+ACTABLE_REASON:60 = 物理障害_着衣(受)(상반신겉옷)
+SIF CLOTHESTYPE(1, 3) == 2
+	RETURN 0
+;안면승마中
+ACTABLE_REASON:60 = 物理障害_자세(안면승마中)
+SIF TEQUIP:안면승마 || TEQUIP:안면승마항문
+	RETURN 0
+;実行可能
+ACTABLE_REASON:60 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;채찍 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE61
+;一括관리
+SIF GLOBAL_ACTABLE(61)
+	RETURN RESULT
+;채찍が無い
+ACTABLE_REASON:61 = 未所持_채찍
+SIF !ITEM:채찍
+	RETURN 0
+;방침が소프트
+ACTABLE_REASON:61 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트")
+	RETURN 0
+;성교중はいくまで抜かないように
+ACTABLE_REASON:61 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:61 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:61 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;바늘 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE62
+;一括관리
+SIF GLOBAL_ACTABLE(62)
+	RETURN RESULT
+;바늘が無い
+ACTABLE_REASON:62 = 未所持_바늘
+SIF !ITEM:바늘
+	RETURN 0
+;방침が소프트/노멀
+ACTABLE_REASON:62 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;성교중はいくまで抜かないように
+ACTABLE_REASON:62 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:62 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:62 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;밧줄 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE63
+;一括관리
+SIF GLOBAL_ACTABLE(63)
+	RETURN RESULT
+;밧줄が無い
+ACTABLE_REASON:63 = 未所持_밧줄
+SIF !ITEM:밧줄
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:63 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그 && TEQUIP:밧줄
+	RETURN 0
+;성교중はいくまで抜かないように
+ACTABLE_REASON:63 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:63 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:63 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;눈가리개 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE64
+;一括관리
+SIF GLOBAL_ACTABLE(64)
+	RETURN RESULT
+;눈가리개が無い
+ACTABLE_REASON:64 = 未所持_눈가리개
+SIF !ITEM:눈가리개
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:64 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그 && TEQUIP:눈가리개
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:64 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:64 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:64 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;볼개그 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE65
+;一括관리
+SIF GLOBAL_ACTABLE(65)
+	RETURN RESULT
+;볼개그が無い
+ACTABLE_REASON:65 = 未所持_볼개그
+SIF !ITEM:볼개그
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:65 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그 && TEQUIP:볼개그
+	RETURN 0
+;방침が소프트/노멀
+ACTABLE_REASON:65 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:65 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:65 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:65 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;매도 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE66
+;一括관리
+SIF GLOBAL_ACTABLE(66)
+	RETURN RESULT
+;방침が소프트
+ACTABLE_REASON:66 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트")
+	RETURN 0
+;実行可能
+ACTABLE_REASON:66 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;삼각목마 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE67
+;一括관리
+SIF GLOBAL_ACTABLE(67)
+	RETURN RESULT
+;삼각목마が無い
+ACTABLE_REASON:67 = 未所持_삼각목마
+SIF !ITEM:삼각목마
+	RETURN 0
+;징계・모드
+ACTABLE_REASON:67 = 状況不適合_징계・中
+SIF TFLAG:징계・플래그 && TEQUIP:삼각목마
+	RETURN 0
+;방침が소프트/노멀
+ACTABLE_REASON:67 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:67 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;도구삽입중
+ACTABLE_REASON:67 = 物理障害_장착(受)(ＶＡ)
+SIF TEQUIP:바이브 || TEQUIP:항문바이브 || TEQUIP:항문비즈 || TEQUIP:관장그릇＋플러그 || TEQUIP:페니스밴드
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:67 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;야외플레이
+ACTABLE_REASON:67 = 物理障害_야외플레이中
+SIF TEQUIP:야외플레이
+	RETURN 0
+;성교중はいくまで抜かないように
+ACTABLE_REASON:67 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:67 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교대상の상반신겉옷で妨害される
+ACTABLE_REASON:67 = 物理障害_着衣(受)(상반신겉옷)
+SIF CLOTHESTYPE(1, 3) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:67 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;남자
+ACTABLE_REASON:67 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;実行可能
+ACTABLE_REASON:67 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;관장그릇＋플러그 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE68
+;一括관리
+SIF GLOBAL_ACTABLE(68)
+	RETURN RESULT
+;관장그릇＋플러그が無い
+ACTABLE_REASON:68 = 未所持_관장세트
+SIF !ITEM:관장세트
+	RETURN 0
+;방침が소프트
+ACTABLE_REASON:68 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트")
+	RETURN 0
+;Ａに他の도구장착中
+ACTABLE_REASON:68 = 物理障害_장착(受)(Ａ)
+SIF TEQUIP:항문바이브 || TEQUIP:항문비즈 || TEQUIP:페니스밴드
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:68 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;삽입중
+ACTABLE_REASON:68 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:68 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;하반신속옷
+ACTABLE_REASON:68 = 物理障害_着衣(受)(하반신속옷)
+SIF TEQUIP:MASTER:하반신속옷
+	RETURN 0
+;죠교대상の상반신겉옷で妨害される
+ACTABLE_REASON:68 = 物理障害_着衣(受)(상반신겉옷)
+SIF CLOTHESTYPE(1, 3) == 2
+	RETURN 0
+;촉수
+ACTABLE_REASON:68 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:68 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;피스트퍽 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE70
+;一括관리
+SIF GLOBAL_ACTABLE(70)
+	RETURN RESULT
+;방침が소프트/노멀
+ACTABLE_REASON:70 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:70 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:70 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:70 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:70 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で妨害される
+	ACTABLE_REASON:70 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0) == 2
+		RETURN 0
+ENDIF
+;촉수
+ACTABLE_REASON:70 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が남자
+ACTABLE_REASON:70 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:70 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;애널피스트 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE71
+;一括관리
+SIF GLOBAL_ACTABLE(71)
+	RETURN RESULT
+;방침が소프트/노멀
+ACTABLE_REASON:71 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:71 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:71 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:71 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:71 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で強く妨害される
+	ACTABLE_REASON:71 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0)
+		RETURN 0
+ENDIF
+;촉수
+ACTABLE_REASON:71 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:71 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;양쪽피스트 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE72
+;一括관리
+SIF GLOBAL_ACTABLE(72)
+	RETURN RESULT
+;방침が소프트/노멀/하드
+ACTABLE_REASON:72 = 방침不適合_턴방침(%POLICY("今")%)
+SIF 2 <= TFLAG:턴방침 && TFLAG:턴방침 <= 4
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:72 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:72 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:72 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;죠교자に벽통과がない
+IF !TALENT:벽통과
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:72 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+	;죠교대상の하반신속옷で強く妨害される
+	ACTABLE_REASON:72 = 物理障害_着衣(受)(하반신속옷)
+	SIF CLOTHESTYPE(1, 0)
+		RETURN 0
+ENDIF
+;촉수
+ACTABLE_REASON:72 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が남자
+ACTABLE_REASON:72 = 物理障害_受男性
+SIF TALENT:MASTER:남자
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:72 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;방치플레이 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE73
+;一括관리
+SIF GLOBAL_ACTABLE(73)
+	RETURN RESULT
+;방침が소프트/노멀
+ACTABLE_REASON:73 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트/노멀")
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:73 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:73 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:73 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:73 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;実行可能
+ACTABLE_REASON:73 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;공중육변기플레이 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE74
+;一括관리
+SIF GLOBAL_ACTABLE(74)
+	RETURN RESULT
+;밧줄と개목걸이のどちらかが無い
+ACTABLE_REASON:74 = 未所持_밧줄
+SIF !ITEM:밧줄
+	RETURN 0
+ACTABLE_REASON:74 = 未所持_개목걸이
+SIF !ITEM:개목걸이
+	RETURN 0
+;방침が소프트/노멀/하드
+ACTABLE_REASON:74 = 방침不適合_턴방침(%POLICY("今")%)
+SIF 2 <= TFLAG:턴방침 && TFLAG:턴방침 <= 4
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:74 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:74 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:74 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:74 = 解除規制_성교(受→攻)(全)
+SIF TEQUIP:성교봉사중
+	RETURN 0
+;촉수
+ACTABLE_REASON:74 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;죠교대상が처녀で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:처녀 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:74 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;페니스밴드장착 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE75
+;一括관리
+SIF GLOBAL_ACTABLE(75)
+	RETURN RESULT
+;페니스밴드が無い
+ACTABLE_REASON:75 = 未所持_Ｐバンド
+SIF !ITEM:페니스밴드 || TEQUIP:페니스밴드
+	RETURN 0
+;삽입중
+ACTABLE_REASON:75 = 物理障害_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+;성교봉사중
+ACTABLE_REASON:75 = 物理障害_성교(受→攻)(全)
+SIF (TEQUIP:성교봉사중)
+	RETURN 0
+;촉수
+ACTABLE_REASON:75 = 物理障害_촉수
+SIF TEQUIP:촉수조교중
+	RETURN 0
+;페니스がある
+ACTABLE_REASON:75 = 物理障害_攻페니스
+SIF PENIS(TARGET)
+	RETURN 0
+;実行可能
+ACTABLE_REASON:75 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;촉수소환 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE80
+;一括관리
+SIF GLOBAL_ACTABLE(80)
+	RETURN RESULT
+;召喚できるクリーチャーがいない
+ACTABLE_REASON:80 = 未所持_촉수
+SIF !ITEM:90
+	RETURN 0
+;本日の방침がイチャイチャ
+ACTABLE_REASON:80 = 방침不適合_日毎방침(%POLICY("금일")%)
+SIF TFLAG:금일의방침 == 4
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:80 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;촉수소환は미구현
+ACTABLE_REASON:80 = 미구현
+RETURN 0
+
+;-----------------------------------------------------------
+;휴식시킨다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE90
+;一括관리
+SIF GLOBAL_ACTABLE(90)
+	RETURN RESULT
+;実行可能
+ACTABLE_REASON:90 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;영양제를 먹인다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE91
+;一括관리
+SIF GLOBAL_ACTABLE(91)
+	RETURN RESULT
+;죠교자に배합지식が無い
+ACTABLE_REASON:91 = 条件未達_배합지식無し
+SIF !TALENT:배합지식
+	RETURN 0
+;実行可能
+ACTABLE_REASON:91 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;치료한다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE92
+;一括관리
+SIF GLOBAL_ACTABLE(92)
+	RETURN RESULT
+;죠교자が치료できない
+ACTABLE_REASON:92 = 条件未達_치료無し
+SIF !TALENT:치료
+	RETURN 0
+;実行可能
+ACTABLE_REASON:92 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;정상위시킨다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE95
+;一括관리
+SIF GLOBAL_ACTABLE(95)
+	RETURN RESULT
+;죠교대상に페니스がなく、페니스밴드がない
+ACTABLE_REASON:95 = 未所持_Ｐバンド
+SIF !PENIS(MASTER) && (TEQUIP:죠교자페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;죠교대상が仰向
+ACTABLE_REASON:95 = 物理障害_자세(受)(누움)
+SIF TFLAG:누움 && !TEQUIP:성교봉사중
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:95 = 物理障害_장착(攻)(Ｐバンド)
+SIF TEQUIP:죠교자페니스밴드
+	RETURN 0
+;발기1000未満
+ACTABLE_REASON:95 = 物理障害_발기不발(受)
+SIF TCVAR:MASTER:발기도 < 1000 && PENIS(MASTER)
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:95 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:95 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:95 = 解除規制_성교(受→攻)(Ａ)
+SIF A_SEX(MASTER)
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:95 = 物理障害_성교(受→攻)(体位)
+SIF TEQUIP:성교봉사중 == 5
+	RETURN 0
+;안빼고なら挿し替え不可
+ACTABLE_REASON:95 = 解除規制_안빼고
+SIF TFLAG:안빼고 && PREV_A_SEX(MASTER)
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:95 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:95 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자の하반신속옷で妨害される
+ACTABLE_REASON:95 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0) == 2
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:95 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교자が남자
+ACTABLE_REASON:95 = 物理障害_攻男性
+SIF TALENT:남자
+	RETURN 0
+;죠교대상が오나홀사용중
+ACTABLE_REASON:95 = 物理障害_장착(受)(Ｐホール)
+SIF TEQUIP:오나홀
+	RETURN 0
+;죠교대상の체력が0以下
+ACTABLE_REASON:95 = 物理障害_체력不발(受)
+SIF BASE:MASTER:체력 <= 0
+	RETURN 0
+;죠교대상が동정で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:동정 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:95 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;후배위시킨다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE96
+;一括관리
+SIF GLOBAL_ACTABLE(96)
+	RETURN RESULT
+;죠교대상に페니스がなく、페니스밴드がない
+ACTABLE_REASON:96 = 未所持_Ｐバンド
+SIF !PENIS(MASTER) && (TEQUIP:죠교자페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;죠교대상が仰向
+ACTABLE_REASON:96 = 物理障害_자세(受)(누움)
+SIF TFLAG:누움 && !TEQUIP:성교봉사중
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:96 = 物理障害_장착(攻)(Ｐバンド)
+SIF TEQUIP:죠교자페니스밴드
+	RETURN 0
+;발기1000未満
+ACTABLE_REASON:96 = 物理障害_발기不발(受)
+SIF TCVAR:MASTER:발기도 < 1000 && PENIS(MASTER)
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:96 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:96 = 解除規制_성교(攻→受)(全)
+SIF (TEQUIP:성교중)
+	RETURN 0
+ACTABLE_REASON:96 = 解除規制_성교(受→攻)(Ａ)
+SIF A_SEX(MASTER)
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:96 = 物理障害_성교(受→攻)(体位)
+SIF TEQUIP:성교봉사중 == 4
+	RETURN 0
+;안빼고なら挿し替え不可
+ACTABLE_REASON:96 = 解除規制_안빼고
+SIF TFLAG:안빼고 && PREV_A_SEX(MASTER)
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:96 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:96 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자の하반신속옷で妨害される
+ACTABLE_REASON:96 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0) == 2
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:96 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교자が남자
+ACTABLE_REASON:96 = 物理障害_攻男性
+SIF TALENT:남자
+	RETURN 0
+;죠교대상오나홀사용중
+ACTABLE_REASON:96 = 物理障害_장착(受)(Ｐホール)
+SIF TEQUIP:오나홀
+	RETURN 0
+;죠교대상の체력が0以下
+ACTABLE_REASON:96 = 物理障害_체력不발(受)
+SIF BASE:MASTER:체력 <= 0
+	RETURN 0
+;죠교대상が동정で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:동정 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:96 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;대면좌위시킨다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE97
+;一括관리
+SIF GLOBAL_ACTABLE(97)
+	RETURN RESULT
+;죠교대상に페니스がなく、페니스밴드がない
+ACTABLE_REASON:97 = 未所持_Ｐバンド
+SIF !PENIS(MASTER) && (TEQUIP:죠교자페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;죠교대상が仰向
+ACTABLE_REASON:97 = 物理障害_자세(受)(누움)
+SIF TFLAG:누움 && !TEQUIP:성교봉사중
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:97 = 物理障害_장착(攻)(Ｐバンド)
+SIF TEQUIP:죠교자페니스밴드
+	RETURN 0
+;발기1000未満
+ACTABLE_REASON:97 = 物理障害_발기不발(受)
+SIF TCVAR:MASTER:발기도 < 1000 && PENIS(MASTER)
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:97 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:97 = 解除規制_성교(攻→受)(全)
+SIF (TEQUIP:성교중)
+	RETURN 0
+ACTABLE_REASON:97 = 解除規制_성교(受→攻)(Ａ)
+SIF A_SEX(MASTER)
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:97 = 物理障害_성교(受→攻)(体位)
+SIF TEQUIP:성교봉사중 == 2 || TEQUIP:성교봉사중 == 5
+	RETURN 0
+;안빼고なら挿し替え不可
+ACTABLE_REASON:97 = 解除規制_안빼고
+SIF TFLAG:안빼고 && PREV_A_SEX(MASTER)
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:97 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:97 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자の하반신속옷で妨害される
+ACTABLE_REASON:97 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0) == 2
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:97 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교자が남자
+ACTABLE_REASON:97 = 物理障害_攻男性
+SIF TALENT:남자
+	RETURN 0
+;죠교대상오나홀사용중
+ACTABLE_REASON:97 = 物理障害_장착(受)(Ｐホール)
+SIF TEQUIP:오나홀
+	RETURN 0
+;죠교대상の체력が0以下
+ACTABLE_REASON:97 = 物理障害_체력不발(受)
+SIF BASE:MASTER:체력 <= 0
+	RETURN 0
+;죠교대상が동정で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:동정 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:97 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;배면좌위시킨다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE98
+;一括관리
+SIF GLOBAL_ACTABLE(98)
+	RETURN RESULT
+;죠교대상に페니스がなく、페니스밴드がない
+ACTABLE_REASON:98 = 未所持_Ｐバンド
+SIF !PENIS(MASTER) && (TEQUIP:죠교자페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;죠교대상が仰向
+ACTABLE_REASON:98 = 物理障害_자세(受)(누움)
+SIF TFLAG:누움 && !TEQUIP:성교봉사중
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:98 = 物理障害_장착(攻)(Ｐバンド)
+SIF TEQUIP:죠교자페니스밴드
+	RETURN 0
+;발기1000未満
+ACTABLE_REASON:98 = 物理障害_발기不발(受)
+SIF TCVAR:MASTER:발기도 < 1000 && PENIS(MASTER)
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:98 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:98 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:98 = 解除規制_성교(受→攻)(Ａ)
+SIF A_SEX(MASTER)
+	RETURN 0
+;体位変更不可
+ACTABLE_REASON:98 = 物理障害_성교(受→攻)(体位)
+SIF TEQUIP:성교봉사중 == 1 || TEQUIP:성교봉사중 == 4
+	RETURN 0
+;안빼고なら挿し替え不可
+ACTABLE_REASON:98 = 解除規制_안빼고
+SIF TFLAG:안빼고 && PREV_A_SEX(MASTER)
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:98 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:98 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자の하반신속옷で妨害される
+ACTABLE_REASON:98 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0) == 2
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:98 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교자が남자
+ACTABLE_REASON:98 = 物理障害_攻男性
+SIF TALENT:남자
+	RETURN 0
+;죠교대상が오나홀사용중
+ACTABLE_REASON:98 = 物理障害_장착(受)(Ｐホール)
+SIF TEQUIP:오나홀
+	RETURN 0
+;죠교대상の체력が0以下
+ACTABLE_REASON:98 = 物理障害_체력不발(受)
+SIF BASE:MASTER:체력 <= 0
+	RETURN 0
+;죠교대상が동정で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:동정 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:98 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;항문섹스시킨다 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE99
+;一括관리
+SIF GLOBAL_ACTABLE(99)
+	RETURN RESULT
+;죠교대상に페니스がなく、페니스밴드がない
+ACTABLE_REASON:99 = 未所持_Ｐバンド
+SIF !PENIS(MASTER) && (TEQUIP:죠교자페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;방침が소프트で항문성교봉사중でない
+ACTABLE_REASON:99 = 방침不適合_턴방침(%POLICY("今")%)
+SIF IS_POLICY("今", "소프트") && TEQUIP:성교봉사중 < 6
+	RETURN 0
+;Ａ사용중
+ACTABLE_REASON:99 = 物理障害_장착(攻)(Ｐバンド)
+SIF TEQUIP:죠교자페니스밴드
+	RETURN 0
+;발기1000未満
+ACTABLE_REASON:99 = 物理障害_발기不발(受)
+SIF TCVAR:MASTER:발기도 < 1000 && PENIS(MASTER)
+	RETURN 0
+;밀어넘어지는중(いくまで해방しないように)
+ACTABLE_REASON:99 = 解除規制_밀어넘어지는중
+SIF TEQUIP:밀어넘어지는중
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:99 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:99 = 解除規制_성교(受→攻)(Ｖ)
+SIF V_SEX(MASTER)
+	RETURN 0
+;안빼고なら挿し替え不可
+ACTABLE_REASON:99 = 解除規制_안빼고
+SIF TFLAG:안빼고 && PREV_V_SEX(MASTER)
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:99 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:99 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자の하반신속옷で強く妨害される
+ACTABLE_REASON:99 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0)
+	RETURN 0
+;죠교대상の하반신겉옷で妨害される
+ACTABLE_REASON:99 = 物理障害_着衣(受)(하반신겉옷)
+SIF CLOTHESTYPE(1, 1) == 2
+	RETURN 0
+;죠교대상오나홀사용중
+ACTABLE_REASON:99 = 物理障害_장착(受)(Ｐホール)
+SIF TEQUIP:오나홀
+	RETURN 0
+;죠교대상の체력が0以下
+ACTABLE_REASON:99 = 物理障害_체력不발(受)
+SIF BASE:MASTER:체력 <= 0
+	RETURN 0
+;죠교자のＡ감각が2未満
+ACTABLE_REASON:99 = 条件未達_Ａ감각不발
+SIF ABL:Ａ감각 < 2
+	RETURN 0
+;죠교대상が동정で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:동정 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:99 = 
+RETURN 1
+
+;-----------------------------------------------------------
+;역강간 の実行判定
+;-----------------------------------------------------------
+@ACT_ABLE103
+;一括관리
+SIF GLOBAL_ACTABLE(103)
+	RETURN RESULT
+;죠교대상に페니스がなく、페니스밴드がない
+ACTABLE_REASON:103 = 未所持_Ｐバンド
+SIF !PENIS(MASTER) && (TEQUIP:죠교자페니스밴드 || !ITEM:페니스밴드)
+	RETURN 0
+;발기1000未満
+ACTABLE_REASON:103 = 物理障害_발기不발(受)
+SIF TCVAR:MASTER:발기도 < 1000 && PENIS(MASTER)
+	RETURN 0
+;Ｖ사용중
+ACTABLE_REASON:103 = 物理障害_장착(攻)(Ｐバンド)
+SIF TEQUIP:죠교자페니스밴드
+	RETURN 0
+;삽입중(사정するまで抜かないように)
+ACTABLE_REASON:103 = 解除規制_성교(攻→受)(全)
+SIF TEQUIP:성교중
+	RETURN 0
+ACTABLE_REASON:103 = 解除規制_성교(受→攻)(Ａ)
+SIF A_SEX(MASTER)
+	RETURN 0
+;안빼고なら挿し替え不可
+ACTABLE_REASON:103 = 解除規制_안빼고
+SIF TFLAG:안빼고 && PREV_A_SEX(MASTER)
+	RETURN 0
+;삼각목마
+ACTABLE_REASON:103 = 物理障害_구속(삼각목마)
+SIF TEQUIP:삼각목마
+	RETURN 0
+;죠교자の하반신겉옷で妨害される
+ACTABLE_REASON:103 = 物理障害_着衣(攻)(하반신겉옷)
+SIF CLOTHESTYPE(0, 1) == 2
+	RETURN 0
+;죠교자の하반신속옷で妨害される
+ACTABLE_REASON:103 = 物理障害_着衣(攻)(하반신속옷)
+SIF CLOTHESTYPE(0, 0) == 2
+	RETURN 0
+;죠교자に벽통과がない（ペニバンも不可）
+IF !TALENT:벽통과 || !PENIS(TARGET)
+	;죠교대상の하반신겉옷で妨害される
+	ACTABLE_REASON:103 = 物理障害_着衣(受)(하반신겉옷)
+	SIF CLOTHESTYPE(1, 1) == 2
+		RETURN 0
+ENDIF
+;죠교자が남자
+ACTABLE_REASON:103 = 物理障害_攻男性
+SIF TALENT:남자
+	RETURN 0
+;죠교대상が오나홀사용중
+ACTABLE_REASON:103 = 物理障害_장착(受)(Ｐホール)
+SIF TEQUIP:오나홀
+	RETURN 0
+;죠교대상が동정で죠교자が주인님でない@ぽ0422test+勝손に調整3
+;今後の条件考慮のためこういう案もあるということを기록@これみ
+;SIF TALENT:MASTER:동정 && !TALENT:TARGET:주인님
+;	RETURN 0
+;実行可能
+ACTABLE_REASON:103 = 
+RETURN 1

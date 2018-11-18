@@ -1,0 +1,3020 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	[릴리 화이트]구상 애무系アクション구상ファイル
+;
+;	애무系アクション구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;애무系 ACT10～19 & 27
+;========================================================================
+;・TFLAG:ACT(10=손으로 애무/11=가슴애무/12=입으로 애무/13=항문애무/14=항문펠라/15=키스/16=성기마찰한다/17=파이즈리한다/18=풋잡하기/19=손가락삽입한다/27=밀어 넘어트린다)
+;・TFLAG:ACT분류 == 1に該当
+;・ACT18, 발コキは이상系から派生する場合あり
+;・汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "애무")で拾う事が可能
+;・죠교자が죠교대상を애무する。この구상の時点で죠교자はすでに손を出している
+;・미약を使用するケースがある
+;-------------------------------------------------
+;・戻り値(RESULT)について
+;・システム側では구상側のRESULT(終端のRETURN 1など)によって구상が表示당했다のか否か、
+;・また箇所毎の特有の挙動(미약等구상をスキップなど)を制御しています
+;・@구상記入チェックの場合代入処理を省略できますが、RESULT値は구상側で決めうちする필요があります
+;・特別な理由がない限り、テンプレとしてはRETURN 1を記述しておきます
+;-------------------------------------------------
+
+;────────────────────────────────────
+;ACT10, 손으로 애무(ACT10_0, 애무する/ACT10_1, 수음する/ACT10_2, 페니스밴드수음)
+;────────────────────────────────────
+;・Ｃ中心に애무する
+;・죠교대상に페니스がある場合、及び페니스밴드장착時には派生コマンドになる
+;・죠교대상が자위중の場合は解除される
+;・죠교자の손に汚れがある場合불쾌SOURCEが変動する
+;・죠교자기교、애무、손가락기술素質に応じて발기도上昇
+;-------------------------------------------------
+@KOJO_ACT_K15_10
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=애무/1=수음/2=페니스밴드수음)
+;-------------------------------------------------
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT10_1, 수음する
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・남성기への애무を行う、つまり손コキ
+;・他の派生と比べてSOURCE:MASTER:쾌Ｃは+200%
+;・죠교자기교、애무、손가락기술素質に応じて발기도上昇
+;-------------------------------------------------
+;필요に応じて、TEQUIP:오나홀やTCVAR:MASTER:발기도
+;PANTSCHECK(1)等で分岐を設ける事もできます。
+;まともにやると손間が尋常じゃないので、効率よく記述する事をお勧めします
+;-------------------------------------------------
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+	;-------------------------------------------------
+	;小分岐
+	;=================================================
+	;着衣初回
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0) && PANTSCHECK(1)
+		PRINTFORMW 「혹시, 여자 아이에게 손대어지는 것은 처음입니까？」
+		PRINTFORMW 「네와……릴리가 상대는, 멋진 추억은 되지 않을지도 모릅니다만……」
+		PRINTFORM 「적어도, 기분이 좋은 추억에……해 주네요
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTL  
+		PRINTFORMDW 릴리는 %CALLNAME:MASTER%(을)를 안심시키도록(듯이) 상냥하게 미소지어, 살그머니 신체를 밀착시킨다
+		PRINTL  
+		PRINTFORMW 「……그러면 아, 자지……촉있네요……」
+		PRINTFORMW 「어루만지고 어루만지고 , 소매치기 소매치기……후후♪　기분 있고입니까？」
+		PRINTL  
+		PRINTFORMDW 속옷 넘어로 릴리의 작은 손이 남성기를 상냥하게 어루만진다
+		PRINTFORMDW 맛사지를 하듯이 전체를 정중하게 비비어 붐비어, 때때로 손가락끝으로 칼리목을 간질인다
+		PRINTL  
+		PRINTFORMW 「아……더 국물응개에 스며들고가 할 수 있어 버렸습니다……」
+		PRINTFORMW 「느껴 준 것 같아, 어쩐지 기쁩니다……네에에 」
+		PRINTFORM 「이봐요, 릴리의 라고라고로……좀 더 기분 좋아져 주세요
+		CALL HEARTCB
+		PRINTFORMW 」
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;탈의初回
+	;IF 구상記入チェック(0)
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0) && P_DATUICHECK(1) == 3
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 속옷을 탈의해 그 모두를 릴리의 눈앞에 쬐고 있다
+		PRINTFORMDW 릴리는 뜨겁게 숨을 황,%CALLNAME:MASTER%의 거무스름하게 충혈한 발기 음경을 가만히 응시하고 있다……
+		PRINTL  
+		PRINTFORMW 「자지……직접깨어버릴 무릎？」
+		PRINTFORMW 「……몹시 뜨겁다……응♪……포월 해와는 전혀 다릅니다……후~♪」
+		PRINTFORMW 「처음입니까들 , 아프지 않게 상냥하게 어루만지고 어루만지고 해 주네요♪」
+		PRINTL  
+		PRINTFORMDW 릴리의 희고 가는 손가락이 간기에 상냥하게 관련되어 붙는다
+		PRINTFORMDW 근원으로부터 첨단에, 귀두를 일주 해 기도록(듯이) 음낭에……
+		PRINTFORMDW 비교적 한 관능의 흔들림이 달려, 앞질러 해에 젖은 육 간이 더욱 딱딱하고 흘립 한다……
+		PRINTL  
+		PRINTFORMW 「인 미끈미끈이 흘러넘쳐……벌벌 해 왔어요♪」
+		PRINTFORMW 「……%CNAME(MASTER, TARGET)%의"정", 릴리가 전부 받아 들여 줄테니까」
+		PRINTFORM 「기분이 좋은 것 참지 말고, 키-역에서 릴리의 라고라고 더럽혀 주세요
+		CALL HEARTCB
+		PRINTFORMW 」
+		RETURN 1
+	ENDIF
+
+	;=================================================
+	;조교중初回
+	;=================================================
+	IF 구상記入チェック(0) && ONCEACT(0)
+		IF FAVOR(0, 2000)
+			PRINTFORMW 「키-역 가득♪　활기가 가득이군요♪」
+			PRINTFORMW 「오늘도 릴리의 라고라고로 가득 짜 주니까요♪」
+		ELSE
+			PRINTFORMW 「키-역 분명하게 모아 왔습니까？　후후♪」
+			PRINTFORMW 「만약 릴리에 비밀로 시등, (군)양이라고 알아 버립니다로부터？」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+		;오나홀장착中
+		;・雑感　「애태움」は「가버려」分岐増や했다方が楽しそう
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:오나홀
+		;동정で눈가리개장착中
+		IF TALENT:MASTER:동정 && TEQUIP:눈가리개
+			;가버려
+			IF TCVAR:MASTER:가버려
+				PRINTFORMW 「이크의？　동정오나호코키로 사정해버린다의？　아하하♪」
+				PRINTFORM 「안보이는 것이 흥분하다니 정말 헨타이씨군요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「그런데, 릴리의 인 소리와 망상키쿠스 할까요♪　이봐요♪　아, , 히아 응♪」
+				PRINTL  
+				PRINTFORMDW 복잡한 고기히이지만 끊임없이 음경을 근원으로부터 잡아당겨 릴리의 염성이 절에 높아져 간다
+				PRINTFORMDW 이미 사정 한계까지 높아지고 있었다%CALLNAME:MASTER%의 쾌감이, 단번에 절정의 가장자리에 밀어 올릴 수 있다
+				PRINTL  
+				PRINTFORMW 「아,♪　릴리의 보지 상상해 , 특농정액해 주세요♪　팥고물♪」
+				PRINTFORMW 「이봐요♪　　좋아 내♪　　릴리의 오나호 보지에 질내사정해 버려♪」
+			;통상
+			ELSE
+				PRINTFORMW 「깜깜해 흥분있습니까？　후후♪」
+				PRINTFORMW 「동정씨의 민감, 해 넘어버릴 무릎♪　네 있고♪」
+				PRINTL  
+				PRINTFORMDW 아이마스크로 시야를 찰 수 있는 민감하게 된 발기 음경에,
+				PRINTFORMDW 오나호르의 복잡한 돌기가 끊임없는 쾌락을 주어 온다
+				PRINTFORMDW 릴리의 절인 한숨이 오나호르의 움직임과 싱크로 해,
+				PRINTFORMDW 정말로 성행위를 하고 있을까하고 착각해 버린다
+				PRINTL  
+				PRINTFORMW 「혹시 릴리의 보지의 감촉 상상해 버리고 있습니다？　아하하♪」
+				PRINTFORMW 「좋아요♪　릴리를 onapet로 해 , 마음껏 잉키섹스 해 주세요♪」
+			ENDIF
+		;동정で눈가리개未장착
+		ELSEIF TALENT:MASTER:동정
+			;가버려
+			IF TCVAR:MASTER:가버려
+				PRINTFORMW 「오나호로 잡아당겨져 이응입니까？　아하하♪」
+				PRINTFORMW 「좋아요♪ 참지 말고 마음껏 해 주세요♪」
+				PRINTL  
+				PRINTFORMDW “”(와)과 끈적끈적한 물소리를 세워 오나호르가 육 간에 관련되어 붙는다
+				PRINTFORMDW 복잡한 히다가 귀두를 위를 덧써 강렬한 쾌락에 비쿤과 허리가 튄다
+				PRINTL  
+				PRINTFORMW 「팥고물♪ 날뛰면(자) 능숙하게 시코시코 할 수 없어요♪」
+				PRINTFORMW 「응, 릴리의 얼굴을 봐？ 릴리의 보지의 감촉 상상해 봐♪」
+				PRINTFORMW 「릴리의 오나호 보지가 잉응은 괴롭고들 있고♪ 마음껏 질내사정 감사할 수 있다-해♪」
+			;통상
+			ELSE
+				PRINTFORMW 「응, 이 오나호르는 「릴리와 전부」라고♪」
+				PRINTFORMW 「무엇이 꼭 닮은 것이겠죠―？ 후후♪」
+				PRINTL  
+				PRINTFORMDW 복잡한 히다히다의 내벽이 페니스를 근원까지 질네 붐비어, 와 귀두에 달라붙는다
+				PRINTFORMDW 삽입하고 있는 것만으로 감미로운 저리고가 허리 전체에 퍼져, 와 허리가 떨려 버린다
+				PRINTFORMDW 릴리는 만족스럽게 미소지으면(자), 천천히 오나호르를 가진 손을 움직이기 시작했다
+				PRINTL  
+				PRINTFORMW 「분명하게 상상할 수 있었어요♪　후후♪」
+				PRINTFORMW 「이봐요, 릴리의 얼굴도 봐？　릴리의 보지의 감촉, 충분히 맛봐♪」
+			ENDIF
+		;非동정で눈가리개장착中
+		ELSEIF TEQUIP:눈가리개
+			;가버려
+			IF TCVAR:MASTER:가버려
+				PRINTFORMW 「이크의？　오나호코키로 사정해버린다의？　아하하♪」
+				PRINTFORM 「안보이는 것이 흥분하다니 정말 헨타이씨군요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「그런데, 릴리의 인 소리와 망상키쿠스 할까요♪　이봐요♪　아, , 히아 응♪」
+				PRINTL  
+				PRINTFORMDW 복잡한 고기히이지만 끊임없이 음경을 근원으로부터 잡아당겨 릴리의 염성이 절에 높아져 간다
+				PRINTFORMDW 이미 사정 한계까지 높아지고 있었다%CALLNAME:MASTER%의 쾌감이, 단번에 절정의 가장자리에 밀어 올릴 수 있다
+				PRINTL  
+				PRINTFORM 「아,♪　팥고물, 자지 간히-종류
+				CALL HEARTCB
+				PRINTFORMW 　아하하♪」
+				PRINTFORMW 「이봐요♪　　좋아 내♪　　릴리의 오나호 보지에 질내사정해 버려♪」
+			;통상
+			ELSE
+				PRINTFORMW 「깜깜해 흥분있습니까？　후후♪」
+				PRINTFORMW 「민감하게 된 자지, 해 넘어버릴 무릎♪　네 있고♪」
+				PRINTL  
+				PRINTFORMDW 아이마스크로 시야를 찰 수 있는 민감하게 된 발기 음경에,
+				PRINTFORMDW 오나호르의 복잡한 돌기가 끊임없는 쾌락을 주어 온다
+				PRINTFORMDW 릴리의 절인 한숨이 오나호르의 움직임과 싱크로 해,
+				PRINTFORMDW 정말로 성행위를 하고 있을까하고 착각해 버린다
+				PRINTL  
+				PRINTFORMW 「혹시 릴리와의 키쿠스 생각해 내 버리고 있습니다？　아하하♪」
+				PRINTFORMW 「좋아요♪　릴리를 onapet로 해 , 마음껏 잉키섹스 해 주세요♪」
+			ENDIF
+		;非동정で눈가리개未장착
+		ELSE
+			;가버려
+			IF TCVAR:MASTER:가버려
+				PRINTFORMW 「오나호로 잡아당겨져 이 나무 그렇습니까？　아하하♪」
+				PRINTFORMW 「좋아요♪ 참지 말고 마음껏 해 주세요♪」
+				PRINTL  
+				PRINTFORMDW “”(와)과 끈적끈적한 물소리를 세워 오나호르가 육 간에 관련되어 붙는다
+				PRINTFORMDW 복잡한 히다가 귀두를 위를 덧써 강렬한 쾌락에 비쿤과 허리가 튄다
+				PRINTL  
+				PRINTFORMW 「팥고물♪ 날뛰면(자) 능숙하게 시코시코 할 수 없어요♪」
+				PRINTFORMW 「응, 릴리의 얼굴을 봐？ 릴리의 보지의 감촉 상상해 봐♪」
+				PRINTFORMW 「릴리의 오나호 보지가 잉응은 괴롭고들 있고♪ 마음껏 질내사정 감사할 수 있다-해♪」
+			;통상
+			ELSE
+				PRINTFORMW 「응, 이 오나호르는 「릴리와 전부」라고♪」
+				PRINTFORMW 「도대체 무엇이 꼭 닮은 것이겠죠―？ 후후♪」
+				PRINTL  
+				PRINTFORMDW 복잡한 히다히다의 내벽이 페니스를 근원까지 질네 붐비어, 와 귀두에 달라붙는다
+				PRINTFORMDW 삽입하고 있는 것만으로 감미로운 저리고가 허리 전체에 퍼져, 와 허리가 떨려 버린다
+				PRINTFORMDW 릴리는 만족스럽게 미소지으면(자), 천천히 오나호르를 가진 손을 움직이기 시작했다
+				PRINTL  
+				PRINTFORMW 「릴리의 질내와 오나호르 어느 쪽이 기분이 좋습니까？」
+				PRINTFORM 「역시 언제나 같이 질내사정 감사할 수 있다-하지 않으면 비교할 수 없을까
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「좋아요♪　오나호 보지로 이말로, 가득 시코시코 해 주네요♪」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;가버려
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		;애태움　体感で3回くらい연속で선택される
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+				IF FAVOR(0, 2000)
+					IF RAND:2 == 0
+						PRINTFORMW 「쫄깃쫄깃 해 개♪……해 개해 개♪……아하하♪
+						PRINTFORMW 「자제국물 그치지 않지 벼……그렇게 이키 싶습니까？」
+						PRINTL  
+						PRINTFORMDW 사정의 타이밍을 완전하게 컨트롤 되어%CALLNAME:MASTER%(은)는 치열의 인연으로 초조하게 해지고 계속하고 있다
+						PRINTFORMDW 육 간을 격렬하게 잡아당겨, 귀두를 어루만져 령구를 지…………그리고 한 걸음의 순간, 꼭과 릴리의 손이 멈춘다
+						PRINTFORMDW 자제국물로 희게 거품이 인 육 간이, 토정의 순간에 기대해 아첨하듯이 비쿤과 뛰었다
+						PRINTL  
+						PRINTFORMW 「…………아직도 오징어키라고 주지 않아요♪」
+						PRINTFORM 「카와이구산등성이다 할 수 없으면……두와 이대로니까요
+						CALL HEARTCB
+						PRINTFORMW 」
+					ELSE
+						PRINTFORMW 「안됩니다, 아직 이나 키라고 주지 않습니다♪」
+						PRINTFORMW 「참고 모으고 붐빈 정자는, 이라고 라고 해도 진하고 맛있어집니다♪」
+						PRINTL  
+						PRINTFORMDW 사정의 타이밍을 완전하게 컨트롤 되어 사정까지 나머지 한 걸음의 로 초조하게 해지고 계속한다
+						PRINTFORMDW 자제국물로 희게 거품이 인 육 간이, 토정의 순간에 기대해 아첨하듯이 비쿤과 뛰었다
+						PRINTL  
+						PRINTFORMW 「그러니까, 좀더 좀더 한계까지 사정 참아……」
+						PRINTFORMW 「그랬더니, 릴리가 전부 짜 취해 주니까요♪」
+					ENDIF
+				ELSE
+					PRINTFORMW 「안됩니다, 아직 이나 키라고 주지 않습니다♪」
+					PRINTFORMW 「참고 모으고 붐빈 정자는, 이라고 라고 해도 진하고 맛있어집니다 것♪」
+					PRINTL  
+					PRINTFORMDW 사정의 타이밍을 완전하게 컨트롤 되어 사정까지 나머지 한 걸음의 로 초조하게 해지고 계속한다
+					PRINTFORMDW 자제국물로 희게 거품이 인 육 간이, 토정의 순간에 기대해 아첨하듯이 비쿤과 뛰었다
+					PRINTL  
+					PRINTFORMW 「그러니까, 좀더 좀더 한계까지 사정 참아……」
+					PRINTFORMW 「그랬더니, 릴리가 전부 짜 취해 주니까요♪」
+				ENDIF
+			;애태움終了（トドメ））
+			CASE 1
+				SELECTCASE NOWEX:MASTER:사정
+					;드라이사정で搾り取る
+					CASE 1
+						PRINTFORMDW %CALLNAME:MASTER%의 정액은 릴리에 의해 짜 다하여져 이미 사정이 실현되지 않는 상태에 있다
+						PRINTFORMDW 끈적거리는 열락의 자취 투성이가 되어 릴리의 가녀린 신체가 희고 음미에 빛나고 있다……
+						PRINTL  
+						PRINTFORMW 「―……타마타마 텅 비게 되어 버렸다 입니까」
+						PRINTFORMW 「이렇게 초조하게 해 전혀 키-역 모이지 않아요？」
+						PRINTL  
+						PRINTFORMDW 불만에 뺨을 부풀리면서, 릴리는 그 세지로 간기를 계속 잡아당기고 있다
+						PRINTFORMDL 끊임없이 절정을 반복해, 모든 정액을 토해냈다%CALLNAME:MASTER%의 남성기는
+						PRINTFORMDW 사정 기능이 없는 단순한 고기 바이브래이터가 되어 끝나 더 쾌락을 졸라 딱딱하고 흘립 하고 있다
+						PRINTL  
+						PRINTFORM 「그래……릴리를 위해 한계까지 감사할 수 있다-해 주었다니깐
+						CALL HEARTCB
+						PRINTFORMW 」
+						PRINTFORM 「매우 노력했다%CNAME(MASTER, TARGET)%에는, 소중한 「-」주지 않으면
+						CALL HEARTCB
+						PRINTFORMW 」
+						PRINTL  
+						CALL QUAKE(2)
+						PRINTFORM 「노력한 아이 밖에 맛볼 수 없는, 최고로 기분 좋은 「더 조수
+						CALL HEARTCB
+						PRINTFORM 」분화시킬 수 있어 주네요
+						CALL HEARTCB
+						PRINTFORMW 」
+					;その他
+					CASEELSE
+						IF RAND:2 == 0
+							PRINTFORM 「가득 인내 한 오- 에……정액 전부 누키누키 해 주네요
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTL  
+							PRINTFORMDW 릴리의 허가를 얻어, 초조하게 해지고 계속한 육 간이 단번에 최고 경도까지 달하게 된다
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 비명과 같은 교성을 흘려, 토정을 간절히 원함 해 오로지에 허리를 밀어 올린다
+							PRINTFORMDW 전신의"정"하지만 릴리를 요구해 유열에 떨리는 페니스의 첨단으로 모여 온다……
+							PRINTL  
+							PRINTFORM 「이봐요 이봐요♪　타마타마 텅 비게 될 때까지, 두---와 시코시코 해……
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「드로드로자멘 ―
+							CALL HEARTCB
+							PRINTFORM ―
+							CALL HEARTCB
+							PRINTFORM 라는 눌러 짬취있습니다
+							CALL HEARTCB
+							PRINTFORMW 」
+						ELSE
+							PRINTFORM 「가득 참을 수 있었던 아이에게는, -주지 않으면
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「모으고 붐빈 키-역, 해 버리자인가
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「……이봐요♪ 자꾸자꾸 빨리, 격렬하고 시있어요
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTL  
+							PRINTFORMDW 쾌감의 레벨이 단번에 튀어, 음열에 뇌가 저리고 복숭아색의 안개에 시야가 물들어 간다……
+							PRINTFORMDW 릴리의 이름을 불러, 상스럽게 허리를 구군요들 다툴 때에, 미지의 쾌락이 전신을 앞질러간다……
+							PRINTL  
+							PRINTFORM 「후후♪　%CNAME(MASTER, TARGET)%의 제일 기분 좋은 타이밍에 감사할 수 있다-해도 좋아
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「릴리가 전부 받아 들여 줄테니까
+							CALL HEARTCB
+							PRINTFORM  릴리에 무심코 정액 샤워 뿌려 주세요
+							CALL HEARTCB
+							PRINTFORMW 」
+						ENDIF
+				ENDSELECT
+			CASEELSE
+				;애태움無し
+				;가버려なのを참다している
+				IF TCVAR:MASTER:가버려 > 5
+					IF FAVOR(0, 2000)
+						IF RAND:2 == 0
+							PRINTFORMW 「인내는 하지 않아 좋아요？　후후♪」
+							PRINTFORM 「이래……참아도 쓸데없습니다 것
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTL  
+							PRINTFORMDW 릴리는 색욕으로 가득 찬 표정으로 조용하게 속삭이면(자), 조용히 가는 손가락끝을 간기에 관련되었다
+							PRINTFORMDW 칼리목을 강하게 연주해졌다고 생각하면(자), 첨단으로부터 중간 정도까지를 위를 덧써진다……
+							PRINTFORMDW 숨 붙는 동안도 없고, 이번은 히크히크와 떨리는 령구를 집게 손가락의 끝으로 강하게 연주해진다……
+							PRINTFORMDW 천진난만한 모습과는 정반대인 교묘한 손가락 사용에, 무심코 허리가 뛴다
+							PRINTL  
+							PRINTFORMW 「이봐요, 이제 국물로 미끈미끈이 되어 버렸습니다……후후♪」
+							PRINTFORMW 「%CNAME(MASTER, TARGET)%가 노력해 모으고 붐빈 정령……전부 눌러 짬취있네요♪」
+						ELSE
+							PRINTFORM 「후~응……자지 기분이 좋다♪　이제 나와버릴 것 같은가
+							CALL HEARTCB
+;OriginalString : 」
+							PRINTW 」
+							PRINTFORMW 「가득 모은 키-역, 키-있어요♪」
+							PRINTL  
+							PRINTFORMDW 릴리는 넑을 잃은 표정으로 %CALLNAME:MASTER%의 얼굴과 노장을 교대로 응시하면(자),
+							PRINTFORMDW 피아노에서도 연주하는 것 같은 우아한 손가락 값어치, 고서 고서와 강직의 첨단을 희롱한다
+							PRINTFORMDW 이미 사정 한계까지 높아지고 있던 쾌감이, 령구로 향해 단번에 밀어 올릴 수 있다
+							PRINTFORMDW 무의식 중에 허리를 금액 학도 흔들어, 페니스를 밀어 올려 버린다
+							PRINTL  
+							PRINTFORMW 「자꾸자꾸 뜨거워져……응, 냄새도 진해져……후~, 매우 괴로울 것 같다……」
+							PRINTFORM 「가득 참은 것이군요……지금 해방 해 준다
+							CALL HEARTCB
+							PRINTFORMW 」
+						ENDIF
+					ELSE
+						PRINTFORMW 「어？　혹시 참습니까？」
+						PRINTFORMW 「……참는 것 괴롭지요？　그렇지만, 이제 무리하지 않아 좋아요？」
+						PRINTL  
+						PRINTFORMDW 앞달리기로 젖은 령구에 손가락끝을 꽉 눌러 과시하듯이 투명의 실을 당긴다
+						PRINTFORMDW 빈 손을 페니스의 근원에 기게 해 정액을 짜기 시작하듯이, 천천히, 천천히 페니스를 잡아당겼다.
+						PRINTL  
+						PRINTFORMW 「자꾸자꾸 뜨거워져……응, 냄새도 진해져……후~, 매우 괴로울 것 같다……」
+						PRINTFORM 「릴리가%CNAME(MASTER, TARGET)%안의 억지인 마음……전부 토해내게 해 주네요
+						CALL HEARTCB
+						PRINTFORMW 」
+					ENDIF
+				ENDIF
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;미약コキ
+	;=================================================
+	IF 구상記入チェック(0) && GETBIT(TFLAG:104, 1)
+		;미약使用구상処理済チェック(미약使用の地の文カットする際はTFLAG:미약등사용지문스킵のコメントを解除)
+		CLEARBIT TFLAG:미약등사용구상, 1
+		;CLEARBIT TFLAG:미약등사용지문스킵, 1
+		PRINTFORMW 
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;밀어넘어짐상태
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:밀어넘어지는중
+		;연속실행
+		IF TFLAG:ACT파생 == 2
+			PRINTFORMW 
+			PRINTFORMW 
+		;통상
+		ELSE
+			PRINTFORMW 
+			PRINTFORMW 
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;연속실행
+	;-------------------------------------------------
+	IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+		IF FAVOR(0, 2000)
+			IF RAND:5 == 0
+				PRINTFORM 「후~응……자지 기분이 좋다♪　이제 나와버릴 것 같은가
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTFORMW 「가득 모은 키-역, 키-있어요♪」
+				PRINTL  
+				PRINTFORMDW 릴리는 넑을 잃은 표정으로 %CALLNAME:MASTER%의 얼굴과 노장을 교대로 응시하면(자),
+				PRINTFORMDW 피아노에서도 연주하는 것 같은 우아한 손가락 값어치, 고서 고서와 강직의 첨단을 희롱한다
+				PRINTFORMDW 이미 사정 한계까지 높아지고 있던 쾌감이, 령구로 향해 단번에 밀어 올릴 수 있다
+				PRINTFORMDW 무의식 중에 허리를 금액 학도 흔들어, 페니스를 밀어 올려 버린다
+				PRINTL  
+				PRINTFORMW 「자꾸자꾸 뜨거워져……응, 냄새도 진해져……후~, 매우 괴로울 것 같다……」
+				PRINTFORM 「가득 참은 것이군요？　무리하지 말아줘♪　지금 해방 해 준다
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSEIF RAND:4 == 0
+				PRINTFORMW 「자지……벌벌 해, 뜨거워졌어？」
+				PRINTFORM 「이제 내자야？　좋아, 릴리의 라고라고로 가득 기분 좋게 해 줍니다
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTL  
+				PRINTFORMDW 그렇게 말해 상냥하게 미소지어 걸치면서, 작은 손이 벌 끊어지듯이 부풀어 오른 육 간을 어루만지고
+				PRINTFORMDW 첨단으로부터 흘러넘친 카우파가 리 스지를 타, 와 추잡한 물소리를 미치게 한다……
+				PRINTFORMDW 아직 어림이 남는 릴리의 표정과 강직을 잡아당기는 광경의 미스매치 천성%CALLNAME:MASTER%의 열정을 일으킨다……
+				PRINTL  
+				PRINTFORMW 「♪　♪　후후, 자지 기분-군요♪」
+				PRINTFORM 「키-역에서 릴리의 라고라고가 잉응은 괴롭고들 있고, 해 버리자
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「후~♪　후~♪　키-역 흘러넘쳐버릴 것 같습니다♪」
+				PRINTFORMW 「벌벌은 떨려 버려서, 매우 기분이야 찌르자입니다……후후♪」
+				PRINTFORMW 「이봐요♪　귀두하면서♪　근원으로부터 쫄깃쫄깃 하네요♪」
+				PRINTL  
+				PRINTFORMDW 손바닥으로 귀두를 어루만지고 돌려, 첨단까지 긴장된 페니스를 열심히 잡아당긴다
+				PRINTFORMDW 정소가 끊임없이 정령을 토해내, 절정의 순간을 기대해 단번에 요도를 채워 간다
+				PRINTL  
+				PRINTFORMW 「응, 후~♪　이크가 참지 않아 좋으니까♪」
+				PRINTFORM 「좋아하는 때에 감사할 수 있다-해♪　릴리의 라고라고%CNAME(MASTER, TARGET)%태우고-역에서 더럽혀 주세요
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「……라고라고 지쳐 버렸습니다……후후♪」
+				PRINTFORMW 「응, 자지 크면“시코시코”하는 것은 매우 큰 일입니다？」
+				PRINTL  
+				PRINTFORMDW 릴리는 노장의 근원을 누르면(자), 빈 손바닥으로 귀두를 상냥하게 감쌌다
+				PRINTFORMDW 손가락을 손재주가 있게 움직여 령구와 칼리목을 자극하면서, 정중하게 귀두 전체를 더듬어 온다
+				PRINTL  
+				PRINTFORM 「%CNAME(MASTER, TARGET)%감씨이니까,“어루만지고 어루만지고”되는 것 정말 좋아하는 걸
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTFORMW 「어루만지고 어루만지고♪　♪　후후, 이것이라면 릴리도 지치지 않습니다♪」
+				PRINTFORMW 「벌벌 해 매우 기분이야 유혹한다♪　이봐요, 국물이 자꾸자꾸 흘러넘쳐 왔던♪」
+				PRINTFORMW 「 좀 더 계속해 주네요♪　-로 어루만지고♪　♪…………」
+				PRINTL  
+				PRINTL  
+				PRINTFORMW 「…………그런데, 릴리는 충분히 휴게 할 수 있었고,%CNAME(MASTER, TARGET)%도 한계군요♪」
+				PRINTFORM 「그러면, 모인 키-네--있을까요
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSE
+				PRINTFORMW 「릴리의 라고라고 그렇게 기분이 좋은거야？　자, 좀 더 해 줍니다♪」
+				PRINTFORM 「릴리가 취해 먼 바다이니까, 사양말고 이는 좋으니까
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDL 그렇게 말하자 마자 릴리의 손바닥이 노장을 싸도록(듯이) 지워져,
+				PRINTFORMDW 령구로부터 간간에, 음낭으로부터 칼리목으로 변환 자재로 겨 질질 꺼 돈다……
+				PRINTFORMDW 10개의 손가락이 다른 의사를 가진 것처럼 노장을 희롱해, 미지의 쾌락에 참지 못하고 교성이 샌다……
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 표정을 엿보면서, 더욱 음열의 인연으로 몰아넣어 간다……
+				PRINTL  
+				PRINTFORMW 「여자 아이같은 소리 내 버려서, 후후♪」
+				PRINTFORMW 「릴리가 전부 받아 들여 주기 때문에, 안심--해 주세요♪」
+			ENDIF
+		ELSE
+			IF RAND:4 == 0
+				PRINTFORMW 「인 냄새나……자꾸자꾸 진해졌습니다」
+				PRINTFORMW 「이제 내자이예요？　후후, 들키고 들키고예요♪」
+				PRINTFORMW 「릴리도……정직 참을 수 없습니다♪　금방 누 있어 주네요」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 자지, 자제국물해 몹시 입니다……」
+				PRINTFORM 「릴리의 라고라고로, 좀 더 로 해 주네요……네 있고
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 그렇게 말하면(자) 릴리는 단번에 페니스를 잡아당기는 손의 움직임을 빨리 해 갔다
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「라고라고 기분이 좋은거야？　그러면, 좀 더 쫄깃쫄깃 속구두쇠있네요♪」
+				PRINTFORMW 「이봐요……농좋다"정"하지만 자지에 모여 와 압니까？」
+				PRINTL  
+				PRINTFORMDW 릴리는 가는 손가락끝을 간기에 관련되면(자), 근원으로부터 짜도록(듯이) 잡아당기기 시작한다……
+				PRINTFORMDW 와 추잡한 물소리가 울려, 쾌락의 물결이 치솟아 온다……
+				PRINTL  
+				PRINTFORMW 「이런 식으로……당신의"정"하지만 미끈미끈의 국물이 되어, 자지의 앞으로부터 흘러넘쳐」
+				PRINTFORMW 「좀더 좀더 기분 좋아져, 새하얀"정"(을)를 릴리에 바쳐 주세요♪」
+			ELSE
+				PRINTFORMW 「릴리의 작은 라고라고로 잡아당겨져, 흥분해 버렸습니다인가？　후후♪」
+				PRINTFORMW 「사양하지 않아도 좋아요―？　좀더 좀더 릴리로 흥분해 주세요」
+				PRINTL  
+				PRINTFORMDW 릴리의 오른손이 제대로 간기를 잡아당겨, 왼손이나 원이나 원과 음낭을 어루만진다……
+				PRINTFORMDW 한계까지 부푼 귀두가 비쿤과 떨려 한층 더 윤활유를 따라 더한다……
+				PRINTL  
+				PRINTFORMW 「이래%CNAME(MASTER, TARGET)%의 두근두근 하는 기분이, 쾌락이, 릴리의 양식이 되기 때문에」
+				PRINTFORMW 「이봐요, 이제 사정해버린다♪　릴리이기 때문에에 해 주세요♪」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;야외플레이中
+	;=================================================
+	IF 구상記入チェック(100) && TEQUIP:야외플레이
+		PRINTFORMW 「도-, 볼 수 있기 위해 외에 왔는데, 자지 숨기면 안됩니다♪」
+		PRINTFORM 「후후♪　그러면 아, 릴리가 라고라고로“시코시코
+		CALL HEARTCB
+		PRINTFORMW ”해 주니까요♪」
+		PRINTL  
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 수치로 수원까지 홍조시켜, 어린 안전에 발기 음경을 쬔다……
+		PRINTFORMDW 릴리는 한 손에 당겨 끈을 가진 채로, 흰 5개의 손가락으로 페니스를 잡아당기기 시작한다……
+		PRINTL  
+		PRINTFORMW 「릴리에 목걸이를 끌려, 외에서 발기응시코시코 되어 흥분해？」
+		PRINTFORMW 「……후후♪　릴리도 흥분하고 있으니, 두 사람 모두 헨타이씨구나♪」
+		PRINTFORM 「이봐요, 외에서 이있어요♪　헨타이키-해 버려
+		CALL HEARTCB
+		PRINTFORMW 」
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;수치플레이中
+	;記入チェック
+	;LOCAL:1 = PERCENT(50)
+	;-------------------------------------------------
+	IF 구상記入チェック(100) && TEQUIP:거울
+		IF FAVOR(0, 2000)
+			IF RAND:2 == 0
+				PRINTFORMW 「시선을 일등없고, (군)양과 거울을 보고 있어 주세요」
+				PRINTFORMW 「살아요♪　쫄깃쫄깃♪……쫄깃쫄깃♪……후후♪」
+				PRINTL  
+				PRINTFORMDW 대거울의 전으로 릴리가 거울 넘어로 행위를 과시해 온다
+				PRINTFORMDW 릴리의 작은 손이, 거무스름하고 추악한 페니스를새와 어루만지고 돌려,
+				PRINTFORMDW 음낭을 희롱해, 근원으로부터 첨단까지를 잡아당겨 가는 손가락끝으로 령구를 간질인다……
+				PRINTFORMDW 음미와는 멀게 생각되는 가련한 소녀가, 극상의 자위로 봉사를 계속하고 있었다……
+				PRINTL  
+				PRINTFORMW 「조금 마음이 산란해지지 않습니까？　분명하게 거울안과 자지에 집중해 주세요♪」
+				PRINTL  
+				PRINTFORMDW 음경에 관련되어 붙는 세지와 같이, 릴리는 다리를 관련되게 해 상체를 문질러 온다
+				PRINTFORMDW 요정인것 같은 가녀린 지체는 비호 욕구를 자극하지만, 일까하고 말해 미성숙인 인상은 없다
+				PRINTFORMDW 풍부한 가슴의 첨단이 스쳐 한숨 섞여에 위 질질 끈 염성이 빠져 나온다
+				PRINTFORMDW 릴리는 사랑 아까운 듯이  거울안의 남자를 응시하면서, 점점손의 움직임을 앞당겨 간다……
+			ELSE
+				PRINTFORMW 「이봐요,%CNAME(MASTER, TARGET)%의 부끄러운 곳, 키-거울에 비쳐 있어요♪」
+				PRINTFORM 「릴리에 자지 잡아당겨져, 야무지지 못하고 아헤테르오얼굴도-입니다
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 대거울의 전으로 릴리가 거울 넘어로 행위를 과시해 온다
+				PRINTFORMDW 작은 손으로 거무스름하고 추악한 페니스를새와 어루만지고 돌려,
+				PRINTFORMDW 사랑스러운 소리로 치태를 부추기면서, 점점손의 움직임을 앞당겨 간다……
+				PRINTL  
+				PRINTFORMW 「쫄깃쫄깃 빨리 하는군♪……후후, 이제 이있을 것 같게 되어 있다♪」
+				PRINTFORMW 「키-하는 곳(중)도, (군)양이라고 보고 있어 주네요―♪」
+			ENDIF
+		;それ以外
+		ELSE
+			PRINTFORMW 「시선을 일등없고……거울안을 잘 봐 주세요」
+			PRINTFORMW 「릴리같은 작은 요정에 발기응 잡아당기게 해, 헨타이씨군요……」
+			PRINTFORMW 「이봐요, 얼굴 새빨갛게 해 허리를 핵 핵 시켜 버리고 있습니다……아하하♪」
+			PRINTL  
+			PRINTFORMDW 대거울의 전으로 릴리가 거울 넘어로 행위를 과시해 온다
+			PRINTFORMDW 작은 손으로 거무스름하고 추악한 페니스를새와 어루만지고 돌려,
+			PRINTFORMDW 사랑스러운 소리로 치태를 부추기면서, 점점손의 움직임을 앞당겨 간다……
+			PRINTL  
+			PRINTFORMW 「반드시, 이대로 볼 수 있으면서 감사할 수 있다-해버리는 구나♪」
+			PRINTFORM 「이봐요♪　릴리의 라고라고로 기분 좋고 이있읍시다
+			CALL HEARTCB
+			PRINTFORMW 」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;발기
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 >= 1000
+		IF FAVOR(0, 2000)
+			IF RAND:4 == 0
+				PRINTFORMW 「빵 빵에 나무 한 자지는요, 상냥하게 어루만져 줍니다」
+				PRINTFORMW 「애정을 담아……근원으로부터, 소매치기, 소매치기, 소매치기, 는♪」
+				PRINTL  
+				PRINTFORMDW 릴리의 작은 손바닥에 싸여 음경이 토정에 대비해 더욱 일단 경도를 더한다
+				PRINTFORMDW 부드러운 손이 간기를 겨 주위, 세지가 적확하게 성감대를 계속 자극한다……
+				PRINTL  
+				PRINTFORM 「이봐요……첨단라고 정령이 가득 차, 훌륭한 자지가 되었어요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMW 「이번은 단번에 격렬하고 시코시코 해 주면(자)……」
+				PRINTFORM 「……분수같이"정"하지만 분출해 이응입니다
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORM 「이 와요♪　쫄깃쫄깃♪　쫄깃쫄깃♪　～
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「후후, 자지나무 하면 있었어요～」
+				PRINTFORMW 「이봐요, 릴리의 라고라고 중(안)에서 비쿤비쿤은 뛰고 있어요♪」
+				PRINTFORMW 「……그러면, 나무 하면(자)-에……있고-있고 시코시코 해 주네요♪」
+				PRINTL  
+				PRINTFORMDW 릴리는 격분한 페니스에 손가락을 걸어 천천히 열심히 잡아당긴다
+				PRINTFORMDW 손가락끝으로 령구를 어루만져 넘쳐 나온 앞질러 해 국물을 장대 전체에 발라 붐비어 간다
+				PRINTFORMDW 와 추잡한 물소리가 서, 재촉하는 것처럼 점점 손의 움직임이 격렬해진다……
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「이봐요 이봐요♪ 릴리의 손가락이 자지 있고-있고 쫄깃쫄깃 해……」
+				PRINTFORM 「전신의"정"(을)를 탈취있어요―
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTL  
+				PRINTFORMDW 릴리는 색욕으로 가득 찬 표정으로 조용하게 속삭이면(자), 가는 손가락끝을 남근에 관련되어 붙인다
+				PRINTFORMDW 카우파를 전체에 발라 넓혀 리근을 위를 덧쓰는 것처럼 해 천천히 상하시킨다
+				PRINTFORMDW 이번은 히크히크와 떨리는 령구를 집게 손가락의 끝으로 강하게 연주해, 단번에 근원으로부터 정령을 잡아당긴다……
+				PRINTFORMDW 1 호된 훈련마다 고간의 깊은 속으로부터 욕망이가 소용돌이쳐, 노장의 첨단에 올라 채워 간다……
+				PRINTL  
+				PRINTFORM 「"정"의 가득 찬 드로드로의 키-역……전부 토해내 버리자
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+			ELSE
+				PRINTFORM 「구응훈은……자지 매우 기쁨응 나와
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTL  
+				PRINTFORMDW 릴리의 작은 손바닥에 싸여 음경이 토정에 대비해 일단 경도를 더한다
+				PRINTFORMDW 부드러운 손이 간기를 겨 주위, 세지가 적확하게 성감대를 계속 자극한다……
+				PRINTL  
+				PRINTFORMW 「이봐요,“손바닥 기분이 좋다♪　손바닥잉세대♪”라고 떨려」
+				PRINTFORMW 「………좋아♪　%CNAME(MASTER, TARGET)%태우고-역에서 릴리의 라고라고 잉키라고♪」
+				PRINTFORM 「릴리의 라고라고와 명절 초밥이라고, 라고 질내사정 감사할 수 있다-해
+				CALL HEARTCB
+				PRINTFORMW 」
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「빵 빵에 나무 한 자지는요, 상냥하게 어루만져 줍니다」
+				PRINTFORMW 「애정을 담아……근원으로부터, 소매치기, 소매치기, 소매치기, 는♪」
+				PRINTL  
+				PRINTFORMDW 릴리의 작은 손바닥에 싸여 음경이 토정에 대비해 더욱 일단 경도를 더한다
+				PRINTFORMDW 부드러운 손이 간기를 겨 주위, 세지가 적확하게 성감대를 계속 자극한다……
+				PRINTL  
+				PRINTFORM 「이봐요……첨단라고"정"하지만 가득 차, 훌륭한 자지가 되었어요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORM 「그러면, 쫄깃쫄깃
+				CALL HEARTCB
+				PRINTFORMW  계속해 주네요♪」
+			ELSE
+				PRINTFORMW 「자지나무 해 버렸습니다♪」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%가 모아 주었다"정", 릴리가 전부 정상있습니다♪」
+				PRINTFORM 「이 와요-♪　쫄깃쫄깃
+				CALL HEARTCB
+				PRINTFORM 　쫄깃쫄깃
+				CALL HEARTCB
+				PRINTFORMW 」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		IF FAVOR(0, 2000)
+			IF RAND:3 == 0
+				PRINTFORMW 「릴리의 라고라고로 기분 좋아져♪」
+				PRINTFORMW 「이봐요,%CNAME(MASTER, TARGET)%(이)가 느끼고 있는 얼굴 보면서 쫄깃쫄깃 해 줍니다♪」
+				PRINTL  
+				PRINTFORMDW 릴리의 5개의 손가락이 긴장된 간간에 휘감긴다……
+				PRINTFORMDW 피아노에서도 연주하는 것 같은 우아한 손가락 값어치 강직의 첨단을 희롱해,
+				PRINTFORMDW 첨단에 정령을 배웅하듯이, 점점스피드를 빨리 해 간다……
+				PRINTL  
+				PRINTFORMW 「……얼굴 새빨갛다♪　자지도 자꾸자꾸 딱딱해졌습니다」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%가 기분이 좋으면, 릴리의 마음도 따끈따끈 해 와」
+				PRINTFORMW 「그러니까 참지 말고, 좀더 좀더 기분 좋아져 주세요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「응, 릴리의 라고라고와 인 일 합시다♪」
+				PRINTFORM 「%CNAME(MASTER, TARGET)%의 특농정액으로……릴리의 라고라고를 더럽혀버리는 놀이
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리의 세지가 조용히 간기에 관련되어 다해새로 한 상하 운동을 시작한다
+				PRINTFORMDW 천진난만한 모습으로부터는 상상할 수 없는 교묘한 손가락 사용에, 단번에 사정감이 높아져 간다
+				PRINTL  
+				PRINTFORM 「응♪　더 국물이 앞로부터 흘러넘쳐 왔습니다
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTFORMW 「후~♪　아♪　젤리 봐 도미인 의 정액-매우♪」
+				PRINTFORM 「라고라고가 잉응은 괴롭고들 있고 , -릴리에 뿌려 주세요
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSE
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%안의아개줄여가며 꿰매고-역♪　릴리에 주세요♪」
+				PRINTL  
+				PRINTFORMDW 조용히 강직을 관련되고 빼앗겨 리근으로부터 음낭까지 열심히 어루만지고 거론된다
+				PRINTFORMDW 숨 붙을 틈도 없게 이번은 령구를 파악할 수 있어 수컷국물에 젖은 손바닥이 귀두 전체를 겨 돈다
+				PRINTFORMDW 흥분으로 뇌가 저려 사정을 졸라 허리가 마음대로 튄다
+				PRINTL  
+				PRINTFORMW 「아는♪　발기응이 음란한 국물로 누르눌입니다♪」
+				PRINTFORM 「릴리가 돕겠습니다로부터,"정"하지만 텅 비게 될 정도로 기분-사생해 주세요
+				CALL HEARTCB
+				PRINTFORMW 」
+			ENDIF
+		ELSE
+			IF RAND:5 == 0
+				PRINTFORMW 「자지 기분 좋게 해 주네요♪」
+				PRINTFORMW 「근원으로부터 짜기 시작하듯이 해……～♪」
+				PRINTL  
+				PRINTFORMDW 릴리는 부드러운 손바닥으로 음경을 감싸, 잼잼과 달게 압박한다
+				PRINTFORMDW 하반신에 흐르는 혈류가 한층 격렬함을 늘려, 즈킨과 아플 정도 발기해 버린다
+				PRINTL  
+				PRINTFORMW 「드쿤, 드쿤, 은"정"하지만 모여 왔어요♪」
+				PRINTFORMW 「이대로 릴리의 라고라고의 안～라고 해버릴 짊어지는군♪」
+			ELSEIF RAND:4 == 0
+				PRINTFORMW 「릴리의 작은 라고라고로 시코시코 해 주네요」
+				PRINTFORMW 「머릿속 녹아버릴 정도,%CNAME(MASTER, TARGET)%(을)를 봄 경치에 염색있습니다♪」
+				PRINTL  
+				PRINTFORMDW 릴리는 엄지와 집게 손가락으로 작은 고리를 만들어, 강직을 잡아당기기 시작한다
+				PRINTFORMDW 칼리목을 꼭 단단히 조일 수 있어 밀어 내지도록(듯이) 첨단으로부터 수컷국물이 흘러넘친다
+				PRINTL  
+				PRINTFORMW 「해, 이제 카치코치예요♪」
+				PRINTFORM 「이봐요, 릴리봐？　이크까지 시코시코 해 준다
+				CALL HEARTCB
+				PRINTFORMW 」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%의"정"있었다야 있네요」
+				PRINTFORMW 「민감한 장소이기 때문에, 천천히……상냥하게 취급해 여(어) 줍니다」
+				PRINTL  
+				PRINTFORMDW 카우파를 발라 넓히는 것처럼, 손바닥으로 간기를 남김없이 더듬어진다
+				PRINTFORMDW 열파가 국소로부터 퍼져, 가크가크와 허리가 마음대로 움직여 버린다
+				PRINTL  
+				PRINTFORMW 「응실마리……영차……응, 어떨까요」
+				PRINTFORMW 「릴리의 라고라고, 기분이 좋습니까？」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「이봐요,%CNAME(MASTER, TARGET)%의 너무 좋아의 시간이에요♪」
+				PRINTFORMW 「(듣)묻는데-♪　어루만지고 어루만지고♪　쫄깃쫄깃♪」
+				PRINTL  
+				PRINTFORMDW 딱딱하게 발기한 페니스를 릴리의 작은 손이 종횡 무진에 겨 돈다
+				PRINTFORMDW 모든 성감을 만편 없게 자극되어 금새 추잡한 물소리가 울리기 시작한다
+				PRINTL  
+				PRINTFORMW 「기분 좋은 국물 흘러넘쳐 왔군요♪　참지 말고 가득 느껴 주세요♪」
+			ELSE
+				PRINTFORMW 「자지에 모인 드로드로키-역, 튜브있네요」
+				PRINTFORMW 「-하지 않으면 병이 되어 버릴테니까♪」
+				PRINTL  
+				PRINTFORMDW 릴리의 흰 세지가 조용히 강직하게 관련되어 붙는다
+				PRINTFORMDW 근원으로부터 리드미컬하게 잡아당겨 거론되어 령구로부터 추잡한 우가 흘러넘치고 낸다
+				PRINTL  
+				PRINTFORMW 「모였습니다？　이제 국물 나와 가 되어 버렸습니다♪」
+				PRINTFORMW 「응♪　이봐요, 이제 조금이에요♪　나쁘다 키-역 내 버리자♪」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+;ACT10_1, 수음する
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT10_2, 페니스밴드수음
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・죠교대상が페니스밴드장착時に発生
+;・쾌ＣSOURCE的にはTFLAG:ACT파생 == 1か否かでしか見てないっぽいので、事実上수음ではなく애무と同等？
+;・쾌Ｖも見てないような感じ。そして部位の汚れも参照できないんじゃないかなと
+;-------------------------------------------------
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+	;-------------------------------------------------
+	;가버려
+	;-------------------------------------------------
+	IF 구상記入チェック(100) && PALAM:쾌Ｖ > 8500
+		PRINTFORMW 「아♪　아♪　이제 이 나무 그렇네요♪」
+		PRINTFORM 「가짜의 자지 시코시코 되어 이낳아 무릎
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTW 」
+		PRINTL  
+		PRINTFORMDW 에러 친 장형이 유육을 유린할 때에, 등골을 타 전신에 유열이 달린다
+		PRINTFORMDW 「」와 질오를 압 되면(자), 지르르 녹은 미육이 큐우와 수축해 가짜 남근을 단단히 조인다
+		PRINTFORMDW 릴리는 질육의 감촉을 확인하듯이 피스톤에 스핀을 더해 절정의 가장자리로 밀어 올린다……
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;연속실행
+	;-------------------------------------------------
+	IF 구상記入チェック(100) && TFLAG:전ACT == 10
+		PRINTFORMW 「바이브래이터와 무엇이 다른지는？」
+		PRINTFORMW 「후후……이런 일도 할 수 있어, 코레」
+		PRINTL  
+		PRINTFORMDW 쌍두 디 루도에 뺨을 대는 것처럼 해 가랑이등 잠수, 물기를 띤 눈동자로%CALLNAME:MASTER%(을)를 올려보았다……
+		PRINTFORMDW 갖고 싶어하는 듯한 빈의 표정……탐욕에 그 작은 입가를 벌려 혀를 쑥 내밀어……
+		PRINTL  
+		PRINTFORM 「응…,
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTW 」
+		PRINTL  
+		PRINTFORMDW 위조의 남근을 아낌없이 안에 포함해, 그리고 구음을 시작했다
+		PRINTFORMDW 협육에 확실히 휘감겨진 위근은, 릴리의 목의 움직임에 맞추어 상하에 슬라이드를 시작한다……
+		PRINTFORMDW 손으로 작동되는 것과는 다른, 끈적거리는 것 같은 대통의 변위에 %CALLNAME:MASTER%(은)는 이상한 쾌감을 느껴 탄식 한다……
+		PRINTL  
+		PRINTFORM 「응…,♪　아……응
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTW 」
+		PRINTFORMW 「기분이 좋다……만이 아닐 것입니다？」
+		PRINTFORMW 「비록 가짜라도, 누락되면(자) 흥분, 해버린다겠지？」
+		PRINTFORM 「반드시“만약 자신이 남자라면, 릴리에 빨게 하고 싶다”라고, 몽상 하고 있었던  것이 아닐까
+		CALL HEARTCB
+;OriginalString : 」
+		PRINTW 」
+		RETURN 1
+	ENDIF
+
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		IF FAVOR(0, 2000)
+			PRINTFORMW 「훌륭한 칼리고자지……릴리가 취급해 여(어) 주네요♪」
+			PRINTFORM 「과라고도 기분 좋아서, 허리의 안쪽까지 벌벌 해버린다 있어요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTW 」
+			PRINTL  
+			PRINTFORMDW 릴리는 딱딱하게 향상되는 위근의 첨단을 꽉 쥐어 근원을 파내도록(듯이) 천천히 잡아당기기 시작한다
+			PRINTFORMDW 쾌락에 떨리는 하지를 잡아, 무방비에 노출된 질오를 집요하게 그럴듯하게 꾸며내 간다……
+			PRINTFORMDW 논쟁이야 우노 없는 쾌락이 전신을 뛰어 돌아다녀, 반사적으로 허리가 떠 장형을 깊고 질네 붐비려고 움직여 버린다……
+		ELSE
+			PRINTFORMW 「몹시 굵고 딱딱하다……이것의 반이%CNAME(MASTER, TARGET)%의 보지에 들어가고 있어？」
+			PRINTFORMW 「맛있을 것 같게 안쪽까지 질네 붐비어 버려서……시코시코 하면 어떻게 되어 버리겠지♪」
+			PRINTFORMW 「후후♪　-가르쳐 주네요♪」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+;ACT10_2, 페니스밴드수음
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT10_0, 애무する
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・女성기への애무を行う
+;・SOURCE的には쾌Ｂと쾌Ｃは同等
+;-------------------------------------------------
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;-------------------------------------------------
+	;小分岐
+	;-------------------------------------------------
+	;가게해줘！선택時
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:126
+		SELECTCASE TFLAG:126
+			;애태움中1
+			CASE IS > 1
+				IF RAND:3 == 0
+					PRINTFORMW 「 아직 이안됩니다♪ 한계까지 초조하게 해 줍니다♪」
+					PRINTFORMW 「허리 비쿤비쿤 뛰어 버려서, 괴로울 정도  기분 있는이구나♪」
+					PRINTFORMDW %CALLNAME:MASTER%(은)는 이나 키라고 받을 수 있지 못하고, 쾌감만을 축적 당해 간다
+				ELSEIF RAND:2 == 0
+					PRINTFORMW 「만종류로 흘리고 있는 것 같네요♪」
+					PRINTFORMW 「먹어, 몹시 인 소리내 버려서……」
+					PRINTFORMW 「후후♪ 이빠듯한 쾌감, 가장 와 가르쳐 줍니다♪ 」
+				ELSE
+					PRINTFORMW 「보지 아와부키 있어 버려서, 진심국물출절의 부엌이군요」
+					PRINTFORMW 「후후……좀 더 격렬하고해 주었으면 합니까？」
+					PRINTFORMW 「…………(이)다-째♪ 응 더 졸라는 안 됨 안됩니다♪」
+					PRINTFORMW 「좀더 좀더, 초있네요♪」
+				ENDIF
+			;애태움中3(とどめ)
+			CASEELSE
+				PRINTFORMW 「이제 한계일까？ 릴리의 손가락으로 마음껏 보지 극치 해 버리자인가♪」
+				PRINTFORM 「응에 모인 쾌락 전부 토해내♪ ……좋아, 이네
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMDW 릴리는 순진하게 미소지으면서 손의 움직임을 가속시켜 갔다…
+		ENDSELECT
+		RETURN 1
+	ENDIF
+
+	;-------------------------------------------------
+	;밀어넘어짐상태
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:밀어넘어지는중
+		;연속실행
+		IF TFLAG:전ACT == 10
+			PRINTFORMW 
+			PRINTFORMW 
+		;통상
+		ELSE
+			PRINTFORMW 
+			PRINTFORMW 
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;-------------------------------------------------
+	;연속실행
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:전ACT == 10
+		IF FAVOR(0, 2000)
+			IF RAND:2 == 0
+				PRINTFORM 「이봐요, 아직도 끝나지 않아요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTL  
+				PRINTFORMDW 상냥하게 힐책하면서, 릴리는 진한 애액이 흘러넘치는 원천에 손가락을 나사 넣는다
+				PRINTFORMDW 녹고 자른 질육은 용이하게 그것을 이해, 응과 얽혀 붙어 환대 한다
+				PRINTFORMDW 전신에 피리 피리와 저리는 것 같은 음열이 번쩍임, 의도키도감 양치류 식물등인 허덕여 소리가 흘러넘치기 시작한다
+				PRINTL  
+				PRINTFORMW 「소리, 참지 않아 좋으니까……」
+				PRINTFORMW 「“기분 좋다”……그 만큼으로 머리 가득 되어버린다……」
+				PRINTFORMW 「에 녹아……이봐요, 이제 참을 수 없다……」
+				PRINTL  
+				PRINTFORMDW 지체를 간질이는 릴리의 긴 머리카락으로부터 달콤한 향기가 감돌아, 저항의 의사를 빼앗아 간다
+				PRINTFORMDW 절의 부엌과 부푼 음핵을, 이군요 취해 녹은 질육을 희롱해져
+				PRINTFORMDW 의식은 순식간에 절정의 가장자리로 추적할 수 있어 간다
+				PRINTL  
+				PRINTFORMW 「좋아, 이 이렇게……릴리의 손가락으로 이나 키라고 주는군」
+			ELSE
+				PRINTFORMDW 릴리의 손가락끝이 히크리와 뛰는 아랫배를 위를 덧써, 부드러운 음모의 끝에 물러나 가면(자)
+				PRINTFORMDW 붉게 충혈한 점막이 음열을 기대와 밀을 흘러넘치게 하고 있다
+				PRINTL  
+				PRINTFORMW 「 이제 빚과 군요……♪」
+				PRINTFORM 「……좀 더, 망가져버릴 정도……시라고 주는군
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 음열에 계속 노출된 음핵으로부터 즈킨과 아플 만큼의 열파가 퍼져 간다
+				PRINTFORMDW 릴리로 되는 대로,%CALLNAME:MASTER%(은)는 치열닉양치류 식물등에 전신을 구군요들 다툰다
+				PRINTL  
+				PRINTFORM 「후~……응
+				CALL HEARTCB
+				PRINTFORMW 　이봐요, 릴리가 분명하게 보고 있어 줄테니까……♪」
+				PRINTFORM 「보지로 이, 음란한%CNAME(MASTER, TARGET)%의 극치얼굴……
+				CALL HEARTCB
+				PRINTFORMW 」
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「더 국물과 만 없다」
+				PRINTFORMW 「릴리의 손가락 그렇게 좋아하는가？……후후♪」
+				PRINTL  
+				PRINTFORMDW 릴리는 요염하게 미소지어, 사랑스러운 소리로%CALLNAME:MASTER%의 치태를 힐책한다……
+				PRINTFORMDW 히크히크와 준구육벽은 %CALLNAME:MASTER%의 의사에 반해, 진한 애액을 토해내 거기에 응했다
+				PRINTL  
+				PRINTFORMW 「보지 기분도 군요……매우 수기이군♪」
+				PRINTFORMW 「이제 참지 않아 좋으니까……이봐요, 릴리의 손가락으로 이어♪」
+			ELSE
+				PRINTFORMW 「아프지 않아 에♪　글자-절의 부엌 즐겨요♪」
+				PRINTL  
+				PRINTFORMDW 릴리의 손가락끝이 비소를 위를 덧쓰는 움직임은, 안타까울 정도 약하고 작다……
+				PRINTFORMDW 천천히 국부에게 줄 수 있는 쾌락은,%CALLNAME:MASTER%(을)를 확실히 절정의 가장자리로 추적해 간다
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 쾌락으로부터 피하려고, 전후 하는 손가락의 움직임에 맞추고 절에 허리를 구 자고들 키
+				PRINTL  
+				PRINTFORMW 「응애기 젖꼭지 해 버려서……매우 입니다♪」
+				PRINTFORMW 「후후, 좋아요♪　릴리의 손가락, 좋아할 뿐(만큼) 애기 젖꼭지 해 주세요♪」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		IF FAVOR(0, 2000)
+			IF RAND:2 == 0
+				PRINTFORMW 「릴리의 손으로 사랑해 주네요」
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%에 꼭과 밀착해, 비소와 흉부에 손을 기게 한이면서 음탕하게 속삭인다
+				PRINTFORMDW 왼손의 손가락이%CALLNAME:MASTER%의 히크 붙은 비순을 위를 덧쓰기 시작하면(자),
+				PRINTFORMDW 준구질육의 안쪽으로부터“”(와)과 진한 애액이 흘러넘쳐 천천히 허벅지를 타 떨어졌다
+				PRINTL  
+				PRINTFORMW 「……%CNAME(MASTER, TARGET)%의 보지, 빚과 군요」
+				PRINTFORMW 「숨결이 난폭하다……이제 기분 좋아져 버렸습니다？……후후♪」
+				PRINTL  
+				PRINTFORMDW 릴리의 소리가새와%CALLNAME:MASTER%의 귀에 휘감겨,
+				PRINTFORMDW 발기 음핵을 농도에, 목의 안쪽으로부터 추잡한 허덕여 소리가 샌다……
+				PRINTFORMDW 차분히새와……%CALLNAME:MASTER%의 정신은 유열의 인연으로 추적할 수 있어 간다
+				PRINTL  
+				PRINTFORM 「후후후……
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 느끼고 있는 곳, 훤히 들여다보여……♪」
+				PRINTFORMW 「응, 쓸데없는 힘을 빼……몸도 마음도……릴리에 맡깁시다？」
+			ELSE
+				PRINTFORMW 「릴리의 손으로, 기분 좋고 있어요」
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 비소의 주위를 켜면서 귓전으로 음탕하게 속삭이면(자),
+				PRINTFORMDW 그 가냘픈 손가락을, 조금씩 비렬로 늘려 간다……
+				PRINTFORMDW 음순의 고기를 밀어 헤치도록(듯이), 상하에 비렬을 위를 덧쓰기 시작했다……
+				PRINTL  
+				PRINTFORMW 「이봐요, 기분 좋았으면 얼굴에 드러내도 좋아♪」
+				PRINTFORM 「귀엽고 번민%CNAME(MASTER, TARGET)%의 얼굴, 쭉 봐 있어 준다
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTL  
+				PRINTFORMDW 릴리의 번뇌에서 벗어나 깨끗함인 시선이%CALLNAME:MASTER%(을)를 높은 곳으로 추적해 간다……
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 지만 높은 곳으로 올라 채우는 것을 재촉하는 것처럼,
+				PRINTFORMDW 릴리는 손바닥을 겉(표)에 보여, 중지의 배로 위에 위로 음순을 위를 덧쓴다……
+			ENDIF
+		ELSE
+			IF RAND:5 == 0
+				PRINTFORMW 「기분이 좋은 곳 많이 있고 글자는 주네요♪」
+				PRINTL  
+				PRINTFORMDW 성감의 스윗치를 넣도록(듯이), 가볍게 유두를 핀과 연주해진다
+				PRINTFORMDW 가는 손가락끝으로 비소를 상하에 켜진 것만으로, 강렬한 쾌락비교적 등골을 앞질러간다
+				PRINTL  
+				PRINTFORMW 「분명하게 솔직하게 하고 있으면(자), 좀 더 기분일, 좋아할 뿐(만큼), 좋아하는 때에……」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 바라는 대로, 릴리가 있고～있고 시라고 줍니다……♪」
+				PRINTFORMW 「좀더 좀더, 솔직하게 느껴 보자……이봐요♪ ～♪」
+			ELSEIF RAND:4 == 0
+				PRINTFORMW 「릴리의 작은 수수로 기분 좋아져요♪」
+				PRINTFORMW 「우선은 가슴으로부터……유두～응 물어 글자는 주니까요」
+				PRINTFORMW 「……아는……또 모조모조 시켜 어떻게 해 버린 것 일까～♪」
+				PRINTFORMW 「좋아요♪ 민감한 곳을 , 굴려 줍니다……그렇지만 좀 더 초조해 할 수 있을까요♪」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「보지의 만지작거리는 방법, 가르쳐 주네요」
+				PRINTFORMW 「후후……로 해 귀엽다……이봐요, 미끈미끈이 안쪽으로부터 흘러넘쳐 오고 있어요♪」
+				PRINTFORMW 「장국을 클리토리스에 처발라……는 만지면(자), 매우 기분 좋습니다♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「보지는 매우 민감하기 때문에 정중하게 만져 주네요」
+				PRINTL  
+				PRINTFORMDW 세지비렬에 꽉 누를 수 있어 토지 분할과 단 쾌감이 달린다
+				PRINTFORMDW 릴리는 손바닥으로 클리토리스 압박하면서, 비렬을 밀어 헤치도록(듯이) 천천히 원운동을 시작한다
+				PRINTFORMDW 소매치기, 소매치기, 라고 피부가 서로 스치는 소리에“”(와)과 음란한 소리가 더해지는데 그렇게 시간은 걸리지 않았다
+				PRINTL  
+				PRINTFORMW 「보지 상냥하게 만져져, 곧바로 미끈미끈이 되어 버린다……릴리와 똑같네요♪」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 느끼는 그 쾌락이,%CNAME(MASTER, TARGET)%의 정령이 릴리의 양식이 됩니다」
+			ELSE
+				PRINTFORMW 「후후……어떻습니까？　릴리의 수수의 부드럽지요♪」
+				PRINTFORMW 「차분히 인 깨어, 기분 좋아져요」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+;ACT10_0, 애무する
+
+;────────────────────────────────────
+;ACT11, 가슴애무
+;────────────────────────────────────
+;・가슴애무/乳首吸い/乳の揉み合い/乳首責め
+;・特定の条件で「乳首吸い」「乳の揉み合い」「乳首責め」へ派生する
+;・죠교대상が남자の場合は必ず「乳首責め」になり、他に派生する事はない
+;-------------------------------------------------
+@KOJO_ACT_K15_11
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=가슴애무/1=乳首吸い/2=揉み合い/3=乳首責め)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_0, 가슴애무
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・全ての派生条件から漏れると통상の가슴애무になる
+;・죠교자の욕망+Ｂ감각が3以上の場合1/2の確率で揉み合いに派生
+;・それから漏れた場合にのみ、통상の가슴애무となる
+;-------------------------------------------------
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+;一般　RAND:4は乳首吸い、いいよね
+	IF FAVOR(0, 2000)
+		IF RAND:4 == 0
+			PRINTFORM 「젖가슴에도 「키스」해 주네요
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTL  
+			PRINTFORMDW 릴리의 연분홍색의 입술이 부푼 곳의 정점으로 「」와 소리를 내 달라붙었다
+			PRINTFORMDW 희미하게 물이 든 유윤의 주위를 혀가 겨 주위, 다시 그 첨단이 입안에서 지……
+			PRINTFORMDW 감 씹어 하거나 철충분해취해 빨거나……
+			PRINTL  
+			PRINTFORM 「,……응,……,
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTL  
+			PRINTFORMDW 안타까운 쾌락이 정점으로 달한 순간, 릴리가 입을 움츠려 단번에 유두를 빨아 올렸다
+		ELSEIF RAND:3 == 0
+			PRINTFORMW 「촉있네요♪」
+			PRINTL  
+			PRINTFORMDW 릴리의 작은 손이 개-와 가슴의 곡선을 위를 덧써, 그 중심으로 향해 성장해 간다
+			PRINTFORMDW 부드러운 부푼 곳의 정점으로 무방비에 노출된 핑크의 돌기가 핀과 연주해진다
+			PRINTFORMDW 인 비교적 퍼지는 속상한 같은 안타까운 쾌락에 %CALLNAME:MASTER%와 몸부림 했다
+			PRINTL  
+			PRINTFORM 「키득, 귀엽다……%CNAME(MASTER, TARGET)%
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTW 」
+			PRINTFORM 「이봐요, 유두만이 아니야……%CNAME(MASTER, TARGET)%의 전부, 전나무로 해 준다……
+			CALL HEARTCB
+			PRINTFORMW 」
+		ELSEIF RAND:2 == 0
+			PRINTFORMW 「젖가슴의 맛사지 해요―♪」
+			PRINTFORMW 「매우 기분 좋아서 깜짝 놀라버린다야♪」
+			PRINTL  
+			;빈유
+			IF TALENT:MASTER:빈유
+				PRINTFORMDW %CALLNAME:MASTER%의 완만한 쌍구가, 릴리의 작은 손바닥에 싸인다
+			;거유
+			ELSEIF TALENT:MASTER:거유
+				PRINTFORMDW 릴리의 가는 손가락끝이%CALLNAME:MASTER%의 풍부하게 성숙한 쌍구에 매몰 해 나간다
+			;普通
+			ELSE
+				PRINTFORMDW %CALLNAME:MASTER%의 붙은 있는 쌍구가, 릴리의 작은 손바닥에 싸인다
+			ENDIF
+			PRINTFORMDW 핑크의 돌기가 사람 마주 앉음과 중지에 협, 와 조금씩 흔들어진다……
+			PRINTFORMDW 가슴의 중심으로부터 얼얼로 한 쾌락이 전신으로 전해져,%CALLNAME:MASTER%(으)로부터 단 한숨이 새기 시작한다……
+		ELSE
+			PRINTFORM 「가슴, 기분 좋게 해 주네요
+			CALL HEARTCB
+;OriginalString : 」
+			PRINTW 」
+			PRINTL  
+			;前から애무
+			IF TCVAR:MASTER:위치전후 == 1
+				PRINTFORMW 릴리는%CNAME(MASTER, TARGET)%의 수치에 물드는 표정을 즐기는 것처럼, 천천히 신체를 어루만져 간다……
+			;後ろから애무
+			ELSE
+				PRINTFORMW 릴리는 배후로부터 꼭 껴안는 것처럼 해, 그 세지로%CNAME(MASTER, TARGET)%의 지체를 어루만진다……
+			ENDIF
+			PRINTFORMDW 무방비에 노출된 유방에 작은 손이 꼭과 붙어, 와 집요하게 비비어 하기 만여……
+			PRINTFORMDW 합계10개의 손가락이 각각별의 생물과 같이 겨 주위, 유두를 연주해, 피부붐빈다……
+			PRINTL  
+			PRINTFORMW 「부드러운데, 코리코리 해……후후♪」
+			PRINTFORM 「이봐요, 이대로 가슴으로 이나 키라고 주는군
+			CALL HEARTCB
+			PRINTFORMW 」
+		ENDIF
+	ELSE
+		IF RAND:2 == 0
+			PRINTFORMW 「가슴에서도……느끼게 해 주네요」
+			PRINTFORMW 「이봐요, 젖가슴의 끝(쪽)이 진 진 해 기분이 좋다―♪」
+			PRINTFORMW 「자꾸자꾸 딱딱해져……후후, 어쩐지 즐거워져 왔습니다♪」
+		ELSE
+			PRINTFORMW 「후후……깨끗한 젖가슴♪」
+			PRINTFORMW 「릴리와 어느 쪽이 크겠지요……？」
+			PRINTL  
+			PRINTFORMDW 릴리는 크기를 확인하는 것처럼 유방을 들어 올리거나 좌우에 요 들이마시거나 하고 있다
+			PRINTL  
+			PRINTFORMW 「저것, 기분 좋아져 버렸습니다인가？　후후♪」
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_1, 乳首吸い
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・전회ACTが가슴애무の場合乳首系になる
+;・その際、죠교자に유치か혀기술があると3/4、なければ1/4で乳首吸いとなる
+;-------------------------------------------------
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+	;상반신服装が要押し退け			服をまくりあげて
+	;IF BRACHECK(1, 1)
+	;	PRINTFORMW
+	;その他
+	;ELSE
+	;	PRINTFORMW
+	;ENDIF
+;一般
+	PRINTFORM 「젖가슴에도 「키스」해 주네요
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTL  
+	PRINTFORMDW 릴리의 연분홍색의 입술이 부푼 곳의 정점으로 「」와 소리를 내 달라붙었다
+	PRINTFORMDW 희미하게 물이 든 유윤의 주위를 혀가 겨 주위, 다시 그 첨단이 입안에서 지……
+	PRINTFORMDW 감 씹어 하거나 철충분해취해 빨거나……
+	PRINTL  
+	PRINTFORM 「,……응,……,
+	CALL HEARTCB
+	PRINTFORMW 」
+	PRINTL  
+	PRINTFORMDW 안타까운 쾌락이 정점으로 달한 순간, 릴리가 입을 움츠려 단번에 유두를 빨아 올렸다
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_2, 乳の揉み合い
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・가슴の揉み合いを要求する。この時点での죠교대상の反応は未定
+;・乳首系の条件から漏れた場合、죠교자の욕망+Ｂ감각３以上なら、1/2で가슴の揉み合いになる
+;-------------------------------------------------
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 2
+	;=================================================
+	;상반신服装が邪魔			服の上から
+	;=================================================
+	IF 구상記入チェック(0) && BRACHECK(1)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;상반신겉옷が要押し退け		겉옷をまくり上げ
+	;=================================================
+	IF 구상記入チェック(0) && UPPERJACKET(1) == 1
+		;속옷もまくり上げた
+		IF UPPERUNDER(1) == 1
+			PRINTFORMW 
+		;その他
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;상반신겉옷が要押し退け		속옷の裾から손を忍ばせ
+	;=================================================
+	IF 구상記入チェック(0) && UPPERUNDER(1) == 1
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		IF FAVOR(0, 2000)
+			;揉み合い
+			IF RAND:4 == 0
+				PRINTFORMW 「젖가슴 비비어 넘읍시다♪」
+				PRINTFORMW 「전나무도 보고♪ 전나무도 보고♪　후후, 부드럽다♪」
+				PRINTL  
+				PRINTFORMDW , 라고 부드러운 공간으로 릴리의 세지가 매몰 해 나간다
+				PRINTFORMDW 비비어져 빚을 수 있어 부대낀다……
+				PRINTL  
+				PRINTFORMW 「어떻게 하지……%CNAME(MASTER, TARGET)%의 가슴으로 놀고 있으면(자) 나도 가슴이 쑤셔버린다……」
+				PRINTFORMW 「응……%CNAME(MASTER, TARGET)%도……나로 해？　가득 손대어♪」
+			;揉み合い（자위公開っぽく
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「혼자 어 통치할 때 같이, 젖가슴 개구쟁이 하자？」
+				PRINTFORMW 「이래……%CNAME(MASTER, TARGET)%가 평상시 어떻게 만지작거리고 있어 신경이 쓰입니다 것」
+				PRINTFORM 「이봐요, 가슴에 손을 대어……응, , 아
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 유방에게 줄 수 있는 쾌락 이상으로 %CALLNAME:MASTER%(은)는 흥분해 버리고 있다
+				PRINTFORMDW 릴리의 자위를, 아무도 모르는 그녀의 치열을 유사 체험하고 있는 것 같은 이상한 감각……
+				PRINTFORMDW 동시에 자신의 손재주에서는 하고 싶은 있고 소리를 흘리는 릴리에 자신을 겹쳐 수치에도 닮은 쾌감이 달린다……
+				PRINTL  
+				PRINTFORM 「후~……응♪　이런 식으로 , 시테응등이군요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+				PRINTFORMW 「 좀 더 릴리에도 기분―일 가르쳐 줘……♪」
+				PRINTFORMW 「릴리의 신체에 젖가슴 자위 가르쳐 주세요♪」
+				PRINTFORMW 「젖가슴 소매치기 소매치기 해, 둘이서 기분 좋아지자♪」
+			;乳首吸い・揉み
+			ELSEIF RAND:2 == 0
+				PRINTFORM 「가슴 날름날름 해버린다♪ 응, 아-
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리가 수유중의 갓난아기와 같이 「, 」와 소리를 내 발기한 유두에 달라붙는다
+				PRINTFORMDL 쾌락의 단지를 다 안 혀끝이, 유두를 집요하게 빨아"정"(을)를 빨아내 간다
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 한 손으로 릴리의 머리를 군과 껴안아 열파에 항같게 신체를 진동시킨다
+				PRINTL  
+				PRINTFORM 「, ,…………응, 아
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 참지 못하고 편 손이 우연히 릴리의 부드러운 쌍구의 첨단을 연주해, 일순간 그 움직임을 멈추었다
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 쾌락에 떨리면서, 릴리의 무방비에 노출된 유두를 깎아, 연주해, 필사적으로 빚어 돌렸다
+				PRINTFORMDW %CALLNAME:MASTER%의 팔 중(안)에서 릴리는 불의의 쾌락에 몸을 비꼼, 유두에 달라붙은 채로 흐려진 천를 흘렸다
+				PRINTL  
+				PRINTFORM 「이나, 응, 핥고 우우
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORM 「응
+				CALL HEARTCB
+				PRINTFORM  히……짜는 , , , , 응！
+				CALL HEARTCB
+				PRINTFORM ―――
+				CALL HEARTCB
+				PRINTFORMW 」
+			;가슴ズリ、擦りつけ合い
+			ELSE
+				PRINTFORM 「그런데, 릴리의 일라고 해
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「얼싸안아 가슴, 소매치기, 소매치기, 는 하면(자) 몹시 기분이 좋아♪」
+				PRINTFORMW 「네, 소～♪」
+				PRINTL  
+				PRINTFORMDW 두 명의 붙은 있는 유방이 「」라고 하는 감촉과 함께 형태를 바꾸어 간다
+				PRINTFORMDW 살결 자그마한 피부가 두 명의 땀, 달지도 치워 있고 쑤셔에 열중해 피부를 검토했다
+				PRINTL  
+				PRINTFORM 「이군요♪　미끈미끈으로 , 따뜻하게라고 , 전신이 찌르르 저려버린다의
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORM 「……그렇지만, 이렇게 한다♪　좀 더 젖꼭지 안타까워서
+				CALL HEARTCB
+				PRINTFORM 소매치기 소매치기 그치지 않지 구낳았다
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리는 마치 자위를 하는 것처럼 「, 」와 양유방을 비비어, 핀과 발기한 유두를 문질러 왔다
+				PRINTFORMDW 딱딱하게 발기한 유두가 부드러운 유방을 겨 주위, 첨단이 접촉할 때에 어느 쪽과도 없고 단 교성이 샌다……
+				PRINTFORMDW 강렬한 밀착감과 혀와도 손가락과도 어긋나는 속상하고 감미로운 쾌감에, 두 명은 추잡한 소리를 지르고 야무지지 못하게 허리를 진동시켰다……
+			ENDIF
+		ELSE
+			IF RAND:4 == 0
+				PRINTFORMW 「젖가슴 기분 좋게 해 주네요」
+				PRINTFORMW 「흥분해 주고 있을까？」
+				PRINTFORMW 「땀으로 쉿 잡아 해, 떡도 치노 젖가슴이 손에 달라붙어 와♪」
+				PRINTFORM 「릴리의 젖가슴도 쉿 새떡떡이에요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「이봐요, 확인해 보세요♪」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「이군요 , 비비어 넘읍시다♪」
+				PRINTFORMW 「……어디를은……젖가슴이에요？　후후」
+				PRINTFORMW 「가슴의 안쪽, 가득 두근두근 시켜 주세요♪」
+			ELSEIF RAND:2 == 0
+				PRINTFORMW 「릴리보다 크다……그렇지만 의욕이라면……―？」
+				PRINTFORMW 「모를 때는 손대어 확인하는 것이 제일이군요！」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%도 릴리의 젖가슴 손대고 있고-예요♪」
+			ELSE
+				PRINTFORMW 「깨끗한 젖가슴……의욕이 있어, 결정하고 자그마해……」
+				PRINTFORMW 「유두의 색도, 매우 깨끗합니다……」
+				PRINTFORMW 「같은 여자 아이로서……패배……아니……」
+				PRINTL  
+				PRINTFORMW 「뭐, 아무튼 릴리는 좀 더 색도 희며, 감도도 발군이지만요！」ﾄﾞﾔｧ…
+				PRINTFORMW 「의심합니까？　자 비비어 넘어 확인해 볼까요♪」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_3, 乳首責め
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・전회ACTが가슴애무の場合乳首系になる
+;・その際、죠교자に유치か혀기술があると1/4、なければ3/4で乳首責めとなる
+;・죠교대상が남자の場合は乳首責めにしかならない
+;-------------------------------------------------
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 3
+	;=================================================
+	;죠교대상が남자か후타나리（竿付き）
+	;=================================================
+	IF 구상記入チェック(0) && TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+		;前から애무
+		;IF TCVAR:MASTER:위치전후 == 1
+		;	PRINTFORMW 
+		;後ろから애무
+		;ELSE
+		;	PRINTFORMW 
+		;ENDIF
+		IF FAVOR(0, 2000)
+			IF RAND:4 == 0
+				PRINTFORMW 「작고 사랑스러운 유두……후후♪」
+				PRINTFORMW 「릴리가 충분히 귀여워해 주네요―♪」
+				PRINTL  
+				PRINTFORMDW %CALLNAME:MASTER%(을)를 초조하게 하는 것처럼, 릴리의 세지가 유두의 주위에서 엔을 그린다……
+				PRINTFORMDW 변덕스럽게 핀과 발기한 유두가 연주해져 피쿤과 허리가 떨려 버린다……
+				PRINTL  
+				PRINTFORMW 「집었으면 좋겠다？　빚고 변통해……갖고 싶지요？」
+				PRINTFORMW 「후후……사랑스럽고 가슴 나오고 산등성이다 할 수 있으면(자)……가득 해 주어요♪」
+			ELSEIF RAND:3 == 0
+				PRINTFORMW 「이봐요, 릴리에 유두 만지작거려지고 느껴 버리자♪」
+				PRINTFORMW 「고육에♪　코리코리♪　후후, 기분이 좋다♪」
+				PRINTL  
+				PRINTFORMDW 딱딱하게 발기한 유두가 릴리의 세지로 빚을 수 있어 인 비교적 한 쾌락이 가슴 전체에 퍼진다
+				PRINTFORMDW 이번에는 퍼진 성감을 일전에 집중시키도록(듯이), 첨단을 칼리 칼리와 손톱의 끝으로 세게 긁어진다
+				PRINTFORMDW 교대로 밀어닥치는 열파와 허리가 떨려 페니스로부터는 앞달리기가 흘러넘쳐 버린다……
+				PRINTL  
+				PRINTFORMW 「손대지 않았는데 자지도 젖어 버렸어？　아하하♪」
+				PRINTFORM 「좋아요♪ 유두로 자지 사정해버릴 정도 기분 좋게 해 주네요
+				CALL HEARTCB
+;OriginalString : 」
+				PRINTW 」
+			ELSEIF RAND:2 == 0
+				PRINTFORM 「젖가슴에도 「키스」해버린다
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리가 「」와 소리를 내 가슴의 첨단에 달라붙었다
+				PRINTFORMDW 가볍게 이빨을 세워 혀끝에서 지, 이번은 유윤의 주위를새와 빤다……
+				PRINTFORMDW 감 씹어 하거나 철충분해취해 빨거나……
+				PRINTL  
+				PRINTFORM 「,……응,……,
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 안타까운 쾌락이 정점으로 달한 순간, 릴리가 입을 움츠려 단번에 유두를 빨아 올렸다
+				PRINTFORMDW 굴복의 증거가 음경으로부터 흘러넘쳐%CALLNAME:MASTER%(은)는 상스러운 소리를 질러 쾌락에 몸열……
+			ELSE
+				PRINTFORMW 「유두도 기분 좋게 해 주네요♪」
+				PRINTFORMW 「후후, 여자 아이같이 외설에 천있습니다♪」
+				PRINTL  
+				PRINTFORMDW 릴리가 손톱의 끝으로 칼리 칼리와 유두를 자극한다
+				PRINTFORMDW 다른 부분에는 일절 접하지 않고, 돌기의 첨단인 만큼 소폭의 자극을 계속 준다……
+				PRINTFORMDW 저리는 것 같은 쾌감이 폐를 단단히 조여 시야가 복숭아색의 안개에 물들어 간다……
+				PRINTL  
+				PRINTFORM 「아♪ 지금, 인 목소리가 들렸어요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「귀엽다……좀더 좀더 기분 좋게 해 주네요♪」
+			ENDIF
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMW 「릴리가 유두의 만지작거리는 방법, 가르쳐 주네요♪」
+				PRINTFORMW 「개-해, 손톱의 끝으로 세게 긁거나……타거나……」
+				PRINTL  
+				PRINTFORMW 「……이봐요, 이제 발기해 버렸습니다♪」
+				PRINTFORMW 「민감하네요……자, 좀 더 해 줍니다♪」
+			ELSE
+				PRINTFORMW 「유두는 매우 굉장해요」
+				PRINTFORMW 「이래, 만지면 만지작거릴수록 민감하게 되어 버립니다 것♪」
+				PRINTL  
+				PRINTFORMDW 릴리가 중지의 손톱을 세워 유두를 핀와 연주했다
+				PRINTFORMDW 그만큼 강하지 않은 자극의 괄이,%CALLNAME:MASTER%(은)는 교성을 누를 수가 없었다
+				PRINTL  
+				PRINTFORMW 「소질 있네요♪……매일 코리코리 해 유두 개발하면(자)……후후♪」
+				PRINTFORMW 「그 중에서양복이 스치는 것만으로 허리가 뛰게 되어……」
+				PRINTFORM 「마지막에는 유두를 연주한 것만으로 , 키-역사정 할 수 있게 된다
+				CALL HEARTCB
+				PRINTFORMW 」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		IF RAND:2 == 0
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 유두는 사랑스럽고 좋아하네요♪」
+			PRINTFORM 「작고, 깨끗해, 매우 민감해
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTFORMW 「충분히 괴롭혀 주기 때문에, 여자 아이같이 허덕여♪」
+		ELSE
+			PRINTFORMW 「유두 괴롭혔으면 좋습니까？　후후♪」
+			PRINTFORMW 「귀여운 아이, 키스 해 줍니다♪　응,…………」
+			PRINTL  
+			PRINTFORMDW 열입안에 유두가 빨려 들여가 상스러운 소리가 새어 버린다
+			PRINTFORMDW 부드러운 입술이 유윤을 비비어 첨단이 이빨과 혀끝에서 와 희롱해진다……
+			PRINTL  
+			PRINTFORMW 「,……♪　좀 더 귀여운 소리, 들려주세요♪」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;ACT12, 입으로 애무
+;────────────────────────────────────
+;・クンニする/펠라チオする
+;・하반신の의상が残っていても発生することがある。죠교자にTALENT:벽통과がない場合はずらして実行する
+;・턴방침が"이상"なら発生しない
+;・TEQUIP(바이브/오나홀/페니스밴드/삼각목마)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・죠교대상に페니스があると、必ず펠라になる
+;-------------------------------------------------
+@KOJO_ACT_K15_12
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=クンニ/1=펠라)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT12_0, クンニする
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;=================================================
+	;죠교대상が가버려
+	;記入チェック
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		;애태움도派生処理
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1 ;애태움中
+				IF RAND:3 == 0
+					PRINTFORMW 「아직도 이나 키라고 주지 않아요♪」
+					PRINTFORMW 「이일까 이상하게,～절의 부엌 빨아 주네요♪」
+				ELSEIF RAND:2 == 0
+					PRINTFORMW 「이없어 괴롭습니까？」
+					PRINTFORMW 「 그렇지만, 이제 조금 만……참아요♪」
+					PRINTFORM 「%CNAME(MASTER, TARGET)%가 제일 기분이 좋은 타이밍으로, 마음껏 이나 키라고 줄테니까
+					CALL HEARTCB
+					PRINTFORMW 」
+				ELSE
+					PRINTFORMW 「째씨, 새빨갛게 되어 버려서 매우 괴로울 것 같다……」
+					PRINTFORMW 「아프지 않게,～절의 부엌 날름날름 해……달래 주네요♪」
+					PRINTFORM 「응♪　…………후후
+					CALL HEARTCB
+					PRINTFORMW 」
+				ENDIF
+			;애태움終了
+			CASE 1
+				IF RAND:2 == 0
+					PRINTFORMW 「가득 참은 것이군요♪」
+					PRINTFORM 「릴리의 구～라고 들이마셔져……이챠오 밭이랑
+					CALL HEARTCB
+					PRINTFORMW 」
+					PRINTFORM 「짠다♪　,……～～
+					CALL HEARTCB
+					PRINTFORMW 」
+				ELSE
+					PRINTFORM 「음란한 국물 나오고 가 되어 버렸습니다
+					CALL HEARTCB
+					PRINTFORMW 」
+					PRINTFORMW 「노력해 인내 한 오- 에♪　릴리의 구에서 이나 키라고 주는군♪」
+					PRINTFORM 「응～～
+					CALL HEARTCB
+					PRINTFORM 　,……응,
+					CALL HEARTCB
+					PRINTFORMW 」
+				ENDIF
+			;애태움無し
+			CASEELSE
+				PRINTFORMW 「 이제 이키 그렇습니까？」
+				PRINTFORM 「후후♪　릴리의 구에 메로메로군요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「좋아요♪　더 국물 가득 먹여 주세요♪」
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;연속실행
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:전ACT == 12
+		IF RAND:2 == 0
+			PRINTFORMW 「아직도 멈추어 주지 않아요♪　짠다♪」
+			PRINTL  
+			PRINTFORMDW 마치 키스를 하는 것처럼, 릴리의 입술이 몇번이나 음순에 꽉 눌린다
+			PRINTFORMDW 절묘한 혀값어치비렬을 위를 덧써져 참지 못하고 추잡한 소리를 흘려 버린다……
+			PRINTL  
+			PRINTFORMW 「……네에에 , 좀더 좀더 외설에 천응이기 때문에♪」
+			PRINTFORMW 「응～♪　, ,～♪」
+		ELSE
+			PRINTFORMW 「―……구의 주위 끈적끈적이 되어 버렸습니다……」
+			PRINTFORM 「응……조금 짜서, 어쩐지 인 맛이 납니다
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTL  
+			PRINTFORMDW 릴리와 혀를 내밀어, 밀액에 젖은 입술을 빤다……
+			PRINTFORMDW 절의 부엌과 부드러운 입술의 사이를, 혀끝이 천천히 슬라이드해 나간다……
+			PRINTFORMDW 쾌락을 철저히 가르쳐졌다%CALLNAME:MASTER%의 음순은, 그 부드러움을 생각해 내 애밀을 흘려 버린다……
+			PRINTL  
+			PRINTFORMW 「다시 또 글자도 시차키라고, 어떻게 했습니까」
+			PRINTFORMW 「……그렇게 릴리의 구가 그리운 것인지？　후후♪」
+			PRINTFORMW 「좋아요♪　(이)라면, 좀 더 계속해 주네요♪」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;LOWERJACKET(1) == 1「まくりあげて」LOWERUNDER(1) == 1「ずらして」等で拡張するのも良いでしょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		;안면승마中
+		IF TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 혀, 기분 있어라……팥고물, 아는♪」
+			PRINTL  
+			PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 얼굴에 페탄과 엉덩이를 실어 비소를 기는 혀의 감촉에 요염하게 허리를 요 들이마시고 있다
+			PRINTFORMDW %CALLNAME:MASTER%에 봉사를 요구하면서 릴리는 손재주가 있게 태세를 바꾸어%CALLNAME:MASTER%의 고좌에 얼굴을 묻었다……
+			PRINTL  
+			PRINTFORMW 「……-에 릴리도 날름날름 해 주네요♪」
+			PRINTFORM 「６９라고 말하기 때문에 했던가？　가득 느껴 주세요
+			CALL HEARTCB
+			PRINTFORMW 」
+		;一般
+		ELSE
+			IF RAND:2 == 0
+				PRINTFORMDW 
+				PRINTFORMDW 
+				PRINTL  
+				PRINTFORM 「아··와♪ 있네요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「응-짠다……,…………」
+				PRINTFORMW 「인가？…………기분 좋고에 창고 차이군요♪」
+				PRINTL  
+				PRINTFORMDW 
+					PRINTFORMDW 
+			ELSE
+				PRINTFORMDW 
+				PRINTFORMDW 
+				PRINTL  
+				PRINTFORMW 「릴리 오- 이바지하기 때문에, 가만히 하고 있어 주세요♪」
+				PRINTFORMW 「응-, ,……후후, 낯간지럽습니까？」
+				PRINTFORMW 「곧바로…………기분히 자주(잘) 히 거쳐 로부터♪」
+				PRINTL  
+				PRINTFORMDW 
+				PRINTFORMDW 
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT12_1, 펠라チオする
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:ACT파생 == 1
+	;=================================================
+	;初回
+	;記入チェック
+	;=================================================
+	IF 구상記入チェック(100) && FIRSTACT(0)
+		;죠교자が자위중（참다できなくなっちゃった）
+		IF GETBIT(TEQUIP:자위중, 1)
+			PRINTFORMW 「응♪　아, 또 릴리뿐 기분 좋아지네요……」
+			PRINTFORMW 「―……응,%CNAME(MASTER, TARGET)%도 자위해도 좋아요♪」
+			PRINTFORM 「……,……이봐요, 아-응
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTL  
+			PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 발밑에 페타리와 들어앉아, 먹이를 조르는 작은 새와 같이 크게 입을 열었다
+			PRINTFORMDW 그리고 「여기」라고도 말하듯이, 충분히의 타액으로 채워진 입안을 가리켜%CALLNAME:MASTER%의 반응을 기다리고 있다……
+			PRINTL  
+			PRINTFORMW 「응구……이기 때문입니다, 어와……」
+			PRINTFORM 「릴리의 구를 사용해, 자위해도 좋아요
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTFORMW 「릴리는, 응구, 자신의 일로 바쁘기 때문에 상관해 줄 수 있지않고……그런데♪」
+			PRINTL  
+			PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 흥분을 권하듯이 비소를 위로해 다시 입을 크게 열어%CALLNAME:MASTER%에 재촉을 했다
+			PRINTFORMDW 타액이 실을 당겨, 김이 서는 것 같은 뜨거운 한숨이 「후~, 후~」와 귀두에 토해 걸칠 수 있다
+			PRINTFORMDW 연분홍색의 입술로 가장자리 놓친 고기 점막의 항아리 중(안)에서, 릴리의 작은 혀가 페니스를 요구하고 추잡하게 준 있다
+			PRINTL  
+			PRINTFORMW 「아, 지금 의 특별인 오- 로부터♪」
+			PRINTFORM 「-의 기분이 변라라 없는 동안에, -
+			CALL HEARTCB
+			PRINTFORMW 」
+		;당신동정
+		ELSEIF TALENT:MASTER:동정
+			;사정後すぐ（お掃除펠라）
+			IF TCVAR:MASTER:사정후경과턴 == 1
+				PRINTFORMW 「후~응♪　오늘할 수 있었어요♪」
+				PRINTL  
+				PRINTFORMDW 사정을 끝낸 페니스를 돌보는 것처럼, 릴리가 만족스럽게 간기를 어루만진다
+				PRINTFORMDW 아직 조금 요도에 남아 있던 정액이 흰 우가 되어 령구로부터 흘러넘쳐 릴리의 세지를 적셨다
+				PRINTL  
+				PRINTFORMW 「그렇게 말하면, 언제나 라고 손으로 하고뿐이었지요」
+				PRINTFORMW 「……응, 릴리의 「구」에서 시라고 갖고 싶다？」
+				PRINTL  
+				PRINTFORMW 「……(이)라니, 사실은 릴리가%CNAME(MASTER, TARGET)%에 시라고 주고 싶습니다♪」
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 발밑에 페타리와 들어앉아, 구 충분하고와 머리를 늘어뜨린 음경에 뺨을 댄다
+				PRINTFORMDW 애처로운 말과 그 배덕적인 광경에, 마그마와 같은 열이 울컥거려 온다
+				PRINTL  
+				PRINTFORM 「자지에 남아있는 키-역……빨아내 주네요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「아-♪……, , 배행, 부부부……」
+				PRINTFORM 「, , 응……응？……,
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 아트아트에 녹고 자른 점막이 귀두를 감싸, 적합과 붙으면서 단번에 근원까지 달라붙어 온다
+				PRINTFORMDW 후오에 귀두를 밀착시킨 채로, 릴리는 혀와 뺨을 손재주가 있게 사용해 강직을 빤다 라고 있다
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 미지의 쾌락에 몇번이나 전신을 뛰게 해 열중해 허리를 밀어 올린다
+				PRINTL  
+				PRINTFORM 「, , 네♪……～～～～……
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 치태에 만족스럽게 웃음을 띄워 요도내에 남은 정액을 단번에 빨아 올린다
+				PRINTFORMDW 뺨을 한계까지 움츠려 부드러운 입술로 간기를 강하게 단단히 조이면서, 마지막 한 방울까지 철올려 간다……
+				PRINTFORMDW 귀두를 감싸는 입술이 자취석 해 기분에 령구를 1들이마셔 해, 간신히%CALLNAME:MASTER%의 강직은 구강 점막으로부터 해방되었다
+				PRINTL  
+				PRINTFORMW 「자지, 밥있었습니다……어에 에♪」
+				PRINTFORMW 「……입속, 아직%CNAME(MASTER, TARGET)%의 맛이 납니다
+				CALL HEARTCB
+				PRINTFORMW 」
+			;동정（たぶんこれが一番多い）
+			ELSE
+				;후타나리（펠라＋膣指入れ）
+				IF TALENT:MASTER:후타나리
+					PRINTFORMW 「릴리의 구……시험해 보고 싶습니까？」
+					PRINTFORMW 「아무튼 릴리가 시험해 보고 싶다고 말하는 것이 본심입니다만……후후♪」
+				;후타나리以外
+				ELSE
+					PRINTFORMW 「그렇게 말하면, 언제나 라고 손뿐이었지요 」
+					PRINTFORMW 「응―……응, 릴리의 「구」에서 시라고 줄까요？」
+					PRINTFORM 「-라고-씨에게는 자극이 너무 강할까？　후후후
+					CALL HEARTCB
+					PRINTFORMW 」
+				ENDIF
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 발밑에 페타리와 들어앉아, 거무스름하게 충혈한 육 간에 뺨을 댄다
+				PRINTFORMDW 충분히타액을 얽히게 할 수 있었던 혀가 간기를 겨 , 귀두에 단 키스를 한다
+				PRINTL  
+				PRINTFORM 「만약 참을 수 없게 되면(자), 말해도 있고-니까요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「아-♪……, , 배행, 부부부……」
+				PRINTFORM 「, , 응……응？
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 딱딱하게 긴장된 육 간이 릴리가 녹고 자른 구강 점막에 감싸진다
+				PRINTFORMDW 릴리는 혀를 손재주가 있게 움직여, 뺨을 움츠려 후오까지 사용해 장대 전체를 정중하게 빨고 있다
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 미지의 쾌락에 몇번이나 전신을 뛰게 해 여자 아이와 같이 단 교성을 주어 버린다
+				PRINTL  
+				PRINTFORM 「, , 네♪……, ,
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 치태에 만족스럽게 웃음을 띄우면(자), 잡아당기도록(듯이) stroke를 앞당겨 간다
+				PRINTFORMDW 떨리는 허리를 제대로 안아져 고좌의 사이에 릴리의 사랑스러운 얼굴이 격렬하고 전후계속 에 흔들린다
+				PRINTFORMDW 열점막이 페니스에 격렬한 자극을 계속 주어 인내의 언을 다 써버릴 수 있으려고 유혹해 온다……
+				PRINTL  
+				PRINTFORMW 「, 아…………어에 에♪」
+				PRINTFORM 「응, 릴리의 말씨 소유 이이겠지♪　오늘을 위해 연습했습니다 것
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「후후～응♪　릴리의 구에서 좀 더 느껴 주세요♪」
+			ENDIF
+		;非동정、ほかの죠교자によって開発済み？
+		ELSE
+			PRINTFORMW 「응, 릴리의 구로 하고 줄까요？」
+			PRINTFORMW 「혹시, 보지보다 기분 있고 지도 모르겠군요？　후후♪」
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 발밑에 페타리와 들어앉아, 거무스름하게 충혈한 육 간에 뺨을 댄다
+				PRINTFORMDW 충분히타액을 얽히게 할 수 있었던 혀가 간기를 겨 , 귀두에 단 키스를 한다
+				PRINTL  
+				PRINTFORM 「만약 참을 수 없게 되면(자), 말해도 있고-니까요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「아-♪……, , 배행, 부부부……」
+				PRINTFORM 「, , 응……응？
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 딱딱하게 긴장된 육 간이 릴리가 녹고 자른 구강 점막에 감싸진다
+				PRINTFORMDW 릴리는 혀를 손재주가 있게 움직여, 뺨을 움츠려 후오까지 사용해 장대 전체를 정중하게 빨고 있다
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 미지의 쾌락에 몇번이나 전신을 뛰게 해 여자 아이와 같이 단 교성을 주어 버린다
+				PRINTL  
+				PRINTFORM 「, , 네♪……, ,
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTL  
+				PRINTFORMDW 릴리는 %CALLNAME:MASTER%의 치태에 만족스럽게 웃음을 띄우면(자), 잡아당기도록(듯이) stroke를 앞당겨 간다
+				PRINTFORMDW 떨리는 허리를 제대로 안아져 고좌의 사이에 릴리의 사랑스러운 얼굴이 격렬하고 전후계속 에 흔들린다
+				PRINTFORMDW 열점막이 페니스에 격렬한 자극을 계속 주어 인내의 언을 다 써버릴 수 있으려고 유혹해 온다……
+				PRINTL  
+				PRINTFORMW 「, 아…………어에 에♪」
+				PRINTFORM 「응, 릴리의 말씨 소유 이이겠지♪　오늘을 위해 연습했습니다 것
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「후후～응♪　릴리의 구에서 좀 더 느껴 주세요♪」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;파이즈리→펠라 = 파이즈리펠라
+	;=================================================
+	IF 구상記入チェック(100) && TFLAG:전ACT == 17
+		;빈유（ナイズリ펠라）
+		IF TALENT:빈유
+			PRINTFORMW 「젖가슴과 구에서 기분 좋고해 주었으면 한다고……」
+			PRINTFORMW 「―, 노력해 봅니다만……기분 좋지 않아도 불평 말하면 싫어요？」
+			PRINTL  
+			PRINTFORMDW 릴리는 열심히 파이즈리페라에 도전해 보았지만, 그 자그마한 가슴에서는 도저히 실현될 것 같지 않다……
+			PRINTFORMDW 어쩔 수 없이, 이번은 귀두를 구강으로 충분히빤 후, 윤활이 늘어난 귀두를 유두에 문지르기 시작한다
+			PRINTFORMDW 2개의 일 되는 자극이 교대로 밀어닥쳐 속상한 쾌감에 %CALLNAME:MASTER%의 허리가 자연과 떠 버린다
+			PRINTL  
+			PRINTFORMW 「……기분 좋음 그래 안심입니다♪……,♪」
+		;거유、普乳（파이즈리펠라）
+		ELSE
+			PRINTFORM 「그러면, 이번은 구도 사용해 기분 좋게 해 주네요
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTFORM 「릴리의 입속하는 것, 정말 좋아하네요♪　후후
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTL  
+			PRINTFORMDW 다시 장대 전체가 릴리의 부드러운 쌍구의 골짜기에않고에 와 메워져 간다…
+			PRINTFORMDW 릴리는 흉부의 열을 즐기는 것처럼, 상하 좌우, 가끔  교대로 변화를 붙이면서 육 간을 몰아세운다…
+			PRINTFORMDW 녹는 것 같은 쾌감에 %CALLNAME:MASTER%(은)는 지만 허리를 쑥 내민 순간, 골짜기로부터 뛰쳐나온 귀두에 릴리의 입이 힘차게 달라붙었다…
+			PRINTL  
+			PRINTFORM 「, ,…………
+			CALL HEARTCB
+			PRINTFORMW 」
+			PRINTFORM 「후후, 기분 좋았으면 참지 말고, , 언제에 해 주세요
+			CALL HEARTCB
+			PRINTFORMW 」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;가버려＋애태움
+	;=================================================
+	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+		;애태움
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+				IF RAND:2 == 0
+					PRINTFORMDW 사정의 타이밍을 완전하게 컨트롤 되어%CALLNAME:MASTER%(은)는 치열의 인연으로 초조하게 해지고 계속하고 있다
+					PRINTFORMDW 육 간을 격렬하게 잡아당겨, 귀두를 어루만져 령구를 지…………그리고 한 걸음의 순간, 꼭과 릴리의 손이 멈춘다
+					PRINTFORMDW 자제국물로 희게 거품이 인 육 간이, 토정의 순간에 기대해 아첨하듯이 비쿤과 뛰었다
+					PRINTL  
+					PRINTFORMW 「…………아직도 오징어키라고 주지 않아요♪」
+					PRINTFORM 「카와이구산등성이다 할 수 없으면……두와 이대로니까요
+					CALL HEARTCB
+					PRINTFORMW 」
+				ELSE
+					PRINTFORMW 「안됩니다, 아직 이나 키라고 주지 않습니다♪」
+					PRINTFORMW 「참고 모으고 붐빈 정자는, 이라고 라고 해도 진하고 맛있어집니다♪」
+					PRINTL  
+					PRINTFORMDW 사정의 타이밍을 완전하게 컨트롤 되어 사정까지 나머지 한 걸음의 로 초조하게 해지고 계속한다
+					PRINTFORMDW 자제국물로 희게 거품이 인 육 간이, 토정의 순간에 기대해 아첨하듯이 비쿤과 뛰었다
+					PRINTL  
+					PRINTFORMW 「그러니까, 좀더 좀더 한계까지 사정 참아……」
+					PRINTFORMW 「그랬더니, 릴리가 전부 짜 취해 주니까요♪」
+				ENDIF
+			;애태움終了（トドメ））
+			CASE 1
+				SELECTCASE NOWEX:MASTER:사정
+					;드라이사정で搾り取る
+					CASE 1
+						PRINTFORMDW %CALLNAME:MASTER%의 정액은 릴리에 의해 짜 다하여져 이미 사정이 실현되지 않는 상태에 있다
+						PRINTFORMDW 끈적거리는 열락의 자취 투성이가 되어 릴리의 가녀린 신체가 희고 음미에 빛나고 있다……
+						PRINTL  
+						PRINTFORMW 「―……타마타마 텅 비게 되어 버렸다 입니까」
+						PRINTFORMW 「이렇게 초조하게 해 전혀 키-역 모이지 않아요？」
+						PRINTL  
+						PRINTFORMDW 불만에 뺨을 부풀리면서, 릴리는 그 세지로 간기를 계속 잡아당기고 있다
+						PRINTFORMDL 끊임없이 절정을 반복해, 모든 정액을 토해냈다%CALLNAME:MASTER%의 남성기는
+						PRINTFORMDW 사정 기능이 없는 단순한 고기 바이브래이터가 되어 끝나 더 쾌락을 졸라 딱딱하고 흘립 하고 있다
+						PRINTL  
+						PRINTFORM 「그래……릴리를 위해 한계까지 감사할 수 있다-해 주었다니깐
+						CALL HEARTCB
+						PRINTFORMW 」
+						PRINTFORM 「매우 노력했다%CNAME(MASTER, TARGET)%에는, 소중한 「-」주지 않으면
+						CALL HEARTCB
+						PRINTFORMW 」
+						PRINTL  
+						CALL QUAKE(2)
+						PRINTFORM 「노력한 아이 밖에 맛볼 수 없는, 최고로 기분 좋은 「더 조수
+						CALL HEARTCB
+						PRINTFORM 」분화시킬 수 있어 주네요
+						CALL HEARTCB
+						PRINTFORMW 」
+					;その他
+					CASEELSE
+						IF RAND:2 == 0
+							PRINTFORM 「가득 인내 한 오- 에……정액 전부 누키누키 해 주네요
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTL  
+							PRINTFORMDW 릴리의 허가를 얻어, 초조하게 해지고 계속한 육 간이 단번에 최고 경도까지 달하게 된다
+							PRINTFORMDW %CALLNAME:MASTER%(은)는 비명과 같은 교성을 흘려, 토정을 간절히 원함 해 오로지에 허리를 밀어 올린다
+							PRINTFORMDW 전신의"정"하지만 릴리를 요구해 유열에 떨리는 페니스의 첨단으로 모여 온다……
+							PRINTL  
+							PRINTFORM 「이봐요 이봐요♪　타마타마 텅 비게 될 때까지, 두---와 시코시코 해……
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「드로드로자멘 ―
+							CALL HEARTCB
+							PRINTFORM ―
+							CALL HEARTCB
+							PRINTFORM 라는 릴리의 라고라고로 눌러 짬취있습니다
+							CALL HEARTCB
+							PRINTFORMW 」
+						ELSE
+							PRINTFORM 「가득 참을 수 있었던 아이에게는, -주지 않으면
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「모으고 붐빈 키-역, 해 버리자인가
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「……이봐요♪ 자꾸자꾸 빨리, 격렬하고 시있어요
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTL  
+							PRINTFORMDW 쾌감의 레벨이 단번에 튀어, 음열에 뇌가 저리고 복숭아색의 안개에 시야가 물들어 간다……
+							PRINTFORMDW 릴리의 이름을 불러, 상스럽게 허리를 구군요들 다툴 때에, 미지의 쾌락이 전신을 앞질러간다……
+							PRINTL  
+							PRINTFORM 「후후♪　%CNAME(MASTER, TARGET)%의 제일 기분 좋은 타이밍에 감사할 수 있다-해도 좋아
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTFORM 「릴리가 전부 받아 들여 줄테니까
+							CALL HEARTCB
+							PRINTFORM  릴리에 무심코 정액 샤워 뿌려 주세요
+							CALL HEARTCB
+							PRINTFORMW 」
+						ENDIF
+				ENDSELECT
+			CASEELSE
+				;애태움無し
+				;가버려なのを참다している
+				IF TCVAR:MASTER:가버려 > 5
+					IF FAVOR(0, 2000)
+						IF RAND:2 == 0
+							PRINTFORMW 「인내는 하지 않아 좋아요？　후후♪」
+							PRINTFORM 「이래……참아도 쓸데없습니다 것
+							CALL HEARTCB
+							PRINTFORMW 」
+							PRINTL  
+							PRINTFORMDW 릴리는 색욕으로 가득 찬 표정으로 조용하게 속삭이면(자), 조용히 가는 손가락끝을 간기에 관련되었다
+							PRINTFORMDW 칼리목을 강하게 연주해졌다고 생각하면(자), 첨단으로부터 중간 정도까지를 위를 덧써진다……
+							PRINTFORMDW 숨 붙는 동안도 없고, 이번은 히크히크와 떨리는 령구를 집게 손가락의 끝으로 강하게 연주해진다……
+							PRINTFORMDW 천진난만한 모습과는 정반대인 교묘한 손가락 사용에, 무심코 허리가 뛴다
+							PRINTL  
+							PRINTFORMW 「이봐요, 이제 국물로 미끈미끈이 되어 버렸습니다……후후♪」
+							PRINTFORMW 「%CNAME(MASTER, TARGET)%가 노력해 모으고 붐빈 정령……전부 눌러 짬취있네요♪」
+						ELSE
+							PRINTFORM 「후~응……자지 기분이 좋다♪　이제 나와버릴 것 같은가
+							CALL HEARTCB
+;OriginalString : 」
+							PRINTW 」
+							PRINTFORMW 「가득 모은 키-역, 키-있어요♪」
+							PRINTL  
+							PRINTFORMDW 릴리는 넑을 잃은 표정으로 %CALLNAME:MASTER%의 얼굴과 노장을 교대로 응시하면(자),
+							PRINTFORMDW 피아노에서도 연주하는 것 같은 우아한 손가락 값어치, 고서 고서와 강직의 첨단을 희롱한다
+							PRINTFORMDW 이미 사정 한계까지 높아지고 있던 쾌감이, 령구로 향해 단번에 밀어 올릴 수 있다
+							PRINTFORMDW 무의식 중에 허리를 금액 학도 흔들어, 페니스를 밀어 올려 버린다
+							PRINTL  
+							PRINTFORMW 「자꾸자꾸 뜨거워져……응, 냄새도 진해져……후~, 매우 괴로울 것 같다……」
+							PRINTFORM 「가득 참은 것이군요……지금 해방 해 준다
+							CALL HEARTCB
+							PRINTFORMW 」
+						ENDIF
+					ELSE
+						PRINTFORMW 「어？　혹시 참습니까？」
+						PRINTFORMW 「……참는 것 괴롭지요？　그렇지만, 이제 무리하지 않아 좋아요？」
+						PRINTL  
+						PRINTFORMDW 앞달리기로 젖은 령구에 손가락끝을 꽉 눌러 과시하듯이 투명의 실을 당긴다
+						PRINTFORMDW 빈 손을 페니스의 근원에 기게 해 정액을 짜기 시작하듯이, 천천히, 천천히 페니스를 잡아당겼다.
+						PRINTL  
+						PRINTFORMW 「자꾸자꾸 뜨거워져……응, 냄새도 진해져……후~, 매우 괴로울 것 같다……」
+						PRINTFORM 「릴리가%CNAME(MASTER, TARGET)%안의 억지인 마음……전부 토해내게 해 주네요
+						CALL HEARTCB
+						PRINTFORMW 」
+					ENDIF
+				ENDIF
+		ENDSELECT
+		RETURN 1
+	ENDIF
+
+	;-------------------------------------------------
+	;연속실행　IF LOCAL:1 && TFLAG:전ACT == 12
+	;=================================================
+	IF 구상記入チェック(0) && TFLAG:ACT == TFLAG:전ACT
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;야외플레이中
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:야외플레이
+		;안면승마中
+		IF TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
+			PRINTFORMDW 릴리는 한 손에 당겨 끈을 가진 채로,
+			PRINTL  
+			PRINTFORMW 「」
+		;통상
+		ELSE
+			PRINTFORMDW 릴리는 한 손에 당겨 끈을 가진 채로,
+			PRINTL  
+			PRINTFORMW 「」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------------------------------
+	;발기
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:발기도 >= 1000
+		RETURN 1
+	ENDIF
+
+	;ここを最初に書きましょう
+	;LOWERJACKET(1) == 1「まくりあげて」LOWERUNDER(1) == 1「ずらして」等で拡張するのも良いでしょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		SELECTCASE NOWEX:MASTER:사정
+			;드라이사정後更に搾り取る
+			CASE 1
+					PRINTFORMW 「」
+			;一般
+			CASEELSE
+				;사정後すぐ（お掃除펠라）
+				IF TCVAR:MASTER:사정후경과턴 == 1
+					PRINTFORMW 「」
+				;눈가리개
+				ELSEIF TEQUIP:눈가리개
+					PRINTFORMW 「」
+				;안면승마中
+				ELSEIF TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
+					PRINTFORMW 「」
+				;죠교자が자위중（참다できなくなっちゃった）
+				ELSEIF GETBIT(TEQUIP:자위중, 1)
+					PRINTFORMW 「」
+				;통상
+				ELSE
+					PRINTFORMW 「」
+				ENDIF
+		ENDSELECT
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;ACT13, 항문애무
+;────────────────────────────────────
+;・항문애무/전립선자극/항문바이브出し入れ
+;・항문바이브装備中は、항문바이브出し入れに派生
+;・연속실행の場合、전립선자극に派生
+;・가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じて전립선자극に派生
+;・발기도が低い場合、죠교자の애무スキルに応じて전립선자극に派生
+;・요강제발기の場合、전립선자극に派生
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"소프트", "이상"だと発生しない
+;・TEQUIP(삼각목마/페니스밴드/항문비즈)장착中には発生しない
+;・성교봉사중には発生しない
+;-------------------------------------------------
+@KOJO_ACT_K15_13
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・TFLAG:ACT파생（0=항문애무/1=전립선자극/2=항문바이브出し入れ）
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT13_0, 항문애무
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && !TFLAG:ACT파생
+	;=================================================
+	;안면승마中
+	;=================================================
+	IF 구상記入チェック(0) && TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;하반신服装が要押し退け
+	;=================================================
+	IF 구상記入チェック(0) && PANTSCHECK(1, 1)
+		;하반신겉옷をまくりあげ
+		IF LOWERJACKET(1) == 1
+			PRINTFORMW 
+		;속옷越しに
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT13_1, 전립선자극(항문애무)
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;죠교대상が남자の場合のみに派生
+;후타나리の前立腺は尿道、つまり膣の上にあるとし、Ｇスポット刺激に
+;-------------------------------------------------
+IF 구상記入チェック(0) && TFLAG:ACT파생 == 1
+	PRINTFORMW 
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT13_2, 항문바이브出し入れ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・항문바이브装備中は、항문바이브出し入れになる
+;-------------------------------------------------
+IF 구상記入チェック(0) && TFLAG:ACT파생 == 2
+	;죠교대상が남자
+	IF TALENT:MASTER:남자
+		PRINTFORMW 
+	;その他
+	ELSE
+		PRINTFORMW 
+	ENDIF
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT14, 항문펠라
+;────────────────────────────────────
+;・항문펠라
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"소프트", "이상"だと発生しない
+;・TEQUIP(항문바이브/항문비즈/관장그릇＋플러그/페니스밴드/삼각목마)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・TCVAR:MASTER:애태움도が真になっている場合は発生しない
+;・舌による전립선자극への派生は「そんなところまで舌が届くわけないじゃないかｗｗｗ」という事で粛清されています
+;・現時点でACTが派生する事はないが、ACT改変の可能性に備え、TFLAG:ACT파생 == 0で指定
+;-------------------------------------------------
+@KOJO_ACT_K15_14
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・ACT파생なし
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT14_0, 항문펠라
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;=================================================
+	IF 구상記入チェック(0) && FIRSTACT(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;조교중初回
+	;=================================================
+	IF 구상記入チェック(0) && ONCEACT(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が자위중
+	;=================================================
+	IF 구상記入チェック(0) && GETBIT(TEQUIP:자위중, 1)
+		;죠교자が페니스밴드身に付けている
+		IF TEQUIP:죠교자페니스밴드
+			PRINTFORMW
+		;その他
+		ELSE
+			PRINTFORMW
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;안면승마中
+	;=================================================
+	IF 구상記入チェック(0) && TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が자위중
+	;=================================================
+	IF 구상記入チェック(0) && GETBIT(TEQUIP:자위중, 0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;하반신服装が要押し退け
+	;=================================================
+	IF 구상記入チェック(0) && PANTSCHECK(1, 1)
+		;하반신겉옷をまくりあげ
+		IF LOWERJACKET(1) == 1
+			PRINTFORMW 
+		;속옷越しに
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;ACT15, 키스
+;────────────────────────────────────
+;・키스/미약키스
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"하드", "이상"だと発生しない
+;・죠교자にTALENT:벽통과が無い場合、TEQUIP:볼개그장착中は弾かれる
+;-------------------------------------------------
+@KOJO_ACT_K15_15
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT15, 키스 初回
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && FIRSTACT(0)
+	;=================================================
+	;お互いに初めて
+	;=================================================
+	IF 구상記入チェック(0) && EXP:MASTER:키스경험 == 0 && EXP:TARGET:키스경험 == 0
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が初めて
+	;=================================================
+	IF 구상記入チェック(0) && EXP:MASTER:키스경험 == 0
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;죠교자が初めて
+	;=================================================
+	IF 구상記入チェック(0) && EXP:TARGET:키스경험 == 0
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;"初回"のネストを開放し、各条件の分岐を방치するならここで補完しましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT15_0, 키스
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;!GETBIT(TFLAG:미약등사용, 1)等の条件を削除して!TFLAG:ACT파생でまとめてしまっても良いと思います
+;無理に全ての箇所を埋める事はないので、필요に応じて使い分けて下さい
+;-------------------------------------------------
+IF 구상記入チェック(0) && !TFLAG:ACT파생 && !GETBIT(TFLAG:미약등사용, 1)
+	;=================================================
+	;성교중（죠교자삽입）
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:성교중
+		;体位を派生処理
+		SELECTCASE TEQUIP:성교중
+			;정상위					頭をつかんで情熱的な키스を했다…
+			CASE 1
+				PRINTFORMW 
+			;후배위					振り向かせ입술을 빼았았다…
+			CASE 2
+				PRINTFORMW 
+			;기승위					下から突き上げながら情熱的に입づけ했다…
+			CASE 3
+				PRINTFORMW 
+			;대면좌위				ぎゅっと抱きしめるとそのまま입술을 빼았았다…
+			CASE 4
+				PRINTFORMW 
+			;배면좌위				振り向かせそのまま입술을 빼았았다…
+			CASE 5
+				PRINTFORMW 
+			;항문섹스			엉덩이を犯하면서키스してきた…
+			CASE 6
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중（죠교대상삽입）
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:성교봉사중
+		;애태움도による派生			TCVAR:MASTER:가버려で囲んではいないので、CASEELSEは통상の상태を意味する
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT15_1, 미약키스
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・죠교대상に입移しで미약を飲ませる
+;-------------------------------------------------
+;RESULT値を2として@KOJO_USE_KXの미약등사용구상を呼び出さない設定をデフォルトとしておきます
+;필요に応じて戻り値を設定してください
+;-------------------------------------------------
+IF 구상記入チェック(0) && !TFLAG:ACT파생 && GETBIT(TFLAG:미약등사용, 1)
+	;미약使用구상処理済チェック(미약使用の地の文カットする際はTFLAG:미약등사용지문스킵のコメントを解除)
+	CLEARBIT TFLAG:미약등사용구상, 1
+	;CLEARBIT TFLAG:미약등사용지문스킵, 1
+	;=================================================
+	;성교중（죠교자삽입）
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:성교중
+		;体位を派生処理
+		SELECTCASE TEQUIP:성교중
+			;정상위					頭をつかんで情熱的な키스を했다…
+			CASE 1
+				PRINTFORMW 
+			;후배위					振り向かせ입술을 빼았았다…
+			CASE 2
+				PRINTFORMW 
+			;기승위					下から突き上げながら情熱的に입づけ했다…
+			CASE 3
+				PRINTFORMW 
+			;대면좌위				ぎゅっと抱きしめるとそのまま입술을 빼았았다…
+			CASE 4
+				PRINTFORMW 
+			;배면좌위				振り向かせそのまま입술을 빼았았다…
+			CASE 5
+				PRINTFORMW 
+			;항문섹스			엉덩이を犯하면서키스してきた…
+			CASE 6
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;=================================================
+	;성교봉사중（죠교대상삽입）
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:성교봉사중
+		;애태움도による派生			TCVAR:MASTER:가버려で囲んではいないので、CASEELSEは통상の상태を意味する
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 2
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 2
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;ACT16, 성기마찰한다
+;────────────────────────────────────
+;・貝合わせ/스마타する
+;・죠교대상に페니스がある場合はACT파생 == 1「스마타する」へ派生する
+;・죠교대상が페니스밴드장착中は、ACT파생 == 2「페니스밴드스마타」になる
+;・턴방침が"하드", "이상だと発生しない
+;・죠교대상が여자で바이브장착中だと発生しない
+;・TEQUIP(오나홀/삼각목마)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・죠교자に페니스があると発生しない（봉사系の스마타強制になる）
+;-------------------------------------------------
+@KOJO_ACT_K15_16
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・TFLAG:ACT파생（=0,貝あわせ/=1,스마타/=2,페니스밴드스마타）
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT16_0, 貝合わせ
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && !TFLAG:ACT파생
+	;=================================================
+	;죠교대상が가버려
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:가버려
+		;애태움도派生
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;=================================================
+	IF 구상記入チェック(0) && TFLAG:ACT == TFLAG:전ACT
+		;누움
+		IF TFLAG:누움
+			PRINTFORMW
+		;その他
+		ELSE
+			PRINTFORMW
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;地の文は죠교대상の하반신服装毎の分岐あり。필요に応じて拡張してください
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		;누움
+		IF TFLAG:누움
+			PRINTFORMW
+		;その他
+		ELSE
+			PRINTFORMW
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT16_1, 스마타する
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・女성기と太股で남성기を挟んで애무する
+;・죠교대상に페니스があると、必ず스마타するになる
+;-------------------------------------------------
+IF 구상記入チェック(0) && TFLAG:ACT파생 == 1
+	;=================================================
+	;죠교대상が가버려
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:가버려
+		;애태움도派生
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;=================================================
+	IF 구상記入チェック(0) && TFLAG:ACT == TFLAG:전ACT
+		;누움
+		IF TFLAG:누움
+			PRINTFORMW
+		;その他
+		ELSE
+			PRINTFORMW
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;地の文は죠교대상の하반신服装毎の分岐あり。필요に応じて拡張してください
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		;누움
+		IF TFLAG:누움
+			PRINTFORMW
+		;その他
+		ELSE
+			PRINTFORMW
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT16_2, 페니스밴드스마타
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;・죠교대상が페니스밴드장착中は、페니스밴드스마타になる
+;-------------------------------------------------
+IF 구상記入チェック(0) && TFLAG:ACT파생 == 2
+	;=================================================
+	;연속실행
+	;=================================================
+	IF 구상記入チェック(0) && TFLAG:ACT == TFLAG:전ACT
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;地の文は죠교대상の하반신服装毎の分岐あり。필요に応じて拡張してください
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		;누움
+		IF TFLAG:누움
+			PRINTFORMW
+		;その他
+		ELSE
+			PRINTFORMW
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;ACT17, 파이즈리한다
+;────────────────────────────────────
+;・TFLAG:징계・플래그がたっていると発生しない
+;・턴방침が"하드", "이상"の場合は発生しない
+;・TEQUIP(오나홀/삼각목마)장착中には発生しない
+;・죠교대상に페니스がない場合は発生しない
+;・죠교자が남자の場合は発生しない
+;・現在ACT파생は存在しないが将来の改変に備え、ACT파생 == 0とする
+;-------------------------------------------------
+@KOJO_ACT_K15_17
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・ACT파생なし
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT17_0, 파이즈리한다
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && !TFLAG:ACT파생
+	;地の文は죠교자の가슴のサイズで分岐します。
+	;素質を変更する事が可能なので、필요に応じて拡張するのも良いでしょう
+	;=================================================
+	;죠교대상がイキそう
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:가버려
+		;애태움도によって分岐
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+				PRINTFORMW 
+		ENDSELECT
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;=================================================
+	IF 구상記入チェック(0) && TFLAG:ACT == TFLAG:전ACT
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		[SKIPSTART]
+		;---------------------------------------------------
+		;地の文には着衣の상태による分岐が存在しますが、書き分けも面倒なので필요に応じてコメントアウトを外すなり
+		;望む形に改変するなりして使用して下さい
+		;---------------------------------------------------
+		;干渉する衣服が存在する時
+		IF TRUECHECK(TEQUIP:상반신속옷, TEQUIP:상반신겉옷, TEQUIP:전신겉옷) > 0 || (TEQUIP:MASTER:하반신속옷 && !TALENT:벽통과) || CFLAG:의상 == 3
+			;노출状況により分岐
+			SELECTCASE TEQUIP:착의노출 & 6
+				;干渉箇所全노출時
+				CASE 6
+					PRINTFORMW 
+				;죠교대상성기노출時
+				CASE 4
+					PRINTFORMW 
+				;죠교자가슴노출時
+				CASE 2
+					PRINTFORMW 
+				;干渉箇所非노출時
+				CASEELSE
+					PRINTFORMW 
+			ENDSELECT
+		;その他
+		ELSE
+			PRINTFORMW 
+		ENDIF
+		[SKIPEND]
+		;他に分岐を設けないのなら、ここは書いておきましょう
+		;分岐を設けるならここのPRINTは空行を生むので削除しましょう
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;ACT18, 풋잡하기
+;────────────────────────────────────
+;・풋잡하기
+;・죠교대상に페니스がない場合は発生しない
+;・이상系から派生する場合もある
+;・TFLAG:징계・플래그がたっていると発生しない
+;・금일의방침が"イチャイチャ"だと発生しない
+;・TEQUIP(오나홀/삼각목마)장착中は発生しない
+;・성교중/성교봉사중は発生しない
+;・죠교자に발が無いと発生しない
+;・죠교대상が여자だと発生しない
+;・現在ACT파생は存在しないが将来の改変に備え、ACT파생 == 0とする
+;-------------------------------------------------
+@KOJO_ACT_K15_18
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・ACT파생なし
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT18, 풋잡하기
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && !TFLAG:ACT파생
+	;地の文にTCVAR:MASTER:애태움도等の分岐は存在しない箇所
+	;=================================================
+	;죠교대상がイキそう				両발で%CALLNAME:MASTER%의 페니스를 荒々しくしごいてきた…
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:가버려
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;발コキは作者の趣味ではないようで、地の文は割りと손抜きだったり
+	;逆に言えば、色々とやっても地の文との整合性が崩れる心配はあまりないので、好きなようにやると良いでしょう
+	;=================================================
+	;연속실행						愉快そうに%CALLNAME:MASTER%を見下ろ하면서페니스를ぐりぐりと짓밟아ている…
+	;=================================================
+	IF 구상記入チェック(0) && TFLAG:ACT == TFLAG:전ACT
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;地の文に派生は設けてありませんが、これは割りと필요と思われるので
+	;=================================================
+	;신발안履い하며 발コキ(デフォルトで신발안履いていないキャラは表示されない)
+	;=================================================
+	IF 구상記入チェック(0) && TEQUIP:신발안
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;죠교자にTALENT:벽통과がない場合、천 넘어로なる
+	;=================================================
+	;하반신服装が邪魔
+	;=================================================
+	IF 구상記入チェック(0) && PANTSCHECK(1)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;ACT19, 손가락삽입한다(ACT19_0, 손가락삽입한다/ACT19_1, Ｇスポット刺激/ACT19_2, 바이브出し入れ)
+;────────────────────────────────────
+;・죠교대상が후타나리若しくはオンナの場合に発生
+;・죠교대상が처녀の場合Ｇスポット刺激等に派生しない＆쾌Ｖにマイナス보정
+;・바이브装備中は바이브出し入れに派生
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"이상"だと発生しない
+;・TEQUIP(삼각목마/페니스밴드)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・죠교대상が남자だと発生しない
+;・죠교대상が후타나리の場合、애태움中には発生しない
+;-------------------------------------------------
+;※죠교대상が처녀ではない
+;※연속실행の場合
+;※가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じて
+;※발기도が低い場合、죠교자の애무スキルに応じて
+;※요강제발기の場合
+;・上記条件の場合Ｇスポット刺激に派生する
+;-------------------------------------------------
+@KOJO_ACT_K15_19
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=손가락삽입한다/1=Ｇスポット刺激/2=바이브出し入れ)
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT19_0, 손가락삽입한다					膣입に指先をあてがい、そっと奥へ押し込んだ…
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && !TFLAG:ACT파생
+	;=================================================
+	;안면승마中
+	;=================================================
+	IF 구상記入チェック(0) && TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;위치전후分岐は필요に応じて
+	;何処かで統合してしまうのも良いと思います
+	;=================================================
+	;後ろから
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:위치전후 == 2
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;前から
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:위치전후 == 1
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT19_1, Ｇスポット刺激					指を進入させＧスポットを直接刺激했다…
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じてＧスポット刺激
+;Ｇスポット責めに派生すると전립선자극扱いになる
+;-------------------------------------------------
+;죠교대상が후타나리の場合でも発生するので、필요に応じてPENIS(MASTER)なり!PENIS(MASTER)で分岐を設けると良いと思います
+;-------------------------------------------------
+IF 구상記入チェック(0) && TFLAG:ACT파생 == 1
+	;=================================================
+	;後ろから
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:위치전후 == 2
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;前から
+	;=================================================
+	IF 구상記入チェック(0) && TCVAR:MASTER:위치전후 == 1
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(0)
+		PRINTFORMW 
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT19_2, 바이브出し入れ					Ｇスポットを抉るように激しく動か했다…
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;地の文自体に派生はありませんが、@TARGET_DESCRIPTIONでの状況描写が入る可能性があります
+;-------------------------------------------------
+IF 구상記入チェック(0) && TFLAG:ACT파생 == 2
+	PRINTFORMW 
+	RETURN 1
+ENDIF
+
+;────────────────────────────────────
+;ACT27, 밀어 넘어트린다
+;────────────────────────────────────
+;・밀어 넘어트린다/밀어넘어짐終了
+;・既に밀어넘어짐ている場合、해방になる
+;・TFLAG:징계・플래그がたっていると発生しない
+;・금일의방침が"イチャイチャ"だと発生しない
+;・TEQUIP:페니스밴드장착中には発生しない
+;・애태움中には発生しない
+;-------------------------------------------------
+@KOJO_ACT_K15_27
+;구상独自内部処理
+CALL DECIDEACTCHECK_K15
+;-------------------------------------------------
+;TFLAG:ACT파생（=0,밀어 넘어트린다/=1,밀어넘어짐終了）
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT27_0, 밀어 넘어트린다			%CALLNAME:MASTER%を押し倒했다…
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;地の文に派生はありませんが、@TARGET_DESCRIPTIONで状況描写が入る可能性があります
+;-------------------------------------------------
+IF 구상記入チェック(100) && !TFLAG:ACT파생
+	;눈가리개장착中
+	IF TEQUIP:눈가리개
+		PRINTFORMW 「주위가 안보이면 불안합니까？　후후♪」
+		PRINTFORM 「괜찮아……릴리가 옆에 있을테니까
+		CALL HEARTCB
+		PRINTFORMW 」
+		PRINTL  
+	ENDIF
+	IF FAVOR(0, 2000)
+		SELECTCASE RANDACT(4, 0)
+			CASE 0
+				PRINTFORMW 「이봐요, 이것으로 이제 움직일 수 없다」
+				PRINTFORMW 「지금부터 가득 음란한 일 해 주니까요♪」
+			CASE 1
+				PRINTFORM 「조금의 사이……는 시켜 주세요……응―
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「……후후♪　역시%CNAME(MASTER, TARGET)%라고 상냥하다」
+				PRINTFORMW 「이대로 음란한 일 해 주네요……」
+			CASE 2
+				PRINTFORMW 「릴리의 두근두근, 전해집니까？」
+				PRINTFORMW 「……응―, 모르면……가르쳐 주네요♪」
+			CASE 3
+				PRINTFORMW 「응, 릴리의 갖고 싶은 것 압니까？」
+				PRINTFORMW 「……「정령」입니까？　………-！부정해입니다！」
+				PRINTL  
+				PRINTFORM 「정답은……「%CNAME(MASTER, TARGET)%」(이에)예요
+				CALL HEARTCB
+				PRINTFORMW 」
+				PRINTFORMW 「이제 잘못하지 않게, 분명하게 가르쳐 주네요♪」
+		ENDSELECT
+	ELSE
+		SELECTCASE RANDACT(4, 0)
+			CASE 0
+				PRINTFORMW 「릴리에 눌러 쓰러져 버렸다」
+				PRINTFORMW 「장난 요정에 밀어 넘어뜨려진 아이낳아 짊어진다？」
+				PRINTFORMW 「후후♪　모르면 가르쳐 주네요♪」
+			CASE 1
+				PRINTFORMW 「움직일 수 있지 않습니까？ 후후♪」
+				PRINTFORMW 「그러면, 충분히 장난있네요♪」
+			CASE 2
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 두근두근, 전해져 와요……」
+				PRINTFORMW 「긴장, 공포, 불안……저것, 기대도 있네요？ 후후♪」
+				PRINTFORMW 「기대 대로, 인 장난있네요♪」
+			CASE 3
+				PRINTFORMW 「응, 릴리의 갖고 싶은 것 압니까？」
+				PRINTFORMW 「……「정령」입니까？　………후후, 정답입니다♪」
+				PRINTL  
+				PRINTFORMW 「정답 혀 오- 에……-짜 취해 주네요♪」
+		ENDSELECT
+	ENDIF
+	
+	;ACT분류　0,회화、1,애무、2,도구、3,성교、4,수치、5,봉사、6,가학、7,이상、8,사역、9,휴식
+	;죠교방침　1,노멀플레이、2,이상플레이、3,휴식、4,하드플레이、5,소프트플레이
+	;행동예약/방침예약/ACT분류예약
+	;금일의방침が애만들기
+	IF IS_POLICY("금일", "애만들기") && PERCENT(90)
+			;分類성교
+			TFLAG:ACT분류예약 = 3
+			WAIT
+	ELSEIF AFFECTION("상사상애") && PERCENT(50)
+		IF !TALENT:MASTER:처녀 && TEQUIP:눈가리개 && PERCENT(30)
+			;역강간
+			TCVAR:행동예약 = 103
+			WAIT
+		ELSEIF !TALENT:MASTER:처녀 && PERCENT(30)
+			;分類성교
+			TFLAG:ACT분류예약 = 3
+			WAIT
+		ELSEIF PERCENT(30)
+			;입으로 애무
+			TCVAR:행동예약 = 12
+			WAIT
+		ELSEIF PERCENT(30)
+			;파이즈리한다
+			TCVAR:행동예약 = 17
+			WAIT
+		ELSEIF PERCENT(30)
+			;항문펠라
+			TCVAR:행동예약 = 14
+			WAIT
+		ELSEIF PERCENT(30)
+			;성기마찰한다
+			TCVAR:행동예약 = 16
+			WAIT
+		ENDIF
+	ELSEIF AFFECTION("죠교完了") && PERCENT(50)
+		IF !TALENT:MASTER:처녀 && TEQUIP:눈가리개 && PERCENT(30)
+			;역강간
+			TCVAR:행동예약 = 103
+			WAIT
+		ELSEIF !TALENT:MASTER:처녀 && PERCENT(20)
+			;分類성교
+			TFLAG:ACT분류예약 = 3
+			WAIT
+		ELSEIF PERCENT(30)
+			;입으로 애무
+			TCVAR:행동예약 = 12
+			WAIT
+		ELSEIF PERCENT(30)
+			;파이즈리한다
+			TCVAR:행동예약 = 17
+			WAIT
+		ELSEIF PERCENT(30)
+			;성기마찰한다
+			TCVAR:행동예약 = 16
+			WAIT
+		ELSEIF PERCENT(30)
+			;항문펠라
+			TCVAR:행동예약 = 14
+			WAIT
+		ENDIF
+	ELSEIF AFFECTION("目覚め") && PERCENT(50)
+		IF PERCENT(30)
+			;파이즈리한다
+			TCVAR:행동예약 = 17
+			WAIT
+		ELSEIF PERCENT(30)
+			;입으로 애무
+			TCVAR:행동예약 = 12
+			WAIT
+		ELSEIF PERCENT(30)
+			;항문펠라
+			TCVAR:행동예약 = 14
+			WAIT
+		ELSEIF PERCENT(30)
+			;성기마찰한다
+			TCVAR:행동예약 = 16
+			WAIT
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT27_1, 밀어넘어짐終了		%CALLNAME:MASTER%を자유に했다…
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(0) && TFLAG:ACT파생 == 1
+	PRINTFORMW 
+	RETURN 1
+ENDIF

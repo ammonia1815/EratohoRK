@@ -1,0 +1,2666 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	아큐구상 애무系アクション구상ファイル
+;
+;	애무系アクション구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;────────────────────────────────────
+;애무系
+;────────────────────────────────────
+;・TFLAG:ACT분류 == 1に該当
+;・ACT18, 발コキは이상系から派生する場合あり
+;・汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "애무")で拾う事が可能
+;・죠교자が죠교대상を애무する。この구상の時点で죠교자はすでに손を出している
+;・미약を使用するケースがある
+;-------------------------------------------------
+
+;*************************************************
+;ACT10, 손으로 애무(ACT10_0, 애무する/ACT10_1, 수음する/ACT10_2, 페니스밴드수음)
+;*************************************************
+;・Ｃ中心に애무する
+;・죠교대상に페니스がある場合、及び페니스밴드장착時には派生コマンドになる
+;・죠교대상が자위중の場合は解除される
+;・죠교자の손に汚れがある場合불쾌SOURCEが変動する
+;・죠교자기교、애무、손가락기술素質に応じて발기도上昇
+;・TFLAG:ACT파생(0=애무/1=수음/2=페니스밴드수음)
+;-------------------------------------------------
+
+;=================================================
+@KOJO_ACT_K48_10
+;=================================================
+;*************************************************
+;ACT10_1, 수음する
+;*************************************************
+;・남성기への애무を行う、つまり손コキ
+;・他の派生と比べてSOURCE:MASTER:쾌Ｃは+200%
+;・죠교자기교、애무、손가락기술素質に応じて발기도上昇
+;-------------------------------------------------
+;필요に応じて、TEQUIP:오나홀やTCVAR:MASTER:발기도
+;PANTSCHECK(1)等で分岐を設ける事もできます。
+;まともにやると손間が尋常じゃないので、効率よく記述する事をお勧めします
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT10_1, 수음する
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 1
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 1
+	;=================================================
+	;初回
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && FIRSTACT(0)
+;OriginalString : 「ふふ、少しドキドキします……」
+		PRINTFORMW 「후후, 조금 두근두근 합니다……」
+;OriginalString : 「見目を覚えていても、感触まで忘れないわけでは無いですから」
+		PRINTFORMW 「용모를 기억하고 있어도, 감촉까지 잊지 않는 것은 없으니까」
+;OriginalString : 「思ったより、可愛らしいのですね……」
+		PRINTFORMW 「생각했던 것보다, 사랑스럽군요……」
+;OriginalString : 
+		PRINTFORMDL
+;OriginalString : ぷにぷにと皮を摘みながら頬を染める아큐の表情に、きっと嘘は無い。
+		PRINTFORMDW 에  가죽을 깎으면서 뺨을 붉히는 아구의 표정에, 반드시 거짓말은 없다.
+;OriginalString : だが、それでも아큐は童女の物と思えぬ손管であっという間に%CALLNAME:MASTER%を追い詰めていく……
+		PRINTFORMDW 하지만, 그런데도 아구는 동녀의 물건이라고 생각되지 않는 농간으로 눈 깜짝할  순간에 %CALLNAME:MASTER%(을)를 추적해 간다……
+;OriginalString : 
+		PRINTFORMDL
+;OriginalString : 「いいですよ、思うがままに、気持よくなっていって下さい」
+		PRINTFORMW 「좋아요, 마음껏, 기분 좋아져 가 주세요」
+;OriginalString : 「妻の仕事は、夫となる殿方に봉사して……天にも登る様な気持ちで、子種を吐精して戴く事なんですから」
+		PRINTFORMW 「아내의 일은, 남편이 되는 남자분에게 봉사해……하늘에도 오르는 것 같은 기분으로, 자식을 토정 해 대구일이니까」
+;OriginalString : 
+		PRINTFORMDL
+;OriginalString : 아큐が華の様に笑うのと同時に、カリ首が小さく柔らかい指で丁寧に扱かれる。
+		PRINTFORMDW 아구가 화와 같이 웃는 것과 동시에, 칼리목이 작고 부드러운 손가락으로 정중하게 잡아당겨진다.
+;OriginalString : 
+		PRINTFORMDL
+;OriginalString : 「……でも」
+		PRINTFORMW 「……그렇지만」
+;OriginalString : 「私、生まれつき身体が弱くて。そのままの薄い精で上손く孕めるか分からなくて」
+		PRINTFORMW 「 나, 선천적으로 신체가 약해서. 그대로의 얇은 정령으로 능숙하게 잉인가 몰라서」
+;OriginalString : 「だから、당신様にはた…………っぷりと子種を溜め込んで、孕ませる気満々の濃いせいえきを作って貰わなくては」
+		PRINTFORMW 「그러니까, 귀하…………와 자식을 모으고 붐비어, 잉다툴 생각 만만의 진한 정액을 만들어 받지 않으면」
+;OriginalString : 「ご不便お掛けすると思いますけど、ちゃーんと참다して下さいね……？」
+		PRINTFORMW 「 불편 쓴다고 생각합니다만, (군)양과 참아 주세요……？」
+;OriginalString : 
+		PRINTFORMDL
+;OriginalString : 甘く耳元で囁く아큐の声に、ゾクリと背筋が怖気だった……
+		PRINTFORMDW 달게 귓전으로 속삭이는 아구의 소리에, 조크리와 등골이 공포심이었다……
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;조교중初回
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && ONCEACT(0)
+;OriginalString : 「さぁ、楽になさって下さい、당신様」
+		PRINTFORMW 「, 편하게 하셔 주세요, 귀하」
+;OriginalString : 「稗田の지식、お見せして差し上げますね」
+		PRINTFORMW 「히에다의 지식, 보여드려 드리네요」
+;OriginalString : 「ええ、私もそう野暮な訳ではございませんよ……」
+		PRINTFORMW 「예, 나도 그렇게 촌스러운 (뜻)이유가 아니어요……」
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がイキそう
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+	TEQUIP:죠교대상Ｃ사용 = 0
+		;-------------------------------------------------
+		;前から애무
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		;IF LOCAL:1 && TCVAR:MASTER:위치전후 == 1
+		;ENDIF
+		
+		;-------------------------------------------------
+		;後ろから애무
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		;IF LOCAL:1 && TCVAR:MASTER:위치전후 == 2
+		;ENDIF
+		
+		;위치전후分岐を埋めるなら필요なし。埋めないならここで補完させましょう
+		;不要な分岐は削除、もしくはコメントアウトすることで負荷は軽くなります
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 1
+		;-------------------------------------------------
+		IF LOCAL:1
+			SELECTCASE KFLAG:152
+				;사정許可なし
+				CASE IS < 1
+					;無断사정플래그なし
+					IF KFLAG:153 == 0
+
+					SELECTCASE KFLAG:150
+					CASE 0
+;OriginalString : 「가버려、なのですか？」
+						PRINTFORMW 「이 기초, 인 것입니다인가？」
+;OriginalString : 
+						PRINTFORML 
+;OriginalString : 아큐は%CALLNAME:MASTER%의 사정が近いのを見て取ると、バシンと音を立てて玉袋を平손で叩いた……
+						PRINTFORMDW 아구는 %CALLNAME:MASTER%의 사정이 가까운 것을 간파하면(자), 바신과 소리를 내 옥대를 손바닥에서 두드렸다……
+;OriginalString : 
+						PRINTFORML 
+;OriginalString : 「キュウと縮こまりま했다ね。吐精、했다かったのですか」
+						PRINTFORMW 「큐우와 움츠러들었어요. 토정, 하고 싶었습니까」
+;OriginalString : 「駄目ですよ、指なんかで果ててしまっては。それじゃあ何時まで経っても、私を孕ませられるとは思えません」
+						PRINTFORMW 「안되어요, 손가락같은 걸로 끝나 버려. 그러면 아몇시까지 지나도, 나를 잉다투어진다고는 생각되지 않습니다」
+;OriginalString : 「これは訓練なのですから、きちんと私を受胎させてくれるせいえきを당신様が作れるまで……私も心を鬼にします」
+						PRINTFORMW 「이것은 훈련인 것입니다로부터, 제대로 나를 수태 시켜 주는 정액을 귀하가 만들 수 없을지……나도 마음을 독하게 먹습니다」
+;OriginalString : 
+						PRINTFORML 
+;OriginalString : そう言うと아큐は、イくにイけずふるふると震える睾丸を、指で優しく包み揉みはじめる。
+						PRINTFORMDW 그렇게 말하면(자) 아구는, 이 나라이두 내리는 거절하면(자) 떨리는 불알을, 손가락으로 상냥하게 싸 비비기 시작한다.
+;OriginalString : 痛苦しい感触に、%CALLNAME:MASTER%から苦悶のうめき声が漏れた……
+						PRINTFORMDW 통 괴로운 감촉에,%CALLNAME:MASTER%(으)로부터 고민의 신음 소리가 새었다……
+;OriginalString : 
+						PRINTFORML 
+;OriginalString : 「ああ、可哀想なのに、なんだかゾクゾクしてしまいそう……」
+						PRINTFORMW 「아, 불쌍한데, 어쩐지 조크조크 해 버릴 것 같다……」
+					CASE 1
+;OriginalString : 「キチンと참다出来ていますね、えらい、えらい」
+						PRINTFORMW 「키친과 인내 되어있네요, 대단한, 대단하다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐は母のように優しい笑みを浮かべて、指で亀頭をさする。
+						PRINTFORMDW 아구는 어머니와 같이 상냥한 미소를 띄워, 손가락으로 귀두를 문지른다.
+;OriginalString : それだけでビクンビクンと腰を揺さぶられ、%CALLNAME:MASTER%의 息が荒くなる。
+						PRINTFORMDW 그 만큼으로 비쿤비쿤과 허리를 흔들어져%CALLNAME:MASTER%의 숨이 난폭해진다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「참다です、참다ですよー。がんばれー」
+						PRINTFORMW 「인내입니다, 인내예요―. 힘내라―」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 根本を強く掴みながら아큐は男根に頬をすり寄せにっこりと微笑んだ。
+						PRINTFORMDW 근본을 강하게 잡으면서 아구는 남근에 뺨을 소매치기 대어 생긋 미소지었다.
+					CASE 2
+;OriginalString : 既に%CALLNAME:MASTER%は限界に近い。
+						PRINTFORMDW 이미%CALLNAME:MASTER%(은)는 한계에 가깝다.
+;OriginalString : %CALLNAME:MASTER%의 男根からは정액の様に粘度を持った참다汁が止めどなく吹き出し、아큐の손指や唇を汚している。
+						PRINTFORMDW %CALLNAME:MASTER%의 남근으로부터는 정액과 같이 점도를 가진 인내국물이 한 없게 불기 시작해, 아구의 손가락이나 입술을 더럽히고 있다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「これ以上触れていると、流石にせいえきを吹き出してしまいそうですね」
+						PRINTFORMW 「더 이상 접하고 있으면(자), 유석 가짜집 나무를 불기 시작해 버릴 것 같네요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐はそう言うと、逸物から손を離し、一切の刺激を辞める。
+						PRINTFORMDW 아구는 그렇게 말하면(자), 훌륭한 인물로부터 손을 떼어 놓아, 일절의 자극을 그만둔다.
+;OriginalString : と、思いきや、입先を近づけて「ふぅー……」と亀頭を吐息で撫でた。
+						PRINTFORMDW 라고 생각했는데, 말씨를 접근해 「―……」라고 귀두를 한숨으로 어루만졌다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「あはっ、文献には有りま했다けど、本当にこんな物でも身体が跳ねるんですね」
+						PRINTFORMW 「아는 , 문헌에는 있었습니다만, 정말로 이런 물건에서도 신체가 뜁니다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 쿠쿡と可笑しそうに笑う아큐からは、子供の様な無邪気さと残酷さが垣間見える……
+						PRINTFORMDW 낄낄 이상한 듯이  웃는 아구로부터는, 아이의 같은 순진함과 잔혹함이 틈새 보인다……
+					CASEELSE
+;OriginalString : 「입から泡吹いちゃって。そろそろ참다するのも辛いですか？」
+						PRINTFORMW 「입으로부터 아와부키 있어 버려서. 이제 참는 것도 괴롭습니까？」
+;OriginalString : 「でも、駄目です。おちんちん가게해줘は上げません」
+						PRINTFORMW 「 그렇지만, 안됩니다. 자지이나 키라고는 올리지 않습니다」
+;OriginalString : 「酷いと思わないんですか？　種付け志望の妻の前で、虚空に向かって精を吐いてしまうなんて……」
+						PRINTFORMW 「심하다고 생각하지 않습니까？ 교배 지망의 아내의 앞에서, 허공으로 향해 정령을 토해 버리다니……」
+;OriginalString : 「そうですね、筆で鈴입をいじめちゃいます。こそばゆいでしょう？　こちょこちょ～」
+						PRINTFORMW 「그렇네요, 붓으로 령구를 유지 엄청 있습니다. 간지러울 것입니다？ ～」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐はわざとらしく拗ねた顔で、悪戯딸の様に亀頭に筆を這わせ始めた。
+						PRINTFORMDW 아구는 일부러인것 같게 등진 얼굴로, 못된 장난딸(아가씨)와 같이 귀두에 붓을 기게 한 시작했다.
+;OriginalString : 漫然と했다快感が%CALLNAME:MASTER%의 脳で弾け、涎を飛ばすが、절정には至れない……
+						PRINTFORMDW 산만한 모양으로 한 쾌감이%CALLNAME:MASTER%의 뇌로 튀어 군침을 날리지만, 절정에는 이를 수 없다……
+					ENDSELECT
+
+					;無断사정後
+					ELSE
+
+					SELECTCASE KFLAG:150
+					CASE 0
+;OriginalString : 「相変わらず참다が効かないんですね、このゴミは」
+						PRINTFORMW 「변함 없이 인내가 효과가 없네요, 이 쓰레기는」
+;OriginalString : 「ええ、構いませんよ。イきたいイきたいと芋虫の様に蠢くだけなら、幾らでもどうぞ」
+						PRINTFORMW 「예, 상관하지 않아요. 이 오고 싶은 이 오고 싶으면 고구마벌레와 같이 준 부서지고라면, 얼마에서도 부디」
+;OriginalString : 
+						PRINTFORML 
+;OriginalString : 아큐は%CALLNAME:MASTER%의 사정が近いのを見て取ると、バシンと音を立てて玉袋を平손で叩いた……
+						PRINTFORMDW 아구는 %CALLNAME:MASTER%의 사정이 가까운 것을 간파하면(자), 바신과 소리를 내 옥대를 손바닥에서 두드렸다……
+;OriginalString : 
+						PRINTFORML 
+;OriginalString : 「嗚呼、なんと보기 흉한のでしょう」
+						PRINTFORMW 「오호, 너무나 보기 흉해서 짊어진다」
+;OriginalString : 「こんな幼女（おさなめ）に叩かれて喜ぶ様なクズ種から、本当にちゃんと했다子供が産めるのが不安で仕方有りません」
+						PRINTFORMW 「이런 유녀（어린）에 얻어맞고 기뻐하는 것 같은 쓰레기종으로부터, 정말로 제대로 된 자식을 낳을 수 있는 것이 불안해 방법 없습니다」
+;OriginalString : 「あまり私をガッカリさせないで下さいね。손が滑って潰してしまっては元も子も有りませんから」
+						PRINTFORMW 「너무 나를 실망 시키지 않고 주세요. 손이 미끄러져 잡아 버려 원도 아이도 없기 때문에」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 冷たい目で%CALLNAME:MASTER%を見下す아큐に、%CALLNAME:MASTER%はカクカクと頷いた。
+						PRINTFORMDW 차가운 눈으로 %CALLNAME:MASTER%(을)를 업신여기는 아구에,%CALLNAME:MASTER%(은)는 핵 핵과 수긍했다.
+					CASE 1
+;OriginalString : 사정의予感を強く目をつぶって耐える%CALLNAME:MASTER%を、아큐は侮蔑的に見下ろしている。
+						PRINTFORMDW 사정의 예감을 강하게 눈감아 주어 참는다%CALLNAME:MASTER%(을)를, 아구는 모멸적으로 내려다 보고 있다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「そんなにイきたいのですか？　プライドを投げ捨てて、こんな子供に対して懇願するくらいに」
+						PRINTFORMW 「그렇게 이 오고 싶습니까？ 프라이드를 내던져, 이런 아이에 대해서 간절히 원함 할 정도로에」
+;OriginalString : 「……まぁいいでしょう。折角ですし、もう少し虐めてあげます」
+						PRINTFORMW 「……아무튼 좋을 것입니다. 절각이고, 좀 더 학째라고 줍니다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐は紐で根本をキツく縛ると、亀頭に掌を添え円を書くようにこすり始めた。
+						PRINTFORMDW 아구는 끈으로 근본을 귤나무구 묶으면(자), 귀두에 손바닥을 첨가엔을 쓰도록(듯이) 비비기 시작했다.
+;OriginalString : 強烈な、しかし사정には至れない刺激に、%CALLNAME:MASTER%의 頭が白くスパークする……
+						PRINTFORMDW 강렬한, 그러나 사정에는 이를 수 없는 자극에,%CALLNAME:MASTER%의 머리가 희게 스파크 한다……
+					CASEELSE
+;OriginalString : 「なんだ、やろうと思えば出来るんじゃないですか、ゴミ屑さん。褒めてあげてもいいですよ」
+						PRINTFORMW 「뭐야, 하려고 생각하면 할 수 있지 않습니까, 쓰레기쓰레기씨. 칭찬해 주어도 괜찮아요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : ちっとも褒めているとは思えない平坦な声で、아큐は言う。
+						PRINTFORMDW 조금도 칭찬하고 있다고는 생각되지 않는 평탄한 소리로, 아구는 말한다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「コレは言わば躾なんです。ちゃんと覚えてくれれば、そうそう痛い目も見ませんよ」
+						PRINTFORMW 「코레는 말하자면 예의 범절입니다. 분명하게 기억해 준다면, 그렇게 자주 아픈 눈도 보지 않아요」
+;OriginalString : 「躾のなっていない豚さんだって、頑張ればご褒美の一つ位差し上げます」
+						PRINTFORMW 「예의 범절이 되지 않은 돼지씨도, 노력하면 포상의 1개 정도 드립니다」
+					ENDSELECT
+
+					ENDIF
+					TCVAR:MASTER:애태움도 += 1
+					KFLAG:150 += 1
+				;사정許可有り
+				CASEELSE
+					SELECTCASE RAND:2
+					CASE 0
+;OriginalString : %CALLNAME:MASTER%의 절정を予感했다아큐が、ピタリと손を止める。
+						PRINTFORMDW %CALLNAME:MASTER%의 절정을 예감 한 아구가, 꼭과 손을 끊는다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「もう少しでイけるのに、なんで손を止めてしまうのかですか？」
+						PRINTFORMW 「조금 더 하면 이 차는데, 어째서 손을 끊어 버리는지입니까？」
+;OriginalString : 「さぁ……なんででしょうね？」
+						PRINTFORMW 「……어째서군요？」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 母の様な笑顔を崩さないまま、아큐はカリ首に指を添えて問いかける。
+						PRINTFORMDW 어머니의 같은 웃는 얼굴을 무너뜨리지 않은 채, 아구는 칼리목에 손가락을 더해 물어 본다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「……冗談です。ちょっと심술궂음を했다かっただけですよ。」
+						PRINTFORMW 「……농담입니다. 조금 심술쟁이를 하고 싶었던 것 뿐이에요.」
+;OriginalString : 「ふふ、可愛らしいお顔……気持ち良いの？」
+						PRINTFORMW 「후후, 사랑스러운 얼굴……기분 좋은거야？」
+;OriginalString : 「お顔を隠했다って無駄ですよ……さ、吐精なさって下さい」
+						PRINTFORMW 「얼굴을 숨겨도 쓸데없어요……, 토정 하셔 주세요」
+					CASEELSE
+;OriginalString : 「……さぁ、止めです」
+						PRINTFORMW 「……, 멈춤입니다」
+;OriginalString : 「溜まりきったせいえきがどれ程の物か……しかと기록に残して上げますね」
+						PRINTFORMW 「다 모인 정액이 어떤 것정도의 물건인가……확실히 기록에 남겨 올리네요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : そわそわと했다表情を隠そうともせず、아큐は指先で亀頭を擽る様に擦り上げる。
+						PRINTFORMDW 조마조마 한 표정을 숨길려고도 하지 않고, 아구는 손가락끝으로 귀두를 간질이는 것처럼 켠다.
+;OriginalString : 鯉の様にパクパクと開閉했다鈴입から、濁りきった욕망が噴出する……！
+						PRINTFORMDW 잉어와 같이 덥석덥석개폐한 령구로부터, 다 탁해진 욕망이 분출한다……！
+;OriginalString : 
+					PRINTFORMW 
+					ENDSELECT
+				ENDSELECT
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 1
+		;-------------------------------------------------
+		IF LOCAL:1
+			;前から애무
+			IF TCVAR:MASTER:위치전후 == 1
+				;無断사정플래그なし
+				IF KFLAG:153 == 0
+					SELECTCASE RAND:4
+					CASE 0
+;OriginalString : 「ああ……당신様の玉袋が……ふるふると、震えて……」
+						PRINTFORMW 「아……귀하의 옥대가……내리는 거절하면(자), 떨려……」
+;OriginalString : 「ん……あむっ」
+						PRINTFORMW 「응……짠다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 突如睾丸を입に加えられ、%CALLNAME:MASTER%は驚きの声を上げた……
+						PRINTFORMDW 갑자기 불알을 입에 더해져%CALLNAME:MASTER%(은)는 놀라움이 소리를 높였다……
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「ふぁむ……ほいひゅうほはいはふ……」
+						PRINTFORMW 「……는 있고……」
+					CASE 1
+;OriginalString : 「なんとも、天にも昇る心地でしょう？」
+						PRINTFORMW 「정말, 하늘에도 오르는 마음이지요？」
+;OriginalString : 「そんじょそこらの遊女では、稗田の손管に敵うはずが有りませんもの」
+						PRINTFORMW 「그 근처의 유녀에서는, 히에다의 농간에 당해 낼 것이 없습니다 것」
+;OriginalString : 「ハイカラに言えば……『めろめろ』にして差し上げます♪」
+						PRINTFORMW 「참신하게 말하면……「」로 해 드립니다♪」
+					CASE 2
+;OriginalString : 「たぁっぷりと気持ちよくなって……」
+						PRINTFORMW 「와 기분 좋아져……」
+;OriginalString : 「たぁっぷりと、ざぁめんを貯めこんで……♪」
+						PRINTFORMW 「와 자리째응을 모으고 넣어……♪」
+;OriginalString : 「やがて、たぁっぷり……私の小さい膣の中に、注ぎ込んで下さいね……」
+						PRINTFORMW 「이윽고,……나의 작은 질안에, 쏟아 주세요……」
+					CASEELSE
+;OriginalString : 「小さい손でございましょう？」
+						PRINTFORMW 「작은 손입시다？」
+;OriginalString : 「本来であれば、男と女にすら別れる前の、童（わらべ）の손ですよ」
+						PRINTFORMW 「본래이면, 남자와 여자에게조차 헤어지기 전의, 동（）의 손이에요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐が自嘲する通り、細く、柔らかい指が%CALLNAME:MASTER%의 민감な箇所を絡めとる……
+						PRINTFORMDW 아구가 자조 하는 대로, 가늘고, 부드러운 손가락이%CALLNAME:MASTER%의 민감한 개소를 관련되고 취한다……
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「子供にされている、と思うと……より、민감になってしまいますか？」
+						PRINTFORMW 「아이로 되고 있다, 라고 생각하면(자)……보다 , 민감하게 되어 버립니까？」
+;OriginalString : 「……いいえ、아큐は嬉しゅうございますよ……」
+						PRINTFORMW 「……아니오, 아구는 희사람들 있어요……」
+					ENDSELECT
+				ELSE
+					SELECTCASE RAND:3
+					CASE 0
+;OriginalString : 아큐は筆を取り出すと、ペタペタと%CALLNAME:MASTER%의 페니스に何かを塗り始めた……
+						PRINTFORMDW 아구는 붓을 꺼내면(자), 페타페타와%CALLNAME:MASTER%의 페니스에 무엇인가를 바르기 시작했다……
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「『不良品』と書くための赤墨を持ってきたんですよ、금일は」
+						PRINTFORMW 「 「불량품」이라고 쓰기 위한 적먹을 가져왔습니다, 안녕하세요」
+;OriginalString : 「小粋な朝食、ドリンクサーバー、コレクション用の剥製……」
+						PRINTFORMW 「멋있는 아침 식사, 드링크 서버, 콜렉션용의 박제……」
+;OriginalString : 「大丈夫、再就職先は豊富です」
+						PRINTFORMW 「괜찮아, 재취직처는 풍부합니다」
+;OriginalString : 「……ちょっと、筆に擽られてる間くらいじっと出来ないんですか？」
+						PRINTFORMW 「……좀, 붓에 간질일 수 있고 있는 동안 정도 가만히 할 수 없습니까？」
+					CASE 1
+;OriginalString : 「どうぞ、好きなようにお鳴きになってくださいな」
+						PRINTFORMW 「아무쪼록, 좋아하는 대로 울어 주세요」
+;OriginalString : 「獣同然の夫をあてがわれた私の方が泣きたい気分ですよ」
+						PRINTFORMW 「짐승 동연의 남편을 나누어주어진 제 쪽을 울고 싶은 기분이에요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 罵りながらも、아큐の柔らかい손の平が%CALLNAME:MASTER%의 亀頭をこねくり回す。
+						PRINTFORMDW 매도하면서도, 아구의 부드러운 손바닥이%CALLNAME:MASTER%의 귀두를 반죽해 돌린다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「気持ちいいんですね？　赤子を撫でるようにぐしゃぐしゃにされて……」
+						PRINTFORMW 「기분이 좋네요？ 갓난아이를 어루만지도록(듯이) 바보 바보로 되어……」
+;OriginalString : 「まったく、度し難いロリコンです」
+						PRINTFORMW 「완전히, 구제할 길 없는 로리타입니다」
+					CASEELSE
+;OriginalString : 「ロリコンですね、気持ち悪いですね、変態ですね」
+						PRINTFORMW 「로리타군요, 기분 나쁘네요, 변태군요」
+;OriginalString : 「違うんですか？　幼子になじられて、睨め付けられて、弄り回されて」
+						PRINTFORMW 「다릅니까？ 어린 아이에게 힐책해져, 예째 붙일 수 있어, 만지작거려 돌려지며」
+;OriginalString : 「先程から粗チンがしくしく泣いてますよ？」
+						PRINTFORMW 「조금 전부터 결점 틴이 훌쩍훌쩍 울고 있어요？」
+;OriginalString : 「하반신の快感に逆らえないんでしょう？　こんな子供に言いたい放題にされて！」
+						PRINTFORMW 「하반신의 쾌감에 거역할 수 없겠지요？ 이런 아이에게 말하고 싶은 마음껏으로 되어！」
+					ENDSELECT
+				ENDIF
+			;後ろから애무
+			ELSE
+				;無断사정플래그なし
+				IF KFLAG:153 == 0
+;OriginalString : 「人差し指と中指で、カリ首をはさみ……」
+					PRINTFORMW 「집게 손가락과 중지로, 칼리목을 끼워……」
+;OriginalString : 「親指で裏筋を擦るようにして、こしこしと……♪」
+					PRINTFORMW 「엄지로 리근을 켜도록(듯이) 해, 고사 고사와……♪」
+;OriginalString : 「ああ、立派な肉筆ですわ、당신様」
+					PRINTFORMW 「아, 훌륭한 육필이예요, 귀하」
+;OriginalString : 「아큐の筆使いも、中々のものでございますよ♪」
+					PRINTFORMW 「아구의 붓사용법도, 꽤의 것이어요♪」
+				ELSE
+;OriginalString : 「この자세だと、本当に好き放題出来る感じですね」
+					PRINTFORMW 「이 자세라고, 정말로 자기 마음대로 할 수 있는 느낌이군요」
+;OriginalString : 「ぶるぶる震えてる玉袋に손を伸ばすのも자유ですし」
+					PRINTFORMW 「부들부들 떨리고 있는 옥대에 손을 뻗는 것도 자유롭고」
+;OriginalString : 「どうせゴミザーメンしか入ってないゴミ袋なんですから、ぎゅっと押し潰しちゃいましょうか？」
+					PRINTFORMW 「어차피 쓰레기 정액 밖에 들어 있지 않는 쓰레기봉지이니까, 꽉 눌러 짓이김있을까요？」
+				ENDIF
+			ENDIF
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1
+		;-------------------------------------------------
+		;안면승마中
+		;記入チェック
+		LOCAL:1 = 1
+		;-------------------------------------------------
+		IF LOCAL:1 && TEQUIP:안면승마 || TEQUIP:안면승마항문
+			IF CFLAG:153 == 0
+;OriginalString : 「んっ……喘ぐ息が、直接おだいじに当って……」
+				PRINTFORMW 「응……허덕이는 숨이, 직접 값 글자에 해당되어……」
+;OriginalString : 「ちょっと、くすぐったいけれど……당신様の逸物は、ガチガチですね♪」
+				PRINTFORMW 「조금, 낯간지럽지만……귀하의 훌륭한 인물은, 가치가치군요♪」
+;OriginalString : 「こうして、幼女の柔らかい肉を擦り付けられながらしこしこされるの、お好きですか？」
+				PRINTFORMW 「이렇게 해, 유녀의 부드러운 고기를 칠할 수 있는이면서 쫄깃쫄깃 되는 것, 좋아합니까？」
+;OriginalString : 「……ふふっ、返事は필요無さそうです……♪」
+				PRINTFORMW 「……후후, 대답은 필요 없음 그렇습니다……♪」
+			ELSE
+;OriginalString : 「びゅるびゅるイく前に私を만족させられなければ、減点一ですから」
+				PRINTFORMW 「이구전에 나를 만족 시킬 수 없으면, 감점1이기 때문에」
+;OriginalString : 「稗田の技に喘ぐのは良いですけど、本気で掛からないと……ぷちっといっちゃいますよ？」
+				PRINTFORMW 「히에다의 기술에 허덕이는 것은 좋지만, 진심으로 걸리지 않으면……와 일치있어요？」
+			ENDIF
+		RETURN LOCAL:1
+		ENDIF
+
+		;前から애무
+		IF TCVAR:MASTER:위치전후 == 1
+			;無断사정플래그なし
+			IF KFLAG:153 == 0
+				IF FAVOR(0, 1000) && RAND:3 == 0
+;OriginalString : 「左손で、ぐいと皮をひん剥かれて」
+					PRINTFORMW 「왼손으로, 생각과 가죽을 히응 벗겨지며」
+;OriginalString : 「カリ首を親指と中指で抱えられながら」
+					PRINTFORMW 「칼리목을 엄지와 중지로 안을 수 있는이면서」
+;OriginalString : 「人差し指で鈴입を引っかかれる……どうですか？」
+					PRINTFORMW 「집게 손가락으로 령구를 걸릴 수 있다……어떻습니까？」
+;OriginalString : 「腰が浮く？　そうでしょう。……もう、私には丸わかりですよ♪」
+					PRINTFORMW 「허리가 뜬다？ 그렇겠지요.……이제, 나에게는 환원 빌리고예요♪」
+				ELSEIF FAVOR(0, 300) && RAND:2 == 0
+;OriginalString : 「じいっと見つめられながらの수음では、恥ずかしい、ですか？」
+					PRINTFORMW 「할아버지와 응시할 수 있는이면서의 자위에서는, 부끄러운, 입니까？」
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : 아큐は困ったように視線を伏せると、입元に손を添えて呟いた。
+					PRINTFORMDW 아구는 곤란한 것처럼 시선을 덮으면(자), 입가에 손을 더해 중얼거렸다.
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : 「ですが、その……これも、당신様に만족していただくためですから」
+					PRINTFORMW 「입니다만, 그……이것도, 귀하에게 만족해 주시기 (위해)때문에이기 때문에」
+;OriginalString : 「どうか、아큐の眼の内に……全て、さらけ出して下さいませ♪」
+					PRINTFORMW 「부디 아구의 눈중에……모두, 드러내 주십시오♪」
+				ELSE
+;OriginalString : 「さぁ、指で弄りますね……」
+					PRINTFORMW 「, 손가락으로 만지작거리네요……」
+;OriginalString : 「ここからだと、旦那様の表情が良く分かります」
+					PRINTFORMW 「여기로부터라고, 남편분의 표정을 자주(잘) 압니다」
+;OriginalString : 「아큐の技で、蕩けて、呆けて……可愛い顔をして下さいね」
+					PRINTFORMW 「아구의 기술로, 녹아, 보라고……사랑스러운 얼굴을 해 주세요」
+				ENDIF
+			ELSE
+;OriginalString : 「まるで大きな蛆の様ですね。醜悪で惨たらしい」
+				PRINTFORMW 「마치 큰 구더기의 같네요. 추악하고 처참하다」
+;OriginalString : 「私の손をこんな粗チンで汚했다いのですか？」
+				PRINTFORMW 「 나의 손을 이런 결점 틴으로 더럽히고 싶습니까？」
+;OriginalString : 「別に、構いませんけど。苦しい思いをするのは、당신ですし」
+				PRINTFORMW 「별로, 상관하지 않지만. 괴로운 생각을 하는 것은, 당신이고」
+			ENDIF
+		;後ろから애무
+		ELSE
+			;無断사정플래그なし
+			IF KFLAG:153 == 0
+				IF FAVOR(0, 1000) && RAND:3 == 0
+;OriginalString : 「……ああ、こうして撫でていると……」
+					PRINTFORMW 「……아, 이렇게 해 쓰다듬고 있으면(자)……」
+;OriginalString : 「こんなものが、私の身体に入っていくのだなぁ、と。不思議な感慨が湧きますね」
+					PRINTFORMW 「이런 것이, 나의 신체에 들어간다, 라고. 이상한 감개가 솟아 오르네요」
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : くちくちと音を立て、아큐はうっとりと페니스に指を絡ませていく……
+					PRINTFORMDW 배가 불러 거북하고 좀 소리를 내 아구는 넋을 잃고페니스에 손가락을 얽히게 할 수 있어 간다……
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : 「膣も良いものですが……指も、そう捨てたものでは無いでしょう？」
+					PRINTFORMW 「질도 좋은 것입니다만……손가락도, 그렇게 버린 것은 아닐 것입니다？」
+;OriginalString : 「당신様のお痒いところ……もう、私は全て把握しておりますよ♪」
+					PRINTFORMW 「귀하의 가려운 곳……이제, 나는 모두 파악하고 있어요♪」
+				ELSEIF FAVOR(0, 300) && RAND:2 == 0
+;OriginalString : 「日に日に、精が増していくのが判ります」
+					PRINTFORMW 「나날이, 정령이 늘어나 가는 것이 압니다」
+;OriginalString : 「睾丸も、こんなにどっしりと垂れ下がって……」
+					PRINTFORMW 「불알도, 이렇게 묵직이 처져……」
+;OriginalString : 「ああ、아큐を孕ますために、こうもそそり立ち……♪」
+					PRINTFORMW 「아, 아구를 잉위해(때문에), 이렇게도 우뚝 솟아……♪」
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : 重みの有る睾丸を손の平で優しく掬いながら、아큐はうっとりと笑みを浮かべた……
+					PRINTFORMDW 중량감이 있는 불알을 손바닥에서 상냥하게 떠올리면서, 아구는 넋을 잃고미소를 띄웠다……
+				ELSE
+;OriginalString : 「さぁ、指で弄りますね……」
+					PRINTFORMW 「, 손가락으로 만지작거리네요……」
+;OriginalString : 「この体勢だと、私が당신様を抱きかかえているようで……なんだか、背徳的ですね」
+					PRINTFORMW 「이 몸의 자세라고, 내가 귀하를 껴안고 있는 것 같아……어쩐지, 배덕적이네요」
+;OriginalString : 「けれども、中々弄りやすいんですよ。후후……」
+					PRINTFORMW 「그러나, 꽤 만지작거리기 쉬워요. 후후……」
+				ENDIF
+			ELSE
+;OriginalString : 「全く、幼女（おさなめ）に後ろから抱きかかえられてブヒブヒと」
+				PRINTFORMW 「완전히, 유녀（어린）에 뒤로부터 껴안을 수 있어 브히브히와」
+;OriginalString : 「世を斜に構えた哲学者など、男は須らく此処で思考をすると言いますが당신もその例に当てはまるようですね」
+				PRINTFORMW 「세상을 새롭게 태세를 갖춘 철학자 등, 남자는 수등구여기에서 사고를 한다고 합니다만 당신도 그 예에 들어맞는 것 같네요」
+;OriginalString : 「屑は屑らしく、大事なミルクを絞られて情けなく鳴いていれば良いのです」
+				PRINTFORMW 「쓰레기는 쓰레기인것 같고, 소중한 밀크를 좁혀져 한심하게 울고 있으면 좋습니다」
+;OriginalString : 「こんなゴミザーメンで孕んで上げよう、なんて言う優しい女性は私くらいの物ですよ？」
+				PRINTFORMW 「이런 쓰레기 정액으로 잉응으로 올리자, 라고 말하는 상냥한 여성은 나만한 물건이에요？」
+			ENDIF
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+;ACT10_1, 수음する
+
+;*************************************************
+;ACT10_0, 애무する
+;*************************************************
+;・女성기への애무を行う
+;・SOURCE的には쾌Ｂと쾌Ｃは同等
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT10_0, 애무する
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && FIRSTACT(2)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;조교중初回
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && ONCEACT(2)
+		;하반신服装がある場合
+		IF PANTSCHECK(1)
+;OriginalString : 
+			PRINTFORMW 
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;죠교대상がイキそう
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		;-------------------------------------------------
+		;前から애무
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1 && TCVAR:MASTER:위치전후 == 1
+			;애태움도によって分岐
+			SELECTCASE TCVAR:MASTER:애태움도
+				;애태움中
+				CASE IS > 1
+;OriginalString : 
+					PRINTFORMW 
+				;애태움終了
+				CASE 1
+;OriginalString : 
+					PRINTFORMW 
+				;애태움無し
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+			RETURN LOCAL:1
+		ENDIF
+		
+		;-------------------------------------------------
+		;後ろから애무
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1 && TCVAR:MASTER:위치전후 == 2
+			;애태움도によって分岐
+			SELECTCASE TCVAR:MASTER:애태움도
+				;애태움中
+				CASE IS > 1
+;OriginalString : 
+					PRINTFORMW 
+				;애태움終了
+				CASE 1
+;OriginalString : 
+					PRINTFORMW 
+				;애태움無し
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+			RETURN LOCAL:1
+		ENDIF
+		
+		;위치전후分岐を埋めるなら필요なし。埋めないならここで補完させましょう
+		;不要な分岐は削除、もしくはコメントアウトすることで負荷は軽くなります
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1
+			;애태움도によって分岐
+			SELECTCASE TCVAR:MASTER:애태움도
+				;애태움中
+				CASE IS > 1
+;OriginalString : 
+					PRINTFORMW 
+				;애태움終了
+				CASE 1
+;OriginalString : 
+					PRINTFORMW 
+				;애태움無し
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+		;-------------------------------------------------
+		;안면승마中
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1 && TEQUIP:안면승마 || TEQUIP:안면승마항문
+			;前から애무
+			IF TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+				PRINTFORMW 
+			;後ろから애무
+			ELSE
+;OriginalString : 
+				PRINTFORMW 
+			ENDIF
+			RETURN LOCAL:1
+		ENDIF
+		
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1
+			;前から애무
+			IF TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+				PRINTFORMW 
+			;後ろから애무
+			ELSE
+;OriginalString : 
+				PRINTFORMW 
+			ENDIF
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+		;前から애무
+		IF TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+			PRINTFORMW 
+		;後ろから애무
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+;ACT10_0, 애무する
+
+;*************************************************
+;ACT11, 가슴애무
+;*************************************************
+;・가슴애무/乳首吸い/乳の揉み合い/乳首責め
+;・特定の条件で「乳首吸い」「乳の揉み合い」「乳首責め」へ派生する
+;・죠교대상が남자の場合は必ず「乳首責め」になり、他に派生する事はない
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=가슴애무/1=乳首吸い/2=揉み合い/3=乳首責め)
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_11
+;=================================================
+
+;*************************************************
+;ACT11_0, 가슴애무
+;*************************************************
+;・全ての派生条件から漏れると통상の가슴애무になる
+;・죠교자の욕망+Ｂ감각が3以上の場合1/2の確率で揉み合いに派生
+;・それから漏れた場合にのみ、통상の가슴애무となる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_0, 가슴애무
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;前から애무
+	IF TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+		PRINTFORMW 
+	;後ろから애무
+	ELSE
+;OriginalString : 
+		PRINTFORMW 
+	ENDIF
+	RETURN LOCAL:1
+ENDIF
+
+;*************************************************
+;ACT11_1, 乳首吸い
+;*************************************************
+;・전회ACTが가슴애무の場合乳首系になる
+;・その際、죠교자に유치か혀기술があると3/4、なければ1/4で乳首吸いとなる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_1, 乳首吸い
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 1
+	;상반신服装が要押し退け			服をまくりあげて
+	IF BRACHECK(1, 1)
+;OriginalString : 
+		PRINTFORMW
+	;その他
+	ELSE
+;OriginalString : 
+		PRINTFORMW
+	ENDIF
+	RETURN LOCAL:1
+ENDIF
+
+;*************************************************
+;ACT11_2, 乳の揉み合い
+;*************************************************
+;・가슴の揉み合いを要求する。この時点での죠교대상の反応は未定
+;・乳首系の条件から漏れた場合、죠교자の욕망+Ｂ감각３以上なら、1/2で가슴の揉み合いになる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_2, 乳の揉み合い
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 2
+	;=================================================
+	;상반신服装が邪魔			服の上から
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && BRACHECK(1)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;상반신겉옷が要押し退け		겉옷をまくり上げ
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && UPPERJACKET(1) == 1
+		;속옷もまくり上げた
+		IF UPPERUNDER(1) == 1
+;OriginalString : 
+			PRINTFORMW 
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;상반신겉옷が要押し退け		속옷の裾から손を忍ばせ
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && UPPERUNDER(1) == 1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+
+;*************************************************
+;ACT11_3, 乳首責め
+;*************************************************
+;・전회ACTが가슴애무の場合乳首系になる
+;・その際、죠교자に유치か혀기술があると1/4、なければ3/4で乳首責めとなる
+;・죠교대상が남자の場合は乳首責めにしかならない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT11_3, 乳首責め
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 3
+	;=================================================
+	;죠교대상が남자
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TALENT:MASTER:남자
+		;前から애무
+		IF TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+			PRINTFORMW 
+		;後ろから애무
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+		;前から애무
+		IF TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+			PRINTFORMW 
+		;後ろから애무
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT12, 입으로 애무
+;*************************************************
+;・クンニする/펠라チオする
+;・하반신の의상が残っていても発生することがある。죠교자にTALENT:벽통과がない場合はずらして実行する
+;・턴방침が"이상"なら発生しない
+;・TEQUIP(바이브/오나홀/페니스밴드/삼각목마)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・죠교대상に페니스があると、必ず펠라になる
+;-------------------------------------------------
+;・TFLAG:ACT파생(0=クンニ/1=펠라)
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_12
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT12_0, クンニする
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;안면승마、아라이멘도が負の場合、TALENT:새드等で地の文が分岐する場合あり
+	;필요に応じて拡張すると良いでしょう
+	;=================================================
+	;죠교대상が가버려
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		;애태움도派生処理
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1 ;애태움中
+;OriginalString : 
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+		;-------------------------------------------------
+		;안면승마中
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1 && TEQUIP:안면승마 || TEQUIP:안면승마항문
+;OriginalString : 
+			PRINTFORMW 
+			RETURN LOCAL:1
+		ENDIF
+		
+		;연속실행のネストを開放するならここは必ず書いておきましょう
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1
+;OriginalString : 
+			PRINTFORMW 
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;LOWERJACKET(1) == 1「まくりあげて」LOWERUNDER(1) == 1「ずらして」等で拡張するのも良いでしょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT12_1, 펠라チオする
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 1
+	;안면승마、아라이멘도が負の場合、TALENT:새드等で地の文が分岐する場合あり
+	;필요に応じて拡張すると良いでしょう
+	;=================================================
+	;죠교대상が가버려
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		IF LOCAL:1
+			SELECTCASE KFLAG:152
+				;사정許可なし
+				CASE IS < 1
+					;無断사정플래그なし
+					IF KFLAG:153 == 0
+
+					SELECTCASE KFLAG:150
+					CASE 0
+;OriginalString : 
+						PRINTFORMW 
+					CASE 1
+;OriginalString : 
+						PRINTFORMW 
+					CASE 2
+;OriginalString : 
+						PRINTFORMDW 
+					CASEELSE
+;OriginalString : 
+						PRINTFORMW 
+					ENDSELECT
+
+					;無断사정後
+					ELSE
+
+					SELECTCASE KFLAG:150
+					CASE 0
+;OriginalString : 
+						PRINTFORMW 
+					CASE 1
+;OriginalString : 
+						PRINTFORMDW 
+					CASEELSE
+;OriginalString : 
+						PRINTFORMW 
+					ENDSELECT
+
+					ENDIF
+					TCVAR:MASTER:애태움도 += 1
+					KFLAG:150 += 1
+				;사정許可有り
+				CASEELSE
+					;애태움도によって分岐
+					SELECTCASE TCVAR:MASTER:애태움도
+					;애태움中
+					CASE IS > 1
+;OriginalString : 
+						PRINTFORMDW 
+					;애태움無し
+					CASEELSE
+;OriginalString : 
+						PRINTFORMW 
+;OriginalString : 
+					PRINTFORMW 
+					ENDSELECT
+				ENDSELECT
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+		;-------------------------------------------------
+		;안면승마中
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1 && TEQUIP:안면승마 || TEQUIP:안면승마항문
+;OriginalString : 
+			PRINTFORMW 
+			RETURN LOCAL:1
+		ENDIF
+		
+		;연속실행のネストを開放するならここは必ず書いておきましょう
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 0
+		;-------------------------------------------------
+		IF LOCAL:1
+;OriginalString : 
+			PRINTFORMW 
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;LOWERJACKET(1) == 1「まくりあげて」LOWERUNDER(1) == 1「ずらして」等で拡張するのも良いでしょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT13, 항문애무
+;*************************************************
+;-------------------------------------------------
+;・항문애무/전립선자극/항문바이브出し入れ
+;・항문바이브装備中は、항문바이브出し入れに派生
+;・연속실행の場合、전립선자극に派生
+;・가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じて전립선자극に派生
+;・발기도が低い場合、죠교자の애무スキルに応じて전립선자극に派生
+;・요강제발기の場合、전립선자극に派生
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"소프트", "이상"だと発生しない
+;・TEQUIP(삼각목마/페니스밴드/항문비즈)장착中には発生しない
+;・성교봉사중には発生しない
+;-------------------------------------------------
+;・TFLAG:ACT파생（0=항문애무/1=전립선자극/2=항문바이브出し入れ）
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_13
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT13_0, 항문애무
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 1
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL ;&& !TFLAG:ACT파생
+	;=================================================
+	;죠교대상がイキそう
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 1
+		;-------------------------------------------------
+		IF LOCAL:1
+			SELECTCASE KFLAG:152
+				;사정許可なし
+				CASE IS < 1
+					;無断사정플래그なし
+					IF KFLAG:153 == 0
+
+					SELECTCASE KFLAG:150
+					CASE IS < 2
+;OriginalString : 「うーん、辛いですか？　吐精했다くて堪らない、という顔をしておられます」
+						PRINTFORMW 「응, 괴롭습니까？ 토정 하고 싶어서 감등 없는, 이라고 하는 얼굴을 하고 있어집니다」
+;OriginalString : 「ええ、妻として당신様に思うよう사정に至らせてあげたい気持ちは有るのですが……」
+						PRINTFORMW 「예, 아내로서 귀하로 생각하듯이 사정에 이르게 해 주고 싶은 기분은 있습니다만……」
+;OriginalString : 「転生の刻が来る前に、一刻も早く、濃い정액が作れる様になってもらわねば困るのですよ」
+						PRINTFORMW 「전생의 각이 오기 전에, 일각이라도 빨리, 진한 정액을 만들 수 있는 것처럼 되어 주지 않으면 곤란한 거에요」
+;OriginalString : 「……私だって、少しは愉しみたいじゃ無いですか。」
+						PRINTFORMW 「……나도, 조금은 즐기고 싶지 않습니까.」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 拗ねた様な声を出すが、いたわって上げられる程の余裕が%CALLNAME:MASTER%には無い。
+						PRINTFORMDW 등진 같은 소리를 내지만, 돌봐 거론될 정도의 여유가%CALLNAME:MASTER%에는 없다.
+;OriginalString : 아큐の細指はスルスルと腸に入り込んで、ぷっくりと膨らんだ前立腺を撫で摩っている。
+						PRINTFORMDW 아구의 세지는 찰랑찰랑장에 비집고 들어가, 절의 부엌과 부풀어 오른 전립선을 어루만지고 갈고 있다.
+;OriginalString : 声を上げないように堪えるだけでも一苦労だ……
+						PRINTFORMDW 소리를 높이지 않게 견디는 것만으로도 상당한 고생이다……
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「ふふ、此処で作られているんですね。私を孕ませる為の精子が……」
+						PRINTFORMW 「후후, 여기에서 만들어지고 있습니다. 나를 잉다투기 때문에(위해)의 정자가……」
+;OriginalString : 「よしよし、いい子、いい子……」
+						PRINTFORMW 「좋아 좋아, 좋은 아이, 좋은 아이……」
+					CASEELSE
+;OriginalString : 「はーい、頑張って下さいませー……ゆーっくり深呼吸して、私の指を受け入れて下さいな」
+						PRINTFORMW 「네, 노력해 주십시오―……-절의 부엌 심호흡 해, 나의 손가락을 받아들여 주세요」
+;OriginalString : 「おちんちんじゃ無くて、お尻の穴に意識を移すんです……そうすれば、少しは楽になりますよ」
+						PRINTFORMW 「자지는 없어서, 엉덩이의 구멍에 의식을 옮깁니다……그러면, 조금은 편해져요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : コリコリと前立腺を撫でながら、아큐は慈しむ様な声を上げる。
+						PRINTFORMDW 코리코리와 전립선을 어루만지면서, 아구는 사랑하는 것 같은 소리를 높인다.
+;OriginalString : 既に%CALLNAME:MASTER%의 膝はガクガクと震え、男根は最早정액と言っても違和感の無い先走りを吹き出しビタンビタンと悶えている……
+						PRINTFORMDW 이미%CALLNAME:MASTER%의 무릎은 가크가크와 떨려 남근은 최조정액이라고 해도 위화감이 없는 앞달리기를 불기 시작해 비탄비탄과 번민이라고 있다……
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「男のヒトは、此処と此処で子種を作って居るんですよね」
+						PRINTFORMW 「남자의 사람은, 여기와 여기에서 자식을 만들어 있습니다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 不意に、아큐が開いている方の손で睾丸をむんずと掴んだ。
+						PRINTFORMDW 갑자기, 아구가 열려 있는 (분)편의 손으로 불알응않고와 잡았다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「少しでも濃～い정액に成るように、両方責めちゃいます」
+						PRINTFORMW 「조금이라도 농～있고 정액에 되도록(듯이), 양쪽 모두 고문있습니다」
+;OriginalString : 「はーい、ぎゅっこん、ぎゅっこん、ぎゅっこんこん……」
+						PRINTFORMW 「네, 감색, 감색, 안녕 안녕……」
+					ENDSELECT
+
+					;無断사정後
+					ELSE
+
+					SELECTCASE KFLAG:150
+					CASE IS < 2
+;OriginalString : 「知りませんで했다。人間って、こんなに豚の様に鳴けるのですね」
+						PRINTFORMW 「몰랐습니다. 인간은, 이렇게 돼지와 같이 울 수 있는 것입니다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : ぐりぐりと３本の指で腸壁内をかき回하면서、아큐は呆れた様に呟く。
+						PRINTFORMDW 때굴때굴３책의 손가락으로 장벽내를 휘저으면서, 아구는 기가 막힌님이 중얼거린다.
+;OriginalString : %CALLNAME:MASTER%의 表情は歪み、고통と쾌락に脳を焼き切られそうになりながら呻いている。
+						PRINTFORMDW %CALLNAME:MASTER%의 표정은 비뚤어져, 고통과 쾌락에 뇌를 구워 잘릴 것 같게 되면서 신음하고 있다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「良いですよ、ゴミ屑さん。사정は許可しませんが、엉덩이で気持よくなってアクメ決めるので有ればご자유にどうぞ」
+						PRINTFORMW 「좋아요, 쓰레기쓰레기씨. 사정은 허가합니다만, 아누스로 기분 좋아져 극치 결정하므로 있으면 자유롭게 아무쪼록」
+;OriginalString : 「存分にお尻の穴で気持よくなってしまう男としてのクズに進化しちゃって下さい」
+						PRINTFORMW 「마음껏 엉덩이의 구멍에서 기분 좋아져 버리는 남자로서의 쓰레기에 진화해 버려서 주세요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : どんなに喚こうが、아큐が손を休める様子はない……
+						PRINTFORMDW 아무리 아우성치든지, 아구가 잠시 쉬는 모습은 없다……
+					CASEELSE
+;OriginalString : 「どう했다んですか？　折角クズ種が集まって少しはマシになろうとしているのに」
+						PRINTFORMW 「어떻게 했습니까？ 모처럼 쓰레기종이 모여 조금은 좋게 되려 하고 있는데」
+;OriginalString : 「また無様にびゅるびゅる사정して使い道の無いゴミザーメンに逆戻り했다いのですか？」
+						PRINTFORMW 「또 무님이사정해 용도가 없는 쓰레기 정액에 퇴보하고 싶습니까？」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 입ではそう言いながらも아큐は間断なく前立腺を押し続ける。
+						PRINTFORMDW 입에서는 그렇게 말하면서도 아구는 간단 없게 전립선을 계속 누른다.
+;OriginalString : コ、コ、コ、コとスイッチの様に前立腺が押される度、%CALLNAME:MASTER%は白く弾けるような錯覚に陥り涎をまき散ら했다。
+						PRINTFORMDW 코, 코, 코, 코와 스윗치와 같이 전립선이 밀릴 때,%CALLNAME:MASTER%(은)는 희게 튀는 것 같은 착각에 빠져 군침을 흩뿌렸다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「はぁ……殿方と言うのは、本当に한심한ですね」
+						PRINTFORMW 「후~……남자분이라고 말하는 것은, 정말로 한심하네요」
+;OriginalString : 「特にこれ、先ほどからぶるんぶるんと揺れて実に目障りです」
+						PRINTFORMW 「특히 이것, 방금전부터인 체하는 인 체하는 와 흔들려 실로 시큰둥합니다」
+;OriginalString : 「引きちぎってやれば少しはスッキリもしますかね？」
+						PRINTFORMW 「당겨 뜯어 주면 조금은 깨끗이도 합니까？」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐はギュウと玉袋の根本を掴み、乱暴に引っ張った。
+						PRINTFORMDW 아구는 규우와 옥대의 근본을 잡아, 난폭하게 이끌었다.
+;OriginalString : %CALLNAME:MASTER%의 입から人の物とは思えない声が漏れる……
+						PRINTFORMDW %CALLNAME:MASTER%의 입으로부터 사람의 물건이라고는 생각되지 않는 소리가 샌다……
+					ENDSELECT
+
+					ENDIF
+					TCVAR:MASTER:애태움도 += 1
+					KFLAG:150 += 1
+				;사정許可有り
+				CASEELSE
+;OriginalString : 「お尻が良いなんて……こっちの方が、好きになっちゃいま했다？」
+					PRINTFORMW 「엉덩이가 좋다니……여기가, 좋아하게 되어 버렸습니다？」
+;OriginalString : 「それとも、おちんちんの底の底からせいえきを捻り出して……」
+					PRINTFORMW 「그렇지 않으면, 자지의 바닥의 바닥으로부터 정액을 염출해……」
+;OriginalString : 「頭の中を真っ白にして……」
+					PRINTFORMW 「머릿속을 새하얗게 해……」
+;OriginalString : 「ちっちゃいお손々に、おちんちんを搾られるのが癖になってしまったのでしょうか」
+					PRINTFORMW 「작은 테테에, 자지를 짜지는 것이 버릇이 되어 버렸는지요」
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : 아큐はほんの少し焦らす様に、つぷつぷと指の第一間接だけを出し入れしている……
+					PRINTFORMDW 아구는 아주 조금 초조하게 하는 것처럼, 와 손가락의 제일 간접만을 출납하고 있다……
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : 「まぁ、どっちでも良いんです」
+					PRINTFORMW 「아무튼, 어느 쪽으로도 좋습니다」
+;OriginalString : 「ちゃーんと、ドロドロぷるぷるの濃い정액さえ作ってくれれば、妻として何でもしちゃいます」
+					PRINTFORMW 「(군)양과 드로드로의 진한 정액마저 만들어 준다면, 아내로서 뭐든지 있습니다」
+;OriginalString : 「さぁ、どれだけの정액を溜め込んだのか……どっぴゅん、して見せて？」
+					PRINTFORMW 「, 얼마나의 정액을 모으고 붐비었는가……응, 해 보여 줘？」
+;OriginalString : 
+					PRINTFORMDL
+;OriginalString : 아큐は薄く笑うと、トドメを刺すかのようにぐりっと二本の指をねじ入れ、間接を曲げた。
+					PRINTFORMDW 아구는 얇게 웃으면(자), 트드메를 찌르는것 같이 꾸물거려 와 2 개의 손가락을 나사 넣어 간접을 굽혔다.
+				ENDSELECT
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	;=================================================
+	;안면승마中
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TEQUIP:안면승마 || TEQUIP:안면승마항문
+		IF CFLAG:153 == 0
+;OriginalString : 「ぐるん、と……ひっくり返されちゃいま했다よ、당신様♪」
+			PRINTFORMW 「꾸물거리는 , 라고……히절의 부엌반 되어 버렸습니다, 귀하♪」
+;OriginalString : 「ふ、ふ……私も、お尻を弄ってあげますね」
+			PRINTFORMW 「,……나도, 엉덩이를 만지작거려 주네요」
+;OriginalString : 「どちらが"きもちよく"出来るか……根比べも、悪くないでしょう？」
+			PRINTFORMW 「어느 쪽이"기분 자주(잘)"할 수 있을까……끈기 겨루기도, 나쁘지 않을 것입니다？」
+		ELSE
+;OriginalString : 「この体勢は良いですね、自ら差し出してる、という感じがします」
+			PRINTFORMW 「이 몸의 자세는 좋네요, 스스로 내미고 있다, 라고 하는 느낌이 듭니다」
+;OriginalString : 「……ほら、私が尻穴を弄りやすいようさっさと自分で尻たぶを掻き分けなさい、グズですね」
+			PRINTFORMW 「……이봐요, 내가 고혈을 만지작거리기 쉽게 빨리 스스로 엉덩이를 밀어 헤치세요, 그즈군요」
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;하반신服装が要押し退け
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && PANTSCHECK(1, 1)
+		;하반신겉옷をまくりあげ
+		IF LOWERJACKET(1) == 1
+;OriginalString : 
+			PRINTFORMW 
+		;속옷越しに
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1
+		IF KFLAG:153 == 0
+			IF FAVOR(0, 1000) && RAND:3 == 0
+;OriginalString : 「すっかり肛門を弄られる事に目覚めてしまいま했다ね……♪」
+				PRINTFORMW 「완전히 항문을 만지작거려지는 일에 눈을 떠 버렸어요……♪」
+;OriginalString : 「自然と自ずから蜜を垂らして、するすると指が入っていきますよ？」
+				PRINTFORMW 「자연과 스스로 밀을 늘어뜨려, 슬슬 손가락이 들어가요？」
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 悪戯っぽい笑顔を浮かべ、아큐は慣れた손つきで前立腺を撫でさする……
+				PRINTFORMDW 못된 장난 같은 웃는 얼굴을 띄워 아구는 익숙해진 손놀림으로 전립선을 어루만지고 문지른다……
+;OriginalString : じんわりと溶けるような快感に、%CALLNAME:MASTER%は涎を垂らして膝を支えるのが精一杯であった。
+				PRINTFORMDW 인 비교적 녹는 것 같은 쾌감에,%CALLNAME:MASTER%(은)는 군침을 늘어뜨려 무릎을 결리는 것이 고작에서 만났다.
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「私の指も、すっかりと당신様の肉穴の感触を覚えてしまって……」
+				PRINTFORMW 「 나의 손가락도, 완전히 귀하의 육 혈의 감촉을 기억해 버려……」
+;OriginalString : 「もっと大きいのが欲しい？　……ふふ、どうしましょうか♪」
+				PRINTFORMW 「 좀 더 큰 것을 갖고 싶다？ ……후후, 어떻게 할까요♪」
+			ELSEIF FAVOR(0, 300) && RAND:2 == 0
+;OriginalString : 「殿方が、未発達の女体に惹かれる気持ちが、何となく分かったかも知れません」
+				PRINTFORMW 「남자분이, 미발들의 여체에 매료되는 기분이, 웬지 모르게 알았을지도 모릅니다」
+;OriginalString : 「こう……당신様を自分専用に仕上げていく감각、と申しますか……」
+				PRINTFORMW 「이렇게……귀하를 자신 전용에 마무리해 가는 감각, 이라고 합니까……」
+;OriginalString : 「歴代の稗田乙女も、こうして愉しんで居たのでしょうか？」
+				PRINTFORMW 「역대의 히에다 아가씨도, 이렇게 해 즐겨 있었는지요？」
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 蜜を장갑に塗り、아큐はつんつんと%CALLNAME:MASTER%의 閉じたすぼみをつつく……
+				PRINTFORMDW 밀을 장갑에 발라, 아구는 콕콕%CALLNAME:MASTER%폐보고를 쿡쿡 찌른다……
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「さ……侵略開始ですね♪」
+				PRINTFORMW 「……침략 개시군요♪」
+			ELSE
+;OriginalString : 아큐はサラサラと했다장갑を取り出すと、その손に蜜を塗り始めた。
+				PRINTFORMDW 아구는 졸졸로 한 장갑을 꺼내면(자), 그 손에 밀을 바르기 시작했다.
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「さぁ……죠교出来るのは、おちんちんだけでは無いのですよ、당신様」
+				PRINTFORMW 「……조교 할 수 있는 것은, 자지만이 아닌 것이에요, 귀하」
+;OriginalString : 「悪い様にはいたしませんから、ゆる～く身を預けて下さいませ……」
+				PRINTFORMW 「나쁘게 네 더하지 않기 때문에,～구몸을 맡겨 주십시오……」
+;OriginalString : 「求聞持法により、私はヒトの身体のつくりとてよぉーくよぉーく知っています……」
+				PRINTFORMW 「구문지법에 의해, 나는 사람의 신체의 구조와라고-구야 -구 알고 있습니다……」
+;OriginalString : 「당신様の蕩けた顔が楽しみでございますね？」
+				PRINTFORMW 「귀하가 녹은 얼굴이 기다려하네요？」
+			ENDIF
+		ELSE
+;OriginalString : 「さ、クソがクソの様に배설してしまったザーメンの、変わりを早急に作りませんと」
+			PRINTFORMW 「, 똥이 똥과 같이 배설해 버린 정액의, 변화를 시급하게 만들지 않습니다와」
+;OriginalString : 「面倒ですが、こちらの方法にて刺激して上げましょう」
+			PRINTFORMW 「귀찮습니다만, 이쪽의 방법에서 자극해 올립시다」
+;OriginalString : 
+			PRINTFORMDL
+;OriginalString : 장갑を했다아큐の指が、容赦無く尻穴を刺激する。
+			PRINTFORMDW 장갑을 한 아구의 손가락이, 용서 없고 고혈을 자극한다.
+;OriginalString : 慣らしも無い事務的な責めに고통が込み上げるが、それすらも硬く肉棒をせり上げる材料となった。
+			PRINTFORMDW 관등 하지도 없는 사무적인 고문에 아픔이 울컥거리지만, 그것조차도 딱딱하게 페니스를 밑에서 밀어올리는 재료가 되었다.
+;OriginalString : 
+			PRINTFORMDL
+;OriginalString : 「恥じ入る事は有りません。どの様なクズであれ발기に至る、御阿礼の秘法です」
+			PRINTFORMW 「송구스러운 일은 없습니다. 어떤 쓰레기든 발기에 이르는, 아례의 비법입니다」
+;OriginalString : 「……まぁ、발기했다所で사정は出来ない無間地獄なんですけど」
+			PRINTFORMW 「……아무튼, 발기한 곳에서 사정은 할 수 없는 아비 지옥입니다만」
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;죠교대상が남자の場合のみに派生
+;후타나리の前立腺は尿道、つまり膣の上にあるとし、Ｇスポット刺激に
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT13_1, 전립선자극(항문애무)
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 1
+;OriginalString : 
+	PRINTFORMW 
+	RETURN LOCAL:1
+ENDIF
+
+;항문바이브装備中は、항문바이브出し入れになる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT13_2, 항문바이브出し入れ
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 2
+	;죠교대상が남자
+	IF TALENT:MASTER:남자
+;OriginalString : 
+		PRINTFORMW 
+	;その他
+	ELSE
+;OriginalString : 
+		PRINTFORMW 
+	ENDIF
+	RETURN LOCAL:1
+ENDIF
+
+;*************************************************
+;ACT14, 항문펠라
+;*************************************************
+;・항문펠라
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"소프트", "이상"だと発生しない
+;・TEQUIP(항문바이브/항문비즈/관장그릇＋플러그/페니스밴드/삼각목마)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・TCVAR:MASTER:애태움도が真になっている場合は発生しない
+;・舌による전립선자극への派生は「そんなところまで舌が届くわけないじゃないかｗｗｗ」という事で粛清されています
+;・現時点でACTが派生する事はないが、ACT改変の可能性に備え、TFLAG:ACT파생 == 0で指定
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_14
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT14_0, 항문펠라
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;=================================================
+	;初回
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && FIRSTACT(0)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;조교중初回
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && ONCEACT(0)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;죠교자が자위중
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 1)
+		;죠교자が페니스밴드身に付けている
+		IF TEQUIP:죠교자페니스밴드
+;OriginalString : 
+			PRINTFORMW
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;안면승마中
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TEQUIP:안면승마 || TEQUIP:안면승마항문
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が자위중
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && GETBIT(TEQUIP:자위중, 0)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;;하반신服装が要押し退け
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && PANTSCHECK(1, 1)
+		;하반신겉옷をまくりあげ
+		IF LOWERJACKET(1) == 1
+;OriginalString : 
+			PRINTFORMW 
+		;속옷越しに
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT15, 키스
+;*************************************************
+;-------------------------------------------------
+;・키스/미약키스
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"하드", "이상"だと発生しない
+;・죠교자にTALENT:벽통과が無い場合、TEQUIP:볼개그장착中は弾かれる
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_15
+;=================================================
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT15, 키스 初回
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && FIRSTACT(0)
+	;=================================================
+	;お互いに初めて
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && EXP:MASTER:키스경험 == 0 && EXP:TARGET:키스경험 == 0
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;죠교대상が初めて
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && EXP:MASTER:키스경험 == 0
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;죠교자が初めて
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && EXP:TARGET:키스경험 == 0
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;"初回"のネストを開放し、各条件の分岐を방치するならここで補完しましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;!GETBIT(TFLAG:미약등사용, 1)等の条件を削除して!TFLAG:ACT파생でまとめてしまっても良いと思います
+;無理に全ての箇所を埋める事はないので、필요に応じて使い分けて下さい
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT15_0, 키스
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생 && !GETBIT(TFLAG:미약등사용, 1)
+	;=================================================
+	;성교중（죠교자삽입）
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TEQUIP:성교중
+		;体位を派生処理
+		SELECTCASE TEQUIP:성교중
+			;정상위					頭をつかんで情熱的な키스を했다…
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;후배위					振り向かせ입술을 빼았았다…
+			CASE 2
+;OriginalString : 
+				PRINTFORMW 
+			;기승위					下から突き上げながら情熱的に입づけ했다…
+			CASE 3
+;OriginalString : 
+				PRINTFORMW 
+			;대면좌위				ぎゅっと抱きしめるとそのまま입술을 빼았았다…
+			CASE 4
+;OriginalString : 
+				PRINTFORMW 
+			;배면좌위				振り向かせそのまま입술을 빼았았다…
+			CASE 5
+;OriginalString : 
+				PRINTFORMW 
+			;항문섹스			엉덩이を犯하면서키스してきた…
+			CASE 6
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중（죠교대상삽입）
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TEQUIP:성교봉사중
+		;애태움도による派生			TCVAR:MASTER:가버려で囲んではいないので、CASEELSEは통상の상태を意味する
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT15_1, 미약키스
+;・죠교대상に입移しで미약を飲ませる
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생 && GETBIT(TFLAG:미약등사용, 1)
+	;미약使用구상処理済チェック(미약使用の地の文カットする際はTFLAG:미약등사용지문스킵のコメントを解除)
+	CLEARBIT TFLAG:미약등사용구상, 1
+	;CLEARBIT TFLAG:미약등사용지문스킵, 1
+	;=================================================
+	;성교중（죠교자삽입）
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TEQUIP:성교중
+		;体位を派生処理
+		SELECTCASE TEQUIP:성교중
+			;정상위					頭をつかんで情熱的な키스を했다…
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;후배위					振り向かせ입술을 빼았았다…
+			CASE 2
+;OriginalString : 
+				PRINTFORMW 
+			;기승위					下から突き上げながら情熱的に입づけ했다…
+			CASE 3
+;OriginalString : 
+				PRINTFORMW 
+			;대면좌위				ぎゅっと抱きしめるとそのまま입술을 빼았았다…
+			CASE 4
+;OriginalString : 
+				PRINTFORMW 
+			;배면좌위				振り向かせそのまま입술을 빼았았다…
+			CASE 5
+;OriginalString : 
+				PRINTFORMW 
+			;항문섹스			엉덩이を犯하면서키스してきた…
+			CASE 6
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중（죠교대상삽입）
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TEQUIP:성교봉사중
+		;애태움도による派生			TCVAR:MASTER:가버려で囲んではいないので、CASEELSEは통상の상태を意味する
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT16, 성기마찰한다
+;*************************************************
+;・貝合わせ/스마타する
+;・죠교대상に페니스がある場合はACT파생 == 1「스마타する」へ派生する
+;・죠교대상が페니스밴드장착中は、ACT파생 == 2「페니스밴드스마타」になる
+;・턴방침が"하드", "이상だと発生しない
+;・죠교대상が여자で바이브장착中だと発生しない
+;・TEQUIP(오나홀/삼각목마)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・죠교자に페니스があると発生しない（봉사系の스마타強制になる）
+;-------------------------------------------------
+;TFLAG:ACT파생（=0,貝あわせ/=1,스마타/=2,페니스밴드스마타）
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_16
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT16_0, 貝合わせ
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;=================================================
+	;죠교대상が가버려
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		;애태움도派生
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+		;누움
+		IF TFLAG:누움
+;OriginalString : 
+			PRINTFORMW
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;地の文は죠교대상の하반신服装毎の分岐あり。필요に応じて拡張してください
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+		;누움
+		IF TFLAG:누움
+;OriginalString : 
+			PRINTFORMW
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT16_1, 스마타する
+;*************************************************
+;・女성기と太股で남성기を挟んで애무する
+;・죠교대상に페니스があると、必ず스마타するになる
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT16_1, 스마타する
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 1
+	;=================================================
+	;죠교대상が가버려
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		;애태움도派生
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+		;누움
+		IF TFLAG:누움
+;OriginalString : 
+			PRINTFORMW
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;地の文は죠교대상の하반신服装毎の分岐あり。필요に応じて拡張してください
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+		;누움
+		IF TFLAG:누움
+;OriginalString : 
+			PRINTFORMW
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT16_2, 페니스밴드스마타
+;*************************************************
+;・죠교대상が페니스밴드장착中は、페니스밴드스마타になる
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT16_2, 페니스밴드스마타
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 2
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;地の文は죠교대상の하반신服装毎の分岐あり。필요に応じて拡張してください
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+		;누움
+		IF TFLAG:누움
+;OriginalString : 
+			PRINTFORMW
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT17, 파이즈리한다
+;*************************************************
+;・TFLAG:징계・플래그がたっていると発生しない
+;・턴방침が"하드", "이상"の場合は発生しない
+;・TEQUIP(오나홀/삼각목마)장착中には発生しない
+;・죠교대상に페니스がない場合は発生しない
+;・죠교자が남자の場合は発生しない
+;・現在ACT파생は存在しないが将来の改変に備え、ACT파생 == 0とする
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_17
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT17_0, 파이즈리한다
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;地の文は죠교자の가슴のサイズで分岐します。
+	;素質を変更する事が可能なので、필요に応じて拡張するのも良いでしょう
+	;=================================================
+	;죠교대상がイキそう
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		;애태움도によって分岐
+		SELECTCASE TCVAR:MASTER:애태움도
+			;애태움中
+			CASE IS > 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움終了
+			CASE 1
+;OriginalString : 
+				PRINTFORMW 
+			;애태움無し
+			CASEELSE
+;OriginalString : 
+				PRINTFORMW 
+		ENDSELECT
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;연속실행
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+		[SKIPSTART]
+		;---------------------------------------------------
+		;地の文には着衣の상태による分岐が存在しますが、書き分けも面倒なので필요に応じてコメントアウトを外すなり
+		;望む形に改変するなりして使用して下さい
+		;---------------------------------------------------
+		;干渉する衣服が存在する時
+		IF TEQUIP:상반신속옷 || TEQUIP:상반신겉옷 || TEQUIP:전신겉옷 || (TEQUIP:MASTER:하반신속옷 && !TALENT:벽통과) || CFLAG:의상 == 3
+			;노출状況により分岐
+			SELECTCASE TEQUIP:착의노출 & 6
+				;干渉箇所全노출時
+				CASE 6
+;OriginalString : 
+					PRINTFORMW 
+				;죠교대상성기노출時
+				CASE 4
+;OriginalString : 
+					PRINTFORMW 
+				;죠교자가슴노출時
+				CASE 2
+;OriginalString : 
+					PRINTFORMW 
+				;干渉箇所非노출時
+				CASEELSE
+;OriginalString : 
+					PRINTFORMW 
+			ENDSELECT
+		;その他
+		ELSE
+;OriginalString : 
+			PRINTFORMW 
+		ENDIF
+		[SKIPEND]
+		;他に分岐を設けないのなら、ここは書いておきましょう
+		;分岐を設けるならここのPRINTは空行を生むので削除しましょう
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT18, 풋잡하기
+;*************************************************
+;・풋잡하기
+;・죠교대상に페니스がない場合は発生しない
+;・이상系から派生する場合もある
+;・TFLAG:징계・플래그がたっていると発生しない
+;・금일의방침が"イチャイチャ"だと発生しない
+;・TEQUIP(오나홀/삼각목마)장착中は発生しない
+;・성교중/성교봉사중は発生しない
+;・죠교자に발が無いと発生しない
+;・죠교대상が여자だと発生しない
+;・現在ACT파생は存在しないが将来の改変に備え、ACT파생 == 0とする
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_18
+;=================================================
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT18, 풋잡하기
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 1
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;地の文にTCVAR:MASTER:애태움도等の分岐は存在しない箇所
+	;=================================================
+	;죠교대상がイキそう				両발で%CALLNAME:MASTER%의 페니스를 荒々しくしごいてきた…
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:가버려
+		;-------------------------------------------------
+		;その他
+		;記入チェック
+		LOCAL:1 = 1
+		;-------------------------------------------------
+		IF LOCAL:1
+			SELECTCASE KFLAG:152
+				;사정許可なし
+				CASE IS < 1
+					;無断사정플래그なし
+					IF KFLAG:153 == 0
+
+					SELECTCASE KFLAG:150
+					CASE 0
+;OriginalString : 「あら？　イってしまいそうなのですか？」
+						PRINTFORMW 「어머나？ 이는 버릴 것 같습니까？」
+;OriginalString : 「발なんかにどぷどぷ～ってせいえき出して……白く染め上げたいの？」
+						PRINTFORMW 「다리인가에～라는 정액 내……희게 염색해 내고 싶은거야？」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐が발を上げると、先走りが糸を引いてつま先から垂れていく……
+						PRINTFORMDW 아구가 다리를 올리면(자), 앞달리기가 실을 당겨 발끝으로부터 늘어져 간다……
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「勿論、吐精させて上げません。ちゃんと참다して下さいね」
+						PRINTFORMW 「물론, 토정 시켜 올리지 않습니다. 분명하게 참아 주세요」
+;OriginalString : 「あるいは……솔직にお願い出来たら、考えてあげましょう」
+						PRINTFORMW 「혹은……솔직하게 부탁 할 수 있으면(자), 생각해 줍시다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐は依然として심술궂음そうに笑っている。
+						PRINTFORMDW 아구는 여전히 심술궂은 듯이  웃고 있다.
+					CASE 1
+;OriginalString : 「全く、こんな方法で사정했다いなんて、理解に苦しみます」
+						PRINTFORMW 「완전히, 이런 방법으로 사정하고 싶다니, 이해하기 어렵습니다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐は両の발で逸物の根本を押さえつけると、そのまま발の親指で搾り出すようになぞり上げる……
+						PRINTFORMDW 아구는 양의다리로 훌륭한 인물의 근본을 억누르면(자), 그대로다리의 엄지로 짜기 시작하듯이 위를 덧쓴다……
+;OriginalString : ぞわぞわと先走りが押し上げられていく感触に%CALLNAME:MASTER%は歯を食いしばった。
+						PRINTFORMDW 원과 앞달리기를 밀어 올릴 수 있어 가는 감촉에 %CALLNAME:MASTER%(은)는 이를 악물었다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「ふふ、これだけなじられても気持ち良くなってしまうのですね」
+						PRINTFORMW 「후후, 이만큼 힐책해져도 기분 좋아져 버리는 것입니다」
+;OriginalString : 「殿方と言うのは、本当にどうしようもありませんね」
+						PRINTFORMW 「남자분이라고 말하는 것은, 정말로 어떻게 하지도 없겠네요」
+					CASEELSE
+;OriginalString : 「しこしこ、ぴゅっぴゅ。すりすり、ぴゅっぴゅ」
+						PRINTFORMW 「쫄깃쫄깃,. 소매치기 소매치기, 」
+;OriginalString : 「…………はい、ストップです。またしばらく휴식しましょうね」
+						PRINTFORMW 「…………네, 스톱입니다. 또 당분간 쉬어요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 今や%CALLNAME:MASTER%は完全に아큐の발に손球に取られ、
+						PRINTFORMDW 지금은 %CALLNAME:MASTER%(은)는 완전하게 아구의 다리에 수구에 놓쳐
+;OriginalString : 사정する直前まで高められては刺激を止めるのを繰り返し、弄ばれている。
+						PRINTFORMDW 사정하기 직전까지 높일 수 있어 자극을 멈추는 것을 반복해, 희롱해지고 있다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「ビクビクしています……苦しそうですね」
+						PRINTFORMW 「벌벌 하고 있습니다……괴로운 듯하네요」
+;OriginalString : 「당신様の弱い所は、求聞持法で完全に把握いたしていますから……」
+						PRINTFORMW 「귀하의 약한 곳은, 구문지법으로 완전하게 파악하고 있을테니까……」
+;OriginalString : 「발でだって、完璧に扱えるんですよ？」
+						PRINTFORMW 「다리로래, 완벽하게 취급할 수 있습니다？」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 可愛らしく笑みを浮かべる아큐の自慢気な声を聞きながら、
+						PRINTFORMDW 사랑스럽게 미소를 띄우는 아구의 자랑기분인 소리를 들으면서,
+;OriginalString : 解き放たれる事の無い쾌락に%CALLNAME:MASTER%は次第に意識を白く塗りつぶす……
+						PRINTFORMDW 풀어 발해지는 일이 없는 쾌락에 %CALLNAME:MASTER%(은)는 점차 의식을 희게 전부 칠한다……
+					ENDSELECT
+
+					;無断사정後
+					ELSE
+
+					SELECTCASE KFLAG:150
+					CASE 0
+;OriginalString : 「喧しいですね、ぎゃあぎゃあぎゃあぎゃあと」
+						PRINTFORMW 「시끄럽네요, 후」
+;OriginalString : 「そんなに大事に扱わなければ壊れるような粗末な物なら、こんな所にぶら下げてるなってんです」
+						PRINTFORMW 「그렇게 소중하게 취급하지 않으면 망가지는 것 같은 허술한 것이라면, 이런 곳에 매달고 있는 되어 입니다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 震える%CALLNAME:MASTER%의 肉棒を、아큐はひときわ強く蹴り飛ばす。
+						PRINTFORMDW 떨린다%CALLNAME:MASTER%의 페니스를, 아구는 한층 강하게 차 날린다.
+;OriginalString : 고통に僅かに縮こまる様子を見下し、酷薄な笑みを浮かべた。
+						PRINTFORMDW 아픔에 불과에 움츠러드는 모습을 업신여겨, 각박한 미소를 띄웠다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「ああ……고통で縮こまる様なら、わざわざ시간を空ける필요も無いですね」
+						PRINTFORMW 「아……아픔으로 움츠러드는 것 같으면, 일부러 시간을 비울 필요도 없네요」
+;OriginalString : 「ガッチガチに발기させては蹴り飛ばして、の繰り返しですぐにザーメン貯められるんじゃ無いですか？」
+						PRINTFORMW 「갓치가치에 발기시켜 차 날려, 의 반복으로 곧바로 정액 모을 수 있지 없습니까？」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : まるでいいアイデアが閃いたかの様に話す아큐の발に、%CALLNAME:MASTER%は縋り付いて懇願했다。
+						PRINTFORMDW 마치 좋은 아이디어가 섬 있었는지와 같이 이야기하는 아구의 다리에,%CALLNAME:MASTER%(은)는 추붙어 간절히 원함 했다.
+					CASEELSE
+;OriginalString : 「如何ですか？　御阿礼の발技は」
+						PRINTFORMW 「어떻습니까？ 아례의 다리 기술은」
+;OriginalString : 「당신の様なクズには勿体無いシロモノなんですよ？」
+						PRINTFORMW 「당신의 같은 쓰레기에는 과분한 흰색 물건이랍니다？」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐は%CALLNAME:MASTER%に股を開かせ、乱暴にサイドキックを繰り返す。
+						PRINTFORMDW 아구는 %CALLNAME:MASTER%에 가랑이를 열게 해 난폭하게 사이드 킥을 반복한다.
+;OriginalString : ぺちんぺちんと揺れる肉棒を鼻で笑うと、아큐は涙すら浮かべる%CALLNAME:MASTER%に語りかけた。
+						PRINTFORMDW 침착하게 흔들리는 페니스를 코로 웃으면(자), 아구는 눈물조차 띄운다%CALLNAME:MASTER%에 말을 걸었다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「イキたいなら勝손にどうぞ。但し、その瞬間にこの참다の効かない玉袋を踏み潰してでも止めますけれど」
+						PRINTFORMW 「이키 싶으면 마음대로 아무쪼록. 단, 그 순간에 이 인내의 효과가 없는 옥대를 밟아 잡고서라도 멈춥니다 하지만」
+					ENDSELECT
+
+					ENDIF
+					TCVAR:MASTER:애태움도 += 1
+					KFLAG:150 += 1
+				;사정許可有り
+				CASEELSE
+					SELECTCASE RAND:2
+					CASE 0
+;OriginalString : 「발ですか？　……それはちょっと、心外ですね」
+						PRINTFORMW 「다리입니까？ ……그건 좀, 의외이네요」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 아큐は少々ムッと했다表情で발による애무を続ける。
+						PRINTFORMDW 아구는 조금 불끈 화가 난 표정으로 다리에 의한 애무를 계속한다.
+;OriginalString : そして両のつま先で逸物の根本を挟み込むと、強く圧迫했다。
+						PRINTFORMDW 그리고 양의 발끝으로 훌륭한 인물의 근본을 사이에 두어 붐비면(자), 강하게 압박했다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「えぇ勿論、당신様が決める事ですから文句を挟む余地はございませんが」
+						PRINTFORMW 「네물론, 귀하가 결정하는 일이기 때문에 불평을 사이에 두는 여지는 없습니다만」
+;OriginalString : 「……悔しいので、少し심술궂음しちゃいます。ふふ、思いっきりいきますよ？」
+						PRINTFORMW 「……분하기 때문에, 조금 심술쟁이있습니다. 후후, 마음껏 살아요？」
+					CASEELSE
+;OriginalString : 「イってしまうんですか？　折角溜めたせいえきを、발なんかに空打ちしてしまうのですか？」
+						PRINTFORMW 「이는 끝냅니까？ 모처럼 모은 정액을, 다리같은 것에(이) 하늘 쳐 해 버립니까？」
+;OriginalString : 「ああ、なんと勿体無い事を。아큐は입惜しゅうございます」
+						PRINTFORMW 「아, 너무나 과분한 일을. 아구는 구석사람들 있습니다」
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 입で言う言葉とは裏腹に、아큐の발は的確に弱い所を突き사정へと押し上げていく。
+						PRINTFORMDW 입으로 말하는 말과는 정반대로, 아구의 다리는 적확하게 약한 곳을 찔러 사정으로 밀어 올려 간다.
+;OriginalString : 아큐の입元は実に楽しそうに歪み、今か今かと발による精の噴出を待ち構えている。
+						PRINTFORMDW 아구의 입가는 실로 즐거운 듯이 비뚤어져, 지금인가 지금일까하고 다리에 의한 정령의 분출을 기다려 짓고 있다.
+;OriginalString : 
+						PRINTFORMDL
+;OriginalString : 「さぁ、どうせなら입で宣言して下さいませんか？」
+						PRINTFORMW 「, 어차피라면 입으로 선언해 주시지 않겠습니까？」
+;OriginalString : 「自分は幼女（おさなめ）の발で弄られて興奮する変態です、と！」
+						PRINTFORMW 「자신은 유녀（어린）의 다리로 만지작거려져 흥분하는 변태입니다, 라고！」
+					ENDSELECT
+				ENDSELECT
+			RETURN LOCAL:1
+		ENDIF
+	ENDIF
+	
+	;=================================================
+	;연속실행						愉快そうに%CALLNAME:MASTER%を見下ろ하면서페니스를ぐりぐりと짓밟아ている…
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TFLAG:ACT == TFLAG:전ACT
+		IF CFLAG:153 == 0
+;OriginalString : 「ええ……もちろん、稗田の技をもってすれば、발であろうと손指と大差のない快感を与えられます」
+			PRINTFORMW 「예……물론, 히에다의 기술을 가지고 하면, 다리여도 손가락과 큰 차이가 없는 쾌감이 주어집니다」
+;OriginalString : 「ほら、こうやって指の間にがっちり掴まれて……」
+			PRINTFORMW 「이봐요, 이렇게 손가락의 사이에 단단히 잡아져……」
+;OriginalString : 「容赦なく、もう片方の발の裏に擦り付けられるのが、堪らないのでしょう？」
+			PRINTFORMW 「가차 없이, 이제 다른 한쪽의 다리의 뒤에 칠할 수 있는 것이, 감등 없을 것입니다？」
+;OriginalString : 
+			PRINTFORMDL
+;OriginalString : 발での快感に喘ぐ%CALLNAME:MASTER%を見下ろし、아큐の股間もしっとりと湿り気を帯びている……
+			PRINTFORMDW 다리에서의 쾌감에 허덕이는 %CALLNAME:MASTER%(을)를 내려다 봐, 아구의 고간도 촉촉하게 습기를 띠고 있다……
+;OriginalString : 
+			PRINTFORMDL
+;OriginalString : 「身体の何処だろうと、愛して、捧げて……ぐちゃぐちゃにして差し上げます♪」
+			PRINTFORMW 「신체의 어디일거라고, 사랑해, 바쳐……질겅질겅으로 해 드립니다♪」
+		ELSE
+;OriginalString : 「……なんともまあ、男性としての尊厳を投げ捨てた格好ですね」
+			PRINTFORMW 「……정말 뭐, 남성으로서의 존엄을 내던진 모습이군요」
+;OriginalString : 「あ、今更ですか。丁度よく両손も空いた事ですし、求聞史紀に残すメモでも取りましょうかね」
+			PRINTFORMW 「아, 지금 갱입니까. 꼭 자주(잘) 양손도 빈 일이고, 구문사기에 남기는 메모에서도 취할까요」
+;OriginalString : 「ええと……『발で睾丸を踏まれると、ぶもぉと鳴く』」
+			PRINTFORMW 「음……「다리로 불알을 밟히면(자), 도 와 운다」」
+;OriginalString : 
+			PRINTFORMDL
+;OriginalString : 意地の悪い笑みを浮かべ、아큐は片손間に페니스를짓밟아た。
+			PRINTFORMDW 고집이 나쁜 미소를 띄워 아구는 여가에 페니스를 짓밟았다.
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+	
+	;地の文に派生は設けてありませんが、これは割りと필요と思われるので
+	;=================================================
+	;신발안履い하며 발コキ
+	;(デフォルトで신발안履いていないキャラは表示されない)
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TEQUIP:신발안
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;죠교자にTALENT:벽통과がない場合、천 넘어로なる
+	;=================================================
+	;하반신服装が邪魔
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && PANTSCHECK(1)
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1
+		;無断사정플래그なし
+		IF KFLAG:153 == 0
+			IF FAVOR(0, 1000) && RAND:3 == 0
+;OriginalString : 「……物발りない、という顔ですね……」
+				PRINTFORMW 「……어딘지 부족한, 이라고 하는 얼굴이군요……」
+;OriginalString : 「やはり、こっちで無ければ駄目なのですか？　こんな小さな童に、발で踏まれるのが望みなの？」
+				PRINTFORMW 「역시, 여기로 없으면 안됩니까？ 이런 작은 동에, 다리로 밟히는 것이 소망이야？」
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 言葉で嘆きながらも、아큐は歪んだ입角を隠そうともしない。
+				PRINTFORMDW 말로 한탄하면서도, 아구는 비뚤어진 구각을 숨길려고도 하지 않는다.
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「稗田の지식をこんな事に使っていると知れたら、ご先祖様になんとお詫びすれば良いか……」
+				PRINTFORMW 「히에다의 지식을 이런 일에 사용하고 있으면(자) 알려지면(자), 선조님에게 무려 사과하면 좋은가……」
+;OriginalString : 「と、これだけ言っても、期待했다目で見るのを止められないんですね……」
+				PRINTFORMW 「이라고 이만큼 말해도, 기대한 눈으로 보는 것을 멈출 수 없네요……」
+;OriginalString : 「分かりま했다。他ならぬ당신様の為、二度と忘れられぬ身体にして差し上げます♪」
+				PRINTFORMW 「알았습니다. 다름아닌 귀하이기 때문에, 두 번 다시 잊을 수 없는 신체로 해 드립니다♪」
+			ELSEIF FAVOR(0, 300) && RAND:2 == 0
+;OriginalString : スッ、と差し出당했다아큐の발に、%CALLNAME:MASTER%의 身体が思わず反応する。
+				PRINTFORMDW 슥, 이라고 내며진 아구의 다리에,%CALLNAME:MASTER%의 신체가 무심코 반응한다.
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「……あら？　まだ、何をするとも言ってないのですけど……」
+				PRINTFORMW 「……어머나？ 아직, 무엇을 한다고도 말하지 않습니다지만……」
+;OriginalString : 「ふふ、발が良いんですか？　こんな小さい발に、プニプニと踏まれたいの？」
+				PRINTFORMW 「후후, 다리가 좋습니까？ 이런 작은 다리에, 프니프니와 밟히고 싶은거야？」
+;OriginalString : 「……仕方のない당신様ですね。これから母になる身としては、不甲斐ないのですが……」
+				PRINTFORMW 「……어쩔 수 없는 귀하군요. 지금부터 어머니가 되는 몸으로서는, 불 보람없습니다만……」
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : クスクスと笑いながらも、아큐は작은체형な身体で페니스へ体重をかけていく……
+				PRINTFORMDW 킥킥웃으면서도, 아구는 몸집이 작은 신체로 페니스에 체중을 걸쳐 간다……
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「もしやとは思いますけれど、妖精に踏まれたいからと言って行方不明되었다りしないで下さいよ？」
+				PRINTFORMW 「어쩌면이라고는 생각합니다 하지만, 요정에 밟히고 싶기 때문에라고 해 행방불명이 되거나하지 마세요？」
+;OriginalString : 「そうならないよう、やはり당신様の事は厳重に관리しておかなければなりませんね……♪」
+				PRINTFORMW 「그렇게 되지 않게, 역시 귀하의 일은 엄중하게 관리해 두지 않으면 안되는군요……♪」
+			ELSE
+;OriginalString : 「ふぅ……」
+				PRINTFORMW 「……」
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 土踏まずでぐりぐりと%CALLNAME:MASTER%의 男根を弄びながら、아큐はため息を付いた。
+				PRINTFORMDW 흙 밟지 않고로 때굴때굴%CALLNAME:MASTER%의 남근을 희롱하면서, 아구는 한숨을 붙었다.
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「話にだけは聞いていま했다が、まさか당신様が幼子に발で踏まれて喜ぶ変態で했다とは……」
+				PRINTFORMW 「이야기에만은 (듣)묻고 있었습니다만, 설마 귀하가 어린 아이에게 다리로 밟히고 기뻐하는 변태였습니다란……」
+;OriginalString : 「違うのですか？　ふふっ、私はそうは思えませんけどね……」
+				PRINTFORMW 「다릅니까？ 후후, 나는 그렇게는 생각되지 않지만……」
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : そう言いつつも아큐の발捌きは段々と動きを早め、的確に%CALLNAME:MASTER%의 ツボをついてきている。
+				PRINTFORMDW 그렇게 말하면서도 아구의 발놀림은 점점움직임을 빠른, 적확하게 %CALLNAME:MASTER%의 단지를 따라 오고 있다.
+;OriginalString : 
+				PRINTFORMDL
+;OriginalString : 「まぁ、宜しいでしょう。당신様がこの様な플레이がお好みとあらばそれに答えるのが賢妻と言う物です」
+				PRINTFORMW 「아무튼, 좋을 것입니다. 귀하가 이와 같은 플레이가 기호와 거기에 대답하는 것이 켄 아내라고 하는 것입니다」
+;OriginalString : 「この稗田の瞳でつぶさに観察しておりますから……存分に、反応して下さいまし」
+				PRINTFORMW 「이 히에다의 눈동자로 자세히 관찰하고 있을테니까……마음껏, 반응해 주세요 해」
+			ENDIF
+		ELSE
+;OriginalString : 아큐は凶悪な笑みを浮かべ、容赦なく%CALLNAME:MASTER%의 玉袋に발を振り下ろす。
+			PRINTFORMDW 아구는 흉악한 미소를 띄워 가차 없이%CALLNAME:MASTER%의 옥대에 다리를 거절해 내린다.
+;OriginalString : 一突きされる毎に%CALLNAME:MASTER%의 額から脂汗が流れ落ち、涙が頬を伝う。
+			PRINTFORMDW 1찔러 될 때마다%CALLNAME:MASTER%의 이마로부터 비지땀이 흐르고 떨어져 눈물이 뺨을 탄다.
+;OriginalString : 
+			PRINTFORMDL
+;OriginalString : 「どう했다んですか、早く無駄撃ちしてしまった分の精子を作りなおして下さいよ」
+			PRINTFORMW 「어떻게 했습니까, 빨리 헛됨 공격해 해 버린 만큼의 정자를 다시 만들어 주세요」
+;OriginalString : 「それすらも出来ない様であれば、本当に両とも潰して야쿠모유카리にのし付けて返しちゃいますよ？」
+			PRINTFORMW 「그것조차도 할 수 없는 같으면, 정말로 양 모두 잡아 야쿠모보라색에의 해 붙여 반환있어요？」
+;OriginalString : 「男としてすら役に立たない男がどうなるか、なんて私には分かりませんけどね」
+			PRINTFORMW 「남자로서조차 도움이 되지 않는 남자가 어떻게 되는지, 뭐라고 하는 나에게는 모르지만」
+;OriginalString : 
+			PRINTFORMDL
+;OriginalString : 侮蔑的な笑みを浮かべながら、아큐はぐりぐりと발で踏みにじる……
+			PRINTFORMDW 모멸적인 미소를 띄우면서, 아구는 때굴때굴다리로 유린한다……
+		ENDIF
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT19, 손가락삽입한다(ACT19_0, 손가락삽입한다/ACT19_1, Ｇスポット刺激/ACT19_2, 바이브出し入れ)
+;*************************************************
+;・죠교대상が후타나리若しくはオンナの場合に発生
+;・죠교대상が처녀の場合Ｇスポット刺激等に派生しない＆쾌Ｖにマイナス보정
+;・바이브装備中は바이브出し入れに派生
+;・TFLAG:징계・플래그が立っていると発生しない
+;・턴방침が"이상"だと発生しない
+;・TEQUIP(삼각목마/페니스밴드)장착中には発生しない
+;・성교중/성교봉사중には発生しない
+;・죠교대상が남자だと発生しない
+;・죠교대상が후타나리の場合、애태움中には発生しない
+;-------------------------------------------------
+;※죠교대상が처녀ではない
+;※연속실행の場合
+;※가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じて
+;※발기도が低い場合、죠교자の애무スキルに応じて
+;※요강제발기の場合
+;・上記条件の場合Ｇスポット刺激に派生する
+;-------------------------------------------------
+;TFLAG:ACT파생(0=손가락삽입한다/1=Ｇスポット刺激/2=바이브出し入れ)
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_19
+;=================================================
+;*************************************************
+;ACT19_0, 손가락삽입한다
+;*************************************************
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;손가락삽입한다					膣입に指先をあてがい、そっと奥へ押し込んだ…
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 1
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+	;=================================================
+	;안면승마中
+	;記入チェック
+	LOCAL:1 = 1
+	;=================================================
+	IF LOCAL:1 && TEQUIP:안면승마 || TEQUIP:안면승마항문
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;위치전후分岐は필요に応じて
+	;何処かで統合してしまうのも良いと思います
+	;=================================================
+	;後ろから
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:위치전후 == 2
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;前から
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;;ACT19_1_0, Ｇスポット刺激
+;*************************************************
+;가버려or쾌Ｃが5000以上の場合、죠교자の애무スキルに応じてＧスポット刺激
+;Ｇスポット責めに派生すると전립선자극扱いになる
+;-------------------------------------------------
+
+;죠교대상が후타나리の場合でも発生するので、필요に応じてPENIS(MASTER)なり!PENIS(MASTER)で分岐を設けると良いと思います
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;Ｇスポット刺激					指を進入させＧスポットを直接刺激했다…
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 1
+	;=================================================
+	;後ろから
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:위치전후 == 2
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;=================================================
+	;前から
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1 && TCVAR:MASTER:위치전후 == 1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+	
+	;ここを最初に書きましょう
+	;=================================================
+	;その他・条件なし
+	;記入チェック
+	LOCAL:1 = 0
+	;=================================================
+	IF LOCAL:1
+;OriginalString : 
+		PRINTFORMW 
+		RETURN LOCAL:1
+	ENDIF
+ENDIF
+
+;*************************************************
+;ACT19_2, 바이브出し入れ
+;*************************************************
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;바이브出し入れ					Ｇスポットを抉るように激しく動か했다…
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 2
+	;地の文自体に派生はありませんが、@TARGET_DESCRIPTIONでの状況描写が入る可能性があります
+;OriginalString : 
+	PRINTFORMW 
+	RETURN LOCAL
+ENDIF
+
+;*************************************************
+;ACT27, 밀어 넘어트린다
+;*************************************************
+;・밀어 넘어트린다/밀어넘어짐終了
+;・既に밀어넘어짐ている場合、해방になる
+;・TFLAG:징계・플래그がたっていると発生しない
+;・금일의방침が"イチャイチャ"だと発生しない
+;・TEQUIP:페니스밴드장착中には発生しない
+;・애태움中には発生しない
+;-------------------------------------------------
+;TFLAG:ACT파생（=0,밀어 넘어트린다/=1,밀어넘어짐終了）
+;-------------------------------------------------
+;=================================================
+@KOJO_ACT_K48_27
+;=================================================
+;地の文に派生はありませんが、@TARGET_DESCRIPTIONで状況描写が入る可能性があります
+;-------------------------------------------------
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT27_0, 밀어 넘어트린다			%CALLNAME:MASTER%を押し倒했다…
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 1
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && !TFLAG:ACT파생
+		IF CFLAG:153 == 0
+;OriginalString : 「……身体が、熱うございます……」
+			PRINTFORMW 「……신체가, 열있습니다……」
+;OriginalString : 「さあ、私に身体を委ねて……？」
+			PRINTFORMW 「자, 나에게 신체를 맡겨……？」
+		ELSE
+;OriginalString : 「精々、家畜らしく大人しくしている事ですね」
+			PRINTFORMW 「정령들, 가축인것 같고 얌전하게 하고 있는 일이군요」
+;OriginalString : 「『待て』を覚えれたなら褒美をあげますよ」
+			PRINTFORMW 「 「기다릴 수 있다」를 기억선반등 포상을 주어요」
+		ENDIF
+	RETURN LOCAL
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;ACT27_1, 밀어넘어짐終了		%CALLNAME:MASTER%を자유に했다…
+;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
+LOCAL = 0
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF LOCAL && TFLAG:ACT파생 == 1
+;OriginalString : 
+	PRINTFORMW 
+	RETURN LOCAL
+ENDIF

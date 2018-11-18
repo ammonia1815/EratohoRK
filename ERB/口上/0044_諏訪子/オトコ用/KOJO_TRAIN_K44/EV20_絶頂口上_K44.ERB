@@ -1,0 +1,620 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	스와코구상 죠교이벤트구상ファイル
+;
+;	죠교ターン中이벤트、절정구상をまとめたファイル
+;
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;========================================================================
+;EV20, 절정구상
+;========================================================================
+;・죠교자か죠교대상が절정に達するときに表示
+;・各절정は個別の呼び出しを持たずに、全て派生で処理される
+;-------------------------------------------------
+;=================================================
+;関連変数…
+;
+;TFLAG:전회질싸,(1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)/5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정))
+;TFLAG:REACT분류,(0=なし/1=소극적으로 한다/2=적극적으로 한다/3=용서를 빌다/4=날뛴다/5=要求に応じない,거부/6=逃げる,もがく)
+;NOWEX:사정,(1=드라이사정/2=사정/3=대량사정/4=사정(조루)/5=A責사정)
+;TEQUIP:자위중,(bit0=죠교대상/bit1=죠교자)
+;
+;=================================================
+;関数類…
+;
+;MASTER_EX
+;引　数:ARG:0…애무者→1.죠교대상自身/2.죠교자/4.조수１/8.조수２/16.조수３
+;                      /64.도구/128.便所利用者　省略すると애무者を問わない
+;              ビット和での指定が可能
+;       ARG:1…(省略可)절정の種別→1.Ｃ절정/2.Ｖ절정/3.Ａ절정/4.Ｂ절정
+;                                  /11.분유/12.사정/13.방뇨
+;ARG:0 (bit0 = 죠교대상自身/bit1 = 죠교자/bit2 = 조수１/bit3 = 조수２/bit4 = 조수３/bit6 = 도구/bit7 = 便所利用者)
+;-------------------------------------------------
+;TARGET_EX
+;引　数:ARG:0…애무者→1.죠교대상/2.죠교자自身/4.조수１/8.조수２/16.조수３
+;              ビット和での指定が可能。省略すると애무者を問わない
+;       ARG:1…(省略可)절정の種別→1.Ｃ절정/2.Ｖ절정/3.Ａ절정/4.Ｂ절정
+;                                  /11.분유/12.사정
+;ARG:0 (bit0 = 죠교대상/bit1 = 죠교자自身/bit2 = 조수１/bit3 = 조수２/bit4 = 조수３)
+;-------------------------------------------------
+@KOJO_MALE_EVENT_K44_20(ARG)
+;-------------------------------------------------
+;TFLAG:전회질싸;(1=Ｖ성교/2=Ｖ성교봉사/3=Ｖ성교(드라이사정)/4=Ｖ성교봉사(드라이사정)/5=Ａ성교/6=Ａ성교봉사/7=Ａ성교(드라이사정)/8=Ａ성교봉사(드라이사정))
+;-------------------------------------------------
+;────────────────────────────────────
+;질내사정(MASTER→TARGET)
+;────────────────────────────────────
+;・Ｖ성교봉사系で질내사정する場合に表示
+;・TFLAG:안빼고は抜かない判定ごとに+1される
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 2, 4) > 0
+	;=================================================
+	;안빼고に続行
+	;=================================================
+	IF TFLAG:안빼고
+		;동시절정(죠교자が同時にＶ절정)
+		IF TCVAR:TARGET:Ｖ절정 && TCVAR:MASTER:사정
+			SELECTCASE GET_SHOOTING(MASTER)
+				CASE "드라이사정"
+;OriginalString : 「イくぅーっ%HTML_HEARTB()%　チンポでイくっ！」")
+					CALL HTMLPRINTW(@"「간다앗%HTML_HEARTB()% 자지로 간닷！」")
+					PRINTFORMW 「은-…하…이제 나오지 않는다니…」
+;OriginalString : 「でもナカでまだビクビク大きくなってるじゃない…%HTML_HEARTB()%　続けちゃうよ？」")
+					CALL HTMLPRINTW(@"「그렇지만 나카로 아직 움찔움찔 커지고 있지 않아…%HTML_HEARTB()% 계속해 버린다？」")
+				;その他
+				CASEELSE
+;OriginalString : 「んはぁっ%HTML_HEARTB()%　イくぅっ%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「응하앗%HTML_HEARTB()% 간다앗%HTML_HEARTB()%」")
+;OriginalString : 「…もう…元気にドピュドピュしちゃってぇ…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「…이제(벌써)…건강하게 드퓨드퓨 해 버려어…%HTML_HEARTB()%」")
+;OriginalString : 「まだ全然硬いまんまよ？　このスケベが%HTML_HEARTB()%　もっと搾り取ってあげる…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「아직 전혀 딱딱한 그대로야？ 이 호색가가%HTML_HEARTB()% 좀 더 짜내 준다…%HTML_HEARTB()%」")
+			ENDSELECT
+		;통상
+		ELSE
+			SELECTCASE GET_SHOOTING(MASTER)
+				CASE "드라이사정"
+					PRINTFORMW 「, 이제 최후인 것…？」
+;OriginalString : 「こっちはまだイってないのに甘いよっ%HTML_HEARTB()%　このまま続行っ%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「여기는 아직 가지 않았는데 달콤해%HTML_HEARTB()% 이대로 속행%HTML_HEARTB()%」")
+				CASE "조루"
+					PRINTFORMW 「굳이 사정하고 있어이 조루！」
+;OriginalString : 「抜かせないわよ…？　イくまで頑張ってもらうんだからぁっ%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「빠뜨릴 수 없어요…？ 갈 때까지 노력해 받기 때문에%HTML_HEARTB()%」")
+				;その他
+				CASEELSE
+;OriginalString : 「あはっ%HTML_HEARTB()%　チンポピクピクいってるぅ%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「아핫%HTML_HEARTB()% 자지 쫑긋쫑긋 말하고 있다아%HTML_HEARTB()%」")
+;OriginalString : 「でも私まだイってないんだけどなー%HTML_HEARTB()%　くす、このまま続行ね%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「그렇지만 나 아직 가지 않지만―%HTML_HEARTB()% 쿠스, 이대로 속행이군요%HTML_HEARTB()%」")
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;동시절정(죠교자が同時にＶ절정)
+	;=================================================
+	IF TCVAR:TARGET:Ｖ절정 && TCVAR:MASTER:사정
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+;OriginalString : 「一緒にっ%HTML_HEARTB()%　一緒にきてぇっ%HTML_HEARTB()%　はぁあぁんっ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「함께%HTML_HEARTB()% 함께 와앗%HTML_HEARTB()% 하아아아읏%HTML_HEARTB()%」")
+				PRINTFORMW 「후~…후~…뭐야, 이제 다 써버려 버려서  것이 아니다…」
+			;その他
+			CASEELSE
+;OriginalString : 「イくっ…！　私もイっちゃうっ！　やぁあぁぁあ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「간닷…！ 나도 가 버린닷！ 야아아아아%HTML_HEARTB()%」")
+;OriginalString : 「はーっ…はーっ%HTML_HEARTB()%　入ってくるぅ…ザーメン…いっぱぁい…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「핫…핫%HTML_HEARTB()% 들어 온다아…정액…있고…%HTML_HEARTB()%」")
+		ENDSELECT
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;애태움から
+	;=================================================
+	IF TCVAR:MASTER:애태움도 && TCVAR:MASTER:사정
+		;애태움中
+		IF TCVAR:MASTER:애태움도 > 1
+			SELECTCASE GET_SHOOTING(MASTER)
+				CASE "전립선사정"
+;OriginalString : 「もうっまだだって言ってんのにぃ%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「이제(벌써) 아직이라고 말하고 있는데%HTML_HEARTB()%」")
+					PRINTFORMW 「엉덩이로 너무 느껴 버렸어？ 완전히…♪」
+				CASEELSE
+;OriginalString : 「はぁんっ……あ%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「하아읏……아%HTML_HEARTB()%」")
+					PRINTFORMW 「, 도―, 뭐사정하고 있어…너무 빨라 자기는！」
+			ENDSELECT
+		;トドメ
+		ELSE
+			SELECTCASE GET_SHOOTING(MASTER)
+				CASE "드라이사정"
+					PRINTFORMW 「뭐야 이제 나오지 않지 않다…」
+					PRINTFORMW 「빨리 불알로 정자 만드세요…♪」
+				;その他
+				CASEELSE
+;OriginalString : 「あはぁっ%HTML_HEARTB()%　熱ぅい…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「아하앗%HTML_HEARTB()% 열있고…%HTML_HEARTB()%」")
+;OriginalString : 「そんなに気持ち良さそうに사정당했다んじゃたまんないわぁ…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「그렇게 기분 좋은 것 같이사정당했다그러면 견딜 수 없어요…%HTML_HEARTB()%」")
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		;사정種の派生を見る
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+				PRINTFORMW 「 이제 정액 다 써버려 버렸어…？」
+				PRINTFORMW 「평상시부터 정력 청구서라고 하세요…싶고…」
+			CASE "대량사정"
+;OriginalString : 「も…もお…、사정しすぎよばかぁ…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「도…아이참…,사정너무 해요 바보…%HTML_HEARTB()%」")
+;OriginalString : 「まだ出てきてるぅ…%HTML_HEARTB()%　ドロォってぇ…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「아직 나오고 있다아…%HTML_HEARTB()% 드로는…%HTML_HEARTB()%」")
+			CASE "조루"
+				PRINTFORMW 「 이제 바보！ 아직 사정 모래매달고 있어…」
+				PRINTFORMW 「이 조루…♪」
+			CASE "전립선사정"
+;OriginalString : 「항문で感じて사정しちゃったんだぁ…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「항문그리고 느껴사정해 버린 것이다아…%HTML_HEARTB()%」")
+;OriginalString : 「どうしようもないわね…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「어쩔 수 없네요…%HTML_HEARTB()%」")
+			CASE "사정"
+;OriginalString : 「はぁんっ%HTML_HEARTB()%　出たぁっ%HTML_HEARTB()%　もう…」")
+				CALL HTMLPRINTW(@"「하아읏%HTML_HEARTB()% 나왔다앗%HTML_HEARTB()% 이제(벌써)…」")
+;OriginalString : 「ほら見てぇ…こんなに사정しちゃってぇ…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「이봐요 봐아…이렇게사정해 버려어…%HTML_HEARTB()%」")
+		ENDSELECT
+		RETURN 2
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;항문内사정(MASTER→TARGET)
+;────────────────────────────────────
+;・Ａ성교봉사系で장내사정する場合に表示
+;・TFLAG:106,안빼고は抜かない判定ごとに+1される
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && GROUPMATCH(TFLAG:전회질싸, 6, 8) > 0
+	;=================================================
+	;동시절정(죠교자が同時にＡ절정)
+	;=================================================
+	IF TCVAR:TARGET:Ａ절정 && TCVAR:MASTER:사정
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+;OriginalString : 「ひゃぁあぁ%HTML_HEARTB()%　もうダメぇっ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「햐아아아%HTML_HEARTB()% 이제 안돼엣%HTML_HEARTB()%」")
+;OriginalString : 「やん…お尻でビクビク動いてるぅ…%HTML_HEARTB()%　もう出せないの…？」")
+				CALL HTMLPRINTW(@"「…엉덩이로 움찔움찔 움직이고 있다아…%HTML_HEARTB()% 이제 낼 수 없는거야…？」")
+			;その他
+			CASEELSE
+;OriginalString : 「やぁあっ%HTML_HEARTB()%　お尻イくぅっ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「야아앗%HTML_HEARTB()% 엉덩이 간다앗%HTML_HEARTB()%」")
+;OriginalString : 「もーばか…%HTML_HEARTB()%　사정しすぎよぉ…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「도-바보…%HTML_HEARTB()% 사정너무 해요…%HTML_HEARTB()%」")
+		ENDSELECT
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;その他・条件なし
+	;=================================================
+	IF 구상記入チェック(100)
+		;사정種の派生を見る
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+;OriginalString : 「もう脈うってるだけじゃない…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「이미 맥 치고 있을 뿐이지 않아…%HTML_HEARTB()%」")
+				PRINTFORMW 「기분 좋았다…？」
+			CASE "대량사정"
+;OriginalString : 「항문でこんなにドバドバ사정すなんてぇ…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「항문그리고 이렇게 줄줄사정모래응이라고오…%HTML_HEARTB()%」")
+				PRINTFORMW 「엉덩이로 임신시킬 생각…？」
+			CASE "조루"
+				PRINTFORMW 「도-사정해 버렸어？」
+;OriginalString : 「ちょっと締め過ぎたかしら…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「조금 과잉긴축 일까…%HTML_HEARTB()%」")
+			CASE "전립선사정"
+;OriginalString : 「항문責められながらお尻に사정するなんて…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「항문꾸짖어지면서 엉덩이에사정하다니…%HTML_HEARTB()%」")
+				PRINTFORMW 「이 엉덩이 매니아♪」
+			CASE "사정"
+;OriginalString : 「ぁはぁ…%HTML_HEARTB()%　熱い…%HTML_HEARTB()%　お尻とけちゃう…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「아하아…%HTML_HEARTB()% 뜨겁다…%HTML_HEARTB()% 엉덩이 녹아 버린다…%HTML_HEARTB()%」")
+;OriginalString : 「遠慮なく사정しすぎよ…もう…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「사양말고사정너무 했어…이제(벌써)…%HTML_HEARTB()%」")
+		ENDSELECT
+		RETURN 2
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;질내사정(TARGET→MASTER)
+;────────────────────────────────────
+;・Ｖ성교系で질내사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+;IF 구상記入チェック(0) && GROUPMATCH(TFLAG:전회질싸, 1, 3) > 0
+;ENDIF
+
+;────────────────────────────────────
+;항문内사정(TARGET→MASTER)
+;────────────────────────────────────
+;・Ａ성교系で장내사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+;IF 구상記入チェック(0) && GROUPMATCH(TFLAG:전회질싸, 5, 7) > 0
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상사정
+;────────────────────────────────────
+;・죠교대상が사정する場合に表示
+;・사정量による分岐は필요に応じ加減して使うのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:MASTER:사정 && !TCVAR:MASTER:방뇨 ;//방뇨を伴う場合は弾く
+	;=================================================
+	;전립선사정(Ａ절정時に쾌Ｃに関わらず사정)
+	;=================================================
+	IF SHOOTING(MASTER, "전립선사정")
+		SELECTCASE MA_PLAYER(1)
+			;입で(항문펠라)           //現在の仕様では発生し得ない
+			;                           //舌が前立腺まで届く訳ない！ というシステム側の意向なんですが
+			;                           //스와코様ならできそうな感はまぁありますｗ ただ仕様なので、ということで@/L
+			;CASE 1
+			;	PRINTFORMW 「レロレロっ%UNICODE(0x2661)%　んぅっ%UNICODE(0x2661)%　びゅるっ%UNICODE(0x2661)%」
+			;	PRINTFORMW 「感じすぎて사정しちゃったの？よかったわねー%UNICODE(0x2661)%」
+			;腕で(フィスト)
+			CASE 10
+				PRINTFORMW 「아리데베르치…(안녕)」
+				PRINTFORMW 「제3부완！！」
+			;上記以外
+			CASEELSE
+;OriginalString : 「くちゅくちゅっ%HTML_HEARTB()%　どうかしらぁ…♪…あっ」")
+				CALL HTMLPRINTW(@"「질척질척%HTML_HEARTB()% 어떨까…♪…앗」")
+;OriginalString : 「사정すなら사정すって言いなさいよぉ…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「사정모래등사정들이마셔 하세요…%HTML_HEARTB()%」")
+		ENDSELECT
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;스마타で동시절정
+	;=================================================
+	IF TCVAR:TARGET:Ｃ절정 && IS_NOWACTNAME("성기마찰한다") && MC_PLAYER(1) == 8
+;OriginalString : 「사정しちゃうの…？　じゃあこのまま…おまんこにかけてぇっ%HTML_HEARTB()%」")
+		CALL HTMLPRINTW(@"「사정해 버려…？ 자 이대로…보지에 걸쳐엇%HTML_HEARTB()%」")
+;OriginalString : 「あはぁっ♪　熱いザーメンいっぱぁい…%HTML_HEARTB()%　もうおまんこグッチャグチャじゃないのぉ…%HTML_HEARTB()%」")
+		CALL HTMLPRINTW(@"「아하앗♪ 뜨거운 정액있고…%HTML_HEARTB()% 이제 보지 굿체그체가 아닌 것…%HTML_HEARTB()%」")
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;파이즈리で동시절정
+	;=================================================
+	IF IS_NOWACTNAME("파이즈리한다") && TCVAR:TARGET:Ｂ절정 && !TCVAR:TARGET:분유
+;OriginalString : 「いいよぉ…%HTML_HEARTB()%　そのままっ%HTML_HEARTB()%　そのままおっぱいに사정してっ%HTML_HEARTB()%」")
+		CALL HTMLPRINTW(@"「좋아…%HTML_HEARTB()% 그대로%HTML_HEARTB()% 그대로 젖가슴에사정햇%HTML_HEARTB()%」")
+;OriginalString : 「んはぁ…%HTML_HEARTB()%　熱くてドロドロじゃない…%HTML_HEARTB()%」")
+		CALL HTMLPRINTW(@"「응하아…%HTML_HEARTB()% 뜨겁고 질척질척이 아니다…%HTML_HEARTB()%」")
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;자위で사정
+	;=================================================
+	IF GETBIT(TEQUIP:자위중, 0)
+		LOCAL:3 = RAND:3
+		;입射
+		IF ME_PLAYER(1) == 9
+			SELECTCASE GET_SHOOTING(MASTER)
+				CASE "드라이사정"
+;OriginalString : 「ほらぁ、おクチにらしてぇ…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「이봐요, 구에들 해에…%HTML_HEARTB()%」")
+;OriginalString : 「あー、もう出てこないじゃないのぉ…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「아-, 이제(벌써) 나오지 않지 않은 것…%HTML_HEARTB()%」")
+				CASE "조루"
+					PRINTFORMW 「 이제 지금 마셔 주기 때문에 대…아！？」
+;OriginalString : 「ザーメン顔にかかっちゃったじゃないぃ…もう…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「정액얼굴에 걸려 버렸지 않아아…이제(벌써)…%HTML_HEARTB()%」")
+				;その他
+				CASEELSE
+					SELECTCASE RANDEVENT(3, 40)
+						CASE 0
+							PRINTFORMW 「아는, 스스로 시코시코 하면서 이낳았다♪」
+;OriginalString : 「でもどーせならぁ…はい、れろんっ%HTML_HEARTB()%」")
+							CALL HTMLPRINTW(@"「그렇지만 어차피라면…네, 날름%HTML_HEARTB()%」")
+;OriginalString : 「おくひに全部らしてぇ…%HTML_HEARTB()%　きたぁっ…%HTML_HEARTB()%」")
+							CALL HTMLPRINTW(@"「두는 히에 전부등 해에…%HTML_HEARTB()% 왔다앗…%HTML_HEARTB()%」")
+						CASE 1
+							PRINTFORMW 「나온다？이제 이 기초？ 자제 할 수 없는 것？」
+;OriginalString : 「しょーがないなぁ…%HTML_HEARTB()%　ほら、おクチにぴゅっぴゅしなさい%HTML_HEARTB()%」")
+							CALL HTMLPRINTW(@"「어쩔 수 없구나…%HTML_HEARTB()% 이봐요, 구하세요%HTML_HEARTB()%」")
+;OriginalString : 「%HTMLFONT("…びゅるっ", , 0xFFFFFF)%%HTML_HEARTB()%　%HTMLFONT("びゅるるっ", , 0xFFFFFF)%%HTML_HEARTB()%　んんっ…%HTML_HEARTB()%　熱くて濃いぃ…%HTML_HEARTB()%」")
+							CALL HTMLPRINTW(@"「%HTMLFONT("…びゅるっ", , 0xFFFFFF)%%HTML_HEARTB()% %HTMLFONT("びゅるるっ", , 0xFFFFFF)%%HTML_HEARTB()% 응읏…%HTML_HEARTB()% 뜨겁고 진하다아…%HTML_HEARTB()%」")
+						CASE 2
+;OriginalString : 「손ぇすごい速いよ？　もうザーメン사정ちゃうんだ%HTML_HEARTB()%」")
+							CALL HTMLPRINTW(@"「손굉장한 빨라？ 이제(벌써) 정액사정낳았다%HTML_HEARTB()%」")
+;OriginalString : 「すんすん…臭い濃くなってる…%HTML_HEARTB()%　いいよ…あーん%HTML_HEARTB()%」")
+							CALL HTMLPRINTW(@"「슝슝…냄새나는 진해지고 있다…%HTML_HEARTB()% 좋아…앙%HTML_HEARTB()%」")
+;OriginalString : 「ぴゅっ%HTML_HEARTB()%　びゅるびゅるっ%HTML_HEARTB()%　ぁふぁ…いっふぁあい%HTML_HEARTB()%」")
+							CALL HTMLPRINTW(@"「퓻%HTML_HEARTB()% %HTML_HEARTB()% …만나%HTML_HEARTB()%」")
+					ENDSELECT
+			ENDSELECT
+		;통상
+		ELSE
+			SELECTCASE GET_SHOOTING(MASTER)
+				CASE "드라이사정"
+					PRINTFORMW 「이제 나오지 않지 않아…」
+;OriginalString : 「仕方ない子…ちゅっ%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「어쩔 수 없는 아이…츗%HTML_HEARTB()%」")
+				;その他
+				CASEELSE
+;OriginalString : 「いいよ…%HTML_HEARTB()%　好きなところにブッかけてぇ…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「좋아…%HTML_HEARTB()% 좋아하는 곳에 북 걸쳐어…%HTML_HEARTB()%」")
+;OriginalString : 「%HTMLFONT("ドピュッ", , 0xFFFFFF)%%HTML_HEARTB()%　%HTMLFONT("びゅっ", , 0xFFFFFF)%%HTML_HEARTB()%　やぁあ…あっつぅい…%HTML_HEARTB()%」")
+					CALL HTMLPRINTW(@"「%HTMLFONT("ドピュッ", , 0xFFFFFF)%%HTML_HEARTB()% %HTMLFONT("びゅっ", , 0xFFFFFF)%%HTML_HEARTB()% 야아아…아개있고…%HTML_HEARTB()%」")
+			ENDSELECT
+		ENDIF
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;스마타で사정
+	;=================================================
+	IF IS_NOWACTNAME("성기마찰한다") && MC_PLAYER(1) == 8
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+;OriginalString : 「あははっ♪　ビクビクするだけでもう出せないんだぁ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「아하핫♪ 움찔움찔 하는 것만으로 이제 낼 수 없다아%HTML_HEARTB()%」")
+;OriginalString : 「先っちょ擦って遊んじゃお♪　んっ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「끝 비비어 놀면♪ 읏%HTML_HEARTB()%」")
+			;その他
+			CASEELSE
+;OriginalString : 「腰動かす度にザーメン出てるじゃない…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「허리 움직일 때에 정액 나와 있지 않아…%HTML_HEARTB()%」")
+;OriginalString : 「おまんこヌルヌルにさせて만족？　この変態…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「보지 미끈미끈하게 시켜만족？ 이 변태…%HTML_HEARTB()%」")
+		ENDSELECT
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;입による애무で사정(펠라など)
+	;=================================================
+	IF (IS_NOWACTNAME("입으로 애무") && TFLAG:ACT파생 == 1) || TEQUIP:죠교대상Ｃ사용 == 2 || MC_PLAYER(1) == 1
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+				PRINTFORMW 「정말로 이제 나오지 않는 것일까…？」
+;OriginalString : 「ちゅうーっ%HTML_HEARTB()%　ん%HTML_HEARTB()%　참다汁しか無いわね」")
+				CALL HTMLPRINTW(@"「츄웃%HTML_HEARTB()% 응%HTML_HEARTB()% 참다국물 밖에 없네요」")
+			;その他
+			CASEELSE
+				SELECTCASE RANDEVENT(3, 41)
+					CASE 0
+;OriginalString : 「でたぁ…臭ぁい…%HTML_HEARTB()%　んっ、ちゅるっ%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「나왔다…취있고…%HTML_HEARTB()% 읏, 츄룻%HTML_HEARTB()%」")
+;OriginalString : 「こんなイカ臭いザーメン飲ませるなんて…この鬼畜%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「이런 오징어 냄새나는 정액 먹이다니…이 귀축%HTML_HEARTB()%」")
+					CASE 1
+;OriginalString : 「じゅるるる…ちゅぽんっ%HTML_HEARTB()%　あはぁ…%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「쥬루루루…츄포읏%HTML_HEARTB()% 아하아…%HTML_HEARTB()%」")
+;OriginalString : 「見てぇ…こんなに사정했다んだよ…%HTML_HEARTB()%　すっごいドロドロしてるぅ…%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「봐아…이렇게사정했다뭐야…%HTML_HEARTB()% 굉장한 질척질척 하고 있다아…%HTML_HEARTB()%」")
+					CASE 2
+;OriginalString : 「んんんーっ%HTML_HEARTB()%　ぷはぁっ%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「응응읏%HTML_HEARTB()% 푸하앗%HTML_HEARTB()%」")
+;OriginalString : 「喉に絡みつくくらいの濃厚ザーメン…ごちそうさま%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「목에 휘감길 정도의 농후 정액…잘 먹었어요%HTML_HEARTB()%」")
+				ENDSELECT
+		ENDSELECT
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;손による애무で사정
+	;=================================================
+	IF IS_NOWACTNAME("손으로 애무") || TEQUIP:죠교대상Ｃ사용 == 1 || MC_PLAYER(1) == 2
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+;OriginalString : 「もう空っぽなのぉ？　つまんないじゃない…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「이제(벌써) 텅 빈？ 재미없지 않아…%HTML_HEARTB()%」")
+;OriginalString : 「ふにゃふにゃチンポも可愛いけどね♪　うりうり%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「흐물흐물 자지도 사랑스럽지만 말야♪ 팔아%HTML_HEARTB()%」")
+			;その他
+			CASEELSE
+				SELECTCASE RANDEVENT(3, 42)
+					CASE 0
+;OriginalString : 「あはぁっ♪　すごい、どっぴゅどぴゅ出てるぅ%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「아하앗♪ 굉장해, 나오고 있다아%HTML_HEARTB()%」")
+;OriginalString : 「気持ちよかったー？　やん、손に付いちゃう…%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「기분 좋았다―？ ,손를 뒤따라 버린다…%HTML_HEARTB()%」")
+					CASE 1
+						PRINTFORMW 「기분 좋음 그렇게 사정하네요―♪」
+;OriginalString : 「ふふ、すごいマヌケな顔してる…%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「후후, 굉장한 얼간이인 얼굴 하고 있다…%HTML_HEARTB()%」")
+					CASE 2
+						PRINTFORMW 「아-아-이런에 사정해 버려서…」」
+;OriginalString : 「カラダにかかっちゃったじゃない…%HTML_HEARTB()%　ん、美味し%HTML_HEARTB()%」")
+						CALL HTMLPRINTW(@"「몸에 걸려 버렸지 않아…%HTML_HEARTB()% 응, 좋은 맛 해%HTML_HEARTB()%」")
+				ENDSELECT
+		ENDSELECT
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;가슴による애무で사정(파이즈리)
+	;=================================================
+	IF IS_NOWACTNAME("파이즈리한다") && MC_PLAYER(1) == 6
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+				PRINTFORMW 「훈 시키는 것만으로 이제 나오지 않지 않다…」
+;OriginalString : 「か弱いわねーキミのチンポは…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「연약해요 않은 너의 자지는…%HTML_HEARTB()%」")
+			;その他
+			CASEELSE
+;OriginalString : 「사정했다いの…？　ほら、いっぱいびゅってしてぇ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「사정했다있고의…？ 이봐요, 는 해에%HTML_HEARTB()%」")
+;OriginalString : 「んっ%HTML_HEARTB()%　乳首が白いのでヌルヌル…%HTML_HEARTB()%　このロリコン…%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「읏%HTML_HEARTB()% 유두가 희기 때문에 미끈미끈…%HTML_HEARTB()% 이 로리콘…%HTML_HEARTB()%」")
+		ENDSELECT
+		RETURN 2
+	ENDIF
+
+	;=================================================
+	;발による애무で사정(발コキ)
+	;=================================================
+	IF IS_NOWACTNAME("풋잡하기") || MC_PLAYER(1) == 7
+		SELECTCASE GET_SHOOTING(MASTER)
+			CASE "드라이사정"
+				PRINTFORMW 「자지 발길질로 되어 텅 비게 할 때까지 사정해버린다는…♪」
+				PRINTFORMW 「어떻게든 하고 있는  것이 아닌 것…？이봐요, 이봐요 이봐요♪」
+			;その他
+			CASEELSE
+;OriginalString : 「ふふっ♪　なぁにこれぇ%HTML_HEARTB()%」")
+				CALL HTMLPRINTW(@"「후훗♪ 뭐이거어%HTML_HEARTB()%」")
+				PRINTFORMW 「드디어 다리로 사정해 버렸어…？ 구할 방법이 없는 변태가 아니다…♪」
+		ENDSELECT
+		RETURN 2
+	ENDIF
+ENDIF
+
+;────────────────────────────────────
+;죠교자사정
+;────────────────────────────────────
+;・죠교자が사정する場合に表示
+;・사정量による分岐は필요に応じ追加して使うのが望ましい
+;・現在の仕様では죠교자が드라이사정することは非常に稀(ほぼ無い？)
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:TARGET:사정
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｃ절정
+;────────────────────────────────────
+;・죠교대상がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:Ｃ절정
+	;남자用구상では不要
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｖ절정
+;────────────────────────────────────
+;・죠교대상がＶ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:Ｖ절정
+	;남자用구상では不要
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상Ａ절정
+;────────────────────────────────────
+;・죠교대상がＡ절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:MASTER:Ａ절정
+	PRINTFORMW 「엉덩이의 구멍은 어때…？」
+	PRINTFORMW 「푹 빠지게 되어버린다겠지♪」
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교대상Ｂ절정
+;────────────────────────────────────
+;・죠교대상がＢ절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:MASTER:Ｂ절정
+	PRINTFORMW 「아는, 유두로 이의 것♪」
+;OriginalString : 「開発のしがいがあるわねキミも%HTML_HEARTB()%」")
+	CALL HTMLPRINTW(@"「개발하는 보람이 있어요너도%HTML_HEARTB()%」")
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교자Ｃ절정
+;────────────────────────────────────
+;・죠교자がＣ절정する場合に表示
+;・ここでは「여자のＣ절정」を想定している
+;・사정は사정구상の分岐で書くのが望ましい
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:TARGET:Ｃ절정
+;OriginalString : 「あはぁっ…だ、ダメッ…%HTML_HEARTB()%　もうっ…%HTML_HEARTB()%」")
+	CALL HTMLPRINTW(@"「아하앗…아, 안됏…%HTML_HEARTB()% 이제(벌써)…%HTML_HEARTB()%」")
+;OriginalString : 「クリちゃんイっちゃうぅううぅ%HTML_HEARTB()%」")
+	CALL HTMLPRINTW(@"「클리짱 가 버린다아아아아%HTML_HEARTB()%」")
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교자Ｖ절정
+;────────────────────────────────────
+;・죠교자がＶ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:TARGET:Ｖ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교자Ａ절정
+;────────────────────────────────────
+;・죠교자がＡ절정する場合に表示
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:TARGET:Ａ절정
+;ENDIF
+
+;────────────────────────────────────
+;죠교자Ｂ절정
+;────────────────────────────────────
+;・죠교자がＢ절정する場合に表示
+;-------------------------------------------------
+IF 구상記入チェック(100) && TCVAR:TARGET:Ｂ절정
+;OriginalString : 「やっ%HTML_HEARTB()%　もうムリっ%HTML_HEARTB()%　ちくびっ%HTML_HEARTB()%」")
+	CALL HTMLPRINTW(@"「얏%HTML_HEARTB()% 이제(벌써) 무리%HTML_HEARTB()% 젖꼭지%HTML_HEARTB()%」")
+;OriginalString : 「イっちゃうっ%HTML_HEARTB()%　ふぁあぁあっ%HTML_HEARTB()%」")
+	CALL HTMLPRINTW(@"「가 버린닷%HTML_HEARTB()% 후아아아앗%HTML_HEARTB()%」")
+	RETURN 2
+ENDIF
+
+;────────────────────────────────────
+;죠교대상시오후키
+;────────────────────────────────────
+;・죠교대상が시오후키の場合に表示
+;・現状、ACT손가락삽입한다時にＧスポット責めに派生했다場合にのみ起きる
+;・주인님の시오후키は無い
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:시오후키
+;ENDIF
+
+;────────────────────────────────────
+;죠교대상실금
+;────────────────────────────────────
+;・죠교대상が실금する場合に表示
+;・죠교대상に素質:오줌싸개が無ければ発生しない
+;・Ｃ절정なしで실금だけというのは稀にあるケース
+;-------------------------------------------------
+;IF 구상記入チェック(0) && TCVAR:MASTER:방뇨
+;ENDIF
+
+[SKIPSTART]
+//オリジナルの스와코구상に於いて、NOWEX:MASTER:방뇨を条件として書かれていたもの
+//内容的にみて、죠교자の방뇨を想定していること
+//そして죠교자の방뇨は미구현であること
+//上記の理由により、最低限の条件を整えた上でコメントアウトしておきます@/L
+IF 구상記入チェック(0) && TCVAR:TARGET:방뇨
+	PRINTFORMW 「나…나와버리는%UNICODE(0x2661)%(이)나다…%UNICODE(0x2661)%」
+	PRINTFORMW 「오줌 나와버린다4다 우우%UNICODE(0x2661)%」
+	RETURN 2
+ENDIF
+[SKIPEND]

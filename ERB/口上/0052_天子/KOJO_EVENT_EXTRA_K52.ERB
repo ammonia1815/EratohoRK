@@ -1,0 +1,416 @@
+﻿;-------------------------------------------------
+;텐시구상 専用이벤트구상ファイル
+;-------------------------------------------------
+;特定状況下で呼び出される専用이벤트구상をまとめたファイルです
+;-------------------------------------------------
+;*************************************************
+;専用이벤트구상
+;*************************************************
+
+;=================================================
+;さらに強靭되었다体이벤트
+;=================================================
+;・조교중止時に発生했다場合に表示
+;-------------------------------------------------
+@KOJO_EVENT_K52_AMIBA_EVENT
+;-------------------------------------------------
+;・本구상では조교중止の際に텐시が天界の桃を使った料理を作り、당신と一緒に食べる事になる
+;・この際に1/5の確率で天界の桃の体を鍛える効果が普段より効き過ぎて、体がさらに強靭になり체력・기력の最大値が100上昇する
+;・更に、남자・후타나리でかつ精力の最大値が限界値に達していない時は精力の最大値も100上昇する
+;・この이벤트を計10回発生시킨다と天人と同レベルの体になってしまい、「고통에강함」と「정력절륜」を身につけ、
+;・更に체력・기력・精力の最大値が1000上昇してしまう
+;・…デメリットは特に無い
+;-------------------------------------------------
+
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL
+;一般
+;OriginalString : 
+	PRINTL
+;OriginalString : ………
+	PRINTFORMDW ………
+;OriginalString : ……
+	PRINTFORMDW ……
+;OriginalString : …
+	PRINTFORMDW …
+;OriginalString : 
+	PRINTL
+;OriginalString : 텐시が作ってくれた、桃を使った料理を食べてから少し経った
+	PRINTFORMDW 천자가 만들어 준, 복숭아를 사용한 요리를 먹고 나서 조금 지났다
+;OriginalString : 
+	PRINTL
+;OriginalString : 何故か体が熱い…
+	PRINTFORMDW 왜일까 몸이 뜨겁다…
+;OriginalString : …力がみなぎってくるような、妙な감각を覚える
+	PRINTFORMDW …힘이 넘쳐 오는 것 같은, 이상한 감각을 기억한다
+;OriginalString : …どうやら、体が丈夫になる副作用が少しばかり効き過ぎてしまったようだ
+	PRINTFORMDW …아무래도, 몸이 튼튼하게 되는 부작용이 조금(뿐)만 너무 효과가 있어 버린 것 같다
+;OriginalString : いつもより余計に体が鍛えられてしまった…
+	PRINTFORMDW 평소보다 불필요하게 몸을 단련할 수 있어 버렸다…
+;OriginalString : 
+	PRINTL
+;OriginalString : さらに体が強靭になり、체력と기력の最大値が100上昇してしまいま했다
+	PRINTFORMDW 한층 더 몸이 강인하게 되어, 체력과 기력의 최대치가100상승해 버렸습니다
+	;체력と기력の最大値上昇
+	MAXBASE:MASTER:체력 += 100
+	MAXBASE:MASTER:기력 += 100
+	;남자・후타나리でかつ精力の最大値が限界値に達していないと、精力の限界値も100上昇
+	IF (TALENT:MASTER:후타나리 || TALENT:MASTER:남자) && MAXBASE:MASTER:사정 < 2500 + CFLAG:MASTER:정력한계 * 500
+;OriginalString : さらに、精力の限界値も100上昇してしまいま했다
+		PRINTFORMDW 게다가 정력의 한계치도100상승해 버렸습니다
+		MAXBASE:MASTER:사정 += 100
+	ENDIF
+	;이벤트発生횟수をカウント
+	KFLAG:1++
+	;이벤트を計10回発生시킨다と天人と同レベルの体になる
+	IF KFLAG:1 == 10
+;OriginalString : 
+		PRINTL
+;OriginalString : ………
+		PRINTFORMDW ………
+;OriginalString : ……
+		PRINTFORMDW ……
+;OriginalString : …
+		PRINTFORMDW …
+;OriginalString : 
+		PRINTL
+;OriginalString : 桃のせいで、今まで何度も何度も体が強靭になってしまってきた
+		PRINTFORMDW 복숭아의 탓으로, 지금까지 몇번이나 몇번이나 몸이 강인하게 되어 버려 왔다
+;OriginalString : …どうやら、そのせいで自分の体はついに天人と同レベルにまで鍛えられてしまったようだ
+		PRINTFORMDW …아무래도, 그 탓으로 자신의 몸은 마침내 천인과 동레벨에까지 단련할 수 있어 버린 것 같다
+;OriginalString : 天人になるつもりは微塵も無かったのに、である
+		PRINTFORMDW 천인이 될 생각은 미진도 없었는데 , 이다
+;OriginalString : 
+		PRINTL
+;OriginalString : …うん、あまり深く考えないようにしよう
+		PRINTFORMDW …응, 너무 깊게 생각하지 않게 하자
+;OriginalString : 
+		PRINTL
+;OriginalString : ついに、体が天人と同レベルに頑丈になってしまいま했다
+		PRINTFORMDW 마침내, 몸이 천인과 동레벨에 튼튼하게 되어 버렸습니다
+;OriginalString : 체력と기력の最大値が1000上昇してしまいま했다
+		PRINTFORMDW 체력과 기력의 최대치가1000상승해 버렸습니다
+		;체력と기력の最大値上昇
+		MAXBASE:MASTER:체력 += 1000
+		MAXBASE:MASTER:기력 += 1000
+		;남자・후타나리なら精力の限界値も上昇
+		IF TALENT:MASTER:후타나리 || TALENT:MASTER:남자
+;OriginalString : さらに、精力の限界値も1000上昇してしまいま했다
+			PRINTFORMDW 게다가 정력의 한계치도1000상승해 버렸습니다
+			;精力の限界値を2回分上昇
+			CFLAG:MASTER:정력한계 += 2
+			;精力の限界値上昇
+			MAXBASE:MASTER:사정 += 1000
+		ENDIF
+;OriginalString : 
+		PRINTL
+		;既に持っていなければ「고통에강함」취득
+		IF TALENT:MASTER:고통에강함 == 0
+			;고통에약함除去
+			SIF TALENT:MASTER:고통에약함
+				TALENT:MASTER:고통에약함 = 0
+			TALENT:MASTER:고통에강함 = 1
+;OriginalString : [고통에강함]を취득してしまいま했다
+			PRINTFORMDW [아픔에 강하다](을)를 취득해 버렸습니다
+		ENDIF
+		;남자・후타나리でかつ既に持っていなければ「정력절륜」취득
+		IF (TALENT:MASTER:후타나리 || TALENT:MASTER:남자) && TALENT:MASTER:정력절륜 == 0
+			;정력박약除去
+			SIF TALENT:MASTER:정력박약
+				TALENT:MASTER:정력박약 = 0
+			TALENT:MASTER:정력절륜 = 1
+;OriginalString : [정력절륜]を취득してしまいま했다
+			PRINTFORMDW [정력 절륜](을)를 취득해 버렸습니다
+		ENDIF
+	ENDIF
+	RETURN LOCAL
+ENDIF
+
+;=================================================
+;食い意地の張りすぎは命に関わるぞ이벤트
+;=================================================
+;・조교중止時に発生했다場合に表示
+;-------------------------------------------------
+@KOJO_EVENT_K52_ONESYO_CANDY_EVENT
+;-------------------------------------------------
+;・조교중止の際に、1/10の確率で텐시が妙な飴玉を拾ってくる
+;・食後のデザートとしてその飴玉を食べてしまうと、効果によって「오줌싸개」を취득してしまう
+;・eratohoYMにも存在しない、不思議な飴玉である。一体誰が作ったのだろうか…
+;-------------------------------------------------
+
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL
+;一般
+;OriginalString : 
+	PRINTL
+;OriginalString : ………
+	PRINTFORMDW ………
+;OriginalString : ……
+	PRINTFORMDW ……
+;OriginalString : …
+	PRINTFORMDW …
+;OriginalString : 
+	PRINTL
+;OriginalString : 「そうだ、%CALLNAME:MASTER%…　飴、食べたくないかしら？」
+	PRINTFORMW 「그렇다,%CALLNAME:MASTER%… 엿, 먹고 싶지 않을까？」
+;OriginalString : そう言うと、텐시は懐から飴玉を1つ取り出했다
+	PRINTFORMDW 그렇게 말하면(자), 천자는 품으로부터 눈깔사탕을1개 꺼냈다
+;OriginalString : レモン色の綺麗な飴玉だ
+	PRINTFORMDW 레몬색의 깨끗한 눈깔사탕이다
+;OriginalString : 「食後のデザートには丁度いいでしょう？　1つしか無いから、%CALLNAME:MASTER%が食べてしまって良いわよ？」
+	PRINTFORMW 「식후의 디저트에는 꼭 좋을 것입니다？ 1개 밖에 없기 때문에,%CALLNAME:MASTER%(은)는 지만 먹어 버려 좋아요？」
+;OriginalString : そう텐시に言われると、何となく食べたい気分になってしまう
+	PRINTFORMDW 그렇게 천자에게 들으면(자), 웬지 모르게 먹고 싶은 기분이 되어 버린다
+;OriginalString : さて、텐시に差し出당했다飴玉を…
+	PRINTFORMDW 그런데, 천자에게 보내진 눈깔사탕을…
+;OriginalString : 
+	PRINTL 
+;OriginalString : [0] 호의に甘えて食べる
+	PRINTFORMDL [0] 호의에 응석부려 먹는다
+;OriginalString : [1] 第六感が危険を察知했다ため食べない
+	PRINTFORMDL [1] 육감이 위험을 찰지했기 때문에 먹지 않는다
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		CASE 0
+;OriginalString : 「分かったわ、それじゃ…　あーんして？」
+			PRINTFORMW 「알았어요, 그러면… 아-응 해？」
+;OriginalString : 텐시は飴玉を持って、自分の입に近づけてきた
+			PRINTFORMDW 천자는 눈깔사탕을 가져, 자신의 입에 접근해 왔다
+;OriginalString : 全く予想だにしなかった행동に、つい戸惑ってしまう
+			PRINTFORMDW 전혀 예상이다로 하지 않았던 행동에, 무심코 당황해 버린다
+;OriginalString : 「こういうシチュエーションを一度、体験してみたかったのよね…」
+			PRINTFORMW 「이런 시추에이션을 한 번, 체험해 보고 싶었던 것이군요…」
+;OriginalString : 텐시は期待に満ち溢れた顔をしている…
+			PRINTFORMDW 천자는 기대로 가득 차고 흘러넘친 얼굴을 하고 있다…
+;OriginalString : …観念して、솔직に입を開けてあげた
+			PRINTFORMDW …관념해, 솔직하게 입을 열어 주었다
+;OriginalString : 「ありがとう！　それじゃ早速…　あーん？」
+			PRINTFORMW 「고마워요！ 그러면 조속히… 아-응？」
+;OriginalString : 입に飴玉を入れられた
+			PRINTFORMDW 입에 눈깔사탕을 넣을 수 있었다
+;OriginalString : 
+			PRINTL 
+;OriginalString : …飴玉は色の通りレモン味だった
+			PRINTFORMDW …눈깔사탕은 색대로 레몬미였다
+;OriginalString : 少しだけ텐시の指も舐めてしまったが、これはハプニングであって別にわざとでは無い
+			PRINTFORMDW 약간 천자의 손가락도 빨아 버렸지만, 이것은 해프닝이며 별로 일부러는 아니다
+;OriginalString : ただ、指の感触に少し興奮してしまったのは…　内緒だ
+			PRINTFORMDW 다만, 손가락의 감촉에 조금 흥분해 버린 것은… 비밀이다
+;OriginalString : 
+			PRINTL 
+;OriginalString : 「どう？　美味しいかしら？」
+			PRINTFORMW 「어때？ 맛있을까？」
+;OriginalString : 美味しいと텐시に返事をする
+			PRINTFORMDW 맛있으면 천자에게 대답을 한다
+;OriginalString : 「あーんまでしてあげたかいが有ったわね…　ふふ、ご馳走様で했다！」
+			PRINTFORMW 「아-응까지 해 주었니가 있던 원이군요… 후후, 맛있는 음식 같았습니다！」
+;OriginalString : 만족気に微笑む텐시は相変わらず可愛い…
+			PRINTFORMDW 만족기분에 미소짓는 천자는 변함 없이 사랑스럽다…
+;OriginalString : 텐시とちょっぴり甘い시간を過ご했다…
+			PRINTFORMDW 천자와 조금 단 시간을 보냈다…
+;OriginalString : 
+			PRINTL
+;OriginalString : 
+			PRINTL
+;OriginalString : 不用意な행동は、時に予想だにしない結末を招く事がある
+			PRINTFORMDW 조심성없는 행동은, 가끔 예상이다로 하지 않는 결말을 부르는 것이 있다
+;OriginalString : そう、後悔は先に立たず
+			PRINTFORMDW 그래, 후회는 먼저 서지 않고
+;OriginalString : まさに、「時既に시간切れ」なのだ…
+			PRINTFORMDW 확실히, 「시 이미 마감 시간」이다…
+;OriginalString : 
+			PRINTL
+;OriginalString : 飴玉を食べたという「행동」は、翌日の朝に「結末」となって訪れた
+			PRINTFORMDW 눈깔사탕을 먹었다고 하는 「행동」은, 다음날의 아침에 「결말」이라고 되어 방문했다
+;OriginalString : 後悔の涙で침대を濡らしても、その時既に「とある水分」で침대は濡れてしまっていたのだ…
+			PRINTFORMDW 후회의 눈물로 침대를 적셔도, 그 때 이미 「어떤 수분」으로 침대는 젖어 버리고 있었던 것이다…
+;OriginalString : 
+			PRINTL
+;OriginalString : （お菓子置き場に有ったから持ってきたのは良いけれど…）
+			PRINTFORMW （과자 두는 곳에 있었기 때문에 가져온 것은 좋지만…）
+;OriginalString : （私、あれを買った覚えが無いのよね…　あの飴玉って、どこで손に入れた物なのかしら…？）
+			PRINTFORMW （나, 저것을 산 기억이 없어… 그 눈깔사탕은, 어디서 손에 넣은 것인가 해들…？）
+;OriginalString : 
+			PRINTL
+;OriginalString : ………
+			PRINTFORMDW ………
+;OriginalString : ……
+			PRINTFORMDW ……
+;OriginalString : …
+			PRINTFORMDW …
+;OriginalString : 
+			PRINTL
+;OriginalString : %CALLNAME:MASTER%は[오줌싸개]を취득してしまいま했다
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 [주되들 해 버릇](을)를 취득해 버렸습니다
+			;오줌싸개入손
+			TALENT:MASTER:오줌싸개 = 1
+			;이벤트発生済み플래그ON
+			KFLAG:2 = 1
+		CASE 1
+;OriginalString : 「もしかして、もうお腹いっぱいなのかしら？」
+			PRINTFORMW 「혹시, 이제 배 가득한가 해들？」
+;OriginalString : 「分かったわ！　それならば、これはまた今度食べましょうか！」
+			PRINTFORMW 「알았어요！ 그러면, 이것은 또 이번에 먹을까요！」
+;OriginalString : そう言うと、텐시は飴玉を懐にしまう
+			PRINTFORMDW 그렇게 말하면(자), 천자는 눈깔사탕을 품에 끝낸다
+;OriginalString : …何故か、とんでもない死亡플래그を回避했다ような気がしてならない…
+			PRINTFORMDW …왜일까, 터무니 없는 사망 플래그를 회피한 것 같은 기분이 들지 않을 수 없다…
+	ENDSELECT
+	RETURN LOCAL
+ENDIF
+
+;=================================================
+;求めよ、さらば与えられん이벤트
+;=================================================
+;・후타나리化or후타나리消去時に発生했다場合に表示
+;-------------------------------------------------
+@KOJO_EVENT_K52_OCHINCHIN_LAND_EVENT
+;-------------------------------------------------
+;・후타나리化or후타나리消去時に発生
+;・마력を통상の量+1000消費して、죠교대상側を후타나리化or후타나리消去する事が可能
+;・おちんちんランドはっじまっるよ～！
+;-------------------------------------------------
+
+;-------------------------------------------------
+;記入チェック
+LOCAL = 1
+;-------------------------------------------------
+IF LOCAL
+;一般
+;OriginalString : 
+	PRINTL
+;OriginalString : ………
+	PRINTFORMDW ………
+;OriginalString : ……
+	PRINTFORMDW ……
+;OriginalString : …
+	PRINTFORMDW …
+;OriginalString : 
+	PRINTL
+	;이벤트初発生時、가슴のサイズ変更이벤트と共通
+	IF KFLAG:3 == 0
+;OriginalString : 「ところで%CALLNAME:MASTER%…」
+		PRINTFORMW 「곳에서 %CALLNAME:MASTER%…」
+;OriginalString : 「この魔法を貴方に使えば、貴方にもおちんちんを生や했다り消했다り、가슴を大きく했다り小さく했다り出来るみたいね」
+		PRINTFORMW 「이 마법을 당신에게 사용하면, 당신에게도 자지를 기르거나 지우거나 가슴을 크게 하거나 작게 하거나 할 수 있는 것 같구나」
+;OriginalString : 텐시はサラッと凄い事を言い出했다
+		PRINTFORMDW 천자는 사락과 굉장한 일을 말하기 시작했다
+;OriginalString : 「だって、ほら…　この마력って元々は%CALLNAME:MASTER%から貰った物じゃない？」
+		PRINTFORMW 「이래, 이봐요… 이 마력은 원래는 %CALLNAME:MASTER%(으)로부터 받은 것이 아니다？」
+;OriginalString : 「だから貰った마력の一部を%CALLNAME:MASTER%に一旦返して、貴方の마력としてこの魔法を行使すれば大丈夫みたいよ」
+		PRINTFORMW 「그러니까 받은 마력의 일부를 %CALLNAME:MASTER%에 일단 돌려주어, 당신의 마력으로서 이 마법을 행사하면 괜찮아 같아요」
+;OriginalString : 「ただ…　一旦私の物として変換했다마력を元に戻す際と、貴方に마력を返す際にロスが発生するみたい」
+		PRINTFORMW 「다만… 일단 나의 물건으로서 변환한 마력을 바탕으로 되돌릴 때와 당신에게 마력을 돌려줄 때에 로스가 발생하는 것 같다」
+;OriginalString : 「だから、普段より多く마력을 소비한다けれど…　丁度마력は十分有るし、今ならいつでも行けるわよ？」
+		PRINTFORMW 「그러니까, 평상시보다 많이 마력을 소비하지만… 꼭 마력은 충분히 있고, 지금이라면 언제라도 갈 수 있어요？」
+;OriginalString : 텐시は自信満々な顔で露骨に誘ってくる
+		PRINTFORMDW 천자는 자신만만한 얼굴로 노골적으로 권해 온다
+;OriginalString : そう텐시に言われると、何となく断れない雰囲気になってしまう
+		PRINTFORMDW 그렇게 천자에게 들으면(자), 웬지 모르게 거절할 수 없는 분위기가 되어 버린다
+;OriginalString : 一度、텐시の誘いに乗ってみるのも良いだろう…　텐시も喜ぶだろうし
+		PRINTFORMDW 한 번, 천자가 유혹에 넘어가 보는 것도 좋을 것이다… 천자도 기뻐할 것이고
+		;이벤트初発生済み플래그ON
+		KFLAG:3 = 1
+	;2回目以降
+	ELSE
+;OriginalString : 「ふふ、今回は%CALLNAME:MASTER%의 方はどうするのかしら？」
+		PRINTFORMW 「후후, 이번은 %CALLNAME:MASTER%(분)편은 어떻게 할까？」
+;OriginalString : 「おちんちんが有っても無くても、それぞれ違った플레이が出来るのが良いわよね…」
+		PRINTFORMW 「자지가 있어도 없어도, 각각 다른 플레이를 할 수 있는 것이 좋아요…」
+;OriginalString : 「もちろん、私はどっちでも構わないわよ？」
+		PRINTFORMW 「물론, 나는 어느 쪽으로도 상관없어요？」
+	ENDIF
+;OriginalString : 
+	PRINTL 
+;OriginalString : さて、今回はどうしようか…
+	PRINTFORMDW 그런데, 이번은 어떻게 하지…
+;OriginalString : (残り마력 {CFLAG:마력})
+	PRINTFORMDL (나머지 마력 {CFLAG:마력})
+;OriginalString : 
+	PRINTL 
+;OriginalString : [0] \@ TALENT:MASTER:후타나리 ? 両性化を元に戻す　 # 両性化の儀式をする \@　　　　　　　　　　　　　　 마력8000
+	PRINTFORMDL [0] \@ TALENT:MASTER:후타나리 ? 양성화를 원래에 되돌린다 # 양성화의 의식을 한다 \@               마력8000
+;OriginalString : [1] 何もしない
+	PRINTFORMDL [1] 아무것도 하지 않는다
+	CALL INPUTINTD(0, 1)
+	SELECTCASE RESULT
+		CASE 0
+;OriginalString : 「ふふ、分かったわ！　それじゃ、손を出して頂戴？」
+			PRINTFORMW 「후후, 알았어요！ 그러면, 손을 대어 주세요？」
+;OriginalString : そう言われて손を差し出すと、텐시は軽く손を握ってきた
+			PRINTFORMDW 그렇게 말해져 손을 내미면(자), 천자는 가볍게 손을 잡아 왔다
+;OriginalString : 「ふふ、%CALLNAME:MASTER%의 손、あったかいな…」
+			PRINTFORMW 「후후,%CALLNAME:MASTER%의 손, 따뜻한데…」
+;OriginalString : 텐시は凄く幸せそうな顔をしている…
+			PRINTFORMDW 천자는 굉장히 행복한 얼굴을 하고 있다…
+;OriginalString : 「…って、そうじゃないわ！　それじゃ、마력を貴方に返すわよ？」
+			PRINTFORMW 「…라고, 그렇지 않아요！ 그러면, 마력을 당신에게 돌려주어요？」
+;OriginalString : そう言い、텐시は呪文を唱え出했다
+			PRINTFORMDW 그렇게 말해, 천자는 주문을 주창하고 냈다
+;OriginalString : 텐시から暖かい마력が送られてくる…　何だか力がみなぎってきて気持ち良い
+			PRINTFORMDW 천자로부터 따뜻한 마력이 보내져 온다… 무엇인가 힘이 넘쳐 와 기분 좋다
+;OriginalString : 「…良し、これで上손く返せたわね！　それじゃ、次の呪文を唱えるわね！」
+			PRINTFORMW 「…좋다, 이것으로 능숙하게 돌려줄 수 있었던 원이군요！ 그러면, 다음의 주문을 주창해요！」
+;OriginalString : そう言い、텐시は次の呪文を唱え出했다
+			PRINTFORMDW 그렇게 말해, 천자는 다음의 주문을 주창하고 냈다
+			;후타나리消去
+			IF TALENT:MASTER:후타나리
+;OriginalString : 膨大な마력が페니스に集まり、どんどん熱を持ってくる…
+				PRINTFORMDW 방대한 마력이 페니스에 모여, 자꾸자꾸 열을 가져온다…
+;OriginalString : 次の瞬間、페니스が強烈な光を放った！　…何か最悪な光景だ！
+				PRINTFORMDW 다음의 순간, 페니스가 강렬한 미츠루를 추방했다！ …무엇인가 최악의 광경이다！
+				CALL FLASH
+;OriginalString : しばらくし、光が収まると…　페니스は可愛らしい클리토리스に戻っていた
+				PRINTFORMDW 당분간 해, 빛이 들어가면(자)… 페니스는 사랑스러운 클리토리스에 돌아오고 있었다
+			;후타나리化
+			ELSE
+;OriginalString : 膨大な마력が클리토리스に集まり、どんどん熱を持ってくる…
+				PRINTFORMDW 방대한 마력이 클리토리스에 모여, 자꾸자꾸 열을 가져온다…
+;OriginalString : 次の瞬間、클리토리스が強烈な光を放った！　…何か卑猥な光景だ！
+				PRINTFORMDW 다음의 순간, 클리토리스가 강렬한 미츠루를 추방했다！ …무엇인가 추잡한 광경이다！
+				CALL FLASH
+;OriginalString : しばらくし、光が収まると…　클리토리스はご立派な페니스に変わっていた
+				PRINTFORMDW 당분간 해, 빛이 들어가면(자)… 클리토리스는 훌륭한 페니스로 변해있었다
+			ENDIF
+;OriginalString : 
+			PRINTL 
+;OriginalString : 「ふう、お疲れ様！　今回は%CALLNAME:MASTER%의 お気に召했다かしら？」
+			PRINTFORMW 「식, 수고 하셨습니다！ 이번은 %CALLNAME:MASTER%(이)가 마음에 드셨는지 해들？」
+;OriginalString : 텐시は額から汗を流している…　この魔法は結構疲れるようだ
+			PRINTFORMDW 천자는 이마로부터 땀을 흘리고 있다… 이 마법은 상당히 지치는 것 같다
+;OriginalString : タンスからタオルを持ってきて、텐시の汗を拭いてあげた
+			PRINTFORMDW 장으로부터 타올을 가져와, 천자의 땀을 닦아 여(어) 주었다
+;OriginalString : 「ありがとう！　ふふ、%CALLNAME:MASTER%に優しくされちゃった！」
+			PRINTFORMW 「고마워요！ 후후,%CALLNAME:MASTER%에 상냥하게 여겨져 버렸다！」
+;OriginalString : 만족気に微笑む텐시は相変わらず可愛い…
+			PRINTFORMDW 만족기분에 미소짓는 천자는 변함 없이 사랑스럽다…
+;OriginalString : 텐시とちょっぴり甘い시간を過ご했다…
+			PRINTFORMDW 천자와 조금 단 시간을 보냈다…
+;OriginalString : 
+			PRINTL
+			;통상の죠교자の場合と同様の処理
+			CFLAG:마력 -= 8000
+			TALENT:MASTER:후타나리 = !TALENT:MASTER:후타나리
+			;동정化。성교경험は역강간の경험等と混ざるので微妙だと思いますが…
+			TALENT:MASTER:동정 = TALENT:MASTER:후타나리 && !EXP:MASTER:성교경험
+			;사정ゲージの初期化
+			;初期化関数を統一@これみ
+			CALL BASE_SETUP_PENIS(MASTER)
+			CALL VOIDLINE_IF(RESULT)
+;OriginalString : %CALLNAME:MASTER%は\@ TALENT:MASTER:후타나리 ? 후타나리 # 여자 \@になりま했다
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 \@ TALENT:MASTER:후타나리 ? 후타나리 # 여자 \@(이)가 되었습니다
+		CASE 1
+;OriginalString : 「ふふ、分かったわ！　それじゃ、また気が向いた時は声を掛けて頂戴！」
+			PRINTFORMW 「후후, 알았어요！ 그러면, 또 기분이 내켰을 때는 말을 걸어 주세요！」
+;OriginalString : いつか気が向いた時にでも、また텐시に声を掛けてみようか…
+			PRINTFORMDW 언젠가 기분이 내켰을 때라도, 또 천자에게 말을 걸어 볼까…
+	ENDSELECT
+	RETURN LOCAL
+ENDIF
+

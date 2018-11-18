@@ -1,0 +1,113 @@
+﻿;코마치＠CPMの人
+@CHARAMAKE_K35(ARG)
+PRINTFORML 「야, 안녕」
+PRINTFORMW 「조금 와 줘. 무엇, 어려운 일은 시키지 않아」
+PRINTL 
+CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
+PRINTL 
+PRINTFORML 「그런데, 그 정도에 코이시가 눕고 있지. 그것을 적당하게 쌓아 두어 주고」
+PRINTFORML 「그 사이에 나는 조금 자고 있으니, 좋을 정도(수록) 쌓으면(자) 일으켜 주고」
+PRINTFORMW 「그러면, 힘내라」
+LOCAL = 0
+LOCAL:1 = 0
+$SET_LOOP
+FOR LOCAL:2, 0, LOCAL
+;OriginalString : ■
+	PRINTD ■
+NEXT
+PRINTL 
+PRINTFORMDL [0] 돌아간다
+PRINTFORMDL [1] 쌓는다
+PRINTFORMDL [2] 일으킨다
+INPUT
+IF RESULT == 0
+	PRINTFORML 「아무것도 말하지 않고 돌아가, 보람」
+	PRINTFORMW 「아휴」
+	CALLF CM_PROF("衝動", -10)
+	CALLF CM_PROF("호기심", -10)
+	CALLF CM_PROF("수치", 10)
+	CALLF CM_PROF("神経質", 10)
+	RETURN 1
+ELSEIF RESULT == 1
+	LOCAL++
+ELSEIF RESULT == 2
+	GOTO LOOP_BREAK
+ENDIF
+IF PERCENT((LOCAL-6)*10)
+	PRINTFORMDW 쌓고 있던 돌은 무너져 버렸다……
+	LOCAL = 2
+	LOCAL:1++
+ENDIF
+GOTO SET_LOOP
+$LOOP_BREAK
+IF LOCAL:1 == 0
+	SELECTCASE LOCAL
+		CASE IS <= 3
+			PRINTFORML 「뭐야, 전혀 쌓아 없지 않은가」
+			PRINTFORML 「뭐, 그래서 좋을 정도(수록)은이라면, 어쩔 수 없다」
+			CALLF CM_PROF("솔직さ", -20)
+			CALLF CM_PROF("衝動", 30)
+			CALLF CM_PROF("楽観", 30)
+			CALLF CM_PROF("モラル", -30)
+			CALLF CM_PROF("神経質", -30)
+			CALLF CM_PROF("潔癖", -30)
+			CALLF CM_PROF("Ｃ好き", 20)
+			CALLF CM_PROF("Ｖ好き", -20)
+			CALLF CM_PROF("Ｂ好き", -10)
+			CALLF CM_PROF("Ａ好き", -10)
+			
+		CASE IS <= 10
+			PRINTFORML 「-응. 적당히 쌓을 수 있던 것 같지 않은가」
+			CALLF CM_PROF("솔직さ", 10)
+			CALLF CM_PROF("衝動", -10)
+			CALLF CM_PROF("楽観", 10)
+			CALLF CM_PROF("モラル", 10)
+			CALLF CM_PROF("神経質", 10)
+			CALLF CM_PROF("Ｃ好き", 10)
+			CALLF CM_PROF("Ｖ好き", 10)
+			CALLF CM_PROF("Ｂ好き", 10)
+			CALLF CM_PROF("Ａ好き", -10)
+			
+		CASEELSE
+			PRINTFORML 「. 이건 또 많이 쌓은 것이다」
+			CALLF CM_PROF("솔직さ", 30)
+			CALLF CM_PROF("衝動", -30)
+			CALLF CM_PROF("楽観", -30)
+			CALLF CM_PROF("モラル", 30)
+			CALLF CM_PROF("神経質", 30)
+			CALLF CM_PROF("潔癖", 30)
+			CALLF CM_PROF("Ｃ好き", -20)
+			CALLF CM_PROF("Ｖ好き", 30)
+			CALLF CM_PROF("Ｂ好き", 20)
+			CALLF CM_PROF("Ａ好き", 20)
+			
+	ENDSELECT
+ELSE
+	IF LOCAL == 2 && LOCAL:1 == 1
+		PRINTFORML 「응, 붕괴기다렸다？　뭐, 그렇게 말하는 일도 있고 말이야」
+		PRINTFORML 「낙심하지 말아」
+		CALLF CM_PROF("楽観", -30)
+		CALLF CM_PROF("モラル", -10)
+		CALLF CM_PROF("神経質", -20)
+		CALLF CM_PROF("潔癖", -30)
+		CALLF CM_PROF("Ｃ好き", 10)
+		CALLF CM_PROF("Ｖ好き", -10)
+		CALLF CM_PROF("Ｂ好き", 10)
+		CALLF CM_PROF("Ａ好き", -10)
+		
+	ELSE
+		PRINTFORML 「편편. 도중에 무너졌지만, 노력했다고」
+		PRINTFORML 「훌륭한 훌륭하다」
+		CALLF CM_PROF("楽観", 20)
+		CALLF CM_PROF("モラル", 30)
+		CALLF CM_PROF("神経質", 20)
+		CALLF CM_PROF("潔癖", 30)
+		CALLF CM_PROF("Ｃ好き", -10)
+		CALLF CM_PROF("Ｖ好き", 30)
+		CALLF CM_PROF("Ｂ好き", 10)
+		CALLF CM_PROF("Ａ好き", 30)
+		
+	ENDIF
+ENDIF
+PRINTFORMW 「돌아가 주기 때문에, 천천히 자」
+RETURN 1

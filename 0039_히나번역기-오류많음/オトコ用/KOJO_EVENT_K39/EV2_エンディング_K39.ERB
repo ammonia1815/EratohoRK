@@ -1,0 +1,465 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+;	히나구상　エンディング구상ファイル
+
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+
+;EV2, エンディング이벤트구상
+;#############################
+;開始30日以降、日時の更新時にシステム側からEVENT2が呼び出される
+;戻り値1以上が返ると本体側でFLAG:END달성が立ち、以降はシステム側から呼び出される事はない
+
+
+@KOJO_MALE_EVENT_K39_2(ARG)
+[SKIPSTART]
+	ルートＢ선택肢[1]は未完の為コメントアウト
+	一部の描写は省きすぎかも知れず
+
+	FIRSTEVENTがなくても現状、複数回表示されてしまう事はないけど、まぁ保険の意味で
+	FLAG:END달성については色々と企んでいたりもするけど、予定は未定という상태
+[SKIPEND]
+
+;エンディング
+;============
+IF (KFLAG:(FLAG:주인님):0 == 1 || KFLAG:(FLAG:주인님):1 == 1) && FLAG:오토모드표시설정 == 0 && FIRSTEVENT(0)
+	CALL ENDING_K39
+	RETURN 1
+ENDIF
+
+
+;エンディング関数
+;================
+@ENDING_K39
+#LOCALSIZE 1
+
+;背景色を夜用に
+;SETBGCOLOR 0, 0, 20
+CALL TWAIT3_K39
+PRINTFORMDW 그 날,%CALLNAME:TARGET%의 모습은 아침부터 안보였다
+PRINTFORMDW 아마 액불제라도 가고 있는 것일까. 그렇게 생각해 특히 기분을 멈추는 일도 없었지만
+PRINTFORMDW 밤이 되어도 돌아오는 모습은 없고,%CALLNAME:MASTER%도 유석에 걱정으로 되었다. 라고 그 때…
+PRINTL
+;히나帰宅。%CALLNAME:MASTER%を外に連れ出す
+PRINTFORMW 「미안해요, 늦어져 버려…」
+PRINTFORMW 「 그렇지만, 아무래도 오늘중에 해 두고 싶었어. 오늘이 아니면 안되기 때문에」
+PRINTFORMDW %CALLNAME:MASTER%(은)는 무슨일인가 알지 않고,%CALLNAME:TARGET%에게 물어 보았다
+PRINTFORMDW %CALLNAME:TARGET%(은)는 잠깐의 사이 말해 요도응으로 있었지만, 무엇인가를 결의했는지와 같이%CALLNAME:MASTER%에 다시 향해 말하기 시작한다…
+PRINTL
+PRINTFORMW 「%CNAME(MASTER, TARGET)%(을)를 원의 세계에 돌려보낼 준비를 할 수 있었어요. 그리고 그것을 할 수 있는 것은 오늘만이야」
+
+;ルートＡ
+IF KFLAG:(FLAG:주인님):0 == 1
+	PRINTFORMW 「%CNAME(MASTER, TARGET)%말했어요 , 원의 세계에 미련이 있다 라고」
+	PRINTFORMW 「정직하게 말하자면？ 나는 실망했고, 조금 낙담했어」
+	PRINTFORMW 「혹시, 이대로 여기에 머물어 주지 않은가…정말, 약간 생각했다. 그렇지만…」
+	PRINTFORMW 「본래 속해야 할 세계로 돌아가고 싶은 것은 당연하다고 생각하고,%CNAME(MASTER, TARGET)%가 그렇게 바란다면 나는 그것을 실현해 주고 싶다」
+	PRINTFORMW 「다름아닌,%CNAME(MASTER, TARGET)%의 소원이기 때문에 더욱……」
+;ルートＢ
+ELSE
+	PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 말해 주었어요. 여기에 남아도 좋다고」
+	CALL HTMLPRINTW(@"「나네？ 굉장히 기뻤다.%HTMLFONT("幸せ", , 0xC0C0C0)%라는 것이 있다고 하면, 이렇게 말하는 일인 것일까 하고 생각했어요」")
+	PRINTFORMW 「 그렇지만 나라고 있는 한%CNAME(MASTER, TARGET)%(은)는 행복하게 될 수  없다. 나는 불행을 뿌리는 일 밖에 할 수 없으니까…」
+	PRINTFORMW 「그런 것 절대로 싫어. 나의 옆에 있는 덕분에%CNAME(MASTER, TARGET)%가 불행하게 완만한 응이라고 견딜 수  없다！」
+	PRINTFORMW 「이래,%CNAME(MASTER, TARGET)%하……나에게 행복을 준 사람이니까」
+ENDIF
+
+PRINTL
+PRINTFORMDL %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 수를 잡아 말했다
+PRINTFORMW 「따라 와. 그렇게 멀지는 않으니까」
+CALL TWAIT1_K39
+PRINTFORMDW %CALLNAME:TARGET%에 이끌리고 숲을 빠져 도착한 장소는 작은 연못이었다
+PRINTFORMDW 맑은 수면은 어디까지도 투명해, 응시하면 바닥까지 보여생각마저 든다
+PRINTFORMW 「깨끗하겠지요？ 여기는 사람이 흘린 액이 표류하는 장소. 모여 소용돌이회장소야」
+PRINTFORMW 「액은 다른 장소에서도 모아지지만, 여기는 조금 특별한 장소야」
+PRINTFORMW 「불길한 장소로서 사람도 요도 가까워지지 않는, 액의 덕분에 물고기도 없는 외로운 장소. 그렇지만…」
+PRINTFORMW 「 나에게는 많은 액이 보인다. 사람의 여러가지 생각의 말로. 버릴 수 있어 흐르게 되어 여기서 나를 기다려」
+PRINTFORMDW %CALLNAME:TARGET%(은)는 지만 그렇게 말하면서 수면에 한 걸음 내디디면(자) 그 신체는 잠기는 무사히 수면에 뜬다
+PRINTFORMDW 발밑으로부터는 작은 파문이 겹겹이 퍼져, 겹겹이 겹쳐, 맑은 수면 일면에 퍼져 간다
+PRINTFORMDW 수면에서 빙글빙글 회%CALLNAME:TARGET%.%CALLNAME:MASTER%(은)는 보는 일은 이루어지지 않고와도 그 주위에 무엇인가가 모여, 소용돌이치는 기색은 감지할 수 있었다
+PRINTFORMW 「후후,%CNAME(MASTER, TARGET)%에도 아는 것 같구나. 나와 너무 길게 있던 탓인지 해들 」
+PRINTFORMW 「그렇게, 나는 언제나 이렇게 액을 모아. 인간의 원래대로 돌아가지 않게, 사람에게 재앙을 가져오지 않게」
+PRINTFORMDW %CALLNAME:TARGET%(은)는 손을 내며, 거기에 있다%CALLNAME:MASTER%에는 안보인다”무엇인가”(을)를 사랑하듯이 응시하면서 말했다
+PRINTL
+PRINTFORMW 「이것은 사람이나 요에 피해지는 것. 그렇지만 나에게 있어서는 그렇지 않다」
+PRINTFORMW 「교제의 긴 친구와 같아, 매우 사랑스럽게 느껴지는 것이야」
+PRINTFORMW 「이래…버릴 수 있어 흐르게 된 것은 나도 같기 때문에, 군요」
+PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 뒤돌아 보면서 말했다…
+PRINTL
+PRINTFORMW 「그리고%CNAME(MASTER, TARGET)%에 남아 있던 마지막 액도, 나의 곁으로 모여 오고 있어요」
+PRINTFORMW 「 나 힘만 사도 해도 불제 없었지만, 역시 이 장소의 영향인가 해들. 이상하구나…」
+PRINTFORMW 「이것으로%CNAME(MASTER, TARGET)%의 액불제는 모두 마지막. 그리고 이제야말로 액을 바꾸어 복이 이룰 때」
+PRINTFORMDW %CALLNAME:TARGET%(은)는 그렇게 말하면(자) 왼팔의 리본을 풀어,%CALLNAME:MASTER%에 전했다
+PRINTL
+PRINTFORMW 「전별 금품, 이라고 하는 것이 아닌거야. 이것은%CNAME(MASTER, TARGET)%(을)를 액으로부터, 지금부터 실시하는 일로부터 지켜 준다」
+PRINTFORMW 「원의 세계에 겨우 도착하는 무렵에는 너덜너덜이 되어 버리겠지요하지만, 반드시 그것까지는…」
+PRINTFORMW 「이 장소로 가득 차는 액을%CNAME(MASTER, TARGET)%(으)로부터 받은 마력을 사용해 다른 힘에 전화시켜요」
+PRINTFORMW 「그리고%CNAME(MASTER, TARGET)%(을)를 원 있던 장소에,%CNAME(MASTER, TARGET)%가 마음에 마음에 그리는 장소에 돌려 보내 준다」
+PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 가까워져 말했다…
+PRINTL
+PRINTFORMW 「안녕은 말하지 않아요. 잊지 말고는 아쉬운 듯한 일도 말하지 않는다. 그렇지만…」
+PRINTFORMW 「 나,%CNAME(MASTER, TARGET)%가 좋아했다……」
+PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 살그머니 입맞춤해 말했다
+PRINTL
+;こういうフェードインの使い方は好き過ぎる。人によっては鬱陶しいだけかもだけど
+CALL FADEIN(25, "「사랑하고 있었어요」")
+TWAIT 1500, 0
+PRINTL
+PRINTFORMW 「이제 시간이 없어요. 리본을 확실히 잡아, 준비하며」
+PRINTFORMDW %CALLNAME:TARGET%(은)는 그렇게 말하면(자) 가슴의 전으로 두손을 모아 무엇인가 주창하기 시작했다
+PRINTFORMDW 수면이 희미하게 빛나 빛나,%CALLNAME:TARGET%의 주위로 소용돌이치고 있었다”무엇인가”하지만 창백한 빛의 알에 바뀐다
+PRINTFORMDW 그것은 주위 일대로부터 솟아올라, 상공으로 향해 천천히 상승해 나간다
+PRINTFORMDW 깨달으면(자) 다리는 지면을 떠나 신체가 공중에 뜨기 시작했다
+PRINTFORMDW %CALLNAME:TARGET%(을)를 바라보면(자) 그 입원이 희미하게 움직이고 있었지만,%CALLNAME:MASTER%에는 알아 들을 수 없었다
+PRINTFORMDW 다만, 주위의 빛에 비추어지고 눈매로부터 흘러넘치고 떨어지는 눈물만은, 분명히 간파할 수가 있었다…
+PRINTL
+PRINTFORMDW %CALLNAME:MASTER%의 신체는 빛에 싸여 자꾸자꾸 상승해 나간다
+PRINTFORMDW 그리고 깨달으면(자) 세계는 반전해, 발 밑의 땅거미의 하늘에 빨려 들여간다
+PRINTFORMDW 멀어지는 환상시골에 %CALLNAME:MASTER%(은)는 살그머니 마음 속에서 이별을 고한다
+PRINTFORMDW 그 중 희미한 소리가 들려 왔다. 아니, 마음 속으로부터 들려 올지도 모르다
+PRINTFORMDW 어쨌든 그것은 %CALLNAME:MASTER%의 의식에 이르렀다
+PRINTFORMDW 점차 소리는 한층 더 높아져, 율동적인 것은 않지만, 귀에 거슬리는 소리인 불협화음이 되어, 머릿속에번개와 같이 울려
+PRINTFORMDW 신체를 관철해 맥박쳐, 둔한 아픔과 같은 감각을 낳았다
+PRINTFORMDW 그리고 적과 흙이 소용돌이치는 물결이 밀어닥쳐 와, 그것을 관통하면(자) 소리는 꼭과 울어 그쳤다
+PRINTL
+;유카리登場。そしてルート毎に分岐시킨다
+;OriginalString : "「あら、また迷い込みに……って、今回はそうではないようね」", COLOR2_K39("유카리"))
+CALL FPRINTW("「아라, 또 헤매어에……읏, 이번은 그렇지 않는 것 같네」", COLOR2_K39("유카리"))
+;キャラカットイン(유카리)
+CALL CHARA_CUTIN(CSVCSTR(22, 10, 0), CSVCSTR(22, 11, 0), CSVCSTR(22, 12, 0))
+PRINTL
+
+;ルートＡ　KFLAG:0
+;=================
+IF KFLAG:(FLAG:주인님):0 == 1
+;OriginalString : @"「…成る程。%CNAME(MASTER, TARGET)%は선택し、厄神様が頑張ったようね」", COLOR2_K39("유카리"))
+	CALL FPRINTW(@"「…과연.%CNAME(MASTER, TARGET)%하선택애, 액신님이 노력한듯 하네」", COLOR2_K39("유카리"))
+	;本当にそれで良かったのかしら云々
+;OriginalString : "「でも、本当にそれで良かったのかしら？」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「그렇지만, 정말로 그래서 좋았을까？」", COLOR2_K39("유카리"))
+;OriginalString : @"「%CNAME(MASTER, TARGET)%の因果の糸は、これでどちらの世界からも切り離されてしまった」", COLOR2_K39("유카리"))
+	CALL FPRINTW(@"「%CNAME(MASTER, TARGET)%의 인과의 실은, 이것으로 어느 쪽의 세계로부터도 떼어내져 버렸다」", COLOR2_K39("유카리"))
+	PRINTL
+	;元居た시간と場所に戻れるとは限らない云々
+;OriginalString : @"「尤も、%CNAME(MASTER, TARGET)%は既に선택を済ませているし、今更後戻りはできないわ」", COLOR2_K39("유카리"))
+	CALL FPRINTW(@"「무엇보다,%CNAME(MASTER, TARGET)%는 이미선택를 끝마치고 있고, 이제 와서 퇴보는 할 수 없어요」", COLOR2_K39("유카리"))
+;OriginalString : "「自身の存在が忘れ去られた世界に돌아가기しかないのよ。そして…」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「자신의 존재가 잊고 떠나진 세계에돌아가기밖에 없는거야. 그리고…」", COLOR2_K39("유카리"))
+;OriginalString : "「これから돌아가기世界が元居た시간と場所であるとも限らない」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「지금부터돌아가기세계가 원 있었다시간(와)과 장소이다고도 할 수 없다」", COLOR2_K39("유카리"))
+	PRINTL
+;OriginalString : @"「ふふ、でも……少なくても%CNAME(MASTER, TARGET)%には覚悟ができているようね」", COLOR2_K39("유카리"))
+	CALL FPRINTW(@"「후후, 그렇지만……적어도%CNAME(MASTER, TARGET)%에는 각오가 되어 있는 것 같네」", COLOR2_K39("유카리"))
+	PRINTL
+	CALL FPRINTL("「ま、それもいいでしょう。でも一つだけ言わせて貰うと…」", COLOR2_K39("유카리"))
+;OriginalString : "「もし同じ事があるなら、今度は違う선택をすべきね」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「만약 같은 일이 있다면, 이번에는 다르다선택를 해야 하구나」", COLOR2_K39("유카리"))
+;OriginalString : "「さてと。そろそろおやすみの시간ね」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「그럼. 슬슬 휴가의시간저기」", COLOR2_K39("유카리"))
+;OriginalString : "「後は私が送って差し上げますわ。ただ、何処に辿り着くかまでは保障しかねますけど」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「뒤는 내가 보내 드려요. 다만, 어디에 겨우 도착할까까지는 보장하기 어렵습니다만」", COLOR2_K39("유카리"))
+	PRINTL
+	;強制表示する
+	CALLF ANIME_CONFIG("TIMES", 1)
+	;フェードアウト
+	CALL FADE_TO_CLEARLINE2(30, COLOR2_K39("YUKARI"), GETBGCOLOR(), "「それではおやすみなさい。覚めるころには……」")
+	CALL TWAIT3_K39
+	;帰還
+	;（そこはかとないムアコック風味に気付く人はいるだろうか？）
+	PRINTFORMDL 깨달으면(자)%CALLNAME:MASTER%젓가락빌리고로 한 잔디 위에 서 있었다
+	PRINTFORMDW 퇴색한 태양아래, 코에는 풀의 냄새가 있었다. 그리고 이 장소에는 본 기억이 있다
+	PRINTL
+	PRINTFORMDW ――여기는 어릴 적 보낸 장소
+	PRINTL
+	PRINTFORMDL 그 풍경은 당시와 마치 바뀌는 무사히 선명한 것은 않았지만,
+	PRINTFORMDW %CALLNAME:MASTER%의 눈에 그것은 퇴색해 보였다. 그리고 위화감을 느낀다
+	PRINTFORMDW 모두가 선명해 선명하게 하고 있는 것에도 불구하고, 이 세계는 색채가 부족하다
+	PRINTFORMDW 이것이 인과로부터 떼어내졌다고 하는 일인 것일까？
+	PRINTFORMDW 이 세계에 있어, 자신은 존재하는 일이 용서되지 않는 사람이 되어 버렸다고 하는 일인 것일까？
+	PRINTL
+	;過去の自分との대면
+	PRINTFORMDW %CALLNAME:MASTER%(은)는 풀을 밟아 전방의 낮고 울창한 한 숲을 별로 걷기 시작했다
+	PRINTFORMDW 숲의 줄어에 붙으면(자) 중에는 들어오지 않고, 둘레를 돌아 가는 동안에 숲으로부터 흘러나와 멀리 사라지고 있는 시냇물에 겨우 도착한다
+	PRINTFORMDW 그 빛나는 맑은 물에는 기억이 있다. 그래, 여기는 어릴 적의 %CALLNAME:MASTER%마음에 드는 장소였다
+	PRINTFORMDW 그리움에 몰아져 옷이 젖는 것도 상관하지 않고 시냇물에 발을 디딘다
+	PRINTFORMDW %CALLNAME:MASTER%(은)는 물의 차가움에 대비해 약간 신체를 굳어지게 했지만 그것은 쓸데없는 일이었다
+	PRINTFORMDW 강의 물은, 마치%CALLNAME:MASTER%(은)는 지만 거기에 없는 것처럼 흐를 뿐으로
+	PRINTFORMDW %CALLNAME:MASTER%자신도 젖는 일도 없고, 물의 차가움을 감지하는 일도 할 수 없었다…
+	PRINTL
+	PRINTFORMDW 왜 이러한 의 것인지는 알지 않는다. 다만, 아무래도 이 세계에 거절되고 있는 것 같다
+	PRINTFORMDW 적어도 그 일만은 %CALLNAME:MASTER%에도 분명히 감지할 수 있다
+	PRINTL
+	PRINTFORMDW 그래, 최조%CALLNAME:MASTER%(이)가 돌아가야 할 장소는 없는 것이다――
+	PRINTL
+	PRINTFORMDW 그렇게 생각한 찰나,%CALLNAME:MASTER%(은)는 자신의 모습이 희박하게 되는 있는 일을 알아차린다
+	PRINTFORMDW 신체는 서서히 실체를 잃어, 저쪽 편이 비쳐 보인다. 그런데도 예외가 하나 있었다
+	PRINTFORMDW ――그것은 병아리에 건네진 리본이었다
+	PRINTFORMDW 지금은 완전히 너덜너덜이 되어 있었지만, 아직도 실체를 잃지 않고, 사라지고 가는 신체에도 그 존재는 제대로 감지할 수 있었다
+	PRINTL
+	PRINTFORMDW 있어에 사람의 시선을 느껴%CALLNAME:MASTER%(은)는 지만 그 쪽으로 뒤돌아 보면(자) 거기에는 아이의 모습이 있었다
+	PRINTFORMDW 오인도 없다. 이것은 한 때의 자신. 어릴 적의 %CALLNAME:MASTER%자신이다
+	PRINTFORMDW 아마 이쪽의 모습이 보이지 않겠지
+	PRINTFORMDW 그 시선은 지금은 실체를 잃어버리고 있는 이 손에 잡아진 리본으로 향해지고 있다
+	PRINTFORMDW 아이가 손을 뻗어 리본을 잡으려고 해,%CALLNAME:MASTER%(은)는 손을 내민다
+	PRINTFORMDW 리본을 손에 넣은 아이는, 최초 불가사의 그렇게 그것을 바라봐 소중한 듯이 포켓에 끝나면(자) 어딘가를 목표로 해 달리기 시작해 간다
+	PRINTL
+	PRINTFORMDW 그 뒷모습을 보류하면서 %CALLNAME:MASTER%(은)는 이해했다
+	PRINTFORMDW 모두는 우연히는 아니고 필연이었던 것이라면. 이것은 자신에게 정해진 운명이다와
+	PRINTFORMDW 존재가 희미해져 세계로부터 사라져 가면서 %CALLNAME:MASTER%(은)는 생각했다
+	PRINTFORMDW 적어도 무엇인가는 계속되어 간다. 만약 이것이 계시라면, 마음만계시라고 할 수 있다
+	PRINTL
+	
+	;Free me
+	;Free me
+	;Free me from this world
+	
+	;Can you free me, free me from this world
+	
+	;フェードイン
+	CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "진심으로 그렇게 생각할 수 있었다……")
+	TWAIT 1000, 0
+	CALL TWAIT3_K39
+	PRINTFORMW 「후~, 완전히 늦고 원이군요. 어째서 오늘은 액이 이렇게, 는…응, 무엇인가？」
+	;ＢＧＭカットイン 運命のダークサイド
+	CALL BGM_CUTIN(CSTR:13, 1)
+	PRINTFORMW 「…저것은 사람, 이군요. 어째서 이런 곳에서 넘어져…」
+	CALL TWAIT1_K39
+	;フォントをセット
+	CALL SETFONT_K39
+	;中央で表示
+	ALIGNMENT CENTER
+	;そして幕引き
+	;フェードインx2 そして振り出しに돌아가기
+	CALL FADE(20, GETBGCOLOR(), COLOR2_K39("HINA"), "나는 카기야마히나, 사람의 액을 쫓는 액신입니다")
+	TWAIT 2500, 0
+	PRINTL
+	CALL FADE(20, GETBGCOLOR(), COLOR2_K39("HINA"), "당신의 액재, 내가 모두 맡읍시다")
+	TWAIT 3000, 0
+	CALl TWAIT3_ZWEI_K39
+	;フォントを戻す
+	CALL RESETFONT_K39
+	;強制表示する！
+	CALLF ANIME_CONFIG("TIMES", 4)
+	;フェードインx3 TWAIT挟んだ方がいい気もする
+	CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "THIS IS")
+	;太字にして
+	FONTSTYLE 1
+	CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "THE END")
+	;戻す
+	FONTREGULAR
+	CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "OF THE BEGINNING")
+	;左寄せに戻す
+	ALIGNMENT LEFT
+	PRINTL
+	TWAIT 500, 0
+	PRINTL
+	;SCROLLTEXTでエンディングタイトル
+	RESETCOLOR
+	FONTSTYLE 1
+	CUSTOMDRAWLINE -=
+	;タイトル思いつかないので放り投げる
+	CALL SCROLLTEXT("　　　　　　　【Ending No.0001】", 2, 6, 117, 0, 1)
+	CALL RESETFONT_K39
+	PRINTL
+	TWAIT 500, 0
+	PRINTL
+	;ゲームオーバー2で終了시킨다
+	CALL GAME_OVER2_K39
+
+;ルートＢ　KFLAG:1
+;=================
+ELSEIF KFLAG:(FLAG:주인님):1 == 1
+	;유카리登場
+;OriginalString : @"「…成る程。%CNAME(MASTER, TARGET)%としては心残りがあるのね」", COLOR2_K39("유카리"))
+	CALL FPRINTW(@"「…과연.%CNAME(MASTER, TARGET)%로서는 유감이 있군요」", COLOR2_K39("유카리"))
+;OriginalString : "「でも厄神様の気持ちは踏みにじりたくない。困らせたくない、と」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「그렇지만 액신님의 기분은 유린하고 싶지 않다. 곤란하게 하고 싶지 않다, 라고」", COLOR2_K39("유카리"))
+;OriginalString : "「ふふ、お互いに不器用で微笑ましい事。って、ちょっと余計だったわね」", COLOR2_K39("유카리"))
+	CALL FPRINTW("「후후, 서로 서투르고 흐뭇한 일. 읏, 조금 불필요했네요」", COLOR2_K39("유카리"))
+;OriginalString : @"「お詫びと言ってはなんですけど、%CNAME(MASTER, TARGET)%にはもう一度선택の機会を差し上げましょう」", COLOR2_K39("유카리"))
+	CALL FPRINTW(@"「사과라고 말해서는 뭐 하지만,%CNAME(MASTER, TARGET)%에는 한번 더선택의 기회를 드립시다」", COLOR2_K39("유카리"))
+	PRINTL
+;OriginalString : @"「さぁ選びなさい。%CNAME(MASTER, TARGET)%が本当はどう했다いのか。どちらの道を望むのか」", COLOR2_K39("유카리"))
+	CALL FPRINTW(@"「자 선택하세요.%CNAME(MASTER, TARGET)%하지만 사실은 어때했다있고의 것인지. 어느 쪽의 길을 바라보는 것인가」", COLOR2_K39("유카리"))
+	PRINTL
+	CALL HTMLPRINTDL(@"%HTMLBUTTON("[0]", "0", "Ending, 0002へ")% 히나의 원래로…")
+	;コメントアウト
+	;CALL HTMLPRINTDL(@"%HTMLBUTTON("[1]", "1", "Ending, 0003へ")% 元の世界へ…")
+	CALL INPUTINTD(0, 1)
+	;오토なら止める
+	SIF FLAG:오토모드 > 0
+		FORCEWAIT
+	SELECTCASE RESULT
+		;선택肢 0
+		CASE 0
+;OriginalString : "「そう……たとえ自分が不幸になっても想いを貫きたい、と」", COLOR2_K39("유카리"))
+			CALL FPRINTW("「그래……비록 자신이 불행하게 되어도 생각을 관철하고 싶다, 라고」", COLOR2_K39("유카리"))
+			CALL FPRINTL("「判りま했다、それもいいでしょう。ただし…」", COLOR2_K39("유카리"))
+;OriginalString : @"「%CNAME(MASTER, TARGET)%の因果の糸は一度幻想郷から断ち切られてしまっている」", COLOR2_K39("유카리"))
+			CALL FPRINTW(@"「%CNAME(MASTER, TARGET)%의 인과의 실은 한 번 환상향으로부터 끊어져 버리고 있다」", COLOR2_K39("유카리"))
+;OriginalString : "「恐らく厄神様も貴方の事は覚えていないでしょう」", COLOR2_K39("유카리"))
+			CALL FPRINTW("「아마 액신님도 당신의 일은 기억하지 않을 것입니다」", COLOR2_K39("유카리"))
+;OriginalString : "「でも、ふふ……少なくても貴方には覚悟ができているようね」", COLOR2_K39("유카리"))
+			CALL FPRINTW("「그렇지만, 후후……적어도 당신에게는 각오가 되어 있는 것 같네」", COLOR2_K39("유카리"))
+			PRINTL
+			;そこまで覚悟してるならよくってよ云々
+;OriginalString : "「さてと、後は私が送って差し上げますわ。少しの間眠って貰う事になりますけど」", COLOR2_K39("유카리"))
+			CALL FPRINTW("「그럼, 뒤는 내가 보내 드려요. 조금의 사이 자 받는 일이 됩니다만」", COLOR2_K39("유카리"))
+;OriginalString : "「それでは、おやすみなさい」", COLOR2_K39("유카리"))
+			CALL FPRINTW("「그러면, 잘 자요」", COLOR2_K39("유카리"))
+			PRINTL
+			;ユーザーの都合なんて知ったことか！的なTIMES 1
+			CALLF ANIME_CONFIG("TIMES", 1)
+			CALL FADE(20, GETBGCOLOR(), COLOR2_K39("YUKARI"), "「――깨는 무렵에는, 환상이에요」")
+			CALL TWAIT3_K39
+			;そして幻想郷へ…
+			SETBGCOLOR 20, 15, 0 ;背景色を昼に
+			PRINTFORMDW 깨달으면(자)%CALLNAME:MASTER%젓가락빌리고로 한 잔디 위에 서 있었다
+			;春以外は意味が無いが、ついついやってしまう
+			;というかまぁルートＡとの対比でもあるので
+			SELECTCASE FLAG:계절
+				CASE 0     ;春
+					PRINTD 따뜻한 봄의 햇볕아래
+				CASE 1     ;夏
+					PRINTD 내리쬐는 한 여름의 태양아래
+				CASE 2     ;秋
+					PRINTD 가을이 부드러운 햇볕아래
+				CASE 3     ;冬
+					PRINTD 둔한 겨울의 햇볕아래
+			ENDSELECT
+			PRINTFORMDW , 코에는 풀의 냄새가 있었다
+			PRINTFORMDW 떨어져 있던 것은 불과라고 생각되는데 그것은 그립게 느껴져 견딜 수 없게 향수를 눈에 띄게 써낼 수 있다
+			;佇む히나、そして再会
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 기대와 불안을 가슴에 품으면서,%CALLNAME:TARGET%의 집의 방위를 목표로 했다
+			PRINTFORMDW 그 어쩐지 수상한 인물은 말했다. 아마%CALLNAME:TARGET%(은)는 기억하지 않을 것이라고
+			PRINTFORMDW 그런데도 한번 더 만나고 싶었다. 만나지 않고서는  견딜 수 없었다
+			PRINTFORMDW 만나 전하고 싶었다. 이것은 자신의 선택이며, 어떠한 결과가 될려고도 받아들일 각오가 있는 일을
+			PRINTL
+			PRINTFORMDW 당분간 걷는 동안에 날이 기울어 왔다. 밤이 되면(자) 다양하게 귀찮다
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 그렇게 생각해 걸음을 빨리 한다
+			PRINTFORMDW 그러자(면) 전방으로 사람의 그림자가 보여 왔다. 사람일까？ 요괴일까？
+			PRINTFORMDW 주위를 기울이면서, 황혼의 태양에 비추어진 사람의 그림자(분)편에 가까워진다
+			PRINTL
+			PRINTFORMW 「거기의%CNAME(MASTER, TARGET)%, 나와 같은 길을 걷지 않는 것이 좋아요」
+			PRINTFORMW 「그대로라면%CNAME(MASTER, TARGET)%에 액이 쏟아져 버려요」
+			PRINTL
+			PRINTFORMDW ――틀림없다. 그것은 %CALLNAME:TARGET%(이었)였다
+			PRINTL
+			PRINTFORMW 「～응이라고 이야기 두꺼비 빌리고 다니고 있는 것 같지만. 뭐, 이제 와서 오해를 풀 생각도 안 되지만요」
+			PRINTFORMDL %CALLNAME:TARGET%(은)는 그렇게 말하면(자),%CALLNAME:MASTER%(분)편에 가까워져 왔다
+			PRINTL
+			PRINTFORMW 「 나를 봐도 놀라지 않구나？ 드물다고 할까 뭐라고 말할까…」
+			PRINTFORMW 「아, 액의 일이라면 괜찮아요. 나의 주위의 액은 전부 산신님이 건네주어 왔는데이니까」
+			PRINTFORMW 「이라고 말해도,%CNAME(MASTER, TARGET)%(은)는 내가 누군지 알지 않는 것 같지만」
+			PRINTFORMDW %CALLNAME:TARGET%(은)는 그렇게 말하면(자) 떠나려고 했다
+			PRINTFORMW 「이제 해가 져요. 이 근처도 안전하다고는 말하기 어렵고, 빨리 돌아가세요」
+			PRINTL
+			PRINTFORMDW 아무래도 그 어쩐지 수상한 인물이 말한 일은 진정한 같았다
+			PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 일을 기억하지 않고,
+			PRINTFORMDW 이 환상시골에 있어, 그 존재는 최초부터 없었던 일이 되어 있는 것 같았다
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 심하게 낙담하면서도 지금은 어떻게 하는 일도 하지 못하고, 어쩔 수 없이 그 자리를 떨어지려고 했다
+			PRINTFORMDW 라고 그 때……
+			PRINTL
+			;まちなさい、何処に行くつもり？
+			PRINTFORMW 「 나를 두어 어디에 갈 생각？」
+			PRINTFORMDW 되돌아 보면(자) 웃는 얼굴의, 그리고 눈에는 눈물을 모았다%CALLNAME:TARGET%의 모습이 거기에는 있었다
+			;히나の笑顔、涙、そして抱き合う二人
+			PRINTFORMDW 어느 쪽과도 없게 달려 와 제대로 얼싸안는다
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 여기에 이르는 경위를 %CALLNAME:TARGET%에 이야기해, 자신의 구상의 모두를 고했다…
+			PRINTL
+			PRINTFORMW 「정말로？ %CNAME(MASTER, TARGET)%(은)는 그것으로 좋은거야？ 정말로 나같은 걸로 좋은거야？」
+			PRINTFORMW 「…뭐라고 말하는 것은, 반대로%CNAME(MASTER, TARGET)%에 실례군요.%CNAME(MASTER, TARGET)%의 그 각오에 대해서도」
+			PRINTL
+			PRINTFORMW 「좋아요, 나도 각오를 결정한다. 나는%CNAME(MASTER, TARGET)%(을)를 행복하게는 할 수 없다. 그렇지만……」
+			PRINTFORMW 「불행하게 안 되게 힘껏 노력하기 때문에. 그것과 하나 더만 말하게 하며」
+			PRINTL
+
+			;You can follow me. 
+			;I will always keep you safe, 
+			;Follow me, 
+			;You can trust in me. 
+			;I will always protect you, my love.
+
+			CALLF ANIME_CONFIG("TIMES", 2)
+			;フェードイン
+			CALL FADE(30, GETBGCOLOR(), COLOR2_K39("HINA"), "「어서 오세요」")
+			;ＢＧＭカットイン 厄神様の通り道　～ Dark Road
+			CALL BGM_CUTIN(CSTR:14, 1)
+			TWAIT 1500, 0
+			PRINTL
+			PRINTFORMDL 그리고 세월은 흐르고……
+			TWAIT 500, 0
+			CALL TWAIT3_K39
+			;少し後日談をいれつつ
+			PRINTFORMW 「이봐요, 그러니까 그렇지 않아서……조금！ 그러면 머리가 역상이야！」
+			PRINTFORMW 「후~, 이런 상태로 히나마쯔리에 시간이 맞을까？ %CNAME(MASTER, TARGET)%가 이렇게 서투르다고는 몰랐어요」
+			PRINTFORMW 「 그렇지만, 후후……, 때 병아리를 둘이서 만드는 것은 즐겁네요」
+			CALL TWAIT1_K39
+			;フォントをセット
+			CALL SETFONT_K39
+			;中央で表示
+			ALIGNMENT CENTER
+			;強制表示する！
+			CALLF ANIME_CONFIG("TIMES", 7)
+			;フェードインx5
+			CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "환상향에는 2기둥의 액신이 있다고 한다")
+			TWAIT 2500, 0
+			PRINTL
+			;噂は真実とかけ離れている場合が多い。まぁこの場合は余計な説明を省いてそれぞれの解釈に任せる的な感じ
+			CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "중일주는 원인간이라고 하는 소문도 있다")
+			TWAIT 2500, 0
+			PRINTL
+			PRINTL
+			CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "어느덧, 그 사이 화목한 모습은 사람들의 평판이 되어")
+			TWAIT 2500, 0
+			PRINTL
+			CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "지금은 액신으로서가 아니고, 결연, 사랑 남녀를 맺어주는 신으로서")
+			TWAIT 2500, 0
+			PRINTL
+			CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "환상향에서, 넓게 신앙되고 있다고 한다……")
+			TWAIT 3000, 0
+			CALL TWAIT3_ZWEI_K39
+			;フォントを戻す
+			CALL RESETFONT_K39
+			;太字にする
+			FONTSTYLE 1
+			;フェードインで"終"
+			CALL FADE(20, GETBGCOLOR(), COLOR2_K39("white"), "종")
+			CALL RESETFONT_K39
+			;左寄せに戻す
+			ALIGNMENT LEFT
+			PRINTL
+			TWAIT 500, 0
+			PRINTL
+			;SCROLLTEXTでエンディングタイトル
+			;デフォルトカラーにする
+			RESETCOLOR
+			;太字にする
+			FONTSTYLE 1
+			CUSTOMDRAWLINE -=
+			CALL SCROLLTEXT("　　　　　　　【Ending No.0002】　　――秘神流し히나", 2, 6, 117, 0, 1)
+			;フォントを戻す
+			CALL RESETFONT_K39
+			PRINTL
+			TWAIT 500, 0
+			PRINTL
+			;ED경과判定（플래그立てても使い道あるかどうか？）
+			KFLAG:(FLAG:주인님):150 = 1
+			;ゲームオーバー(선택肢x3)
+			CALL GAME_OVER_K39
+		;선택肢 1
+		CASE 1
+			;ここも何とかしないといけない
+			RESETCOLOR
+			FONTSTYLE 1
+			CUSTOMDRAWLINE -=
+			CALL SCROLLTEXT("　　　　　　　【Ending No.0003】ここにタイトル", 2, 6, 117, 0, 1)
+			FONTREGULAR
+			SETFONT
+			PRINTL
+			TWAIT 500, 0
+			PRINTL
+			;ゲームオーバー2で終了시킨다
+			CALL GAME_OVER2_K39
+	ENDSELECT
+ENDIF

@@ -1,0 +1,327 @@
+﻿;────────────────────────────────────
+;060,스펭킹（Ｓ/Ｎ/Ｈ/Ａ）[罰]（접촉、고통、중독충족）
+;────────────────────────────────────
+@ACTION_APPLY_60
+;죠교자새드素質、기교、가학、죠교레벨に応じて고통SOURCE増加
+SOURCE:MASTER:고통 = 80 * (TALENT:새드 + 1) + GET_ABL(TARGET, "기교") * (GET_ABL(TARGET, "가학") + 10) * 15 / 100 + (GET_ABL(TARGET, "기교") / 10 + GET_TRAINLV(TARGET) + 1) * (TALENT:새드 * 3 + 1) * (10 + TALENT:새드)
+;고통SOURCEに応じて접촉SOURCE増加
+SOURCE:MASTER:접촉 = 200 + SOURCE:MASTER:고통 / 10
+;죠교대상마조끼、고통중독、고통SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "고통중독") - 10) * (GET_ABL(MASTER, "고통중독") + 10) * SOURCE:MASTER:고통 / 100000
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 20) * 2
+TFLAG:경과시간 += 2
+
+;────────────────────────────────────
+;061,채찍（Ｎ/Ｈ/Ａ）[罰]（고통、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_61
+;죠교자새드素質、기교、가학、죠교레벨に応じて고통SOURCE増加
+SOURCE:MASTER:고통 = 250 * (TALENT:새드 + 1) + GET_ABL(TARGET, "기교") * (GET_ABL(TARGET, "가학") + 20) / 10 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "기교") + GET_TRAINLV(TARGET) * 10) * (TALENT:새드 * 2 + 1) * (10 + TALENT:새드) / 10
+;마음씨착한素質が存在すると고통SOURCE0.9倍
+SIF TALENT:마음씨착한
+	TIMES SOURCE:MASTER:고통 , 0.90
+;죠교대상마조끼、고통중독、고통SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "고통중독") - 10) * (GET_ABL(MASTER, "고통중독") + 10) * SOURCE:MASTER:고통 / 100000
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;고통SOURCEに応じて트라우마SOURCE増加、중독충족SOURCEによって減少
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 / 2 - SOURCE:MASTER:중독충족
+;트라우마SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:트라우마 < 0 ? 0 # SOURCE:MASTER:트라우마
+;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+SIF CFLAG:MASTER:트라우마 == 61
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 20) * 3
+TFLAG:경과시간 += 2
+
+;────────────────────────────────────
+;062,바늘（Ｈ/Ａ）[罰]（고통、이탈、중독충족、트라우마、出血）
+;────────────────────────────────────
+@ACTION_APPLY_62
+;죠교자새드素質、기교、가학、바느질、죠교레벨に応じて고통SOURCE増加
+SOURCE:MASTER:고통 = 450 * (TALENT:새드 + 1) + GET_ABL(TARGET, "기교") * (GET_ABL(TARGET, "가학") + 1) * (2 + TALENT:바느질 * 3) / 100 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "기교") + GET_TRAINLV(TARGET) * 10) * (TALENT:새드 + TALENT:바느질 * 2 + 1) * (10 + TALENT:새드) / 10
+;마음씨착한素質が存在すると고통SOURCE0.8倍
+SIF TALENT:마음씨착한
+	TIMES SOURCE:MASTER:고통 , 0.80
+;고통SOURCE、죠교대상죠교레벨、마조끼、고통중독に応じて이탈SOURCE増加
+SOURCE:MASTER:이탈 = 200 + SOURCE:MASTER:고통 / 2 - CFLAG:MASTER:죠교레벨 * 30 - GET_ABL(MASTER, "마조끼") * 6 - GET_ABL(MASTER, "고통중독") * 20
+;이탈SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
+;죠교대상마조끼、고통중독、고통SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "고통중독") - 10) * (GET_ABL(MASTER, "고통중독") + 10) * SOURCE:MASTER:고통 / 100000
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;고통SOURCEに応じて트라우마SOURCE増加、중독충족SOURCEによって減少
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 / 2 - SOURCE:MASTER:중독충족
+;트라우마SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:트라우마 < 0 ? 0 # SOURCE:MASTER:트라우마
+;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+SIF CFLAG:MASTER:트라우마 == 62
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;出血
+;男/후타나리なら페니스、女なら바기나に血液汚れ追加
+IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
+	STAIN:MASTER:페니스 |= 32
+ELSE
+	STAIN:MASTER:바기나 |= 32
+ENDIF
+;가슴に血液汚れ追加
+STAIN:MASTER:가슴 |= 32
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 20) * 4
+TFLAG:경과시간 += 2
+
+;────────────────────────────────────
+;063,밧줄（Ｓ/Ｎ/Ｈ/Ａ）[罰]（구속、중독충족）
+;────────────────────────────────────
+@ACTION_APPLY_63
+;本当はいろんな縛り方を作りたいが面倒すぎます…暫定的に縛りの強度だけをTEQUIP:밧줄に記入します
+;구속時
+IF TFLAG:ACT파생 == 0
+	;반항각인、죠교자죠교레벨、기교、긴박능숙素質に応じて구속SOURCE増加
+	SOURCE:MASTER:구속 = 200 + (MARK:반항각인 + GET_TRAINLV(TARGET)) * (GET_ABL(TARGET, "기교") + 10) * 5 * (TALENT:긴박능숙 * 3 + 2) / 10
+	;마조끼、구속중독、구속SOURCEに応じて중독충족SOURCE増加
+	SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "구속중독") - 10) * (GET_ABL(MASTER, "구속중독") + 10) * SOURCE:MASTER:구속 / 100000
+	;중독충족SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+	;밧줄で구속(구속SOURCEに応じて強度上昇)
+	TEQUIP:밧줄 = 1 + SOURCE:MASTER:구속 / 500
+;解除時
+ELSE
+	;밧줄で구속解除
+	TEQUIP:밧줄 = 0
+ENDIF
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 20)
+TFLAG:경과시간 += 2
+
+;────────────────────────────────────
+;064,눈가리개（Ｓ/Ｎ/Ｈ/Ａ）[罰]（구속、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_64
+;장착時
+IF TFLAG:ACT파생 == 0
+	;가학、죠교자죠교레벨、기교、긴박능숙素質に応じて구속SOURCE増加
+	SOURCE:MASTER:구속 = 100 + (GET_ABL(TARGET, "가학") + GET_TRAINLV(TARGET) * 10) * (GET_ABL(TARGET, "기교") + 10) * 5 * (TALENT:긴박능숙 + 2) / 10
+	;마조끼、구속중독、구속SOURCEに応じて중독충족SOURCE増加
+	SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "구속중독") - 10) * (GET_ABL(MASTER, "구속중독") + 10) * SOURCE:MASTER:구속 / 100000
+	;중독충족SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+	;구속SOURCEに応じて트라우마SOURCE増加、중독충족SOURCEによって減少
+	SOURCE:MASTER:트라우마 = SOURCE:MASTER:구속 / 2 - SOURCE:MASTER:중독충족
+	;트라우마SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:트라우마 = SOURCE:MASTER:트라우마 < 0 ? 0 # SOURCE:MASTER:트라우마
+	;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+	SIF CFLAG:MASTER:트라우마 == 64
+		TIMES SOURCE:MASTER:트라우마 , 1.50
+	;눈가리개장착
+	TEQUIP:눈가리개 = 1
+;解除時
+ELSE
+	;눈가리개解除
+	TEQUIP:눈가리개 = 0
+ENDIF
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 20)
+TFLAG:경과시간 += 1
+
+;────────────────────────────────────
+;065,볼개그（Ｎ/Ｈ/Ａ）[罰]（구속、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_65
+;장착時
+IF TFLAG:ACT파생 == 0
+	;가학、죠교자죠교레벨、긴박능숙素質に応じて구속SOURCE増加
+	SOURCE:MASTER:구속 = 350 + (GET_ABL(TARGET, "가학") + GET_TRAINLV(TARGET) * 10) * (TALENT:긴박능숙 + 1)
+	;마조끼、구속중독、구속SOURCEに応じて중독충족SOURCE増加
+	SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "구속중독") - 10) * (GET_ABL(MASTER, "구속중독") + 10) * SOURCE:MASTER:구속 / 100000
+	;중독충족SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+	;구속SOURCEに応じて트라우마SOURCE増加、중독충족SOURCEによって減少
+	SOURCE:MASTER:트라우마 = SOURCE:MASTER:구속 / 2 - SOURCE:MASTER:중독충족
+	;트라우마SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:트라우마 = SOURCE:MASTER:트라우마 < 0 ? 0 # SOURCE:MASTER:트라우마
+	;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+	SIF CFLAG:MASTER:트라우마 == 65
+		TIMES SOURCE:MASTER:트라우마 , 1.50
+	;볼개그장착
+	TEQUIP:볼개그 = 1
+;解除時
+ELSE
+	;볼개그解除
+	TEQUIP:볼개그 = 0
+ENDIF
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자자위を中断
+TEQUIP:자위중 &= ~2
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 2)
+TFLAG:경과시간 += 1
+
+;────────────────────────────────────
+;066,매도（Ｎ/Ｈ/Ａ）[罰]（이탈、중독충족）
+;────────────────────────────────────
+@ACTION_APPLY_66
+;죠교자회화、가학、랭크に応じて이탈SOURCE増加
+SOURCE:MASTER:이탈 = 200 + (GET_ABL(TARGET, "회화") + 10) * (GET_ABL(TARGET, "가학") + 10) * CFLAG:랭크 * 5 / 100
+;마조끼、구속중독、이탈SOURCEに応じて중독충족SOURCE増加
+SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "구속중독") - 10) * (GET_ABL(MASTER, "구속중독") + 10) * SOURCE:MASTER:이탈 / 100000
+;중독충족SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+;중독충족SOURCE分이탈SOURCE減少(フィードバック)
+SOURCE:MASTER:이탈 -= SOURCE:MASTER:중독충족
+;이탈SOURCEが負の値をとらないよう調整
+SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
+TFLAG:경과시간 += 1
+;話題『매도』を既出とする
+TFLAG:기출의화제 |= 64
+
+;────────────────────────────────────
+;067,삼각목마（Ｈ/Ａ）[罰]（쾌Ｖ、애정逆、고통、구속、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_67
+;開始時
+IF TFLAG:ACT파생 == 0
+	;마조끼、고통중독、도Ｍ素質に応じて쾌ＶSOURCE増加
+	SOURCE:MASTER:쾌Ｖ = (GET_ABL(MASTER, "마조끼") - 30) * GET_ABL(MASTER, "고통중독") * (TALENT:MASTER:도Ｍ + 2) / 2
+	;쾌ＶSOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:쾌Ｖ = SOURCE:MASTER:쾌Ｖ < 0 ? 0 # SOURCE:MASTER:쾌Ｖ
+	;죠교자가학、기교、죠교레벨、새드素質に応じて고통SOURCE増加
+	SOURCE:MASTER:고통 = 1000 + GET_ABL(TARGET, "가학") * GET_ABL(TARGET, "기교") * 50 / 100 + GET_TRAINLV(TARGET) * (TALENT:새드 * 3 + 2) * 20
+	;반항각인、기교に応じて구속SOURCE増加
+	SOURCE:MASTER:구속 = 50 + (MARK:반항각인 + 1) * (GET_ABL(TARGET, "기교") + 10)
+	;고통SOURCEに応じて이탈SOURCE増加、죠교레벨、마조끼、고통중독によって減少
+	SOURCE:MASTER:이탈 = 1800 + SOURCE:MASTER:고통 / 2 - CFLAG:MASTER:죠교레벨 * 50 - GET_ABL(MASTER, "마조끼") * 20 - GET_ABL(MASTER, "고통중독") * 60
+	;이탈SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
+	;마조끼、고통중독、고통SOURCEに応じて중독충족SOURCE増加
+	SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "마조끼") * (GET_ABL(MASTER, "고통중독") - 30) * (GET_ABL(MASTER, "고통중독") + 10) * SOURCE:MASTER:고통 / 80000
+	;중독충족SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+	;고통、구속SOURCEに応じて트라우마SOURCE増加、중독충족SOURCEによって減少
+	SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 / 2 + SOURCE:MASTER:구속 / 5 - SOURCE:MASTER:중독충족
+	;트라우마SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:트라우마 = SOURCE:MASTER:트라우마 < 0 ? 0 # SOURCE:MASTER:트라우마
+	;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+	SIF CFLAG:MASTER:트라우마 == 67
+		TIMES SOURCE:MASTER:트라우마 , 1.50
+	;중독충족SOURCEに応じて애정SOURCE増加、고통、이탈、트라우마SOURCEによって減少
+	SOURCE:MASTER:애정 += SOURCE:MASTER:중독충족 - SOURCE:MASTER:고통 - SOURCE:MASTER:이탈 - SOURCE:MASTER:트라우마
+	;애정SOURCEが正の値をとらないよう調整
+	SOURCE:MASTER:애정 = SOURCE:MASTER:애정 > 0 ? 0 # SOURCE:MASTER:애정
+	;삼각목마に乗せる
+	TEQUIP:삼각목마 = 1
+;終了時
+ELSE
+	;삼각목마から降ろす
+	TEQUIP:삼각목마 = 0
+ENDIF
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+;죠교자마조끼に応じて발기도上昇
+TCVAR:MASTER:금회발기 += 50 + (GET_ABL(MASTER, "마조끼") - 30) * 4
+TFLAG:경과시간 += 3
+
+@ACTION_APPLY2_67
+;MASTERが처녀なら、처녀상실が起こる
+TCVAR:MASTER:처녀상실 = TALENT:MASTER:처녀
+
+;────────────────────────────────────
+;068,관장그릇＋플러그（Ｎ/Ｈ/Ａ）[罰]（쾌Ａ、고통、구속<=プラグのこと、이탈、중독충족、트라우마）
+;────────────────────────────────────
+@ACTION_APPLY_68
+;注入/追加
+IF TFLAG:ACT파생 == 0 || TFLAG:ACT파생 == 2
+	;관장液注入(量1か2)
+	IF TFLAG:ACT파생 == 0
+		TEQUIP:관장그릇＋플러그 = 1 + RAND:2
+	;관장液追加(量1から3)
+	ELSE
+		TEQUIP:관장그릇＋플러그 += 1 + RAND:3
+	ENDIF
+	;죠교대상죠교레벨、기교、죠교자도구능숙素質、죠교대상도Ｍ素質、液量に応じて쾌ＡSOURCE増加
+	SOURCE:MASTER:쾌Ａ = 20 * (CFLAG:MASTER:죠교레벨 + 1) + (GET_ABL(MASTER, "기교") - 30) * GET_ABL(MASTER, "마조끼") * (TALENT:도구능숙 + TALENT:MASTER:도Ｍ + TEQUIP:관장그릇＋플러그) * 30 / 100
+	;쾌ＡSOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:쾌Ａ = SOURCE:MASTER:쾌Ａ < 0 ? 0 # SOURCE:MASTER:쾌Ａ
+	;ここの고통は腹痛の処理です。경험不발のほうは항문未開発による고통です。
+	;液量に応じて고통SOURCE増加
+	SOURCE:MASTER:고통 = 200 + TEQUIP:관장그릇＋플러그 * 100
+	;液量に応じて구속SOURCE増加
+	SOURCE:MASTER:구속 = 50 + TEQUIP:관장그릇＋플러그 * 100
+	;쾌Ａ、고통SOURCEに応じて이탈SOURCE増加、죠교레벨、마조끼によって減少
+	SOURCE:MASTER:이탈 = SOURCE:MASTER:쾌Ａ / 2 + SOURCE:MASTER:고통 / 2 - CFLAG:MASTER:죠교레벨 * 20 - GET_ABL(MASTER, "마조끼") * 10
+	;이탈SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
+	;마조끼、Ａ감각、쾌ＡSOURCEに応じて중독충족SOURCE増加
+	SOURCE:MASTER:중독충족 = (GET_ABL(MASTER, "마조끼") - 30) * GET_ABL(MASTER, "Ａ감각") * 25 * SOURCE:MASTER:쾌Ａ / 10000
+	;중독충족SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+	;경험不발
+	;導管はすでに入れてますから追加の注入は경험不발の処理を行いません
+	IF TFLAG:ACT파생 == 0
+		;Ａ경험不발であればあるほど쾌ＡSOURCE減衰、고통、이탈SOURCE増加
+		IF EXP:MASTER:Ａ경험 < 1
+			TIMES SOURCE:MASTER:쾌Ａ , 0.80
+			SOURCE:MASTER:고통 += 100
+			SOURCE:MASTER:이탈 += 2000
+		ELSEIF EXP:MASTER:Ａ경험 < 6
+			TIMES SOURCE:MASTER:쾌Ａ , 0.90
+			SOURCE:MASTER:이탈 += 1500
+		ELSEIF EXP:MASTER:Ａ경험 < 11
+			SOURCE:MASTER:이탈 += 1000
+		ELSEIF EXP:MASTER:Ａ경험 < 21
+			SOURCE:MASTER:이탈 += 500
+		ENDIF
+	ENDIF
+;排出
+ELSE
+	;液量に応じて쾌ＡSOURCE増加
+	SOURCE:MASTER:쾌Ａ = 500 * TEQUIP:관장그릇＋플러그 * (100 + RAND:11 - RAND:11) / 100
+	;쾌Ａに応じて이탈SOURCE増加、죠교대상죠교레벨、마조끼、변태적、도Ｍ素質によって減少
+	SOURCE:MASTER:이탈 = SOURCE:MASTER:쾌Ａ - CFLAG:MASTER:죠교레벨 * 80 - GET_ABL(MASTER, "마조끼") * 40 - TALENT:MASTER:변태적 * 500 - TALENT:MASTER:도Ｍ * 1000
+	;죠교레벨、Ａ감각、쾌ＡSOURCEに応じて중독충족SOURCE増加
+	SOURCE:MASTER:중독충족 = (CFLAG:MASTER:죠교레벨 - 5) * (GET_ABL(MASTER, "Ａ감각") + 5) * 2 * SOURCE:MASTER:쾌Ａ / 1000
+	;중독충족SOURCEが負の値をとらないよう調整
+	SOURCE:MASTER:중독충족 = SOURCE:MASTER:중독충족 < 0 ? 0 # SOURCE:MASTER:중독충족
+	;관장液排出
+	TEQUIP:관장그릇＋플러그 = 0
+ENDIF
+;고통、구속、이탈SOURCEに応じて트라우마SOURCE増加
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:고통 / 3 + SOURCE:MASTER:구속 / 3 + SOURCE:MASTER:이탈 / 3
+;중독충족SOURCEが正であれば트라우마SOURCE抹消
+SOURCE:MASTER:트라우마 = SOURCE:MASTER:중독충족 > 0 ? 0 # SOURCE:MASTER:트라우마
+;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+SIF CFLAG:MASTER:트라우마 == 68
+	TIMES SOURCE:MASTER:트라우마 , 1.50
+;안면승마系解除
+CALL FACESITTING_SET(0)
+;죠교자、죠교대상자위を中断
+TEQUIP:자위중 = 0
+TFLAG:경과시간 += 3

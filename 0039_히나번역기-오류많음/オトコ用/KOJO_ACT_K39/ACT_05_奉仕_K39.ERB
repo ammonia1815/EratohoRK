@@ -1,0 +1,835 @@
+﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;히나구상 봉사系アクション구상ファイル
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;################
+;봉사系 ACT50～57
+;################
+[SKIPSTART]
+	#TFLAG:ACT
+		50=손으로 애무를 강요
+		51=입으로 애무를 강요
+		52=파이즈리
+		53=스마타
+		55=발핥기강제
+		56=이라마치오
+		57=가슴애무강제
+	#TFLAG:ACT분류 == 5に該当
+	#汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "봉사")で拾う事が可能
+	#죠교대상に、죠교자の身体を애무するように命令する
+	#基本的には命令なので、この段階では従うかどうか確定していない(ACT56,이라마치오は거부できない)
+
+	*ACT54,발コキは12/04/08版で粛清
+[SKIPEND]
+
+
+;///////////////////////
+;ACT50, 손으로 애무를 강요//
+;///////////////////////
+[SKIPSTART]
+	#애무強制/수음強制/페니스밴드수음強制
+	#죠교대상(MASTER)に、손による애무를 강요する
+	#죠교자に페니스があると必ず수음強制になる(페니스があると통상の애무強制は起こらない)
+	#죠교자が페니스밴드장착中は페니스밴드수음強制になる
+	#TFLAG:징계・플래그が立っていると発生しない
+	#턴방침が"하드", "이상"だと発生しない
+	#밀어넘어지는중には発生しない
+	#TEQUIP(밧줄/삼각목마)장착中には発生しない
+	#성교중/성교봉사중には発生しない
+	#죠교대상が従うか否かはこの時点では未定
+	#REACT분류が거부/날뛴다/逃げるの場合は拒絶扱いとなる
+
+	*地の文はACT파생毎に分岐。各ACT파생内では分岐なし
+	*ACT파생0,애무の時のみ쾌Ｂ/쾌ＡSOURCE増加
+	*その他の場合は쾌Ｃ限定
+[SKIPEND]
+@KOJO_MALE_ACT_K39_50 ;TFLAG:ACT파생(0=애무強制/1=수음強制/2=페니스밴드수음強制)
+#LOCALSIZE  1
+#LOCALSSIZE 1
+VARSET LOCAL
+VARSET LOCALS
+
+;ACT파생1と2は考慮しない
+SIF GROUPMATCH(TFLAG:ACT파생, 1, 2)
+	RETURN 0
+
+;ACT50_0, 애무強制 //「自分の성기を손으로 애무しろと命令する」
+;=================
+IF !TFLAG:ACT파생
+	;연속실행
+	;========
+	IF TFLAG:ACT == TFLAG:전ACT
+		;죠교자がイキそう
+		;================
+		IF TCVAR:TARGET:가버려
+			;호의、호감도で派生
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				CALL HTMLPRINTW(@"「햐앗！ 그런…손가락으로！ 타면, 안돼에%HTML_PS2_K39()%」")
+				CALL HTMLPRINTW(@"「가 버린다%HTML_AH_K39()% 가 버리기 때문에！ 아아, 안돼엣……！」")
+			ELSEIF AFFECTION("익애")
+				{
+				CALL HTMLPRINTW(
+;OriginalString : 「んっ%HTML_AH_K39()%　あぁっ%HTML_AH_K39()%" + 
+				@"「읏%HTML_AH_K39()% 아앗%HTML_AH_K39()%" + 
+;OriginalString : 　そんなとこまで…弄られ…ッ…%HTML_PS2_K39()%」")
+				@" 그런 곳까지…만지작거려지고……%HTML_PS2_K39()%」")
+				}
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%에, 손대어져……나, 이렇게……！」
+			ELSE
+				CALL HTMLPRINTW(@"「읏%HTML_AH_K39()% 앗%HTML_AH_K39()% 나, 이제(벌써)……」")
+				CALL HTMLPRINTW(@"「이제(벌써), 조금으로……！ 아앗%HTML_PS2_K39()%」")
+			ENDIF
+			RETURN 1
+		ENDIF
+
+		;その他
+		;======
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			CALL HTMLPRINTW(@"「앙%HTML_AH_K39()% 앗%HTML_AH_K39()% 아앗！ 뭔가 격렬해…히앗！」")
+			CALL HTMLPRINTW(@"「야, 약하면 나뭇 조각빚……만지작거리는 것인가, 들…%HTML_PS2_K39()%」")
+		ELSEIF AFFECTION("익애")
+			CALL HTMLPRINTW(@"「핫, 응읏！ 추잡하다손돌출하고 무릎……아앗%HTML_PS2_K39()%」")
+			CALL HTMLPRINTW(@"「어느새, 이렇게……읏후아%HTML_AH_K39()% 거기, 만지작거려지면！」")
+		ELSE
+			CALL HTMLPRINTW(@"「읏%HTML_AH_K39()% 위손, (이에)예요……」")
+			CALL HTMLPRINTW(@"「앗%HTML_AH_K39()% 거기, 좀 더 손대어 주세요……」")
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;성교봉사중 //TEQUIP:성교봉사중(정상위/대면좌위/배면좌위)かつ죠교자が"정욕"かつTCVAR:가버려が立っている場合限定で発生
+	;========== //후배위/역강간/Ａ섹스では発生しない
+	IF TEQUIP:성교봉사중
+		LOCAL :0 = GET_KFLAG_K39("상사상애", (FLAG:주인님))
+		LOCALS:0 '= PALAM:쾌Ｖ > 5000 ? "ッ！" # "…" 
+		{
+		CALL HTMLPRINTW(
+;OriginalString : 「あ\@ PALAM:쾌Ｖ > 5000 ? ゛ # \@……ああ……あ\@ PALAM:쾌Ｖ > 5000 
+		@"「아\@ PALAM:쾌Ｖ > 5000 ? ″ # \@……아아……아\@ PALAM:쾌Ｖ > 5000 
+;OriginalString : ゛ # \@っ、あ\@ PALAM:쾌Ｖ > 5000 ? ゛あぁ # \@っ%HTML_PS2_K39()%」")
+		? ″ # \@읏, 아\@ PALAM:쾌Ｖ > 5000 ? ″아 # \@읏%HTML_PS2_K39()%」")
+		}
+		{
+		PRINTFORMW 「\@ LOCAL:0 
+;OriginalString : ね、ねぇ # あ、あの 
+		? 저, 저기 # 저, 저 
+		\@……%RAND_SPLIT(
+;OriginalString : お願い\@ !LOCAL:0 ? です # \@。こっちも、弄って\@ !LOCAL:0 ? ください # \@…%LOCALS:0%" + 
+		@"부탁\@ !LOCAL:0 ? 입니다 # \@여기도, 만지작거려\@ !LOCAL:0 ? 주세요 # \@…%LOCALS:0%" + 
+;OriginalString : /ココが切ない\@ LOCAL:0 ? の # んです \@…%LOCALS:0%　ちょっと激しくシても、いい\@ !LOCAL:0 ? です # \@から……")%」
+		@"/코코가 안타깝다\@ LOCAL:0 ? 노 # 응입니다 \@…%LOCALS:0% 조금 격렬하게 시라고도, 좋다\@ !LOCAL:0 ? 입니다 # \@로부터……")%」
+		}
+		RETURN 1
+	ENDIF
+
+	;その他・条件なし //確率で汎用アクションへ
+	;================
+	IF 구상記入チェック(50)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMDW %CALLNAME%(은)는 %CALLNAME:MASTER%의 수를 잡아 스스로의 신체에 꽉 눌렀다…
+			PRINTFORMW 「그런데, 알겠죠……이제 이렇게 뜨거워져…」
+			PRINTFORMW 「손대어…만지작거려 돌려…모두 잊게 해……」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「 나,%CNAME(MASTER, TARGET)%에 손대기를 원해서, 이제 참을 수 없습니다…」
+			PRINTFORMW 「부탁입니다………%CNAME(MASTER, TARGET)%의 손으로, 나를 녹여……」
+		ELSE
+			PRINTFORMW 「 나의 몸은 어떻습니까.%CNAME(MASTER, TARGET)%(으)로부터 봐 매력적입니까？」
+			PRINTFORMW 「사양은 필요 없습니다. 좋아할 뿐(만큼) 손대어 주세요…」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+
+;///////////////////////
+;ACT51, 입으로 애무를 강요//
+;///////////////////////
+[SKIPSTART]
+	#クンニ/펠라チオ/안면승마/안면승마항문/
+	#죠교대상に、입による애무를 강요する
+	#죠교자が후타나리の場合、죠교대상が누움なら1/2で안면승마、そうでなければ펠라強制になる
+	#죠교자に페니스がなく、죠교대상が누움なら안면승마になる
+	#안면승마が選ばれていたとき、안면승마항문に변화することがある
+	#全ての条件から漏れた場合は통상のクンニとなる
+	#TFLAG:징계・플래그が立っていると発生しない
+	#밀어넘어지는중には発生しない
+	#TEQUIP(볼개그/삼각목마)장착中は発生しない
+	#죠교자が페니스밴드を장착している場合は発生しない
+	#성교중/성교봉사중には発生しない
+	#REACT분류が거부/날뛴다/逃げるの場合は拒絶扱いになる
+[SKIPEND]
+@KOJO_MALE_ACT_K39_51 ;TFLAG:ACT파생(0=クンニ/1=펠라/2=안면승마/3=안면승마항문)
+
+;ACT파생が펠라なら弾く
+SIF TFLAG:ACT파생 == 1
+	RETURN 0
+
+;ACT51_0, クンニ
+;===============
+IF !TFLAG:ACT파생
+	;연속실행
+	;========
+	IF TFLAG:ACT == TFLAG:전ACT
+		;죠교자がイキそう
+		;================
+		IF TCVAR:TARGET:가버려
+			;호의、호감도で派生
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				CALL HTMLPRINTW(@"「얏, 거기 안돼엣%HTML_AH_K39()% 거기, 약한데……！」")
+				{
+				CALL HTMLPRINTW(
+;OriginalString : 「だめっ、だめぇ%HTML_AH_K39()%　イっちゃうっ" + 
+				@"「안됏, 안돼에%HTML_AH_K39()% 가 버린닷" + 
+;OriginalString : %HTML_AH_K39()%　イっちゃうからぁ…ッ…！」")
+				@"%HTML_AH_K39()% 가 버리기 때문에……！」")
+				}
+			ELSEIF AFFECTION("익애")
+				{
+				CALL HTMLPRINTW(
+;OriginalString : 「んぁっ%HTML_AH_K39()%　あっ%HTML_AH_K39()%　" + 
+				@"「응앗%HTML_AH_K39()% 앗%HTML_AH_K39()% " + 
+;OriginalString : はぁっ…だ、だめですっ！ そんなに했다ら…」")
+				"하앗…아, 안됩니닷！ 그렇게했다들…」")
+				}
+				CALL HTMLPRINTW(@"「나, 나！ 가 버립니다……아앗…！」")
+			ELSE
+				CALL HTMLPRINTW(@"「앗%HTML_AH_K39()% 응읏！ 그, 그렇게…당했다랏！ 나, 가 버립니다…」")
+			ENDIF
+			RETURN 1
+		ENDIF
+
+		;その他
+		;======
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			CALL HTMLPRINTW(@"「응앗！ 앗%HTML_AH_K39()% 아읏%HTML_AH_K39()% 이제(벌써), 약하면 나뭇 조각빚…」")
+		ELSE
+			CALL HTMLPRINTW(@"「읏%HTML_AH_K39()% 앗%HTML_AH_K39()% 좋습, 니다…」")
+			PRINTFORMW 「기분이 좋아요……」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;シックスナイン
+	;==============
+	IF GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			CALL HTMLPRINTW(@"「응%HTML_AH_K39()% 이것은 뭔가 굉장히 흥분한다…」")
+			PRINTFORM 「이봐요, 분명하게 시라고 주기 때문에 제 쪽도 부탁이군요
+		ELSE
+			PRINTFORMW 「이 모습, 매우 불쾌해서 흥분해 버리네요…」
+			PRINTFORMW 「좋아요. 좋아할 뿐(만큼) 나를 맛봐 주세요」
+			PRINTFORM 「 나는 이쪽에서 즐기게 해 줄테니까
+		ENDIF
+		CALL PRINT_SYMBOL_K39
+		RETURN 1
+	ENDIF
+
+	;정액舐め強制
+	;============
+	IF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「응 봐.%CNAME(MASTER, TARGET)%의 정액이 흘러넘쳐 와버린다의. 그러니까…」
+			CALL HTMLPRINTW(@"「분명하게 빨아 예쁘게 해？ 후후…%HTML_PS_K39()%」")
+		ELSE
+			PRINTFORMW 「자신이 더럽힌 곳은, 분명하게 깨끗이 받아요」
+			CALL HTMLPRINTW(@"「후후, 안됩니다. 싫어해도 허락해 주지 않습니다%HTML_PS_K39()%」")
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;その他・条件なし //確率で汎用アクションへ
+	;================
+	IF 구상記入チェック(55)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「응, 부탁. 빠르게 시라고…」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%에 빨았으면 좋아서, 이제 참을 수 없는거야……」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「봐 주세요.%CNAME(MASTER, TARGET)%에 빨았으면 좋아서, 이제 이렇게 되어 있습니다…」
+			PRINTFORMW 「이런 야비한 신을 경멸합니까？ 그렇지만, 이제 나……」
+		ELSE
+			PRINTFORMW 「에서는 나 코코를 빨아 줄까요」
+			PRINTFORMW 「민감한 곳이므로, 정중하게 부탁드릴게요」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+
+;ACT51_2, 안면승마
+;=================
+IF TFLAG:ACT파생 == 2
+	;연속실행
+	;========
+	IF TFLAG:ACT == TFLAG:전ACT
+		;죠교자がイキそう
+		;================
+		IF TCVAR:TARGET:가버려
+			;호의、호감도で派生
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				CALL HTMLPRINTW(@"「야앗, 앗%HTML_AH_K39()% 아앗%HTML_AH_K39()%！ 이제(벌써), 가 버릴지도……」")
+				CALL HTMLPRINTW(@"「응아앗%HTML_AH_K39()% 그렇게당했다겨, 견딜 수 없어…！」")
+			ELSEIF AFFECTION("익애")
+				CALL HTMLPRINTW(@"「응앗, 아읏%HTML_AH_K39()% 그런,민감곳(뿐)만！」")
+				PRINTFORMW 「개, 이런 건……이제 , 견딜 수 있는 것…！」
+			ELSE
+				CALL HTMLPRINTW(@"「아앗%HTML_AH_K39()% 이렇게당했다들, 나…！」")
+				PRINTFORMW 「도, 이제！ 인내…할 수 없게……！」
+			ENDIF
+			RETURN 1
+		ENDIF
+
+		;その他 //호의、호감도で派生
+		;======
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			CALL HTMLPRINTW(@"「읏, 앗%HTML_PS_K39()% 아앗！ 그런, 곳까지……」")
+			CALL HTMLPRINTW(@"「앗, 하앗！ 안됏%HTML_AH_K39()% 안돼엣！」")
+		ELSE
+			CALL HTMLPRINTW(@"「앗%HTML_AH_K39()% 응읏！ 나쁘고, 없어요」")
+			PRINTFORMW 「 좀 더, 좀 더 시라고 주세요…」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;정액舐め強制 //55%で真
+	;============
+	IF 구상記入チェック(55) && INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「이봐요, 스스로 더럽힌 곳은 분명하게 깨끗이 하며」
+			CALL HTMLPRINTW(@"「전부 깨끗이 빨아…%HTML_PS_K39()%」")
+		ELSE
+			CALL HTMLPRINTW(@"「자, 자신의정액를 잘 맛봐 주세요%HTML_PS_K39()%」")
+			PRINTFORMW 「남기지 않고 깨끗이 하지 않으면 안되어요？」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;その他・条件なし //確率で汎用アクションへ
+	;================
+	IF 구상記入チェック(55)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「응, 이런 불쾌한 신은 경멸한다？」
+			PRINTFORMW 「 그렇지만, 이런 일 하는 것은%CNAME(MASTER, TARGET)%만…」
+			PRINTFORMW 「 나,%CNAME(MASTER, TARGET)%(이)라고 있으면(자), 자꾸자꾸 이상해져버린다의…」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「압니까？ 이제 기다릴 수  없어서, 이렇게 되어 있습니다…」
+			PRINTFORMW 「빨리,%CNAME(MASTER, TARGET)%의 혀로……나를 녹여 주세요」
+		ELSE
+			PRINTFORMW 「우대신, 이 몸의 자세라고 도망가지 않아요？」
+			PRINTFORMW 「이 액신의 불쾌한 곳,%CNAME(MASTER, TARGET)%의 혀로 빨아 주세요」
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+
+;ACT51_3, 안면승마항문
+;=======================
+IF TFLAG:ACT파생 == 3
+	;연속실행
+	;========
+	IF TFLAG:ACT == TFLAG:전ACT
+		;죠교자がイキそう
+		;================
+		IF PALAM:쾌Ａ > 8500
+			;호의、호감도で派生
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				CALL HTMLPRINTW(@"「야앗%HTML_AH_K39()% 그, 그렇게！ 혀로 뚫어서는 안돼엣%HTML_PS2_K39()%」")
+				PRINTFORMW 「엉덩이의 구멍에서, 기쁨……안된 신이 되어 버린다……！」
+			ELSEIF AFFECTION("익애")
+				CALL HTMLPRINTW(@"「후앗%HTML_AH_K39()% 나, 엉덩이의 구멍 빨 수 있어…읏…！」")
+				CALL HTMLPRINTW(@"「이, 이렇게…！ 기분 자주(잘)……응앗%HTML_PS2_K39()%」")
+			ELSE
+				CALL HTMLPRINTW(@"「얏%HTML_AH_K39()% 그렇게 끈적, 빨려지면…」")
+				PRINTFORMW 「이상하고！ 나, 이상해져 버립니다……！」
+			ENDIF
+			RETURN 1
+		ENDIF
+
+		;その他
+		;======
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			CALL HTMLPRINTW(@"「읏, 앗%HTML_AH_K39()% 아앗！ 그런, 곳까지……」")
+			CALL HTMLPRINTW(@"「앗%HTML_AH_K39()% 하앗！ 안됏%HTML_AH_K39()% 안돼엣！」")
+		ELSE
+			CALL HTMLPRINTW(@"「앗%HTML_AH_K39()% 응읏！ 나쁘고, 없어요」")
+			PRINTFORMW 「 좀 더, 좀 더 시라고 주세요…」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;その他・条件なし //確率で汎用アクションへ
+	;================
+	IF 구상記入チェック(55)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「엉덩이가 쑤셔, 이제 참을 수 없는거야」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 혀로……나의 부끄러운 구멍, 그체그체에 빨아 돌리며」
+		ELSEIF AFFECTION("익애")
+			PRINTFORMW 「기대해 히크히크 해, 압니까？」
+			PRINTFORMW 「이제 기다릴 수  없습니다…%CNAME(MASTER, TARGET)%의 혀로, 녹여 주세요…」
+		ELSE
+			PRINTFORMW 「,%CNAME(MASTER, TARGET)%의 혀로 빨아 주어요？」
+			CALL HTMLPRINTW(@"「우후, 즐겁게 해 주세요%HTML_PS_K39()%」")
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+
+;/////////////////
+;ACT52, 파이즈리//
+;/////////////////
+[SKIPSTART]
+	#죠교대상に파이즈리での봉사를 강요する
+	#죠교대상が남자の場合は発生しない
+	#죠교자に페니스がない場合は発生しない
+	#턴방침が"이상"の場合は発生しない
+	#밀어넘어지는중には発生しない
+	#TEQUIP(밧줄/삼각목마)장착中には発生しない
+	#성교중/성교봉사중には発生しない
+	#REACT분류が거부/날뛴다/逃げるの場合は拒絶扱いとなる
+
+	*地の文に分岐なし
+	*@TARGET_DESCRIPTIONによる状況描写が入る可能性あり
+[SKIPEND]
+@KOJO_MALE_ACT_K39_52 ;ACT파생なし
+;良い子は히나さまに生やしてはいけません
+RETURN 0
+
+
+;/////////////
+;ACT53, 스마타//
+;/////////////
+[SKIPSTART]
+	#죠교대상に페니스밴드、もしくは페니스를股に挟んで擦れと命令する
+	#죠교자に棒がない(페니스/페니스밴드)場合は発生しない
+	#죠교대상に페니스がある場合は発生しない
+	#TFLAG:징계・플래그が立っていると発生しない
+	#턴방침が"이상"の場合は発生しない
+	#밀어넘어지는중には発生しない
+	#TEQUIP:삼각목마장착中には発生しない
+	#성교중/성교봉사중には発生しない
+	#죠교대상に발がないと発生しない(現状では屠自古が죠교대상である場合のみと考えられる)
+	#REACT분류が거부/날뛴다/逃げるである場合は拒絶扱い
+
+	*안면승마系、자위系は解除される
+	*地の文はACT파생で分岐。派生内では分岐なし
+	*@TARGET_DESCRIPTIONによる状況描写が入る可能性あり
+[SKIPEND]
+@KOJO_MALE_ACT_K39_53 ;TFLAG:ACT파생(0=스마타/1=페니스밴드스마타)
+;良い子は히나さまに生やしてはいけません
+RETURN 0
+
+
+;///////////////////
+;ACT55, 발핥기강제//
+;///////////////////
+[SKIPSTART]
+	#죠교자が발를 핥아ろと命令してくる
+	#이상系から発生する場合あり
+	#턴방침が"소프트"だと発生しない
+	#本日の방침が"イチャイチャ"だと発生しない
+	#밀어넘어지는중には発生しない
+	#TEQUIP(볼개그/삼각목마)장착中には発生しない
+	#성교중/성교봉사중には発生しない
+	#죠교자に발がない場合は発生しない
+	#REACT분류が거부/날뛴다/逃げるの場合は拒絶扱い
+
+	*ACT파생なし
+	*地の文に分岐なし
+	*@TARGET_DESCRIPTIONで状況描写が入る可能性あり
+[SKIPEND]
+@KOJO_MALE_ACT_K39_55
+
+;ACT55, 발핥기강제
+;=================
+IF !TFLAG:ACT파생
+	;금일의방침が징계・ //ONCEで同一조교중に一度のみ表示
+	;====================
+	IF IS_POLICY("금일", "징계・") && ONCEACT(0)
+		LOCAL:0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
+		LOCALS:0 '= RAND_SPLIT("よ/")
+		;플레이ヤーが만족보너스で『징계해』を선택している場合
+		IF IS_SATIS_BONUS("징계・")
+			PRINTFORMW 「이봐요, 이런 일을 하고 싶어서\@ LOCAL:0 ? 짊어진다 # 군요 \@？」
+			CALL HTMLPRINTL(@"「ふふ、嘘ついたって駄目\@ LOCAL:0 ? %LOCALS:0% # です%LOCALS:0% \@…%HTML_PS_K39()%」")
+			{
+			CALL HTMLPRINTW(
+;OriginalString : 「本当に嫌なら、最初から%HTMLFONT("<b>『징계해』</b>", , COLOR2_K39("WHITE"))%" + 
+			@"「정말로 싫으면, 최초부터%HTMLFONT("<b>『징계해』</b>", , COLOR2_K39("WHITE"))%" + 
+;OriginalString : なんて言わないはず\@ !LOCAL:0 ? です # \@よね？」")
+			@"뭐라고 말하지 않을 것\@ !LOCAL:0 ? 입니다 # \@(이)군요？」")
+			}
+		;죠교자の방침による징계・の場合
+		ELSE
+			PRINTFORMW 「그런데, 다리지등\@ LOCAL:0 ? 왕인가 # 있을까요 \@」
+			PRINTFORMW 「 나도, 가끔 씩은 이런 일 하고 싶어진다\@ LOCAL:0 ? 의？ # 응입니다 \@」
+			;죠교자のBASE:만족が50%以上
+			SIF TENSION(TARGET, 8) == "高い"
+				CALL HTMLPRINTW(@"「액신이라도 가끔 즐기지 않으면\@ LOCAL:0 ? 저기… # … \@%HTML_PS_K39()%」")
+		ENDIF
+		CALL FADE_TO_CLEARLINE(15, @"「%RAND_SPLIT("ふふ/うふ/くすくす")%…」")
+		RETURN 1
+	ENDIF
+
+	;징계・모드 //ONCEで同一조교중に一度のみ表示
+	;==============
+	IF TFLAG:징계・플래그 && !IS_CONDITION(TARGET, "분노") && ONCEACT(1)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「그러면, 나의 다리를%CNAME(MASTER, TARGET)%의 혀로 깨끗이 하며」
+			PRINTFORMW 「분명하게 하지 않으면 안되어요？」
+		ELSE
+			PRINTFORMW 「,%CNAME(MASTER, TARGET)%의 혀로 깨끗이 빨아 주세요」
+			PRINTFORMW 「이것, 일단 징계 위난이에요？ 우대신…」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;その他・条件なし //汎用ACTにはパスしない
+	;================
+	IF 구상記入チェック(100)
+		;호의、호감도で派生
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「이봐요, 이것을 하고 싶어서 실마리？」
+			PRINTFORM 「좋아…%CNAME(MASTER, TARGET)%(이)가 좋아할 뿐(만큼) 빨아 돌려
+		ELSE
+			PRINTFORMW 「에서는, 나의 다리를 빨아 줄까요」
+			PRINTFORM 「상냥하고, 정중하게 부탁드릴게요
+		ENDIF
+		CALL PRINT_SYMBOL_K39
+		RETURN 1
+	ENDIF
+ENDIF
+
+
+;///////////////////
+;ACT56, 이라마치오//
+;///////////////////
+[SKIPSTART]
+	#命令するのではなく、強引に페니스를입に突っ込む
+	#죠교대상の反応は未定だが、拒絶する事はできない
+	#가학系から発生する場合あり
+	#턴방침が"노멀", "소프트"だと発生しない
+	#밀어넘어지는중には発生しない
+	#TEQUIP(볼개그/삼각목마)장착中には発生しない
+	#성교중/성교봉사중には発生しない
+	#죠교자に페니스がない場合は発生しない(페니스밴드による이라마치오は無い)
+[SKIPEND]
+@KOJO_MALE_ACT_K39_56
+RETURN 0
+
+
+;///////////////////
+;ACT57, 가슴애무강제//
+;///////////////////
+[SKIPSTART]
+	#죠교대상に、죠교자の가슴を애무するよう強制する
+	#죠교자が남자の場合は発生しない
+	#TFLAG:징계・플래그が立っていると発生しない
+	#턴방침が"이상"だと発生しない
+	#밀어넘어지는중には発生しない
+	#TEQUIP:밧줄장착中は입で가슴애무강제に派生する。ただし볼개그を장착中の場合は弾かれる
+	#볼개그がなければ、1/2の確率で입으로 애무になる
+	#REACT분류が거부/날뛴다/逃げるの場合は拒絶扱い
+	#PALAMが치정先行か반항先行かで"恥ずかしくて봉사できなかった/嫌がって要求に応じなかった"に派生する
+
+	*地の文はACT파생で分岐。派生内では分岐なし
+	*@TARGET_DESCRIPTIONによる状況描写が入る可能性あり
+	*안면승마は解除される
+	*REACTにおいて、누움でなく、ACT파생が입으로 애무でない場合、1/2で後ろから애무に派生する
+[SKIPEND]
+@KOJO_MALE_ACT_K39_57 ;TFLAG:ACT파생(0=손で가슴애무강제/2=입で가슴애무강제)
+
+;ACT57_0, 손で가슴애무를 강요
+;=========================
+IF !TFLAG:ACT파생
+LOCAL:0 = GET_KFLAG_K39("상사상애", (FLAG:주인님))
+
+	;연속실행 //今の実装ではこの条件が成立する可能性は低いかな感
+	;========
+	IF TFLAG:ACT == TFLAG:전ACT && FLAG:지문제어 == 2
+		;죠교자がイキそう
+		;================
+		IF PALAM:쾌Ｂ > 8500
+			;호의、호감도で分岐
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				CALL HTMLPRINTW(@"「야앗%HTML_AH_K39()% 그런, 강하게 비비면 안돼엣！」")
+				CALL HTMLPRINTW(@"「아픈 것은 싫엇！ 그렇지만, 어째서 이렇게…%HTML_AH_K39()% 아앗…안돼엣！」")
+			ELSE
+				CALL HTMLPRINTW(@"「힛, 아앗%HTML_AH_K39()% 나,가슴만으로 이런……」")
+				CALL HTMLPRINTW(@"「야, 안됏%HTML_AH_K39()% 그런 추잡하고, 비비지 맛…！」")
+			ENDIF
+			RETURN 1
+		ENDIF
+
+		;성교봉사중 //30601+以降、후배위/배면좌위/Ａ섹스中は不可になる
+		;========== //손으로 애무強制と입으로 애무強制は別ACTに切り分ける方向で検討中
+		IF TEQUIP:성교봉사중
+			CALL QUAKE(4)
+			;성교봉사중（Ａ섹스） //30601+以降では死に구상
+			IF TEQUIP:성교봉사중 == 6
+				;호의、호감도で分岐
+				IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+					CALL HTMLPRINTW(@"「시, 싫닷%HTML_AH_K39()% 가슴도, 엉덩이도…기분 좋아서！」")
+				ELSE
+					CALL HTMLPRINTW(@"「아, 아앗%HTML_AH_K39()% 좋습니닷！ 가슴도, 엉덩이도！」")
+				ENDIF
+			;その他の성교봉사중
+			ELSE
+				PRINTFORMW 「 좀 더！ 좀 더 찔러\@ !LOCAL:0 ? 주세요 # \@！ 좀 더 가슴도 손대어！」
+			ENDIF
+			CALL QUAKE(4)
+			{
+			CALL HTMLPRINTW(
+;OriginalString : 「あ%RAND_SPLIT("ぁぅ/゛/ん/")%っ%HTML_AH_K39()%　" + 
+			@"「아%RAND_SPLIT("아우/″/응/")%읏%HTML_AH_K39()% " + 
+;OriginalString : あ%RAND_SPLIT("ぁ/")%っ%HTML_AH_K39()%　はぁっ…んんっ！」")
+			@"아%RAND_SPLIT("아/")%읏%HTML_AH_K39()% 하앗…응읏！」")
+			}
+			RETURN 1
+		ENDIF
+
+		;その他 //호의、호감도で分岐
+		;======
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			CALL HTMLPRINTW(@"「히앗%HTML_AH_K39()% 응쿳, 앗%HTML_AH_K39()% 하앗, 앗…%HTML_AH_K39()%」")
+			PRINTFORMW 「응 좀 더！ 좀 더 젖가슴 만지작거려…！」
+		ELSE
+			CALL HTMLPRINTW(@"「아웃%HTML_AH_K39()% 아, 아앗%HTML_AH_K39()% 응앗%HTML_AH_K39()%」")
+			PRINTFORMW 「좋습니다！ 좀 더, 좀 더 만지작거려……！」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;성교봉사중 //정상위, 대면좌위, 역강간の場合
+	;==========
+	IF GROUPMATCH(TEQUIP:성교봉사중, 1, 3, 4) > 0 && FLAG:지문제어 == 2
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「응…이대로 젖가슴도 손대며」
+			PRINTFORMW 「망가져버리는 위 마구 찔러…」
+		ELSE
+			PRINTFORMW 「이대로 가슴도 손대어 주세요」
+			PRINTFORMW 「 나라면 괜찮기 때문에, 마음껏 시라고 좋아요…」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;성교봉사중（Ａ섹스）
+	;=======================
+	IF TEQUIP:성교봉사중 == 6 && FLAG:지문제어 == 2
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「응…이대로 젖가슴도 손대며」
+			PRINTFORMW 「엉덩이가 망가져버릴 정도, 마음껏 찔러…」
+		ELSE
+			PRINTFORMW 「이대로 가슴도 손대어 주세요. 그리고…」
+			PRINTFORMW 「 나의 엉덩이, 좀 더 범해……」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;죠교자がイキそう
+	;================
+	IF PALAM:쾌Ｂ > 8500
+		;호의、호감도で分岐
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「 나…이제 이 나무 그래」
+			PRINTFORMW 「부탁해요, 젖가슴으로 이나 키라고…」
+		ELSE
+			PRINTFORMW 「 나, 이제 이 나무 그렇습니다」
+			PRINTFORMW 「부탁입니다, 가슴으로 이나 키라고 주세요…」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;その他・条件なし //汎用ACTにはパスしない
+	;================
+	IF 구상記入チェック(100)
+		;죠교자が거유
+		IF TALENT:TARGET:거유
+			;호의、호감도で派生
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				SELECTCASE RANDACT(2, 0)
+					CASE 0
+						PRINTFORMW 「어, 거절해 무엇？」
+						PRINTFORMW 「분명하게 설명해 주지 않으면 모르지만？」
+					CASE 1
+						PRINTFORMW 「이렇게, 가슴으로 얼굴을 사이에 두어？ 그것은 좋지만…」
+						PRINTFORMW 「무슨 이것, 굉장히 바보 같지 않다？」
+				ENDSELECT
+			ELSE
+				PRINTFORMW 「, 커진 나의 가슴으로 즐겨 주세요」
+				CALL HTMLPRINTW(@"「아라, 이제(벌써) 흥분하고 있는 것 같네요%HTML_PS_K39()%」")
+			ENDIF
+		;죠교자が빈유 //まず発生しないだろう感ある
+		ELSEIF TALENT:TARGET:빈유
+			;호의、호감도で派生
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				PRINTFORMW 「응,%CNAME(MASTER, TARGET)%(은)는 정말로 이런 작은 젖가슴이 있고의？」
+				PRINTFORMW 「무슨 굉장히 변태 같지만……」
+			ELSE
+				PRINTFORMW 「작은 가슴을 좋아한다 라고, 조금 변합니다」
+				CALL HTMLPRINTW(@"「자, 좋아요. 나의 작은가슴그리고 즐겨 주세요%HTML_PS_K39()%」")
+			ENDIF
+		;その他
+		ELSE
+			;호의、호감도で派生
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				CALL HTMLPRINTW(@"「이봐요,%CNAME(MASTER, TARGET)%의 정말 좋아하는 젖가슴이야%HTML_PS_K39()%」")
+				PRINTFORMW 「좋아할 뿐(만큼) 손대어？ 그렇지만 상냥하고, 군요…」
+			ELSE
+				PRINTFORMW 「 나의 가슴, 좋아할 뿐(만큼) 손대어도 좋아요」
+				PRINTFORMW 「 그렇지만, 상냥하고 부탁드릴게요…」
+			ENDIF
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+
+
+;ACT57_2, 입で가슴애무를 강요
+;=========================
+IF TFLAG:ACT파생 == 2
+	;연속실행
+	;========
+	IF TFLAG:ACT == TFLAG:전ACT && FLAG:지문제어 == 2
+		;죠교자がイキそう
+		;================
+		IF PALAM:쾌Ｂ > 8500
+			IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+				CALL HTMLPRINTW(@"「야앗%HTML_AH_K39()% 그런, 강하게 들이마시면！」")
+				CALL HTMLPRINTW(@"「나, 나 있고！ 가 버린다%HTML_AH_K39()% 가 버린다앗！！」")
+			ELSE
+				CALL HTMLPRINTW(@"「힛, 아앗%HTML_AH_K39()% 나,가슴만으로 이런……」")
+				CALL HTMLPRINTW(@"「야, 안됏%HTML_AH_K39()% 그런혀기술당했다랏…！」")
+			ENDIF
+			RETURN 1
+		ENDIF
+
+		;성교봉사중 //一部の体位に於いて、입で가슴애무できるのはおかしくね？
+		;========== //ということで、손元の本体では정상위/역강간/대면좌위以外は規制済み
+		IF TEQUIP:성교봉사중
+			CALL QUAKE(4)
+			IF 0
+			[SKIPSTART]
+			;Ａ섹스中 //現在では死に구상
+			ELSEIF TEQUIP:성교봉사중 == 6
+				IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+					CALL HTMLPRINTW(@"「얏%HTML_AH_K39()% 싫닷！ 가슴도, 엉덩이도…기분 좋아서！」")
+				ELSE
+					CALL HTMLPRINTW(@"「앗%HTML_AH_K39()% 아앗！ 좋습니닷！ 가슴도, 엉덩이도！」")
+				ENDIF
+			[SKIPEND]
+			;정상위, 대면좌위, 역강간のいずれかの場合
+			ELSEIF GROUPMATCH(TEQUIP:성교봉사중, 1, 3, 4) > 0
+				{
+				PRINTFORMW 「 좀 더！ 좀 더 찔러\@ 
+				!GET_KFLAG_K39("상사상애", (FLAG:주인님)) 
+;OriginalString : ください 
+				? 주세요 
+;OriginalString : 
+				# 
+				\@っ！ もっと\@ 
+				!GET_KFLAG_K39("상사상애", (FLAG:주인님)) 
+;OriginalString : 乳首 
+				? 유두 
+;OriginalString : おっぱい 
+				# 젖가슴 
+				\@も吸ってっ！」
+				}
+			ELSE
+				;ここには来ないはず
+			ENDIF
+			CALL QUAKE(4)
+			{
+			CALL HTMLPRINTW(
+;OriginalString : 「あ%RAND_SPLIT("ぁぅ/゛/ん/")%っ%HTML_AH_K39()%　" + 
+			@"「아%RAND_SPLIT("아우/″/응/")%읏%HTML_AH_K39()% " + 
+;OriginalString : あ%RAND_SPLIT("ぁ/")%っ%HTML_AH_K39()%　はぁっ…んんっ！」")
+			@"아%RAND_SPLIT("아/")%읏%HTML_AH_K39()% 하앗…응읏！」")
+			}
+			RETURN 1
+		ENDIF
+
+		;その他 //호의、호감도で派生
+		;======
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			CALL HTMLPRINTW(@"「히앗%HTML_AH_K39()% 응쿳, 앗！ 하앗, 앗…%HTML_PS2_K39()%」")
+			PRINTFORMW 「응 좀 더！ 좀 더 젖가슴 들이마셔…！」
+		ELSE
+			CALL HTMLPRINTW(@"「아웃, 앗%HTML_AH_K39()% 아앗！ 응앗%HTML_PS2_K39()%」")
+			PRINTFORMW 「좋습니다！ 좀 더, 좀 더 들이마셔……！」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	;성교봉사중
+	;==========
+	IF V_SEX(MASTER) && FLAG:지문제어 == 2
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「응…이대로 젖가슴도 들이마시며」
+			PRINTFORMW 「망가져버리는 위 마구 찔러…」
+		ELSE
+			PRINTFORMW 「이대로 유두도 들이마셔 주세요」
+			PRINTFORMW 「 나라면 괜찮기 때문에, 마음껏 시라고 좋아요…」
+		ENDIF
+		RETURN 1
+	ENDIF
+
+	[SKIPSTART]
+	;성교봉사중（Ａ섹스） //現在は死に구상
+	;=======================
+	IF A_SEX(MASTER) && FLAG:지문제어 == 2
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「응…이대로 젖가슴도 들이마시며」
+			PRINTFORMW 「엉덩이가 망가져버릴 정도, 마음껏 찔러…」
+		ELSE
+			PRINTFORMW 「이대로 유두도 들이마셔 주세요. 그리고…」
+			PRINTFORMW 「 나의 엉덩이, 좀 더 범해……」
+		ENDIF
+		RETURN 1
+	ENDIF
+	[SKIPEND]
+
+	;죠교자がイキそう
+	;================
+	IF PALAM:쾌Ｂ > 8500
+		{
+		PRINTFORMW 「\@ GET_KFLAG_K39("상사상애", (FLAG:주인님)) 
+;OriginalString : 私…もう가버려なの # 私、もう가버려なんです \@」
+		? 나…이제(벌써)가버려(이)야 # 나, 이제(벌써)가버려무엇입니다 \@」
+		}
+		{
+		PRINTFORMW 「\@ GET_KFLAG_K39("상사상애", (FLAG:주인님)) 
+;OriginalString : お願い、おっぱいで가게해줘 # お願いです、가슴で가게해줘下さい \@…」
+		? 부탁해요, 젖가슴으로가게해줘 # 부탁입니다,가슴그래서가게해줘주세요 \@…」
+		}
+		RETURN 1
+	ENDIF
+
+	;その他・条件なし //汎用ACTにはパスしない
+	;================
+	IF 구상記入チェック(100)
+		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
+			PRINTFORMW 「우대신, 학수 고대라는 느낌？」
+			PRINTFORMW 「좋아…%CNAME(MASTER, TARGET)%(이)가 좋아하는 것 같게 해……」
+		ELSE
+			PRINTFORMW 「 나의 가슴은 어떨까요？ 후후…」
+			CALL HTMLPRINTW(@"「차이 있고예요, 마음껏 달라붙어 주세요%HTML_PS_K39()%」")
+		ENDIF
+		RETURN 1
+	ENDIF
+ENDIF
+RETURN 0

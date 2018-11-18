@@ -1,0 +1,435 @@
+﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;히나구상 수치系個別リアクション구상ファイル
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;##################
+;수치系 REACT40～45
+;##################
+[SKIPSTART]
+	#TFLAG:ACT派
+		40 = 자위
+		41 = 비패개장
+		42 = 자위과시
+		43 = 수치플레이
+		44 = 야외플레이
+		45 = 방뇨
+		46 = 코스프레
+
+・ACT분류:수치系の場合、基本的に회화系COM、애무系COM、봉사系COMが선택肢となる
+・状況によってはその他のものが선택肢に含まれる可能性もある
+[SKIPEND]
+
+
+;///////////////////////////////
+;REACT40, 자위・個別リアクション
+;///////////////////////////////
+[SKIPSTART]
+想定されるCOM…
+	회화系反応
+		COM:용서를 빌다
+	애무系反応
+		COM:부끄러워한다/싫어한다/겁없이 웃는다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+	봉사系反応
+		COM:거부한다/소극적으로 한다/적극적으로 한다/태연하게 한다
+
+・地の文はREACT분류で分岐
+・REACT분류が소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れるである場合は受容扱い
+・その他の反応の場合はREACT분류は全て거부にセットされる(용서를 빌다等も거부扱いである事に注意)
+[SKIPEND]
+@KOJO_MALE_REACT_K39_40 ;ACT파생なし。PENIS(MASTER)やTEQUIP:페니스밴드で分ける事は可能
+;変数宣言と代入
+#DIM  DYNAMIC FAV_RATING
+#DIMS DYNAMIC SYMBOL
+#DIMS DYNAMIC STRING
+#DIMS DYNAMIC MSTR
+FAV_RATING = GET_KFLAG_K39("상사상애")
+SYMBOL    '= HTML_PS_K39()
+STRING    '= RAND_SPLIT("ふふ/うふ/ふふっ/うふっ/くすっ/クスクス") + "…"
+MSTR      '= CNAME(MASTER, TARGET)
+
+;죠교대상が拒絶했다場合
+;======================
+[SKIPSTART]
+REACT분류が受容扱いでない場合、他のものはACTION_APPLY2_40で거부にセットされる為
+この箇所で거부を処理しない場合は、汎用リアクションでの整合性に問題が出る可能性あり
+COM:쾌감을 참는다等での애원扱い（REACT분류：용서를 빌다）も거부扱いとなるが
+現在の仕様では、REACT以降でこの변화を追いきれない
+[SKIPEND]
+IF IS_COMGRONAME("거부")
+	;恥ずかしくて // 치정先行
+	IF PALAM:MASTER:치정 > PALAM:MASTER:반항
+		PRINTFORMW 「부끄럽다……\@ FAV_RATING ? 노 # 입니까 \@？」
+		PRINTFORMW 「――아휴. 곤란한 사람\@ FAV_RATING ? 저기 # (이)군요 \@…」
+	;嫌がって // 반항先行
+	ELSE
+		IF FAV_RATING
+			PRINTFORMW 「이제 와서%RAND_SPLIT("이런/이 정도의")%일을 싫어한다든가, 의미판응 없지만？」
+		ELSE
+			PRINTFORML 「정직, 거기까지 미움 받는다고는 생각하고 있지 않았습니다만…」
+			PRINTFORMW 「어쩔 수 없겠네요……」
+		ENDIF
+	ENDIF
+	RETURN 1
+ENDIF
+
+;REACT40, 初回 // 죠교대상が従った場合 <<<--------자위경험とか参照すべきかもしんない
+;=============
+IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる") && FIRSTREACT(0)
+	PRINTFORML 「처음으로 남의 앞에서 자위를 하는 것은 어떤 느낌\@ !FAV_RATING ? 입니까 # \@？」
+	{
+	CALL HTMLPRINTW(@"「이봐요, 얼굴을 돌리지 마…분명하게 나를\@ !FAV_RATING ? 
+	見てシて下さい # 見ながらシて \@%SYMBOL%」")
+	}
+	RETURN 1
+ENDIF
+
+;顔射자위절정
+;============
+IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる") && ME_PLAYER(1) == 9
+	IF FAV_RATING
+		PRINTFORMW 「응, 알았다. 좋아요？ 그대로 사정하며」
+		PRINTFORMW 「입으로 받아 들여 준다……」
+	ELSE
+		PRINTFORMW 「…그렇습니까. 이제 참을 수 없네요」
+		PRINTFORMW 「좋아요….%MSTR%의 액, 내가 받아 들여 줄테니까」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;REACT분류が적극적으로 한다且つ가버려상태で애태움終了/無し
+;======================================================
+{
+IF IS_COMGRONAME("태연하게 한다/적극적으로 한다/受け入れる") 
+&& TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 < 2 && TFLAG:REACT부하 < 2
+}
+	;오나홀장착中
+	;----------------
+	IF TEQUIP:오나홀
+		IF FAV_RATING
+			PRINTFORMW 「평소보다 조금 빠른 느낌이 들지만 기분탓？」
+			PRINTFORMW 「소레는 손으로 직접 하는 것보다도 키모치 좋은 것일까」
+			CALL HTMLPRINTW(@"「그렇지만, 후후……%MSTR%하지만 가는 곳, 확실히 봐 있어 준다%SYMBOL%」")
+		ELSE
+			PRINTFORMW 「후후…, 좋아요.%MSTR%하지만 이크곳, 여기서 봐 있어 줍니다」
+			CALL HTMLPRINTW(@"「마음껏, 그것안에 액을 토해내 주세요%SYMBOL%」")
+		ENDIF
+		RETURN 1
+	ENDIF
+	;その他
+	;------
+	IF FAV_RATING
+		PRINTFORMW 「이크의 것은 좋지만, 나는 이번 보고 있을 뿐이니까」
+		PRINTFORMW 「뭐 그런 (뜻)이유로, 혼자서 마음대로 이는 준다？」
+		PRINTFORMW 「 그렇지만 이것은 이것대로…, 꽤 흥미로워」
+	ELSE
+		PRINTFORMW 「좋아요？ 언제라도 좋아하는 때에 이는 주세요. 다만…」
+		PRINTFORMW 「 나는 아무것도 하지 않고, 여기서 보고 있을 뿐입니다지만？」
+	ENDIF
+	;フェードアウト
+	CALL FADE_TO_CLEARLINE(15, @"「%STRING%」")
+	RETURN 1
+ENDIF
+
+;REACT40, 부끄러워한다(60%) // 負荷2及びREACT파생1は弾く
+;--------------------------
+{
+IF 구상記入チェック(60) && IS_NOWCOMNAME("부끄러워한다") 
+&& TFLAG:REACT부하 < 2 && !TFLAG:REACT파생
+}
+	IF FAV_RATING
+		PRINTFORMW 「응, 볼 수 있는 것이 그렇게 부끄러운거야？」 
+		PRINTFORMW 「좋아, 그러면……좀 더 자주(잘) 봐 준다♪」
+	ELSE
+		PRINTFORMW 「부끄러운 듯이  위로하고 있는 모습이 감등 없네요♪」
+		PRINTFORMW 「 그렇지만 나로 보여져, 조금 흥분하고 있는  것이 아닙니까？」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;REACT40, 소극적으로 한다(60%) // 消極的なのが気に入らないの場合はCOMへ流す
+;------------------------
+{
+IF 구상記入チェック(60) && IS_NOWCOMNAME("소극적으로 한다") 
+&& TFLAG:REACT파생 != 1 && TFLAG:REACT부하 < 2
+}
+	IF FAV_RATING
+		PRINTFORMW 「응, 그런 방식은 기분 좋지 않다고 생각하는데？」 
+		PRINTFORMW 「스스로 하는 것은 혐？ 그렇지 않으면 나에게 시라고 갖고 싶은거야？」
+	ELSE
+		SELECTCASE RANDREACT(3, 410)
+			CASE 0
+				PRINTFORMW 「그다지 내켜하는 마음이 아니네요…」 
+				PRINTFORMW 「 나로 보여지는 것은 싫습니까…？」 
+			CASE 1
+				PRINTFORMW 「그렇게 잡아당기는 방법에서는 기분 좋지 않지 없습니까？」
+				PRINTFORMW 「사양하지 않고, 좀 더 취급이라고 좋아요？」 
+			CASE 2
+				PRINTFORMW 「남의 앞에서 하는데는, 저항이 있는 것 같네요…」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+;REACT40, 적극적으로 한다(60%)
+;========================
+IF 구상記入チェック(60) && IS_NOWCOMNAME("적극적으로 한다") && TFLAG:REACT부하 < 2
+	IF FAV_RATING
+		PRINTFORMW 「열중해 시 있어 버려서……볼 수 있어 흥분해？」 
+		PRINTFORMW 「 그렇지만, 이런 건 보게 되면(자)…어쩐지, 나도……」
+	ELSE
+		SELECTCASE RANDREACT(3, 420)
+			CASE 0
+				PRINTFORMW 「……상당히 격렬하게 잡아당깁니다. 나로 보여져 흥분하고 있는 것일까인가？」 
+				PRINTFORMW 「그렇지 않으면, 나를 정액 바를 수 있는으로 하는 것을 상상해 흥분하고 있다고(면)인가？」
+			CASE 1
+				CALL HTMLPRINTW(@"「적극적으로 매우 좋아요%SYMBOL%」")
+				PRINTFORMW 「 그렇지만, 이크 때는 분명하게 가르쳐 주세요？」
+			CASE 2
+				PRINTFORMW 「이봐요, 나부터 눈을 일등 해 안되어요？」
+				CALL HTMLPRINTW(@"「그렇습니다, 분명하게 내 쪽을 보면서. 후후…%SYMBOL%」")
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+
+;///////////////////////////////////
+;REACT41, 비패개장・個別リアクション
+;///////////////////////////////////
+[SKIPSTART]
+想定されるCOM…
+	회화系反応
+		COM:용서를 빌다
+	애무系反応
+		COM:부끄러워한다/싫어한다/겁없이 웃는다/쾌감을 참는다/쾌감을 받아들인다/기분 좋다!
+・地の文はREACT분류(受け入れる, 적극적으로 한다, 태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+・ACTION_APLLY2に固有の処理なし
+[SKIPEND]
+;@KOJO_MALE_REACT_K39_41 ;ACT파생なし
+;RETURN 0
+
+
+;///////////////////////////////////////
+;REACT42, 자위과시・個別リアクション
+;///////////////////////////////////////
+[SKIPSTART]
+想定されるCOM…
+	회화系反応
+		COM:기분좋게 해
+	애무系反応
+		COM:부끄러워한다
+	その他反応
+		COM:자위를 시작한다
+
+・地の文はREACT분류(受け入れる, 적극적으로 한다/태연하게 한다/용서를 빌다/소극적으로 한다)で分岐
+[SKIPEND]
+@KOJO_MALE_REACT_K39_42 ;ACT파생なし
+;変数宣言と代入
+#DIM  DYNAMIC FAV_RATING
+#DIMS DYNAMIC AHEART
+FAV_RATING = GET_KFLAG_K39("상사상애")
+AHEART    '= HTML_AH_K39()
+
+;REACT42, 初回 // リアクションが受容である場合
+;=============
+IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる") && FIRSTREACT(0)
+	;적극적으로 한다・受け入れるの場合は、息を荒げながら凝視…という扱い
+	{
+	CALL HTMLPRINTW(@"「읏…！ 앗%AHEART% \@ IS_COMGRONAME("적극적 따른다/받아들인다") 
+;OriginalString : そんな風に見られながら # 人前で \@するのって、なんか…」")
+	? 그런 식으로 보여지면서 # 남의 앞에서 \@하는 것은, 뭔가…」")
+	}
+	PRINTFORMW 「굉장히 조크조크 해…, 버릇이 될 것 같다\@ !FAV_RATING ? 입니다 # \@……」
+	RETURN 1
+ENDIF
+
+;REAC42, 부끄러워한다(55%) // 負荷2は弾く
+;=========================
+IF 구상記入チェック(55) && IS_NOWCOMNAME("부끄러워한다") && TFLAG:REACT부하 < 2
+	IF FAV_RATING
+		{
+		CALL HTMLPRINTW(
+;OriginalString : 「%RAND_SPLIT("あ/ん")%んっ%AHEART% " + 
+		@"「%RAND_SPLIT("아/응")%읏%AHEART% " + 
+;OriginalString : %RAND_SPLIT("ん/ふ/あ")%ぁっ%AHEART% どうして…、こんなに、興奮しちゃうのっ！」")
+		@"%RAND_SPLIT("응/후/아")%앗%AHEART% 어째서…, 이렇게, 흥분해 버린다！」")
+		}
+		{
+		CALL HTMLPRINTW(
+;OriginalString : 「や……、%RAND_SPLIT("だめぇっ/いやぁ…")%%AHEART% " + 
+		@"「야……,%RAND_SPLIT("안돼엣/아니…")%%AHEART% " + 
+;OriginalString : もう、とまんなくなっちゃうっ…ッ…！」")
+		"이제(벌써), 풍부하지 않지 구 되어 버린닷……！」")
+		}
+	ELSE
+		SELECTCASE RANDREACT(2, 10)
+			CASE 0
+				CALL HTMLPRINTW(@"「아앗%AHEART% 얏%AHEART% 이, 이런 건 안돼, 인데……」")
+				PRINTFORMW 「손가락, 멈추지 않아서……, 나, 이상하고……」
+			CASE 1
+				PRINTFORML 「그렇게 부끄러워하지 마…」
+				PRINTFORMW 「 나의 야비한 모습, 좀 더 잘 봐 주세요…」
+		ENDSELECT
+	ENDIF
+	RETURN 1
+ENDIF
+
+
+;/////////////////////////////////////
+;REACT43, 수치플레이・個別リアクション
+;/////////////////////////////////////
+[SKIPSTART]
+想定されるCOM…
+	회화系反応
+		COM:침묵한다/빈정거린다/더 하드하게 해/용서를 빌다/기분좋게 해
+	애무系反応
+		COM:부끄러워한다
+	고통系反応
+		COM:무서워한다
+	その他反応
+		COM:자위를 시작한다
+
+・@TRAIN_MESSAGE2_43が存在せず、固有のリアクションの地の文なし
+・죠교대상の反応に応じてREACTTION_MESSAGEでの汎用処理のみ
+[SKIPEND]
+;@KOJO_MALE_REACT_K39_43 ;TFLAG:ACT파생(0=開始/1=終了)
+;RETURN 0
+
+
+;/////////////////////////////////////
+;REACT44, 야외플레이・個別リアクション
+;/////////////////////////////////////
+[SKIPSTART]
+想定されるCOM…
+	회화系反応
+		COM:침묵한다/빈정거린다/더 하드하게 해/용서를 빌다/기분좋게 해
+	애무系反応
+		COM:부끄러워한다
+	고통系反応
+		COM:무서워한다
+	その他反応
+		COM:자위를 시작한다
+
+・@TRAIN_MESSAGE2_44が存在せず、固有のリアクションの地の文なし
+・죠교대상の反応に応じてREACTTION_MESSAGEでの汎用処理のみ
+[SKIPEND]
+;@KOJO_MALE_REACT_K39_44 ;TFLAG:ACT파생(0=開始/1=終了)
+;RETURN 0
+
+
+;///////////////////////////////
+;REACT45, 방뇨・個別リアクション
+;///////////////////////////////
+[SKIPSTART]
+想定されるCOM…
+	회화系反応
+		COM:용서를 빌다/기분좋게 해
+	애무系反応
+		COM:부끄러워한다
+	고통系反応
+		COM:거부한다/소극적으로 한다/적극적으로 한다/태연하게 한다
+
+・地の文はREACT분류で分岐
+・REACT분류が소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れるである場合は[受容]扱い
+・REACT분류が소극적으로 한다の場合は「仕方なく」、受け入れる/태연하게 한다/적극적으로 한다の場合は「恥ずかしげもなく」という扱い
+・その他の反応の場合はREACT분류は全て[거부]にセットされる
+[SKIPEND]
+@KOJO_MALE_REACT_K39_45 ;ACT파생なし
+;変数宣言と代入
+#DIM  DYNAMIC FAV_RATING
+#DIMS DYNAMIC SYMBOL
+#DIMS DYNAMIC STRING
+#DIMS DYNAMIC MSTR
+FAV_RATING = GET_KFLAG_K39("상사상애")
+SYMBOL    '= HTML_PS_K39()
+STRING    '= RAND_SPLIT("ふふ/うふ/ふふっ/うふっ/くすっ/クスクス") + "…"
+MSTR      '= CNAME(MASTER, TARGET)
+[SKIPSTART]
+内容的に汎用処理に向かないと思われるのでREACT분류で全部引っ掛けてしまう
+リアクションが受容でない場合、REACT분류は(용서를 빌다等も)거부にセットされるので受容でない場合は거부で拾う
+すべてREACTで完結させ、COMには流さない
+[SKIPEND]
+
+;REACT45, 初回
+;=============
+IF !IS_COMGRONAME("거부") && FIRSTREACT(0)
+	{
+	PRINTFORML 「%MSTR%하…, 남자의\@ 
+	TALENT:MASTER:작은체형 ? 子 # 人 
+	\@はそういう風にする\@ 
+	FAV_RATING ? の # んです \@ね…」
+	}
+	{
+	CALL HTMLPRINTW(@"「나, 뭔가 매우 안 되는 것을 하고 있는 같은 기분이\@ 
+	FAV_RATING ? する # します \@%SYMBOL%」")
+	}
+	RETURN 1
+ENDIF
+
+;죠교대상が拒絶했다場合
+;======================
+IF IS_COMGRONAME("거부")
+	{
+	PRINTFORML 「뭐, 남의 앞에서 하는 것이\@ 
+	PALAM:MASTER:치정 > PALAM:MASTER:반항 ? 恥ずかしい # 嫌 \@って当然の反応\@ 
+	FAV_RATING ? よね # ですよね 
+	\@。でも%MSTR%…」
+	}
+	PRINTFORMW 「당장 샐 것 같아, 괴롭다\@ FAV_RATING ? 응(이)가 아니다 # 것은 아닙니까 \@？」
+	;히나さまの만족度が高い
+	SIF TENSION(TARGET, 8) == "高い"
+		CALL FADE_TO_CLEARLINE(15, @"「%STRING%」")
+	RETURN 1
+ENDIF
+
+;REACT45, リアクションが消極的な受容
+;===================================
+IF IS_COMGRONAME("소극적으로 한다")
+	SELECTCASE RANDREACT(3, 20)
+		CASE 0
+			PRINTFORMW 「그렇게 부끄러워하지 않아 좋다\@ FAV_RATING ? 의에 # (이에)예요？ \@」
+			CALL HTMLPRINTW(@"「생리 현상인거야, 방법이 없는 일\@ FAV_RATING ?  # 입니다 \@%SYMBOL%」")
+		CASE 1
+			PRINTFORMW 「 나로 보여지는 것은 혐\@ !FAV_RATING ? 그럴까요 # \@？」
+			CALL HTMLPRINTW(@"「그렇지만 이것, 보고 있는 (분)편이 흥분해\@ !FAV_RATING ? 라고 끝내네요 # 위 \@%SYMBOL%」")
+		CASE 2
+			{
+			PRINTFORMW 「\@ IS_NOWCOMNAME("부끄러워한다") 
+;OriginalString : 恥ずかしいけど # 仕方なくって顔하면서でも結局 
+			? 부끄럽지만 # 어쩔 수 없어서 얼굴하면서그렇지만 결국 
+			\@しちゃう\@ FAV_RATING 
+;OriginalString : のね # んですね \@…」
+			? 의 # 응(이)군요 \@…」
+			}
+			CALL HTMLPRINTW(@"「액 있고, 액 있고 원…%SYMBOL%」")
+	ENDSELECT
+	RETURN 1
+ENDIF
+
+;REACT45, リアクションが積極的な受容
+;===================================
+IF IS_COMGRONAME("태연하게 한다/적극적으로 한다/受け入れる")
+	SELECTCASE RANDREACT(3, 30)
+		CASE 0
+			{
+			PRINTFORMW 「\@ !FAV_RATING 
+;OriginalString : あら # \@あら、大胆\@ !FAV_RATING 
+			? 아라 # \@아라, 대담\@ !FAV_RATING 
+;OriginalString : なんですね # %RAND_SPLIT("ね/なのね")% \@」
+			? 무엇입니다 # %RAND_SPLIT("저기/인 거네")% \@」
+			}
+			{
+			CALL HTMLPRINTW(@"「내 쪽이 조금 부끄럽고\@ 
+			!FAV_RATING ? てしまいますよ # ちゃうわ \@%SYMBOL%」")
+			}
+		CASE 1
+			PRINTFORMW 「후후, 상당히 상쾌한 얼굴 해\@ FAV_RATING ? 원 #  \@그런데」
+			PRINTFORMW 「하고 싶었으면 사양말고 말해도 좋다\@ FAV_RATING ? 노 # 응입니다 \@？」
+		CASE 2
+			PRINTFORMW 「\@ FAV_RATING ? 저기, 시켜 두어 말하는 것도 뭐 하지만 # 저, 내가 말하는 것도 뭐 하지만 \@…」
+			PRINTFORMW 「그것, 부끄럽고\@ FAV_RATING ? 없는거야 # 없습니까 \@？ %STRING%」
+	ENDSELECT
+	RETURN 1
+ENDIF

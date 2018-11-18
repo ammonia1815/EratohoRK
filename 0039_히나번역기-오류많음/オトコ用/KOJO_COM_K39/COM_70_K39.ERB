@@ -1,0 +1,274 @@
+﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+;
+;	히나구상 その他の反応、汎用リアクション구상ファイル
+;
+;Version		Reason
+;1.11			COMファイルを系統別に分割
+;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
+
+;=====================================================================
+;特殊な反応 COM70～
+;=====================================================================
+
+;──────────────────────────────────
+;COM70, 가게해줘！
+;──────────────────────────────────
+;・REACT분류:受け入れる
+;・REACT인상:好印象大
+;・의존도변화(+10, +6)
+;-------------------------------------------------
+;선택可能な条件…
+;・애태움中ではない
+;・TCVAR:MASTER:가버려が立っている
+;・애무系ACT(키스/밀어넘어짐以外)かつ各部位のPALAMが5000以上である
+;※上記条件に適う場合は可
+;-------------------------------------------------
+;・TFLAG:REACT파생(0=聞き流す/1=가게해줘あげる/2=가게해줘あげない）
+;-------------------------------------------------
+;ACTに於いてTCVAR:MASTER:애태움도 == 1(イかせる)であってもCOM70の선택でTCVAR:MASTER:애태움도 > 1(焦らす)になる場合あり
+;現在の仕様ではこの손の변화を参照する術はない。本体側の対応が望まれる！
+;-------------------------------------------------
+;・TFLAG:REACT파생(0=聞き流す/1=가게해줘あげる/2=가게해줘あげない）
+;-------------------------------------------------
+@KOJO_MALE_COM_K39_70
+;-------------------------------------------------
+#LOCALSSIZE 5
+VARSET LOCALS
+;LOCALS:0 = \@ TENSION(TARGET, 8) == "高い" ? 히나 # 私 \@
+LOCALS:1 '= RAND_SPLIT("出/사정")
+LOCALS:2 '= RAND_SPLIT("中/질내/ナカ")
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+; REACT파생2：가게해줘あげない
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 2
+	;=================================================
+	;성교봉사중：정상위
+	;=================================================
+	IF IS_NOWACTNAME("정상위시킨다") || TEQUIP:성교봉사중 == 1
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「우대신, 그렇게\@ IS_POLICY("금일", "애만들기") ? %TNAME_K39()%(을)를 잉세대 # 안에%LOCALS:1%하고 싶다 \@노？」
+			PRINTFORM 「그것은 좋은데……좀 더 즐기게 해
+		;それ以外
+		ELSE
+			PRINTFORMW 「그렇게 나의%LOCALS:2%에%LOCALS:1%하고 싶습니까？」
+			PRINTFORM 「우대신, 아직 안되어요. 좀 더 즐기게 해 주세요
+		ENDIF
+		;PSで閉じる
+		CALL PRINT_SYMBOL_K39
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중：후배위
+	;=================================================
+	IF IS_NOWACTNAME("후배위시킨다") || TEQUIP:성교봉사중 == 2
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「이런 짐승같은 모습으로,%TNAME_K39()%\@ IS_POLICY("금일", "애만들기") ? 에 교배한다 # 의 안에 낸다 \@작정(생각)이야？」
+			PRINTFORM 「…응, 별로 좋은데. 그렇지만, 간단하게는 이나 등 있고로부터
+			CALL PRINT_SYMBOL_K39
+		;それ以外
+		ELSE
+			PRINTFORMW 「이런 짐승같은 모습으로, 나의%LOCALS:2%(을)를 더럽히고 싶습니까？」
+			PRINTFORMW 「불쾌하네요♪ 그런 사람은 조금 초조하게 해 줍니다. 우대신…」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중：역강간
+	;=================================================
+	IF IS_NOWACTNAME("역강간") || TEQUIP:성교봉사중 == 3
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「그렇게 안에%LOCALS:1%하고 싶다？ 그렇지만 이 몸의 자세라면…」
+			PRINTFORM 「이인가 다투는 것도…초조하게 하는 것도……, 모두는 나나름이라는 느낌군요
+		;それ以外
+		ELSE
+			PRINTFORMW 「우대신, 그렇게 나중에%LOCALS:1%하고 싶습니까？」
+			PRINTFORM 「 그렇지만 간단하게는 이나 키라고 주지 않아요
+		ENDIF
+		CALL PRINT_SYMBOL_K39
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중：대면좌위
+	;=================================================
+	IF IS_NOWACTNAME("대면좌위시킨다") || TEQUIP:성교봉사중 == 4
+		PRINTFORMW 「\@ GET_KFLAG_K39("상사상애") ? 안돼……%TNAME_K39()%, 아직 부족하다%RAND_SPLIT("/와/응그러니까")% # 안되어요……좀 더 즐기게 해 주세요 \@…」
+		CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(, , "키스", 1)
+		PRINTFORMDL %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 키스를 품질,
+		PRINTFORMDW 허리를 요염하게 구군요들 키,%CALLNAME:MASTER%(을)를 초조하게 하기 시작했다…
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중：배면좌위
+	;=================================================
+	IF IS_NOWACTNAME("배면좌위시킨다") || TEQUIP:성교봉사중 == 5
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「우대신, 그렇게\@ IS_POLICY("금일", "애만들기") ? %TNAME_K39()%(을)를 잉세대 # 안에%LOCALS:1%하고 싶다 \@노？」
+			PRINTFORM 「그것은 좋은데……좀 더 즐기게 해
+		;それ以外
+		ELSE
+			PRINTFORMW 「그렇게 나의%LOCALS:2%에%LOCALS:1%하고 싶습니까？」
+			PRINTFORM 「우대신, 아직 안되어요. 좀 더 즐기게 해 주세요
+		ENDIF
+		CALL PRINT_SYMBOL_K39
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중：항문섹스
+	;=================================================
+	IF IS_NOWACTNAME("항문섹스시킨다") || TEQUIP:성교봉사중 == 6
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「그렇게 엉덩이안에 사정하고 싶은거야？」
+			PRINTFORM 「 그렇지만, 아직 다～메. 좀 더 초조하게 해 주기 때문에
+		;それ以外
+		ELSE
+			PRINTFORMW 「엉덩이 중(안)에서 이 오고 싶습니까？」
+			PRINTFORM 「우대신, 아직 안되어요. 좀 더 노력해 주세요
+		ENDIF
+		CALL PRINT_SYMBOL_K39
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他
+	;-------------------------
+	;상사상애
+	IF GET_KFLAG_K39("상사상애")
+		PRINTFORMW 「후후, 그렇게 이 오고 싶은거야？」
+		PRINTFORM 「 그렇지만 아직 타목
+		CALL PRINT_HEARTCBW_K39(COLOR2_K39("pink"), , , COLOR2_K39("HINA"), "　もう少し애태움てあげる♪」")
+	;それ以外
+	ELSE
+		PRINTFORMW 「이제 참을 수 없습니까？」
+		PRINTFORM 「 그렇지만, 좀 더만 즐기게 해 주어요
+		CALL PRINT_SYMBOL_K39
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생1：가게해줘あげる
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+	;=================================================
+	;Ｖ성교봉사중
+	;=================================================
+	IF V_SEX(MASTER) || INRANGE(TEQUIP:성교봉사중, 1, 5)
+		;-------------------------------------------------
+		;성교봉사중：역강간
+		;-------------------------------------------------
+		IF IS_NOWACTNAME("역강간") || TEQUIP:성교봉사중 == 3
+			;상사상애
+			IF GET_KFLAG_K39("상사상애")
+				PRINTFORM 「좋아, 소망 대로……조임과는 준다…
+				CALL PRINT_SYMBOL_K39
+				PRINTFORMW 「%TNAME_K39()%의 %LOCALS:2%에%LOCALS:2%시켜 주어요…」
+			;それ以外
+			ELSE
+				PRINTFORMW 「……좋아요.%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다」
+				PRINTFORMW 「 나중에 마음껏 토해%LOCALS:1%해 주세요…」
+			ENDIF
+			RETURN 1
+		ENDIF
+		
+		;---------------------
+		;その他
+		;---------------------
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「좋아…,%LOCALS:2%에%LOCALS:1%해……흘러넘쳐버릴 정도 쏟아…」
+			PRINTFORMW 「%TNAME_K39()%의 안, 전부%CNAME(MASTER, TARGET)%의 것으로 해…」
+		;それ以外
+		ELSE
+			PRINTFORMW 「좋아요,%CNAME(MASTER, TARGET)%의 액, 전부 받아 들여 줍니다」
+			PRINTFORMW 「 나중에 마음껏 토해%LOCALS:1%해 주세요…」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;성교봉사중：항문섹스
+	;=================================================
+	IF IS_NOWACTNAME("항문섹스시킨다") || A_SEX(MASTER)
+		;상사상애
+		IF GET_KFLAG_K39("상사상애")
+			PRINTFORMW 「좋아…엉덩이안에%LOCALS:1%해…」
+			PRINTFORMW 「%LOCALS:0%하지만 전부 받아 들여 준다…」
+		;それ以外
+		ELSE
+			PRINTFORMW 「 나의 엉덩이 중(안)에서 이 오고 싶습니까？」
+			PRINTFORMW 「좋아요.%CNAME(MASTER, TARGET)%의 액을 쏟아 주세요」
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+	;-------------------------
+	;その他・条件なし
+	;-------------------------
+	;상사상애
+	IF GET_KFLAG_K39("상사상애")
+		PRINTFORMW 「좋아……이나 키라고 준다」
+		PRINTFORM 「,%CNAME(MASTER, TARGET)%의 액을 내
+		CALL PRINT_SYMBOL_K39
+	;それ以外
+	ELSE
+		PRINTFORMW 「참을 수 없네요…」
+		PRINTFORMW 「좋아요,%CNAME(MASTER, TARGET)%의 액을 내 주세요」
+	ENDIF
+	RETURN 1
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;REACT파생0：「ふーん」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상記入チェック(100) && !TFLAG:REACT파생
+	CALL hmm_K39
+	RETURN 1
+ENDIF
+
+;*************************************************
+;関数置き場
+;*************************************************
+;HMMだと違和感なんでhmm...
+;-------------------------------------------------
+@hmm_K39
+IF GET_KFLAG_K39("상사상애")
+	SELECTCASE AUTORAND(2, 300)
+		CASE 0
+			PRINTFORMW 「-응. 그리고, 구체적으로 나에게 어째서 갖고 싶은거야？」
+			PRINTFORMW 「자주(잘) 알지 않지만」
+		CASE 1
+			PRINTFORMW 「아, 그렇게！ …그리고, 그것이 어떻게든 했어？」
+;OriginalString : 20, COLOR2_K39("HINA"), COLOR2_K39("black"), "「くすくす…」")
+			CALL FADE(20, COLOR2_K39("HINA"), COLOR2_K39("black"), "「킥킥…」")
+			CALL FADE_CLINE(1)
+		CASE 2
+			PRINTFORML 「그런 말을 들어도…, 응？ 후후…」
+	ENDSELECT
+ELSE
+	SELECTCASE AUTORAND(2, 301)
+		CASE 0
+			PRINTFORMW 「그런 일 말해져도…, 정직, 곤란해 버리네요」
+		CASE 1
+			PRINTFORMW 「미안해요. 무엇인가 말했습니다？」
+			PRINTFORMW 「후후……」
+		CASE 2
+			PRINTFORMW 「과연.%CNAME(MASTER, TARGET)%의 말하고 싶은 일은 알았습니다만…」
+			PRINTFORMW 「그것을 (들)물어 줄지 어떨지는, 또 다른 문제이예요」
+;OriginalString : 20, COLOR2_K39("HINA"), COLOR2_K39("black"), "「ふふっ…」")
+			CALL FADE(20, COLOR2_K39("HINA"), COLOR2_K39("black"), "「후훗…」")
+			CALL FADE_CLINE(1)
+	ENDSELECT
+ENDIF
+;PRINTFORMDW %CALLNAME:TARGET%は悪戯っぽい笑みを浮かべながら、%CALLNAME:MASTER%의 言葉を聞き流했다…
+PRINTL
