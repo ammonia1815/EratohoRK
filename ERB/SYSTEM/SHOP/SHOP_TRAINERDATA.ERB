@@ -1,46 +1,299 @@
-﻿;────────────────────────────────────
-;ステータス表示
-;────────────────────────────────────
-;ちょっと整理@revkoishi(14/05/22)
+﻿<<<<<<< HEAD
+・ｿ;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;繧ｹ繝・・繧ｿ繧ｹ陦ｨ遉ｺ
+;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;縺｡繧・▲縺ｨ謨ｴ逅・revkoishi(14/05/22)
 @PRINT_STATUS(ARG:0)
 LOCAL:1 = RESULT
 DO
 	DRAWLINE
-	PRINTFORML ■ %CALLNAME:(ARG:0)%의 스테이터스 ■ \@ ARG:0 != MASTER && TALENT:MASTER:독심능력 == 2 ? (호감도:{CFLAG:(ARG:0):9}) # \@
-	PRINTFORM [LV {CFLAG:(ARG:0):죠교레벨, 2}  EXP {CFLAG:(ARG:0):죠교경험, 6}/{CFLAG:(ARG:0):필요경험치, 6}  
-	PRINTFORML NEXT {CFLAG:(ARG:0):필요경험치 - CFLAG:(ARG:0):죠교경험, 6}]
-	CALL PRINT_BASEL("체력", ARG:0, GETNUM(BASE, "체력"), 32, 1)
-	CALL PRINT_BASEL("기력", ARG:0, GETNUM(BASE, "기력"), 32, 1)
+	PRINTFORML 笆 %CALLNAME:(ARG:0)%・・・､奛護擽奓ｰ・､ 笆 \@ ARG:0 != MASTER && TALENT:MASTER:・・峡・･・･ == 2 ? (嶸ｸ・尖巡:{CFLAG:(ARG:0):9}) # \@
+	PRINTFORM [LV {CFLAG:(ARG:0):・・尖壱ｲｨ, 2}  EXP {CFLAG:(ARG:0):・・専ｲｽ嵭・ 6}/{CFLAG:(ARG:0):﨑・囈・ｽ嵭們ｹ・ 6}  
+	PRINTFORML NEXT {CFLAG:(ARG:0):﨑・囈・ｽ嵭們ｹ・- CFLAG:(ARG:0):・・専ｲｽ嵭・ 6}]
+	CALL PRINT_BASEL("・ｴ・･", ARG:0, GETNUM(BASE, "・ｴ・･"), 32, 1)
+	CALL PRINT_BASEL("・ｰ・･", ARG:0, GETNUM(BASE, "・ｰ・･"), 32, 1)
 	IF ARG:0 == MASTER
-		CALL PRINT_BASEL("이성", ARG:0, GETNUM(BASE, "이성"), 32, 1)
+		CALL PRINT_BASEL("・ｴ・ｱ", ARG:0, GETNUM(BASE, "・ｴ・ｱ"), 32, 1)
 		SIF PENIS(ARG:0)
-			CALL PRINT_BASEL("精力", ARG:0, GETNUM(BASE, "사정"), 32, 1)
+			CALL PRINT_BASEL("邊ｾ蜉・, ARG:0, GETNUM(BASE, "・ｬ・・), 32, 1)
 	ELSE
 		CALL PRINT_TENSION(ARG:0)
 	ENDIF
 	CALL NEW_PRINT_TALENT(ARG:0)
 	CALL NEW_PRINT_EXP(ARG:0)
 	CALL NEW_PRINT_ABL(ARG:0)
-	IF FLAG:죠교UI패드화 && FLAG:조교중
-;OriginalString : (HTMLBUTTON(@"[%KEYMARK_B%] - 돌아가기", KEY_B) + "　" +HTMLBUTTON(@"[%KEYMARK_X%] - 前のページ", KEY_X))
-		CALL HTMLPRINTL(HTMLBUTTON(@"[%KEYMARK_B%] - 돌아가기", KEY_B) + " " +HTMLBUTTON(@"[%KEYMARK_X%] - 전의 페이지", KEY_X))
+	IF FLAG:・・振I甯ｨ・懦剩 && FLAG:・ｰ・川､・;OriginalString : (HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + "縲" +HTMLBUTTON(@"[%KEYMARK_X%] - 蜑阪・繝壹・繧ｸ", KEY_X))
+		CALL HTMLPRINTL(HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + " " +HTMLBUTTON(@"[%KEYMARK_X%] - ・・攪 寬們擽・", KEY_X))
 		DO
 			ONEINPUTS
 			LOCAL:0 = (RESULTS != KEY_B && RESULTS != KEY_X)
 			IF LOCAL:0
 				CLEARLINE 1
-				REUSELASTLINE 入力値が範囲外です
-			ENDIF
+				REUSELASTLINE 蜈･蜉帛､縺檎ｯ・峇螟悶〒縺・			ENDIF
 		LOOP LOCAL:0
 		RESULT = RESULTS == KEY_B ? 100 # 102
 	ELSE
-		PRINTL [100] - 돌아온다　[102] - 다음의 페이지
+		PRINTL [100] - ・護符・ｨ・､縲[102] - ・､・護攪 寬們擽・
 		DO
 			INPUT
 			LOCAL:0 = (RESULT != 100 && RESULT != 102)
 			IF LOCAL:0
 				CLEARLINE 1
-				REUSELASTLINE 入力値が範囲外です
+				REUSELASTLINE 蜈･蜉帛､縺檎ｯ・峇螟悶〒縺・			ENDIF
+		LOOP LOCAL:0
+	ENDIF
+	SIF RESULT == 102
+		CALL PRINT_STATUS2(ARG:0)
+LOOP RESULT != 100
+RETURN LOCAL:1
+
+
+;譛ｪ・ｨ・昴・・・攤繧ょ性繧√き繝ｩ繝ｼ陦ｨ遉ｺ蛹悶よ隼陦御ｽ咲ｽｮ閾ｪ蜍募愛螳壹↓螟画峩縲ょ､画峩蠕後・繧､繝ｳ繝郁ｨ育ｮ励′蜃ｺ譚･縺ｦ縺・↑縺九▲縺溘・繧剃ｿｮ豁｣縲・;豎ｺ譁ｭ逧・↓譁ｰ莉墓ｧ倥∈螟ｧ蟾･莠具ｼ句ｾｮ隱ｿ謨ｴ@revkoishi(14/05/28)
+@PRINT_STATUS2(ARG:0)
+#DIM SURRENDER_LIST, 6, 30
+#DIM SURRENDER_SIZE, 6
+#DIM LINE_WIDTH
+LINE_WIDTH = WIDTH()
+
+IF ARG:0 == MASTER
+	PRINTFORML -- 笆｡ ・・攤 笆｡ %"-" * (LINE_WIDTH - 14)%
+	IF MARK:MASTER:・奝ｵ・・攤 || MARK:MASTER:・誤攷・・攤 || MARK:MASTER:孖ｸ・ｼ・ｰ・・		PRINTFORM \@ MARK:MASTER:・奝ｵ・・攤 ? %MARKNAME:0%Lv{MARK:MASTER:・奝ｵ・・攤, 2}%" "% # \@
+		PRINTFORM \@ MARK:MASTER:・誤攷・・攤 ? %MARKNAME:1%Lv{MARK:MASTER:・誤攷・・攤, 2}%" "% # \@
+		PRINTFORML \@ MARK:MASTER:孖ｸ・ｼ・ｰ・・? %MARKNAME:4%Lv{MARK:MASTER:孖ｸ・ｼ・ｰ・・2} # \@
+	ENDIF
+	SIF MARK:MASTER:孖ｸ・ｼ・ｰ・・		PRINTFORML %CALLNAME:MASTER%・・孖ｸ・ｼ・ｰ・一ｰ ・俯株 ・川攤・・喙%GET_ACTNAME(CFLAG:MASTER:孖ｸ・ｼ・ｰ・・%]
+	PRINTFORML                      %MARKNAME:2%        %MARKNAME:3%
+	FOR LOCAL:0, 0, CHARANUM
+		IF LOCAL:0 == MASTER !| CFLAG:(LOCAL:0):・ｼ・懦・嵓ｼ	;・ｼ・懦・嵓ｼ荳ｭ縺ｮ繧ｭ繝｣繝ｩ縺ｯ陦ｨ遉ｺ縺励↑縺・			PRINTPLAINFORM [{LOCAL:0, 3}] - %CALLNAME:(LOCAL:0), 16, LEFT% 
+			PRINTFORML Lv{MARK:(LOCAL:0):・ｴ・ｵ・・攤, 2}            Lv{MARK:(LOCAL:0):・倆墳・・攤, 2}
+		ENDIF
+	NEXT
+ELSE
+	VARSET LOCAL	;0.繧ｫ繧ｦ繝ｳ繧ｿ/1.Lv/2.譯∽ｽ咲ｽｮ/3.譁・ｭ怜・髟ｷ/4.・・攤謨ｰ/5.蜃ｦ逅・ｸｭ縺ｮ螳溽ｸｾ・逸从/6.陌ｹ濶ｲ
+	VARSET SURRENDER_LIST
+	VARSET SURRENDER_SIZE
+	PRINTFORML -- 笆｡ ・ｰ・・・ｴ・･ 笆｡ %"-" * (LINE_WIDTH - 18)%
+	FOR LOCAL:0, 0, 128
+		SIF GET_SURRENDER_LV(LOCAL:0, ARG:0) && IS_SURRENDER_ENABLE(LOCAL:0, ARG:0)	;髢｢謨ｰ蜷榊､画峩@revkoishi(14/06/01)
+			SURRENDER_LIST:GET_SURRENDER_LV(LOCAL:0, ARG:0):(SURRENDER_SIZE:GET_SURRENDER_LV(LOCAL:0, ARG:0)++) = LOCAL:0
+	NEXT
+	FOR LOCAL:1, 1, 6
+		PRINTFORM Lv{LOCAL:1}
+		LOCAL:2 = 3	;譯∽ｽ咲ｽｮ繝ｪ繧ｻ繝・ヨ
+		LOCAL:4 = 0	;・・攤謨ｰ繝ｪ繧ｻ繝・ヨ
+		LOCAL:6 = GET_RAINBOW(6 + LOCAL:1)	;陌ｹ濶ｲ
+		FOR LOCAL:0, 0, SURRENDER_SIZE:(LOCAL:1)
+			LOCAL:5 = SURRENDER_LIST:(LOCAL:1):(LOCAL:0)	;蜃ｦ逅・ｸｭ縺ｮ螳溽ｸｾ・逸从譖ｴ譁ｰ
+			LOCALS:0 = 縲・GET_SURRENDER_STR_T(LOCAL:5, ARG:0)%縲・			LOCAL:3 = STRLENS(LOCALS:0)
+			LOCAL:2 += LOCAL:3
+			IF LOCAL:2 > LINE_WIDTH
+				PRINTFORM \n   
+				LOCAL:2 = 3 + LOCAL:3
+			ENDIF
+			;繧ｫ繝・ざ繝ｪ蛻・￠逕ｨ濶ｲ繧ｻ繝・ヨ髢｢謨ｰ菴懊ｍ縺・°縺ｨ諤昴▲縺溘￠縺ｩ縲∝ｽ馴擇縺ｯ縺薙ｌ縺ｧ蜊∝・縺ｪ莠域─窶ｦ
+			IF LOCAL:5 > 63 ? GETBIT(CFLAG:(ARG:0):・・攤2, LOCAL:5 - 64) # GETBIT(CFLAG:(ARG:0):・・攤, LOCAL:5)	;謇謖・ｰ・攤
+				++LOCAL:4							;・・攤謨ｰ蜉邂・				IF INRANGE(LOCAL:1, 1, 4)			;Lv4莉･荳九・蜊倩牡
+					CALL FPRINT(LOCALS:0, LOCAL:6)
+				ELSE								;Lv5莉･荳翫・陌ｹ濶ｲ
+					CALL PRINT_RAINBOW(LOCALS:0, , , RAND:12)
+				ENDIF
+			ELSE									;譛ｪ謇謖・ｰ・攤
+				CALL FPRINT(LOCALS:0, 0x606060)		;轣ｰ濶ｲ
+			ENDIF
+		NEXT
+		PRINTFORML \n    {SURRENDER_LV2POINT(LOCAL:1), 2}Pﾃ養LOCAL:4, 2}・掉LOCAL:4 * SURRENDER_LV2POINT(LOCAL:1), 2}P
+		PRINTSL "-" * LINE_WIDTH
+	NEXT
+	PRINTFORML 﨑ｩ・・{CFLAG:(ARG:0):・ｴ・ｵP1}P ・ｴ・ｵ ・・攤:LV{MARK:(ARG:0):・ｴ・ｵ・・攤}
+ENDIF
+IF FLAG:・・振I甯ｨ・懦剩 && FLAG:・ｰ・川､・;OriginalString : (HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + "縲" +HTMLBUTTON(@"[%KEYMARK_X%] - 蜑阪・繝壹・繧ｸ", KEY_X))
+	CALL HTMLPRINTL(HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + " " +HTMLBUTTON(@"[%KEYMARK_X%] - ・・攪 寬們擽・", KEY_X))
+	DO
+		ONEINPUTS
+		LOCAL:0 = (RESULTS != KEY_B && RESULTS != KEY_X)
+		IF LOCAL:0
+			CLEARLINE 1
+			REUSELASTLINE 荳肴ｭ｣縺ｪ蜈･蜉帛､縺ｧ縺・		ENDIF
+	LOOP LOCAL:0
+	RESULT = RESULTS == KEY_B ? 100 # 101
+ELSE
+	PRINTL [100] - ・護符・ｨ・､縲[101] - ・・攪 寬們擽・
+	CALL INPUT_RANGE(100, 101)
+ENDIF
+RETURN RESULT
+
+
+;荳驛ｨ蜿ら・縺後★繧後※縺・◆縺ｮ縺ｧ菫ｮ豁｣・・ｼ募・縺ｫ螟画峩・・｡ｨ遉ｺ縺ｮ隱ｿ謨ｴ・・牡險ｭ螳咫revkoishi(14/05/26)
+@NEW_PRINT_EXP(ARG:0)
+#DIM NODISP, 10
+#DIM LINE_WIDTH
+LINE_WIDTH = WIDTH()
+LOCAL:1 = 0				;陦ｨ遉ｺ繧ｫ繧ｦ繝ｳ繧ｿ
+;陦ｨ遉ｺ鬆・・諤ｧ蛻･縺ｫ繧医▲縺ｦ縺ゅｊ縺医↑縺・ｂ縺ｮ繧呈栢縺上□縺代↓縺励∪嵂壱共縲ゆｻ･荳区栢縺九ｌ繧九ｂ縺ｮ
+VARSET NODISP, -1
+IF TALENT:(ARG:0):弡・ム・俯ｦｬ
+	NODISP = 14, 41				;弡・ム・俯ｦｬ・・4,・懍丶弡・う・ｽ嵭・41,・｢・ｬ・ｽ嵭・ELSEIF TALENT:(ARG:0):・ｨ・・	NODISP =  1,  6, 14, 40, 52	;縲・ｨ・撰ｼ・,・ｶ・ｽ嵭・6,・・悛・ｽ嵭・14,・懍丶弡・う・ｽ嵭・40,・溢ｦ一ｲｽ嵭・52,・ｶ嶹菩棗・ｽ嵭・ELSE
+	NODISP =  5, 41				;縲・ｬ・撰ｼ・,・ｬ・母ｲｽ嵭・41,・｢・ｬ・ｽ嵭・ENDIF
+PRINTFORML -- 笆｡ ・ｽ嵭・笆｡ %"-" * (LINE_WIDTH - 14)%
+FOR LOCAL:0, 0, 70
+	SIF STRLENSU(EXPNAME:(LOCAL:0)) && !MATCH(NODISP, LOCAL:0)
+{
+		CALL FPRINT(@"\@ EXP:(ARG:0):(LOCAL:0) ? %EXPNAME:(LOCAL:0), 12% # ・滂ｼ滂ｼ滂ｼ滂ｼ滂ｼ・\@:{EXP:(ARG:0):(LOCAL:0), 5}" + 
+                    @"\@ ++LOCAL:1 % 5 ? 縲 # \n \@", EXP:(ARG:0):(LOCAL:0) ? GET_RAINBOW(9 + EXP_TYPE(LOCAL:0)) # 0x606060)
+}
+NEXT
+PRINTFORM \@ LINEISEMPTY() ? # \n \@
+
+
+;・伜・縺ｫ螟画峩・・｡ｨ遉ｺ縺ｮ隱ｿ謨ｴ・・牡險ｭ螳咫revkoishi(14/05/26)
+@NEW_PRINT_ABL(ARG:0)
+#DIM NODISP, 10
+#DIM LINE_WIDTH
+LINE_WIDTH = WIDTH()
+LOCAL:1 = 0				;陦ｨ遉ｺ繧ｫ繧ｦ繝ｳ繧ｿ
+;陦ｨ遉ｺ鬆・・諤ｧ蛻･縺ｫ繧医▲縺ｦ縺ゅｊ縺医↑縺・ｂ縺ｮ繧呈栢縺上□縺代↓縺励∪嵂壱共縲ゆｻ･荳区栢縺九ｌ繧九ｂ縺ｮ
+VARSET NODISP, -1
+IF TALENT:(ARG:0):弡・ム・俯ｦｬ
+	NODISP = 10			;弡・ム・俯ｦｬ・・0,・｢・ｬ・ｼ
+ELSEIF TALENT:(ARG:0):・ｨ・・	NODISP =  4,  9, 14	;縲・ｨ・撰ｼ・,・ｶ・専ｰ・9,・溢ｦ壱⊂/14,・溢ｦ溢､瀧遵
+ELSE
+	NODISP = 10			;縲・ｬ・撰ｼ・0,・｢・ｬ・ｼ/
+ENDIF
+PRINTFORML -- 笆｡ ・･・･ 笆｡ %"-" * (LINE_WIDTH - 14)%
+FOR LOCAL:0, 0, 30
+	SIF STRLENSU(ABLNAME:(LOCAL:0)) && !MATCH(NODISP, LOCAL:0)
+{
+		CALL FPRINT(@"%ABLNAME:(LOCAL:0), 8%:{ABL:(ARG:0):(LOCAL:0), 2}\@ ++LOCAL:1 % 8 ? 縲 # \n \@", 
+                    ABL:(ARG:0):(LOCAL:0) ? GET_RAINBOW(3 + ABL_TYPE(LOCAL:0)) # 0x606060)
+}
+NEXT
+PRINTFORM \@ LINEISEMPTY() ? # \n \@
+
+
+;逕ｻ髱｢蟷・・譛牙柑豢ｻ逕ｨ・・OCAL蝨ｰ迯・〒縺ｨ縺ｦ繧りｪｭ縺ｿ縺ｫ縺上＞蜃ｦ逅・□縺｣縺溘・縺ｧ謨ｴ逅・嵂壱共縺､繧ゅｊ)縲ょｾｮ隱ｿ謨ｴ@revkoishi(14/05/26)
+@NEW_PRINT_TALENT(ARG:0)
+#DIM LINE_WIDTH
+#DIM TALENT_LIST, 8, 50
+#DIM TALENT_SIZE, 8
+
+;螟画焚蛻晄悄蛹・VARSET LOCAL
+VARSET TALENT_LIST
+VARSET TALENT_SIZE
+LINE_WIDTH = WIDTH()	;縺ｨ繧翫≠縺医★蝓ｺ貅悶→縺ｪ繧句ｹ・ｒ莉匁園縺九ｉ蜍晧・縺ｫ諡晏溘・7*4+0=108譯・
+PRINTFORML -- 笆｡ ・護ｧ・笆｡ %"-" * (LINE_WIDTH - 14)%
+IF FLAG:・護ｧ逸像・罹ｰｩ・・;邏雉ｪ蛻・｡櫁｡ｨ遉ｺ
+	FOR LOCAL:0, 0, 150	;蛻・｡槭Ν繝ｼ繝・		SIF TALENT:(ARG:0):(LOCAL:0)
+			TALENT_LIST:TALENT_TYPE(LOCAL:0):(TALENT_SIZE:TALENT_TYPE(LOCAL:0)++) = LOCAL:0
+	NEXT
+	;諤ｧ蛻･縺ｯ迚ｹ谿翫↑縺ｮ縺ｧ蛻･蜃ｦ逅・→縺励√％縺薙〒陦ｨ遉ｺ縺吶ｋ
+	PRINTFORM %TALENT_TYPENAME(1), 8, RIGHT%・・{
+	CALL FPRINTL(@"[%GET_SEX(ARG:0)%] " + \@ TALENT:(ARG:0):・俯・ ? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "・俯・"))%]%" "% # \@ + 
+                \@ TALENT:(ARG:0):・呷・? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "・呷・))%]%" "% # \@, GET_RAINBOW(1))
+}
+	FOR LOCAL:0, 2, 8	;陦ｨ遉ｺ繝ｫ繝ｼ繝励る撼陦ｨ遉ｺ縺ｨ縲∬｡ｨ遉ｺ貂医∩縺ｮ諤ｧ蛻･縺ｯ鬟帙・縺・		IF TALENT_SIZE:(LOCAL:0)	;縺昴・蛻・｡槭・邏雉ｪ縺檎┌縺代ｌ縺ｰ鬟帙・縺・			;邏雉ｪ蛻・｡槫錐繧定｡ｨ遉ｺ
+			PRINTFORM %TALENT_TYPENAME(LOCAL:0), 8, RIGHT%・・			LOCAL:2 = 10						;譯∽ｽ咲ｽｮ(竊題｡ｨ遉ｺ蠕後・菴咲ｽｮ)
+			LOCAL:4 = GET_RAINBOW(LOCAL:0)		;陌ｹ濶ｲ
+			FOR LOCAL:1, 0, TALENT_SIZE:(LOCAL:0)	;縺昴・蛻・｡槭・謇謖∫ｴ雉ｪ謨ｰ蛻・Ν繝ｼ繝・				;邏雉ｪ蜷阪ｒ・ｨ・・[邏雉ｪ蜷江 )
+				LOCALS:0 = [%GET_TALENTNAME(ARG:0, TALENT_LIST:(LOCAL:0):(LOCAL:1))%]%" "%
+				LOCAL:3 = STRLENS(LOCALS:0)	;竊代・譁・ｭ玲焚(邏雉ｪ蜷・[]+繧ｹ繝壹・繧ｹ)
+				LOCAL:2 += LOCAL:3			;譯∽ｽ咲ｽｮ蜉邂・				IF LOCAL:2 > LINE_WIDTH		;縺薙・縺ｾ縺ｾ陦ｨ遉ｺ縺吶ｋ縺ｨ騾比ｸｭ謾ｹ陦後＆繧後◎縺・↑蝣ｴ蜷医・謾ｹ陦悟・逅・ｒ陦後≧
+					;謾ｹ陦悟・逅・謚倥ｊ霑斐＠縲∬｡碁ｭ繧､繝ｳ繝・Φ繝医∵｡∽ｽ咲ｽｮ蜀崎ｨ育ｮ・
+					PRINTFORM \n%"          "%
+					LOCAL:2 = 10 + LOCAL:3
+				ENDIF
+				;邏雉ｪ蜷阪ｒ陦ｨ遉ｺ
+				CALL FPRINT(LOCALS:0, LOCAL:4)
+			NEXT
+			PRINTL 
+		ENDIF
+	NEXT
+ELSE					;邏雉ｪ・逸从鬆・｡ｨ遉ｺ
+	LOCAL:2 = 0	;譯∽ｽ咲ｽｮ
+	FOR LOCAL:0, 0, 150	;陦ｨ遉ｺ繝ｫ繝ｼ繝励る撼陦ｨ遉ｺ縺ｯ鬟帙・縺・		IF TALENT:(ARG:0):(LOCAL:0) && TALENT_TYPE(LOCAL:0)
+			LOCALS:0 = [%GET_TALENTNAME(ARG:0, LOCAL:0)%]%" "%
+			LOCAL:3 = STRLENS(LOCALS:0)
+			LOCAL:2 += LOCAL:3
+			IF LOCAL:2 > LINE_WIDTH	;謾ｹ陦悟・逅・り｡碁ｭ繧､繝ｳ繝・Φ繝育┌縺・				PRINTL 
+				LOCAL:2 = LOCAL:3
+			ENDIF
+			CALL FPRINT(LOCALS:0, GET_RAINBOW(TALENT_TYPE(LOCAL:0)))
+		ENDIF
+	NEXT
+	PRINTL 
+ENDIF
+RETURN RESULT
+
+
+;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;・・川梵縺ｮ繝・Φ繧ｷ繝ｧ繝ｳ陦ｨ遉ｺ
+;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;繝舌・縺ｮ濶ｲ縺悟ｰ代＠繧ｭ繝・う諢溘′嵂壱共縺ｮ縺ｧ蠕ｮ隱ｿ謨ｴ縲ら┌鬧・↓繝懊ち繝ｳ蛹悶☆繧九・繧貞屓驕ｿ@revkoishi(14/05/22)
+@PRINT_TENSION(ARG:0)
+LOCAL:1 = RESULT
+SELECTCASE TALENT:MASTER:・・峡・･・･
+	CASE 1
+		PRINTFORML ・ｴ・ｱ[%TENSION(ARG:0, GETNUM(BASE, "・ｴ・ｱ"))%]\n彧･・ｸ[%TENSION(ARG:0, GETNUM(BASE, "彧･・ｸ"))%]
+		PRINTFORML ・・ｽ[%TENSION(ARG:0, GETNUM(BASE, "・溢｡ｰ﨑ｨ"))%]\n・護｡ｱ[%TENSION(ARG:0, GETNUM(BASE, "・護｡ｱ"))%]
+	CASE 2
+		LOCAL:0 = GETCOLOR()
+		CALL PRINT_BASEL("・ｴ・ｱ", ARG:0, GETNUM(BASE, "・ｴ・ｱ"), 32, 1)
+		CALL PRINT_BASEL("彧･・ｸ", ARG:0, GETNUM(BASE, "彧･・ｸ"), 32, 1)
+		CALL PRINT_BASEL("・溢｡ｰ", ARG:0, GETNUM(BASE, "・溢｡ｰ﨑ｨ"), 32, 1)
+		CALL PRINT_BASEL("・護｡ｱ", ARG:0, GETNUM(BASE, "・護｡ｱ"), 32, 1)
+		PRINTPLAINFORM ・・腐・深{CFLAG:ARG:5}] ・・攵・ｴ・ｼ孖ｸ
+		SETCOLOR CFLAG:(ARG:0):・・攵・ｴ・俯巡 >= 0 ? 0x0041FF # 0xFF2800
+		BAR CFLAG:(ARG:0):・・攵・ｴ・俯巡 + 100, 199, 32
+		SETCOLOR LOCAL:0
+		PRINTPLAINFORM [{CFLAG:(ARG:0):・・攵・ｴ・俯巡}]
+		PRINTL 
+	CASEELSE
+		PRINTFORML %CALLNAME:(ARG:0)%・・・ｰ・・乱 ・﨑ｴ ・・ｧ・・・・ｨ・ｸ・､窶ｦ
+ENDSELECT
+RETURN LOCAL:1
+=======
+・ｿ;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;繧ｹ繝・・繧ｿ繧ｹ陦ｨ遉ｺ
+;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;縺｡繧・▲縺ｨ謨ｴ逅・revkoishi(14/05/22)
+@PRINT_STATUS(ARG:0)
+LOCAL:1 = RESULT
+DO
+	DRAWLINE
+	PRINTFORML 笆 %CALLNAME:(ARG:0)%・・・､奛護擽奓ｰ・､ 笆 \@ ARG:0 != MASTER && TALENT:MASTER:・・峡・･・･ == 2 ? (嶸ｸ・尖巡:{CFLAG:(ARG:0):9}) # \@
+	PRINTFORM [LV {CFLAG:(ARG:0):・・尖壱ｲｨ, 2}  EXP {CFLAG:(ARG:0):・・専ｲｽ嵭・ 6}/{CFLAG:(ARG:0):﨑・囈・ｽ嵭們ｹ・ 6}  
+	PRINTFORML NEXT {CFLAG:(ARG:0):﨑・囈・ｽ嵭們ｹ・- CFLAG:(ARG:0):・・専ｲｽ嵭・ 6}]
+	CALL PRINT_BASEL("・ｴ・･", ARG:0, GETNUM(BASE, "・ｴ・･"), 32, 1)
+	CALL PRINT_BASEL("・ｰ・･", ARG:0, GETNUM(BASE, "・ｰ・･"), 32, 1)
+	IF ARG:0 == MASTER
+		CALL PRINT_BASEL("・ｴ・ｱ", ARG:0, GETNUM(BASE, "・ｴ・ｱ"), 32, 1)
+		SIF PENIS(ARG:0)
+			CALL PRINT_BASEL("邊ｾ蜉・, ARG:0, GETNUM(BASE, "・ｬ・・), 32, 1)
+	ELSE
+		CALL PRINT_TENSION(ARG:0)
+	ENDIF
+	CALL NEW_PRINT_TALENT(ARG:0)
+	CALL NEW_PRINT_EXP(ARG:0)
+	CALL NEW_PRINT_ABL(ARG:0)
+	IF FLAG:・・振I甯ｨ・懦剩 && FLAG:・ｰ・川､・
+;OriginalString : (HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + "縲" +HTMLBUTTON(@"[%KEYMARK_X%] - 蜑阪・繝壹・繧ｸ", KEY_X))
+		CALL HTMLPRINTL(HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + " " +HTMLBUTTON(@"[%KEYMARK_X%] - ・・攪 寬們擽・", KEY_X))
+		DO
+			ONEINPUTS
+			LOCAL:0 = (RESULTS != KEY_B && RESULTS != KEY_X)
+			IF LOCAL:0
+				CLEARLINE 1
+				REUSELASTLINE 蜈･蜉帛､縺檎ｯ・峇螟悶〒縺・
+			ENDIF
+		LOOP LOCAL:0
+		RESULT = RESULTS == KEY_B ? 100 # 102
+	ELSE
+		PRINTL [100] - ・護符・ｨ・､縲[102] - ・､・護攪 寬們擽・
+		DO
+			INPUT
+			LOCAL:0 = (RESULT != 100 && RESULT != 102)
+			IF LOCAL:0
+				CLEARLINE 1
+				REUSELASTLINE 蜈･蜉帛､縺檎ｯ・峇螟悶〒縺・
 			ENDIF
 		LOOP LOCAL:0
 	ENDIF
@@ -50,8 +303,8 @@ LOOP RESULT != 100
 RETURN LOCAL:1
 
 
-;未취득の각인も含めカラー表示化。改行位置自動判定に変更。変更後ポイント計算が出来ていなかったのを修正。
-;決断的に新仕様へ大工事＋微調整@revkoishi(14/05/28)
+;譛ｪ・ｨ・昴・・・攤繧ょ性繧√き繝ｩ繝ｼ陦ｨ遉ｺ蛹悶よ隼陦御ｽ咲ｽｮ閾ｪ蜍募愛螳壹↓螟画峩縲ょ､画峩蠕後・繧､繝ｳ繝郁ｨ育ｮ励′蜃ｺ譚･縺ｦ縺・↑縺九▲縺溘・繧剃ｿｮ豁｣縲・
+;豎ｺ譁ｭ逧・↓譁ｰ莉墓ｧ倥∈螟ｧ蟾･莠具ｼ句ｾｮ隱ｿ謨ｴ@revkoishi(14/05/28)
 @PRINT_STATUS2(ARG:0)
 #DIM SURRENDER_LIST, 6, 30
 #DIM SURRENDER_SIZE, 6
@@ -59,186 +312,186 @@ RETURN LOCAL:1
 LINE_WIDTH = WIDTH()
 
 IF ARG:0 == MASTER
-	PRINTFORML -- □ 각인 □ %"-" * (LINE_WIDTH - 14)%
-	IF MARK:MASTER:고통각인 || MARK:MASTER:쾌락각인 || MARK:MASTER:트라우마
-		PRINTFORM \@ MARK:MASTER:고통각인 ? %MARKNAME:0%Lv{MARK:MASTER:고통각인, 2}%" "% # \@
-		PRINTFORM \@ MARK:MASTER:쾌락각인 ? %MARKNAME:1%Lv{MARK:MASTER:쾌락각인, 2}%" "% # \@
-		PRINTFORML \@ MARK:MASTER:트라우마 ? %MARKNAME:4%Lv{MARK:MASTER:트라우마,2} # \@
+	PRINTFORML -- 笆｡ ・・攤 笆｡ %"-" * (LINE_WIDTH - 14)%
+	IF MARK:MASTER:・奝ｵ・・攤 || MARK:MASTER:・誤攷・・攤 || MARK:MASTER:孖ｸ・ｼ・ｰ・・
+		PRINTFORM \@ MARK:MASTER:・奝ｵ・・攤 ? %MARKNAME:0%Lv{MARK:MASTER:・奝ｵ・・攤, 2}%" "% # \@
+		PRINTFORM \@ MARK:MASTER:・誤攷・・攤 ? %MARKNAME:1%Lv{MARK:MASTER:・誤攷・・攤, 2}%" "% # \@
+		PRINTFORML \@ MARK:MASTER:孖ｸ・ｼ・ｰ・・? %MARKNAME:4%Lv{MARK:MASTER:孖ｸ・ｼ・ｰ・・2} # \@
 	ENDIF
-	SIF MARK:MASTER:트라우마
-		PRINTFORML %CALLNAME:MASTER%의 트라우마가 되는 원인은：[%GET_ACTNAME(CFLAG:MASTER:트라우마)%]
+	SIF MARK:MASTER:孖ｸ・ｼ・ｰ・・
+		PRINTFORML %CALLNAME:MASTER%・・孖ｸ・ｼ・ｰ・一ｰ ・俯株 ・川攤・・喙%GET_ACTNAME(CFLAG:MASTER:孖ｸ・ｼ・ｰ・・%]
 	PRINTFORML                      %MARKNAME:2%        %MARKNAME:3%
 	FOR LOCAL:0, 0, CHARANUM
-		IF LOCAL:0 == MASTER !| CFLAG:(LOCAL:0):일시퇴피	;일시퇴피中のキャラは表示しない
+		IF LOCAL:0 == MASTER !| CFLAG:(LOCAL:0):・ｼ・懦・嵓ｼ	;・ｼ・懦・嵓ｼ荳ｭ縺ｮ繧ｭ繝｣繝ｩ縺ｯ陦ｨ遉ｺ縺励↑縺・
 			PRINTPLAINFORM [{LOCAL:0, 3}] - %CALLNAME:(LOCAL:0), 16, LEFT% 
-			PRINTFORML Lv{MARK:(LOCAL:0):굴복각인, 2}            Lv{MARK:(LOCAL:0):반항각인, 2}
+			PRINTFORML Lv{MARK:(LOCAL:0):・ｴ・ｵ・・攤, 2}            Lv{MARK:(LOCAL:0):・倆墳・・攤, 2}
 		ENDIF
 	NEXT
 ELSE
-	VARSET LOCAL	;0.カウンタ/1.Lv/2.桁位置/3.文字列長/4.각인数/5.処理中の実績번호/6.虹色
+	VARSET LOCAL	;0.繧ｫ繧ｦ繝ｳ繧ｿ/1.Lv/2.譯∽ｽ咲ｽｮ/3.譁・ｭ怜・髟ｷ/4.・・攤謨ｰ/5.蜃ｦ逅・ｸｭ縺ｮ螳溽ｸｾ・逸从/6.陌ｹ濶ｲ
 	VARSET SURRENDER_LIST
 	VARSET SURRENDER_SIZE
-	PRINTFORML -- □ 조교 이력 □ %"-" * (LINE_WIDTH - 18)%
+	PRINTFORML -- 笆｡ ・ｰ・・・ｴ・･ 笆｡ %"-" * (LINE_WIDTH - 18)%
 	FOR LOCAL:0, 0, 128
-		SIF GET_SURRENDER_LV(LOCAL:0, ARG:0) && IS_SURRENDER_ENABLE(LOCAL:0, ARG:0)	;関数名変更@revkoishi(14/06/01)
+		SIF GET_SURRENDER_LV(LOCAL:0, ARG:0) && IS_SURRENDER_ENABLE(LOCAL:0, ARG:0)	;髢｢謨ｰ蜷榊､画峩@revkoishi(14/06/01)
 			SURRENDER_LIST:GET_SURRENDER_LV(LOCAL:0, ARG:0):(SURRENDER_SIZE:GET_SURRENDER_LV(LOCAL:0, ARG:0)++) = LOCAL:0
 	NEXT
 	FOR LOCAL:1, 1, 6
 		PRINTFORM Lv{LOCAL:1}
-		LOCAL:2 = 3	;桁位置リセット
-		LOCAL:4 = 0	;각인数リセット
-		LOCAL:6 = GET_RAINBOW(6 + LOCAL:1)	;虹色
+		LOCAL:2 = 3	;譯∽ｽ咲ｽｮ繝ｪ繧ｻ繝・ヨ
+		LOCAL:4 = 0	;・・攤謨ｰ繝ｪ繧ｻ繝・ヨ
+		LOCAL:6 = GET_RAINBOW(6 + LOCAL:1)	;陌ｹ濶ｲ
 		FOR LOCAL:0, 0, SURRENDER_SIZE:(LOCAL:1)
-			LOCAL:5 = SURRENDER_LIST:(LOCAL:1):(LOCAL:0)	;処理中の実績번호更新
-			LOCALS:0 = 【%GET_SURRENDER_STR_T(LOCAL:5, ARG:0)%】
+			LOCAL:5 = SURRENDER_LIST:(LOCAL:1):(LOCAL:0)	;蜃ｦ逅・ｸｭ縺ｮ螳溽ｸｾ・逸从譖ｴ譁ｰ
+			LOCALS:0 = 縲・GET_SURRENDER_STR_T(LOCAL:5, ARG:0)%縲・
 			LOCAL:3 = STRLENS(LOCALS:0)
 			LOCAL:2 += LOCAL:3
 			IF LOCAL:2 > LINE_WIDTH
 				PRINTFORM \n   
 				LOCAL:2 = 3 + LOCAL:3
 			ENDIF
-			;カテゴリ分け用色セット関数作ろうかと思ったけど、当面はこれで十分な予感…
-			IF LOCAL:5 > 63 ? GETBIT(CFLAG:(ARG:0):각인2, LOCAL:5 - 64) # GETBIT(CFLAG:(ARG:0):각인, LOCAL:5)	;所持각인
-				++LOCAL:4							;각인数加算
-				IF INRANGE(LOCAL:1, 1, 4)			;Lv4以下は単色
+			;繧ｫ繝・ざ繝ｪ蛻・￠逕ｨ濶ｲ繧ｻ繝・ヨ髢｢謨ｰ菴懊ｍ縺・°縺ｨ諤昴▲縺溘￠縺ｩ縲∝ｽ馴擇縺ｯ縺薙ｌ縺ｧ蜊∝・縺ｪ莠域─窶ｦ
+			IF LOCAL:5 > 63 ? GETBIT(CFLAG:(ARG:0):・・攤2, LOCAL:5 - 64) # GETBIT(CFLAG:(ARG:0):・・攤, LOCAL:5)	;謇謖・ｰ・攤
+				++LOCAL:4							;・・攤謨ｰ蜉邂・
+				IF INRANGE(LOCAL:1, 1, 4)			;Lv4莉･荳九・蜊倩牡
 					CALL FPRINT(LOCALS:0, LOCAL:6)
-				ELSE								;Lv5以上は虹色
+				ELSE								;Lv5莉･荳翫・陌ｹ濶ｲ
 					CALL PRINT_RAINBOW(LOCALS:0, , , RAND:12)
 				ENDIF
-			ELSE									;未所持각인
-				CALL FPRINT(LOCALS:0, 0x606060)		;灰色
+			ELSE									;譛ｪ謇謖・ｰ・攤
+				CALL FPRINT(LOCALS:0, 0x606060)		;轣ｰ濶ｲ
 			ENDIF
 		NEXT
-		PRINTFORML \n    {SURRENDER_LV2POINT(LOCAL:1), 2}P×{LOCAL:4, 2}＝{LOCAL:4 * SURRENDER_LV2POINT(LOCAL:1), 2}P
+		PRINTFORML \n    {SURRENDER_LV2POINT(LOCAL:1), 2}Pﾃ養LOCAL:4, 2}・掉LOCAL:4 * SURRENDER_LV2POINT(LOCAL:1), 2}P
 		PRINTSL "-" * LINE_WIDTH
 	NEXT
-	PRINTFORML 합계:{CFLAG:(ARG:0):굴복P1}P 굴복 각인:LV{MARK:(ARG:0):굴복각인}
+	PRINTFORML 﨑ｩ・・{CFLAG:(ARG:0):・ｴ・ｵP1}P ・ｴ・ｵ ・・攤:LV{MARK:(ARG:0):・ｴ・ｵ・・攤}
 ENDIF
-IF FLAG:죠교UI패드화 && FLAG:조교중
-;OriginalString : (HTMLBUTTON(@"[%KEYMARK_B%] - 돌아가기", KEY_B) + "　" +HTMLBUTTON(@"[%KEYMARK_X%] - 前のページ", KEY_X))
-	CALL HTMLPRINTL(HTMLBUTTON(@"[%KEYMARK_B%] - 돌아가기", KEY_B) + " " +HTMLBUTTON(@"[%KEYMARK_X%] - 전의 페이지", KEY_X))
+IF FLAG:・・振I甯ｨ・懦剩 && FLAG:・ｰ・川､・
+;OriginalString : (HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + "縲" +HTMLBUTTON(@"[%KEYMARK_X%] - 蜑阪・繝壹・繧ｸ", KEY_X))
+	CALL HTMLPRINTL(HTMLBUTTON(@"[%KEYMARK_B%] - ・護符・・ｰ", KEY_B) + " " +HTMLBUTTON(@"[%KEYMARK_X%] - ・・攪 寬們擽・", KEY_X))
 	DO
 		ONEINPUTS
 		LOCAL:0 = (RESULTS != KEY_B && RESULTS != KEY_X)
 		IF LOCAL:0
 			CLEARLINE 1
-			REUSELASTLINE 不正な入力値です
+			REUSELASTLINE 荳肴ｭ｣縺ｪ蜈･蜉帛､縺ｧ縺・
 		ENDIF
 	LOOP LOCAL:0
 	RESULT = RESULTS == KEY_B ? 100 # 101
 ELSE
-	PRINTL [100] - 돌아온다　[101] - 전의 페이지
+	PRINTL [100] - ・護符・ｨ・､縲[101] - ・・攪 寬們擽・
 	CALL INPUT_RANGE(100, 101)
 ENDIF
 RETURN RESULT
 
 
-;一部参照がずれていたので修正＆５列に変更＆表示の調整＆色設定@revkoishi(14/05/26)
+;荳驛ｨ蜿ら・縺後★繧後※縺・◆縺ｮ縺ｧ菫ｮ豁｣・・ｼ募・縺ｫ螟画峩・・｡ｨ遉ｺ縺ｮ隱ｿ謨ｴ・・牡險ｭ螳咫revkoishi(14/05/26)
 @NEW_PRINT_EXP(ARG:0)
 #DIM NODISP, 10
 #DIM LINE_WIDTH
 LINE_WIDTH = WIDTH()
-LOCAL:1 = 0				;表示カウンタ
-;表示順は性別によってありえないものを抜くだけにしま했다。以下抜かれるもの
+LOCAL:1 = 0				;陦ｨ遉ｺ繧ｫ繧ｦ繝ｳ繧ｿ
+;陦ｨ遉ｺ鬆・・諤ｧ蛻･縺ｫ繧医▲縺ｦ縺ゅｊ縺医↑縺・ｂ縺ｮ繧呈栢縺上□縺代↓縺励∪嵂壱共縲ゆｻ･荳区栢縺九ｌ繧九ｂ縺ｮ
 VARSET NODISP, -1
-IF TALENT:(ARG:0):후타나리
-	NODISP = 14, 41				;후타나리：14,시오후키경험/41,ＢＬ경험
-ELSEIF TALENT:(ARG:0):남자
-	NODISP =  1,  6, 14, 40, 52	;　남자：1,Ｖ경험/6,분유경험/14,시오후키경험/40,레즈경험/52,Ｖ확장경험
+IF TALENT:(ARG:0):弡・ム・俯ｦｬ
+	NODISP = 14, 41				;弡・ム・俯ｦｬ・・4,・懍丶弡・う・ｽ嵭・41,・｢・ｬ・ｽ嵭・
+ELSEIF TALENT:(ARG:0):・ｨ・・
+	NODISP =  1,  6, 14, 40, 52	;縲・ｨ・撰ｼ・,・ｶ・ｽ嵭・6,・・悛・ｽ嵭・14,・懍丶弡・う・ｽ嵭・40,・溢ｦ一ｲｽ嵭・52,・ｶ嶹菩棗・ｽ嵭・
 ELSE
-	NODISP =  5, 41				;　여자：5,사정경험/41,ＢＬ경험
+	NODISP =  5, 41				;縲・ｬ・撰ｼ・,・ｬ・母ｲｽ嵭・41,・｢・ｬ・ｽ嵭・
 ENDIF
-PRINTFORML -- □ 경험 □ %"-" * (LINE_WIDTH - 14)%
+PRINTFORML -- 笆｡ ・ｽ嵭・笆｡ %"-" * (LINE_WIDTH - 14)%
 FOR LOCAL:0, 0, 70
 	SIF STRLENSU(EXPNAME:(LOCAL:0)) && !MATCH(NODISP, LOCAL:0)
 {
-		CALL FPRINT(@"\@ EXP:(ARG:0):(LOCAL:0) ? %EXPNAME:(LOCAL:0), 12% # ？？？？？？ \@:{EXP:(ARG:0):(LOCAL:0), 5}" + 
-                    @"\@ ++LOCAL:1 % 5 ? 　 # \n \@", EXP:(ARG:0):(LOCAL:0) ? GET_RAINBOW(9 + EXP_TYPE(LOCAL:0)) # 0x606060)
+		CALL FPRINT(@"\@ EXP:(ARG:0):(LOCAL:0) ? %EXPNAME:(LOCAL:0), 12% # ・滂ｼ滂ｼ滂ｼ滂ｼ滂ｼ・\@:{EXP:(ARG:0):(LOCAL:0), 5}" + 
+                    @"\@ ++LOCAL:1 % 5 ? 縲 # \n \@", EXP:(ARG:0):(LOCAL:0) ? GET_RAINBOW(9 + EXP_TYPE(LOCAL:0)) # 0x606060)
 }
 NEXT
 PRINTFORM \@ LINEISEMPTY() ? # \n \@
 
 
-;８列に変更＆表示の調整＆色設定@revkoishi(14/05/26)
+;・伜・縺ｫ螟画峩・・｡ｨ遉ｺ縺ｮ隱ｿ謨ｴ・・牡險ｭ螳咫revkoishi(14/05/26)
 @NEW_PRINT_ABL(ARG:0)
 #DIM NODISP, 10
 #DIM LINE_WIDTH
 LINE_WIDTH = WIDTH()
-LOCAL:1 = 0				;表示カウンタ
-;表示順は性別によってありえないものを抜くだけにしま했다。以下抜かれるもの
+LOCAL:1 = 0				;陦ｨ遉ｺ繧ｫ繧ｦ繝ｳ繧ｿ
+;陦ｨ遉ｺ鬆・・諤ｧ蛻･縺ｫ繧医▲縺ｦ縺ゅｊ縺医↑縺・ｂ縺ｮ繧呈栢縺上□縺代↓縺励∪嵂壱共縲ゆｻ･荳区栢縺九ｌ繧九ｂ縺ｮ
 VARSET NODISP, -1
-IF TALENT:(ARG:0):후타나리
-	NODISP = 10			;후타나리：10,ＢＬ끼
-ELSEIF TALENT:(ARG:0):남자
-	NODISP =  4,  9, 14	;　남자：4,Ｖ감각/9,레즈끼/14,레즈중독
+IF TALENT:(ARG:0):弡・ム・俯ｦｬ
+	NODISP = 10			;弡・ム・俯ｦｬ・・0,・｢・ｬ・ｼ
+ELSEIF TALENT:(ARG:0):・ｨ・・
+	NODISP =  4,  9, 14	;縲・ｨ・撰ｼ・,・ｶ・専ｰ・9,・溢ｦ壱⊂/14,・溢ｦ溢､瀧遵
 ELSE
-	NODISP = 10			;　여자：10,ＢＬ끼/
+	NODISP = 10			;縲・ｬ・撰ｼ・0,・｢・ｬ・ｼ/
 ENDIF
-PRINTFORML -- □ 능력 □ %"-" * (LINE_WIDTH - 14)%
+PRINTFORML -- 笆｡ ・･・･ 笆｡ %"-" * (LINE_WIDTH - 14)%
 FOR LOCAL:0, 0, 30
 	SIF STRLENSU(ABLNAME:(LOCAL:0)) && !MATCH(NODISP, LOCAL:0)
 {
-		CALL FPRINT(@"%ABLNAME:(LOCAL:0), 8%:{ABL:(ARG:0):(LOCAL:0), 2}\@ ++LOCAL:1 % 8 ? 　 # \n \@", 
+		CALL FPRINT(@"%ABLNAME:(LOCAL:0), 8%:{ABL:(ARG:0):(LOCAL:0), 2}\@ ++LOCAL:1 % 8 ? 縲 # \n \@", 
                     ABL:(ARG:0):(LOCAL:0) ? GET_RAINBOW(3 + ABL_TYPE(LOCAL:0)) # 0x606060)
 }
 NEXT
 PRINTFORM \@ LINEISEMPTY() ? # \n \@
 
 
-;画面幅の有効活用＆LOCAL地獄でとても読みにくい処理だったので整理(했다つもり)。微調整@revkoishi(14/05/26)
+;逕ｻ髱｢蟷・・譛牙柑豢ｻ逕ｨ・・OCAL蝨ｰ迯・〒縺ｨ縺ｦ繧りｪｭ縺ｿ縺ｫ縺上＞蜃ｦ逅・□縺｣縺溘・縺ｧ謨ｴ逅・嵂壱共縺､繧ゅｊ)縲ょｾｮ隱ｿ謨ｴ@revkoishi(14/05/26)
 @NEW_PRINT_TALENT(ARG:0)
 #DIM LINE_WIDTH
 #DIM TALENT_LIST, 8, 50
 #DIM TALENT_SIZE, 8
 
-;変数初期化
+;螟画焚蛻晄悄蛹・
 VARSET LOCAL
 VARSET TALENT_LIST
 VARSET TALENT_SIZE
-LINE_WIDTH = WIDTH()	;とりあえず基準となる幅を他所から勝손に拝借。27*4+0=108桁
+LINE_WIDTH = WIDTH()	;縺ｨ繧翫≠縺医★蝓ｺ貅悶→縺ｪ繧句ｹ・ｒ莉匁園縺九ｉ蜍晧・縺ｫ諡晏溘・7*4+0=108譯・
 
-PRINTFORML -- □ 소질 □ %"-" * (LINE_WIDTH - 14)%
-IF FLAG:소질표시방법	;素質分類表示
-	FOR LOCAL:0, 0, 150	;分類ループ
+PRINTFORML -- 笆｡ ・護ｧ・笆｡ %"-" * (LINE_WIDTH - 14)%
+IF FLAG:・護ｧ逸像・罹ｰｩ・・;邏雉ｪ蛻・｡櫁｡ｨ遉ｺ
+	FOR LOCAL:0, 0, 150	;蛻・｡槭Ν繝ｼ繝・
 		SIF TALENT:(ARG:0):(LOCAL:0)
 			TALENT_LIST:TALENT_TYPE(LOCAL:0):(TALENT_SIZE:TALENT_TYPE(LOCAL:0)++) = LOCAL:0
 	NEXT
-	;性別は特殊なので別処理とし、ここで表示する
-	PRINTFORM %TALENT_TYPENAME(1), 8, RIGHT%：
+	;諤ｧ蛻･縺ｯ迚ｹ谿翫↑縺ｮ縺ｧ蛻･蜃ｦ逅・→縺励√％縺薙〒陦ｨ遉ｺ縺吶ｋ
+	PRINTFORM %TALENT_TYPENAME(1), 8, RIGHT%・・
 {
-	CALL FPRINTL(@"[%GET_SEX(ARG:0)%] " + \@ TALENT:(ARG:0):처녀 ? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "처녀"))%]%" "% # \@ + 
-                \@ TALENT:(ARG:0):동정 ? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "동정"))%]%" "% # \@, GET_RAINBOW(1))
+	CALL FPRINTL(@"[%GET_SEX(ARG:0)%] " + \@ TALENT:(ARG:0):・俯・ ? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "・俯・"))%]%" "% # \@ + 
+                \@ TALENT:(ARG:0):・呷・? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "・呷・))%]%" "% # \@, GET_RAINBOW(1))
 }
-	FOR LOCAL:0, 2, 8	;表示ループ。非表示と、表示済みの性別は飛ばす
-		IF TALENT_SIZE:(LOCAL:0)	;その分類の素質が無ければ飛ばす
-			;素質分類名を表示
-			PRINTFORM %TALENT_TYPENAME(LOCAL:0), 8, RIGHT%：
-			LOCAL:2 = 10						;桁位置(↑表示後の位置)
-			LOCAL:4 = GET_RAINBOW(LOCAL:0)		;虹色
-			FOR LOCAL:1, 0, TALENT_SIZE:(LOCAL:0)	;その分類の所持素質数分ループ
-				;素質名を취득([素質名] )
+	FOR LOCAL:0, 2, 8	;陦ｨ遉ｺ繝ｫ繝ｼ繝励る撼陦ｨ遉ｺ縺ｨ縲∬｡ｨ遉ｺ貂医∩縺ｮ諤ｧ蛻･縺ｯ鬟帙・縺・
+		IF TALENT_SIZE:(LOCAL:0)	;縺昴・蛻・｡槭・邏雉ｪ縺檎┌縺代ｌ縺ｰ鬟帙・縺・
+			;邏雉ｪ蛻・｡槫錐繧定｡ｨ遉ｺ
+			PRINTFORM %TALENT_TYPENAME(LOCAL:0), 8, RIGHT%・・
+			LOCAL:2 = 10						;譯∽ｽ咲ｽｮ(竊題｡ｨ遉ｺ蠕後・菴咲ｽｮ)
+			LOCAL:4 = GET_RAINBOW(LOCAL:0)		;陌ｹ濶ｲ
+			FOR LOCAL:1, 0, TALENT_SIZE:(LOCAL:0)	;縺昴・蛻・｡槭・謇謖∫ｴ雉ｪ謨ｰ蛻・Ν繝ｼ繝・
+				;邏雉ｪ蜷阪ｒ・ｨ・・[邏雉ｪ蜷江 )
 				LOCALS:0 = [%GET_TALENTNAME(ARG:0, TALENT_LIST:(LOCAL:0):(LOCAL:1))%]%" "%
-				LOCAL:3 = STRLENS(LOCALS:0)	;↑の文字数(素質名+[]+スペース)
-				LOCAL:2 += LOCAL:3			;桁位置加算
-				IF LOCAL:2 > LINE_WIDTH		;このまま表示すると途中改行されそうな場合は改行処理を行う
-					;改行処理(折り返し、行頭インデント、桁位置再計算)
+				LOCAL:3 = STRLENS(LOCALS:0)	;竊代・譁・ｭ玲焚(邏雉ｪ蜷・[]+繧ｹ繝壹・繧ｹ)
+				LOCAL:2 += LOCAL:3			;譯∽ｽ咲ｽｮ蜉邂・
+				IF LOCAL:2 > LINE_WIDTH		;縺薙・縺ｾ縺ｾ陦ｨ遉ｺ縺吶ｋ縺ｨ騾比ｸｭ謾ｹ陦後＆繧後◎縺・↑蝣ｴ蜷医・謾ｹ陦悟・逅・ｒ陦後≧
+					;謾ｹ陦悟・逅・謚倥ｊ霑斐＠縲∬｡碁ｭ繧､繝ｳ繝・Φ繝医∵｡∽ｽ咲ｽｮ蜀崎ｨ育ｮ・
 					PRINTFORM \n%"          "%
 					LOCAL:2 = 10 + LOCAL:3
 				ENDIF
-				;素質名を表示
+				;邏雉ｪ蜷阪ｒ陦ｨ遉ｺ
 				CALL FPRINT(LOCALS:0, LOCAL:4)
 			NEXT
 			PRINTL 
 		ENDIF
 	NEXT
-ELSE					;素質번호順表示
-	LOCAL:2 = 0	;桁位置
-	FOR LOCAL:0, 0, 150	;表示ループ。非表示は飛ばす
+ELSE					;邏雉ｪ・逸从鬆・｡ｨ遉ｺ
+	LOCAL:2 = 0	;譯∽ｽ咲ｽｮ
+	FOR LOCAL:0, 0, 150	;陦ｨ遉ｺ繝ｫ繝ｼ繝励る撼陦ｨ遉ｺ縺ｯ鬟帙・縺・
 		IF TALENT:(ARG:0):(LOCAL:0) && TALENT_TYPE(LOCAL:0)
 			LOCALS:0 = [%GET_TALENTNAME(ARG:0, LOCAL:0)%]%" "%
 			LOCAL:3 = STRLENS(LOCALS:0)
 			LOCAL:2 += LOCAL:3
-			IF LOCAL:2 > LINE_WIDTH	;改行処理。行頭インデント無し
+			IF LOCAL:2 > LINE_WIDTH	;謾ｹ陦悟・逅・り｡碁ｭ繧､繝ｳ繝・Φ繝育┌縺・
 				PRINTL 
 				LOCAL:2 = LOCAL:3
 			ENDIF
@@ -250,29 +503,30 @@ ENDIF
 RETURN RESULT
 
 
-;────────────────────────────────────
-;죠교자のテンション表示
-;────────────────────────────────────
-;バーの色が少しキツイ感が했다ので微調整。無駄にボタン化するのを回避@revkoishi(14/05/22)
+;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;・・川梵縺ｮ繝・Φ繧ｷ繝ｧ繝ｳ陦ｨ遉ｺ
+;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;繝舌・縺ｮ濶ｲ縺悟ｰ代＠繧ｭ繝・う諢溘′嵂壱共縺ｮ縺ｧ蠕ｮ隱ｿ謨ｴ縲ら┌鬧・↓繝懊ち繝ｳ蛹悶☆繧九・繧貞屓驕ｿ@revkoishi(14/05/22)
 @PRINT_TENSION(ARG:0)
 LOCAL:1 = RESULT
-SELECTCASE TALENT:MASTER:독심능력
+SELECTCASE TALENT:MASTER:・・峡・･・･
 	CASE 1
-		PRINTFORML 이성[%TENSION(ARG:0, GETNUM(BASE, "이성"))%]\n흥미[%TENSION(ARG:0, GETNUM(BASE, "흥미"))%]
-		PRINTFORML 가립[%TENSION(ARG:0, GETNUM(BASE, "초조함"))%]\n만족[%TENSION(ARG:0, GETNUM(BASE, "만족"))%]
+		PRINTFORML ・ｴ・ｱ[%TENSION(ARG:0, GETNUM(BASE, "・ｴ・ｱ"))%]\n彧･・ｸ[%TENSION(ARG:0, GETNUM(BASE, "彧･・ｸ"))%]
+		PRINTFORML ・・ｽ[%TENSION(ARG:0, GETNUM(BASE, "・溢｡ｰ﨑ｨ"))%]\n・護｡ｱ[%TENSION(ARG:0, GETNUM(BASE, "・護｡ｱ"))%]
 	CASE 2
 		LOCAL:0 = GETCOLOR()
-		CALL PRINT_BASEL("이성", ARG:0, GETNUM(BASE, "이성"), 32, 1)
-		CALL PRINT_BASEL("흥미", ARG:0, GETNUM(BASE, "흥미"), 32, 1)
-		CALL PRINT_BASEL("초조", ARG:0, GETNUM(BASE, "초조함"), 32, 1)
-		CALL PRINT_BASEL("만족", ARG:0, GETNUM(BASE, "만족"), 32, 1)
-		PRINTPLAINFORM 죄악감[{CFLAG:ARG:5}] 아라이먼트
-		SETCOLOR CFLAG:(ARG:0):아라이멘도 >= 0 ? 0x0041FF # 0xFF2800
-		BAR CFLAG:(ARG:0):아라이멘도 + 100, 199, 32
+		CALL PRINT_BASEL("・ｴ・ｱ", ARG:0, GETNUM(BASE, "・ｴ・ｱ"), 32, 1)
+		CALL PRINT_BASEL("彧･・ｸ", ARG:0, GETNUM(BASE, "彧･・ｸ"), 32, 1)
+		CALL PRINT_BASEL("・溢｡ｰ", ARG:0, GETNUM(BASE, "・溢｡ｰ﨑ｨ"), 32, 1)
+		CALL PRINT_BASEL("・護｡ｱ", ARG:0, GETNUM(BASE, "・護｡ｱ"), 32, 1)
+		PRINTPLAINFORM ・・腐・深{CFLAG:ARG:5}] ・・攵・ｴ・ｼ孖ｸ
+		SETCOLOR CFLAG:(ARG:0):・・攵・ｴ・俯巡 >= 0 ? 0x0041FF # 0xFF2800
+		BAR CFLAG:(ARG:0):・・攵・ｴ・俯巡 + 100, 199, 32
 		SETCOLOR LOCAL:0
-		PRINTPLAINFORM [{CFLAG:(ARG:0):아라이멘도}]
+		PRINTPLAINFORM [{CFLAG:(ARG:0):・・攵・ｴ・俯巡}]
 		PRINTL 
 	CASEELSE
-		PRINTFORML %CALLNAME:(ARG:0)%의 기분에 대해 아직 잘 모른다…
+		PRINTFORML %CALLNAME:(ARG:0)%・・・ｰ・・乱 ・﨑ｴ ・・ｧ・・・・ｨ・ｸ・､窶ｦ
 ENDSELECT
 RETURN LOCAL:1
+>>>>>>> d29239f180aad384a1e39d65cf6a8a750783a09d
