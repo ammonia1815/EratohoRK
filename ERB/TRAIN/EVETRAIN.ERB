@@ -1,605 +1,229 @@
-﻿<<<<<<< HEAD
-・ｿ;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・・宣幕蟋九・蜃ｦ逅・;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+﻿;────────────────────────────────────
+;죠교開始の処理
+;────────────────────────────────────
 @EVENTTRAIN
 #DIM LCOUNT
-#DIM 蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ
+#DIM 可能만족보数
 
-;(・・川梵蛻･)・・戦圈・伜刈邂・CFLAG:・・戦圈・・+
+;(죠교자別)죠교횟수加算
+CFLAG:죠교횟수++
 
-;・・宣幕蟋狗峩蜑阪↓・壱･豸郁ｲｻ蜃ｦ逅・ｒ縺ｯ縺輔・(・誤糖・菩侃縺ｮ縺ｿ縲∵欠螳壽凾)
-SIF FLAG:・ｨ・・== 1 && FLAG:AI・川悛・・	CALL MANAGE_MP
-
-FLAG:・ｰ・川､・= 1
-;・們メ繧棚nitialize
-TEQUIP:MASTER:・・┷・罹ｦｬ = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:・・┷・罹ｦｬ # 0
-TEQUIP:MASTER:・・懍譜       = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:・・懍譜 # 0
-TEQUIP:MASTER:﨑俯ｰ們侠・作亶 = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:﨑俯ｰ們侠・作亶 # 0
-TEQUIP:MASTER:・・ｰ們侠・作亶 = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:・・ｰ們侠・作亶 # 0
-TEQUIP:MASTER:﨑俯ｰ們侠・餓亶 = CFLAG:MASTER:・們メ < 1 ? EQUIP:MASTER:﨑俯ｰ們侠・餓亶 # 0
-TEQUIP:MASTER:・・ｰ們侠・餓亶 = CFLAG:MASTER:・們メ < 1 ? EQUIP:MASTER:・・ｰ們侠・餓亶 # 0
-TEQUIP:MASTER:・・侠・餓亶   = CFLAG:MASTER:・們メ < 1 ? EQUIP:MASTER:・・侠・餓亶 # 0
-TEQUIP:MASTER:・肥侃嵓・・  = CFLAG:MASTER:・們メ == 3 ? EQUIP:MASTER:・肥侃嵓・・# 0
-
-TEQUIP:MASTER:・ｸ・壱ｪｩ・ｸ・ｴ = EQUIP:MASTER:・ｸ・壱ｪｩ・ｸ・ｴ
-
-TEQUIP:・・┷・罹ｦｬ = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:・・┷・罹ｦｬ # 0
-TEQUIP:・・懍譜       = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:・・懍譜 # 0
-TEQUIP:﨑俯ｰ們侠・作亶 = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:﨑俯ｰ們侠・作亶 # 0
-TEQUIP:・・ｰ們侠・作亶 = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:・・ｰ們侠・作亶 # 0
-TEQUIP:﨑俯ｰ們侠・餓亶 = CFLAG:TARGET:・們メ < 1 ? EQUIP:TARGET:﨑俯ｰ們侠・餓亶 # 0
-TEQUIP:・・ｰ們侠・餓亶 = CFLAG:TARGET:・們メ < 1 ? EQUIP:TARGET:・・ｰ們侠・餓亶 # 0
-TEQUIP:・・侠・餓亶   = CFLAG:TARGET:・們メ < 1 ? EQUIP:TARGET:・・侠・餓亶 # 0
-TEQUIP:・肥侃嵓・・  = CFLAG:TARGET:・們メ == 3 ? EQUIP:TARGET:・肥侃嵓・・# 0
-
-;-1縺ｫ蛻晄悄蛹悶☆繧亀FLAG繧偵Μ繧ｻ繝・ヨ
-TFLAG:・БCT = -1
-TFLAG:・СEACT・・･・= -1
-TFLAG:ACT・・･們・・ｽ = -1
-CVARSET TCVAR, GETNUM(TCVAR, "嵂雅徐・溢平"), -1
-TCVAR:・溢攵・護｡ｱ・ｴ・溢侃 = -1
-
-;・ｰ・川､代↓逕ｨ縺・ｋCFLAG繧偵Μ繧ｻ繝・ヨ
-FOR LOCAL, 30, 34
-	CVARSET CFLAG, LOCAL, 50
-NEXT
-FOR LOCAL, 250, 260
-	CVARSET CFLAG, LOCAL
-NEXT
-TFLAG:・・･﨑廚OM・・= 0
-;・溢暮未騾｣縺ｮ繝ｪ繧ｻ繝・ヨ
-FOR LCOUNT, 0, CHARANUM
-	VARSET EX:LCOUNT:0
-	VARSET NOWEX:LCOUNT:0
-	VARSET TCVAR:LCOUNT:0, 0, 70, 100
-NEXT
-
-;・川┷髢｢騾｣
-CVARSET TCVAR, GETNUM(TCVAR,           "・川┷")
-CVARSET TCVAR, GETNUM(TCVAR,     "・・嚮・們梵・ｸ")
-CVARSET TCVAR, GETNUM(TCVAR,       "・・ｹ們・寇")
-CVARSET TCVAR, GETNUM(TCVAR, "・・嚮・們怱・們・寇")
-CVARSET TCVAR, GETNUM(TCVAR,       "・・ｹ們メ﨑・)
-CVARSET TCVAR, GETNUM(TCVAR, "・・嚮・們怱・們メ﨑・)
-
-;迴ｾ蝨ｨ縺ｮ・・攵・ｴ・俯巡=蟷ｳ譎ゎ符・ｼ・ｴ・俯巡
-CFLAG:尞餓メ・・= LIMIT(CFLAG:尞餓メ・・ -999, 999)
-CFLAG:・・攵・ｴ・俯巡 = CFLAG:尞餓メ・・/ 10
-;・ｸ・壱ｪｩ・ｸ・ｴ陬・ｙ荳ｭ
-SIF TEQUIP:MASTER:・ｸ・壱ｪｩ・ｸ・ｴ == 1
-	CFLAG:・・攵・ｴ・俯巡 = -99
-
-;髢句ｧ区凾縺ｮ・・川梵縺ｮ・ｬ・輔ご繝ｼ繧ｸ縺・縺ｫ縺ｪ縺｣縺ｦ縺・◆縺ｮ縺ｧ縲√％縺薙〒菫ｮ豁｣
-BASE:・ｬ・・= MAXBASE:・ｬ・・;・誤ｳ繧ｲ繝ｼ繧ｸ縺ｮ險ｭ螳・BASE:MASTER:・誤ｳ = 0
-MAXBASE:MASTER:・誤ｳ = 10000 - TALENT:MASTER:・ｰ・ｨ * 5000 + TALENT:MASTER:・ｫ・・* 5000
-;縺ｾ縺隗｣豸医＠縺ｦ縺ｪ縺・半尞舌ｒ・・舌ヵ繧ｧ繝ｼ繧ｹ縺ｫ蜿榊ｿ・TFLAG:・ｰ・川梵・誤ｪｨ・・= CFLAG:・誤ｪｨ
-TFLAG:・誤ｪｨ・・= CFLAG:MASTER:・誤ｪｨ
-
-TCVAR:MASTER:・懋ｸｰ・・= 1000 * (BASE:MASTER:・ｬ・・+ 5000) * (MAXBASE:MASTER:・ｴ・ｱ - BASE:MASTER:・ｴ・ｱ) / ((MAXBASE:MASTER:・ｬ・・+ 5000) * MAXBASE:MASTER:・ｴ・ｱ)
-
-;髟ｷ譛滔ｳｴ・募､逕ｨ蛻晄悄蛹門・逅・CALL ACT_M_RESEARCH_L(0)
-
-CALLF _UNEXTRACTION(MASTER, 1, 0)	;・壱ｹｼ・・・・驕・ｻｶ蛻､螳夬伯・俾ｷｸ蛻晄悄蛹法revkoishi(14/07/15)
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;莉雁屓縺ｮ・ｩ・ｨ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・夋晏庄閭ｽ縺ｪ・・護｡ｱ・ｴ・溢侃縺後＞縺上▽縺ゅｋ縺・蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ = 0
-FOR LCOUNT, 0, 12
-	SIF SATISBONUS_ABLE(LCOUNT)
-		蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ++
-NEXT
-
-
-;縺碑､堤ｾ弱′縺ゅ▲縺溘→縺阪・・ｩ・ｨ螟画峩繧帝｣帙・縺吶ｈ縺・↓
-IF (!CFLAG:・護｡ｱ・ｴ && CFLAG:・誤ｪｨ <= 5 && CFLAG:MASTER:・誤ｪｨ <= 5 && CFLAG:・・尖壱ｲｨ > 4) || !蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ
-	;縺雁ｰｻ繧偵＞縺倥ａ縺ｦ縺ｿ繧医≧縺九↑蜃ｦ逅・ｼ・	;縺ｪ繧薙□縺薙ｌ諢丞袖繧上°繧峨ｓ窶ｦ・｡・専ｰ∽ｸ翫′繧九⊇縺ｩ蜃ｺ縺ｫ縺上￥縺ｪ繧九・・・	;證ｫ螳壽ｮ九＠
-	SELECTCASE ABL:MASTER:・｡・専ｰ・		CASE 0
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:3
-		CASE 1
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:4
-		CASE 2
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:6
-		CASE 3
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:8
-		CASE 4
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:12
-	ENDSELECT
-	;遒ｺ邇・〒縺・▽繧ゅ←縺翫ｊ縺ｧ縺ｪ縺・ｰｩ・ｨ繧偵→繧九ｈ縺・↓
-	IF !RAND:5
-		LOCAL = RAND:4
-		IF BASE:MASTER:・ｴ・･ < 2 * MAXBASE:MASTER:・ｴ・･ / 3 && LOCAL == 0
-			TFLAG:・溢攵・俯ｰｩ・ｨ = 4
-		ELSEIF	BASE:MASTER:・ｬ・・< 9 * MAXBASE:MASTER:・ｴ・･ / 10 && LOCAL == 1
-			TFLAG:・溢攵・俯ｰｩ・ｨ = 3
-		ELSEIF ITEM:・罹ｪｩ・ｸ・ｴ  && LOCAL == 2
-			TFLAG:・溢攵・俯ｰｩ・ｨ = 6
-		;ELSEIF GETBIT(FLAG:60,0)  && LOCAL == 3
-		;	TFLAG:・溢攵・俯ｰｩ・ｨ = 9
-		;・母ｳ・・縺ｯ・俯ｰ應ｾ晏ｭ倥↓嵂壱共縺・′莉墓ｧ倥′縺輔□縺ｾ縺｣縺ｦ縺・↑縺・・縺ｧ蠕悟屓縺・		;ELSEIF RAND:((2 + MARK:・倆墳・・攤) * (TALENT:・壱糖 + 1)) > RAND:30
-		;	TFLAG:・溢攵・俯ｰｩ・ｨ = 2
-		ENDIF
-	ENDIF
-ENDIF
-
-;・・宣幕蟋苦ｵｬ・・DRAWLINE
-RESULT = 0
-IF CFLAG:・誤ｪｨ > 5
-	CALL KOJO_EVENT(11, 1)
-ELSEIF CFLAG:MASTER:・誤ｪｨ > 5
-	CALL KOJO_EVENT(11, 2)
-ELSE
-	CALL KOJO_EVENT(11)
-ENDIF
-
-LOCAL = 0
-IF 蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ && CFLAG:・護｡ｱ・ｴ && CFLAG:嶸ｸ・・> 1000 && !TFLAG:・溢攵・俯ｰｩ・ｨ && CFLAG:・誤ｪｨ <= 5 && CFLAG:MASTER:・誤ｪｨ <= 5
-	SKIPDISP 0
-	PRINTL
-	CALL PRINT_RAINBOW2W(@"笘・・%CALLNAME:TARGET%・・・・護｡ｱ ・ｴ・溢侃笘・・", 30)
-	PRINTL
-	;・､奝・ｨ・懊・髫帙・蜃ｦ逅・	IF FLAG:・､奝・ｨ・・> 0
-		LOCAL = FLAG:・ｰ・・・護｡ｱ・ｴ・溢侃 % 100
-		SIF LOCAL == 12
-			LOCAL = RAND:12
-		SIF !LOCAL:1 && LOCAL == 6
-			LOCAL = FLAG:・ｰ・・・護｡ｱ・ｴ・溢侃 / 100
-		SIF !LOCAL:2 && LOCAL == 7
-			LOCAL = FLAG:・ｰ・・・護｡ｱ・ｴ・溢侃 / 100
-		;驕ｸ繧薙□繧ゅ・縺悟ｮ溯｡後〒縺阪↑縺・ｴ蜷・		IF !SATISBONUS_ABLE(LOCAL)
-			FOR LCOUNT, 0, 20
-				SIF SATISBONUS_ABLE(LCOUNT)
-					LOCAL = LCOUNT
-			NEXT
-		ENDIF
-		PRINTFORMW %AUTO_SPLIT("・ｸ・罹ｘ・俯涵/﨑ｭ・ｸ・・ｴｴ・ｭ嶸/・母ｳ・紛/・ｩ・ｬ﨑俾ｲ・・卓・・・ｬ・・・晝ｰ・壱阜・護ｧ/・野乱・懦紛/・・侠﨑ｴ/・ｬ・・謚ｱ縺九ｌ縺溘＞/・餓ぎ﨑俾ｲ・縺九ｏ縺・′縺｣縺ｦ/繝ｩ繝ｳ繝繝", "/", LOCAL)%(・・・ｼ ・夋晨毎・ｵ・壱共
-		RESULT = LOCAL
-		LOCAL = 0
-	;奝ｵ・√・蜃ｦ逅・	;OriginalString : (@"%HTMLBUTTON("[ 0] - ・ｸ・罹ｘ・俯涵", "0", "奝ｵ・・)%")
-	;OriginalString : (@"%HTMLBUTTON("[ 1] - 﨑ｭ・ｸ・・・ｴ・ｭ嶸", "1", @"\@ 
-	ELSE
-		CALL KOJO_EVENT(16)
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・､・ｰ ・ｰ・・擽 ・駆捩 ・ｨ・ｵ・ｼ・・ ・､・們捩 ・ｴ・・揆 﨑俾ｳ ・ｶ・・ｧ ・壱ｬｸ嵂壱共
-		PRINTL
-		SIF SATISBONUS_ABLE(0)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 0] - ・ｸ・罹ｘ・俯涵", "0", "奝ｵ・・)%")
-		SIF SATISBONUS_ABLE(1)
-			{
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 1] - 﨑ｭ・ｸ・・・ｴ・ｭ嶸", "1", @"\@ 
-			CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && (TALENT:TARGET:弡・ム・俯ｦｬ || ITEM:寬俯笈・､・ｴ・・ 
-			? ・ｱ・・+ # ・・ｴ++ ・・ｵｬ++ ・﨑・ \@")%")
-			}
-		;OriginalString : (@"%HTMLBUTTON("[ 2] - ・母ｳ・紛", "2", "・母ｳ・・嵓誤椈・ｸ縺檎ｫ九▽")%")
-		SIF SATISBONUS_ABLE(2)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 2] - ・母ｳ・紛", "2", "・母ｳ・・嵓誤椈・ｸ縺檎ｫ九▽")%")
-		;OriginalString : (@"%HTMLBUTTON("[ 3] - ・ｩ・ｬ﨑俾ｲ・, "3", "・・ｵｬ+ ・餓ぎ+ ・﨑・+")%")
-		SIF SATISBONUS_ABLE(3)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 3] - ・ｩ・ｬ﨑俾ｲ・, "3", "・・ｵｬ+ ・餓ぎ+ ・﨑・+")%")
-		;OriginalString : (@"%HTMLBUTTON("[ 4] - ・卓・・・ｬ・・, "4", @"\@ 
-		SIF SATISBONUS_ABLE(4)
-			{
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 4] - ・卓・・・ｬ・・, "4", @"\@ 
-			CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && ITEM:寬俯笈・､・ｴ・・&& !PENIS(MASTER) 
-			? ・ｱ・・+ # ・・ｴ+ ・餓ぎ++ \@")%")
-			}
-		;OriginalString : (@"%HTMLBUTTON("[ 5] - ・晝ｰ・壱阜・護ｧ", "5", "・﨑・+ ・ｴ・・+")%")
-		SIF SATISBONUS_ABLE(5)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 5] - ・晝ｰ・壱阜・護ｧ", "5", "・﨑・+ ・ｴ・・+")%")
-;OriginalString : (@"%HTMLBUTTON("[ 6] - ・野乱・懦紛", "6", "・ｼ・ｸ嵓誤溢擽")%")
-		SIF SATISBONUS_ABLE(6)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 6] - ・野乱・懦紛", "6", "・ｼ・ｸ嵓誤溢擽")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[ 7] - %CALLNAME%・們揆 ・・侠・懦う・・, "7", "・ｱ・・+")%")
-		;OriginalString : (@"%HTMLBUTTON("[ 8] - ・ｬ・・, "8", "弴ｴ・昴↓繧医ｋ・・舌・繧ｹ繧ｭ繝・・")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[ 9] - %CALLNAME%・們乱・・・一ｸｰ・・, "9", "・ｱ・・+")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[10] - %CALLNAME%・們揆 ・餓ぎ﨑俾ｲ・, "10", "・餓ぎ++")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[11] - ・・ｬ・醐紛", "11", @"巐醐剩+ ・・ｴ++\@ 
-		;嶸ｸ・・嶸ｸ・尖巡10000莉･荳翫・｣・川梵縺護桷・縺ｧ縺阪ｋ
-		SIF SATISBONUS_ABLE(7)
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 7] - %CALLNAME%・們揆 ・・侠・懦う・・, "7", "・ｱ・・+")%")
-		SIF SATISBONUS_ABLE(8)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 8] - ・ｬ・・, "8", "弴ｴ・昴↓繧医ｋ・・舌・繧ｹ繧ｭ繝・・")%")
-		;嶸ｸ・・嶸ｸ・尖巡10000莉･荳・		SIF SATISBONUS_ABLE(9)
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 9] - %CALLNAME%・們乱・・・一ｸｰ・・, "9", "・ｱ・・+")%")
-		;・倆墳・・攤縺ｪ縺励°縺､M嶸ｸ・・000莉･荳・		SIF SATISBONUS_ABLE(10)
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[10] - %CALLNAME%・們揆 ・餓ぎ﨑俾ｲ・, "10", "・餓ぎ++")%")
-		;嶸ｸ・・000, M嶸ｸ・・000縺醐符・・		SIF SATISBONUS_ABLE(11)
-			{
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[11] - ・・ｬ・醐紛", "11", @"巐醐剩+ ・・ｴ++\@ 
-			!TALENT:MASTER:・ｨ・・?  ・ｱ・・ # \@")%")
-			}
-		REDRAW 0
-		$INPUT_LOOP
-		INPUT
-		IF !SATISBONUS_ABLE(RESULT)
-			CLEARLINE 1
-			GOTO INPUT_LOOP
-		ENDIF
-		REDRAW 1
-	ENDIF
-	SELECTCASE RESULT
-		;奝ｵ・・		CASE 0
-		;﨑ｭ・ｸ
-		CASE 1
-		;・母ｳ・・
-		CASE 2
-			TFLAG:・母ｳ・・嵓誤椈・ｸ = 1
-		;﨑俯糖
-		CASE 3
-		;繧､繝√Ε繧､繝√Ε
-		CASE 4
-		;・ｴ・・		CASE 5
-		;・ｼ・ｸ
-		CASE 6
-			TEQUIP:・ｼ・ｸ嵓誤溢擽 = 1
-		;・・誤豆・ｰ
-		CASE 7
-		;弴ｴ・・		CASE 8
-		;謚ｱ縺・※
-		CASE 9
-		;縺罷ｴ餓ぎ
-		CASE 10
-		;・・ｬ・醐紛
-		CASE 11
-	ENDSELECT
-	TFLAG:・溢攵・俯ｰｩ・ｨ = RESULT
-	TCVAR:・溢攵・護｡ｱ・ｴ・溢侃 = RESULT
-	;縺薙％縺ｧ繝ｪ繧ｻ繝・ヨ縺輔ｌ繧九→・溢攵・俯ｰｩ・ｨ邂・園縺ｧ縺ｮ蜿ら・縺ｫ菴ｿ縺医↑縺・・縺ｧ繧ｳ繝｡繝ｳ繝医い繧ｦ繝・	;CFLAG:・護｡ｱ・ｴ = 0
-	PRINTL
-	CALL KOJO_EVENT(16, 1)
-	CALL VOIDLINE_IF(RESULT)
-	SIF TFLAG:・溢攵・俯ｰｩ・ｨ != 8
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・・ｵ・・・､・ｼ・ｴ ・ｰ・川攪 ・・・･ｼ ・懍梠嵂壱共
-	LOCAL = 1
-	IF FLAG:・､奝・ｨ・・> 0 && FLAG:・､奝・ｨ・懦像・懍└・・== 1
-		SKIPDISP 1
-	ENDIF
-ENDIF
-
-IF !LOCAL && TFLAG:・溢攵・俯ｰｩ・ｨ
-	CALL KOJO_EVENT(17)
-	CALL VOIDLINE_IF(RESULT)
-ENDIF
-
-;・ｩ・ｨ豎ｺ螳壼ｾ後・蝨ｰ縺ｮ譁・SELECTCASE POLICY("・溢攵")
-	CASE "奝ｵ・・
-	CASE "﨑ｭ・ｸ"
-		{
-		PRINTFORMW ・ｴ・・CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・禄@ CFLAG:・護｡ｱ・ｴ 
-		? 繝ｪ繧ｯ繧ｨ繧ｹ繝医↓蠢懊∴縲・# \@﨑ｭ・ｸ繧帝幕逋ｺ縺吶ｋ縺薙→縺ｫ豎ｺ繧√◆窶ｦ
-		}
-	CASE "・母ｳ・・"
-		{
-		PRINTFORMW %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%\@ CFLAG:・護｡ｱ・ｴ 
-		? 縺ｮ繝ｪ繧ｯ繧ｨ繧ｹ繝医↓蠢懊∴縲・# 縺ｫ \@・母ｳ・・繧偵☆繧九％縺ｨ縺ｫ嵂壱共窶ｦ
-		}
-	CASE "﨑俯糖"
-		{
-		PRINTFORMW %CALLNAME:TARGET%(・)・・\@ CFLAG:・護｡ｱ・ｴ 
-		? %CALLNAME:MASTER%・・繝ｪ繧ｯ繧ｨ繧ｹ繝医↓蠢懊∴縲・# \@縺・▽繧ゅｈ繧頑ｿ縺励￥・・舌☆繧九％縺ｨ縺ｫ嵂壱共窶ｦ
-		}
-	CASE "繧､繝√Ε繧､繝√Ε"
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・川ｧ・﨑ｴ, ・・Η﨑俾ｲ・・ｴ・溢葺・､窶ｦ 
-	CASE "・ｴ・・     ;蝸懆剞縺ｨ・菩囎縺ｨ險縺｣縺ｦ繧りｦ√☆繧九↓・ｴ・∫ｳｻ縺ｨ縺・≧縺縺代↑繧薙〒蠕ｮ螯吶↑豌励・縺吶ｋ
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・ｰ﨑呟ｳｼ ・菩囎・・・ｸ・・・溢愍・・%CALLNAME:MASTER%(・・・ｼ ・卓亨﨑ｴ ・罷共窶ｦ
-	CASE "・ｼ・ｸ"
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｩ・ｸ・ｴ・ｼ ・呷擽・・﨑俯ｩｴ, ・ｸ・懍攪 ・・・･ｼ ・懍梠嵂壱共窶ｦ
-	;莉･荳九√＃隍堤ｾ弱〒縺励°蜃ｺ縺ｪ縺・	CASE "・・誤豆・ｰ"
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・・擽・ｼ ・ｴ・､ ・ｼ・罹株 ・・攪 ・ｰ・・罹ｶ奓ｰ%CALLNAME:MASTER%・・・肥ｧ・・､・・､・・・・罷共窶ｦ
-	CASE "弴ｴ・・
-		;弴ｴ・昴・NFO.ERB縺ｫ蜃ｦ逅・ｒ遘ｻ蜍・	CASE "謚ｱ縺・※"
-		{
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・・壱ｶ奓ｰ ・一ｸｰ・・・・乱・・・ｰ・・・・・ｴ・ｼ ・ｨ・・ｳ ・・・・ｶ・・・・壱株 %CALLNAME:MASTER%(・・・ｼ\@ 
-		!TALENT:・壱糖 ? 蜆ｪ縺励￥ # \@謚ｱ縺榊ｯ・○縺溪ｦ
-		}
-	CASE "縺罷ｴ餓ぎ"
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・ｰ孖ｹ﨑・・懍攪(・・ｭ)・・・護｡ｱ・ｸ ・ｸ・誤･ｼ ・・垈・ｴ・・ %CALLNAME:MASTER%(・・・ｼ ・壱洳 ・・ ・ｸ ・ｸ・ｬ・ｼ ・・Η﨑俾ｲ・・ｴ・ｨ・護｡誤共窶ｦ
-	CASE "・・ｬ・醐紛"
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・ｸ・護ｧ・ｼ・ｴ・・%CALLNAME:MASTER%・・・・護寥・ｸ, ・｡・・・ｴ・ｸ・ｸ・・・・ｧ樌ｶ､嵂壱共窶ｦ
-ENDSELECT
-
-;・溢攵・俯ｰｩ・ｨ蝨ｰ縺ｮ譁・ｒ謚懊￠縺ｦ縺九ｉ繝ｪ繧ｻ繝・ヨ
-CFLAG:・護｡ｱ・ｴ = 0
-
-IF FLAG:・､奝・ｨ・・> 0 && FLAG:・､奝・ｨ・懦像・懍└・・== 1
-	CALL SHOW_AUTOMODE_UPCHECK, 1
-	SKIPDISP 0
-	DRAWLINE
-	PRINTFORML {FLAG:・ｰ・・1}・кFLAG:・ｼ・・1}・ｼ・ｸ(%GET_TIME()%) %GET_SEASON()% %GET_DAY()%・・嵂・縲・ｨ寬ｸ・假ｼ・CALLNAME:1%
-	DRAWLINE
-	SKIPDISP 1
-ENDIF
-
-;・・護｡ｱ・ｴ・溢侃縺ｮ蜿ｯ蜷ｦ
-@SATISBONUS_ABLE(ARG)
-#FUNCTION
-;・・護｡ｱ・ｴ・溢侃閾ｪ菴薙′・餓攤縺輔ｌ縺ｦ縺・ｌ縺ｰ0繧定ｿ斐☆
-SIF CFLAG:・・護｡ｱ・ｴ・溢侃・餓攤
-	RETURNF 0
-SELECTCASE ARG
-	;・ｸ・罹ｘ・俯涵
-	CASE 0
-	;﨑ｭ・ｸ・・ｴｴ・ｭ嶸
-	CASE 1
-	;・母ｳ・紛
-	CASE 2
-	;・ｩ・ｬ﨑俾ｲ・	CASE 3
-	;・卓・・・ｬ・・	CASE 4
-	;・晝ｰ・壱阜・護ｧ
-	CASE 5
-	;・野乱・懦紛
-	CASE 6
-		SIF !ITEM:・罹ｪｩ・ｸ・ｴ
-			RETURNF 0
-	;・・侠﨑ｴ
-	CASE 7
-		SIF !(CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && !TALENT:・・侠 && FLAG:・・侠 && !TALENT:・ｨ・・&& PENIS(MASTER))
-			RETURNF 0
-	;・ｬ・・	CASE 8
-	;・溢符・ｬ・ｼ・ｴ
-	CASE 9
-		SIF !(CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && !TALENT:MASTER:・ｨ・・&& (TALENT:弡・ム・俯ｦｬ || ITEM:寬俯笈・､・ｴ・・)
-			RETURNF 0
-	;・餓ぎ﨑俾ｲ・	CASE 10
-		SIF !(!MARK:・倆墳・・攤 && CFLAG:M嶸ｸ・・>= 1000)
-			RETURNF 0
-	;縺九ｏ縺・′縺｣縺ｦ
-	CASE 11
-		SIF !(CFLAG:嶸ｸ・・>= 2000 && CFLAG:M嶸ｸ・・>= 1000)
-			RETURNF 0
-	[SKIPSTART]
-	螳溯｣・☆繧句ｴ蜷医・繝壹ル繝舌Φ縺ｨ謗剃ｻ悶↓縺吶∋縺阪°・・	縺ｨ縺・≧縺倶ｻ頑峩蛻･譫縺ｧ繧・ｋ諢丞袖縺ｯ阮・＞縲ゅｄ繧九↑繧雅ｰｩ・ｨ[9]縺ｨ邨ｱ蜷医＠縺ｦ蜀・Κ縺ｧ蛻・￠繧区婿縺後＞縺・°縺ｪ
-	;蟄輔∪縺帙※
-	CASE 12
-		SIF !(CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && !TALENT:MASTER:・・侠 && FLAG:・・尖劇・・桷・ && !TALENT:MASTER:・ｨ・・&& TALENT:弡・ム・俯ｦｬ)
-			RETURN 0
-	[SKIPEND]
-	;譛ｪ螳夂ｾｩ
-	CASEELSE
-		RETURNF 0
-ENDSELECT
-;蛟句挨縺ｫ・餓攤縺輔ｌ縺ｦ縺・↑縺代ｌ縺ｰ
-RETURNF !CFLAG:(1200+ARG)
-
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;豎壹ｌ縺ｮ繝ｪ繧ｻ繝・ヨ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-@STAIN_RESET
-RESET_STAIN MASTER
-RESET_STAIN TARGET
-SIF ASSI:1 >= 0
-	RESET_STAIN ASSI:1
-SIF ASSI:2 >= 0
-	RESET_STAIN ASSI:2
-SIF ASSI:3 >= 0
-	RESET_STAIN ASSI:3
-=======
-・ｿ;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・・宣幕蟋九・蜃ｦ逅・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-@EVENTTRAIN
-#DIM LCOUNT
-#DIM 蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ
-
-;(・・川梵蛻･)・・戦圈・伜刈邂・
-CFLAG:・・戦圈・・+
-
-;・・宣幕蟋狗峩蜑阪↓・壱･豸郁ｲｻ蜃ｦ逅・ｒ縺ｯ縺輔・(・誤糖・菩侃縺ｮ縺ｿ縲∵欠螳壽凾)
-SIF FLAG:・ｨ・・== 1 && FLAG:AI・川悛・・
+;죠교開始直前に마력消費処理をはさむ(샌드박스のみ、指定時)
+SIF FLAG:모드 == 1 && FLAG:AI자유도
 	CALL MANAGE_MP
 
-FLAG:・ｰ・川､・= 1
-;・們メ繧棚nitialize
-TEQUIP:MASTER:・・┷・罹ｦｬ = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:・・┷・罹ｦｬ # 0
-TEQUIP:MASTER:・・懍譜       = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:・・懍譜 # 0
-TEQUIP:MASTER:﨑俯ｰ們侠・作亶 = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:﨑俯ｰ們侠・作亶 # 0
-TEQUIP:MASTER:・・ｰ們侠・作亶 = CFLAG:MASTER:・們メ < 2 ? EQUIP:MASTER:・・ｰ們侠・作亶 # 0
-TEQUIP:MASTER:﨑俯ｰ們侠・餓亶 = CFLAG:MASTER:・們メ < 1 ? EQUIP:MASTER:﨑俯ｰ們侠・餓亶 # 0
-TEQUIP:MASTER:・・ｰ們侠・餓亶 = CFLAG:MASTER:・們メ < 1 ? EQUIP:MASTER:・・ｰ們侠・餓亶 # 0
-TEQUIP:MASTER:・・侠・餓亶   = CFLAG:MASTER:・們メ < 1 ? EQUIP:MASTER:・・侠・餓亶 # 0
-TEQUIP:MASTER:・肥侃嵓・・  = CFLAG:MASTER:・們メ == 3 ? EQUIP:MASTER:・肥侃嵓・・# 0
+FLAG:조교중 = 1
+;의상をInitialize
+TEQUIP:MASTER:악세서리 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:악세서리 # 0
+TEQUIP:MASTER:신발안       = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:신발안 # 0
+TEQUIP:MASTER:하반신속옷 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:하반신속옷 # 0
+TEQUIP:MASTER:상반신속옷 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:상반신속옷 # 0
+TEQUIP:MASTER:하반신겉옷 = CFLAG:MASTER:의상 < 1 ? EQUIP:MASTER:하반신겉옷 # 0
+TEQUIP:MASTER:상반신겉옷 = CFLAG:MASTER:의상 < 1 ? EQUIP:MASTER:상반신겉옷 # 0
+TEQUIP:MASTER:전신겉옷   = CFLAG:MASTER:의상 < 1 ? EQUIP:MASTER:전신겉옷 # 0
+TEQUIP:MASTER:코스프레   = CFLAG:MASTER:의상 == 3 ? EQUIP:MASTER:코스프레 # 0
 
-TEQUIP:MASTER:・ｸ・壱ｪｩ・ｸ・ｴ = EQUIP:MASTER:・ｸ・壱ｪｩ・ｸ・ｴ
+TEQUIP:MASTER:노예목걸이 = EQUIP:MASTER:노예목걸이
 
-TEQUIP:・・┷・罹ｦｬ = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:・・┷・罹ｦｬ # 0
-TEQUIP:・・懍譜       = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:・・懍譜 # 0
-TEQUIP:﨑俯ｰ們侠・作亶 = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:﨑俯ｰ們侠・作亶 # 0
-TEQUIP:・・ｰ們侠・作亶 = CFLAG:TARGET:・們メ < 2 ? EQUIP:TARGET:・・ｰ們侠・作亶 # 0
-TEQUIP:﨑俯ｰ們侠・餓亶 = CFLAG:TARGET:・們メ < 1 ? EQUIP:TARGET:﨑俯ｰ們侠・餓亶 # 0
-TEQUIP:・・ｰ們侠・餓亶 = CFLAG:TARGET:・們メ < 1 ? EQUIP:TARGET:・・ｰ們侠・餓亶 # 0
-TEQUIP:・・侠・餓亶   = CFLAG:TARGET:・們メ < 1 ? EQUIP:TARGET:・・侠・餓亶 # 0
-TEQUIP:・肥侃嵓・・  = CFLAG:TARGET:・們メ == 3 ? EQUIP:TARGET:・肥侃嵓・・# 0
+TEQUIP:악세서리 = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:악세서리 # 0
+TEQUIP:신발안       = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:신발안 # 0
+TEQUIP:하반신속옷 = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:하반신속옷 # 0
+TEQUIP:상반신속옷 = CFLAG:TARGET:의상 < 2 ? EQUIP:TARGET:상반신속옷 # 0
+TEQUIP:하반신겉옷 = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:하반신겉옷 # 0
+TEQUIP:상반신겉옷 = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:상반신겉옷 # 0
+TEQUIP:전신겉옷   = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:전신겉옷 # 0
+TEQUIP:코스프레   = CFLAG:TARGET:의상 == 3 ? EQUIP:TARGET:코스프레 # 0
 
-;-1縺ｫ蛻晄悄蛹悶☆繧亀FLAG繧偵Μ繧ｻ繝・ヨ
-TFLAG:・БCT = -1
-TFLAG:・СEACT・・･・= -1
-TFLAG:ACT・・･們・・ｽ = -1
-CVARSET TCVAR, GETNUM(TCVAR, "嵂雅徐・溢平"), -1
-TCVAR:・溢攵・護｡ｱ・ｴ・溢侃 = -1
+;-1に初期化するTFLAGをリセット
+TFLAG:전ACT = -1
+TFLAG:전REACT분류 = -1
+TFLAG:ACT분류예약 = -1
+CVARSET TCVAR, GETNUM(TCVAR, "행동예약"), -1
+TCVAR:금일만족보너스 = -1
 
-;・ｰ・川､代↓逕ｨ縺・ｋCFLAG繧偵Μ繧ｻ繝・ヨ
+;조교중に用いるCFLAGをリセット
 FOR LOCAL, 30, 34
 	CVARSET CFLAG, LOCAL, 50
 NEXT
 FOR LOCAL, 250, 260
 	CVARSET CFLAG, LOCAL
 NEXT
-TFLAG:・・･﨑廚OM・・= 0
-;・溢暮未騾｣縺ｮ繝ｪ繧ｻ繝・ヨ
+TFLAG:가능한COM수 = 0
+;절정関連のリセット
 FOR LCOUNT, 0, CHARANUM
 	VARSET EX:LCOUNT:0
 	VARSET NOWEX:LCOUNT:0
 	VARSET TCVAR:LCOUNT:0, 0, 70, 100
 NEXT
 
-;・川┷髢｢騾｣
-CVARSET TCVAR, GETNUM(TCVAR,           "・川┷")
-CVARSET TCVAR, GETNUM(TCVAR,     "・・嚮・們梵・ｸ")
-CVARSET TCVAR, GETNUM(TCVAR,       "・・ｹ們・寇")
-CVARSET TCVAR, GETNUM(TCVAR, "・・嚮・們怱・們・寇")
-CVARSET TCVAR, GETNUM(TCVAR,       "・・ｹ們メ﨑・)
-CVARSET TCVAR, GETNUM(TCVAR, "・・嚮・們怱・們メ﨑・)
+;자세関連
+CVARSET TCVAR, GETNUM(TCVAR,           "자세")
+CVARSET TCVAR, GETNUM(TCVAR,     "전회의자세")
+CVARSET TCVAR, GETNUM(TCVAR,       "위치전후")
+CVARSET TCVAR, GETNUM(TCVAR, "전회의위치전후")
+CVARSET TCVAR, GETNUM(TCVAR,       "위치상하")
+CVARSET TCVAR, GETNUM(TCVAR, "전회의위치상하")
 
-;迴ｾ蝨ｨ縺ｮ・・攵・ｴ・俯巡=蟷ｳ譎ゎ符・ｼ・ｴ・俯巡
-CFLAG:尞餓メ・・= LIMIT(CFLAG:尞餓メ・・ -999, 999)
-CFLAG:・・攵・ｴ・俯巡 = CFLAG:尞餓メ・・/ 10
-;・ｸ・壱ｪｩ・ｸ・ｴ陬・ｙ荳ｭ
-SIF TEQUIP:MASTER:・ｸ・壱ｪｩ・ｸ・ｴ == 1
-	CFLAG:・・攵・ｴ・俯巡 = -99
+;現在の아라이멘도=平時아라이멘도
+CFLAG:평상시 = LIMIT(CFLAG:평상시, -999, 999)
+CFLAG:아라이멘도 = CFLAG:평상시 / 10
+;노예목걸이装備中
+SIF TEQUIP:MASTER:노예목걸이 == 1
+	CFLAG:아라이멘도 = -99
 
-;髢句ｧ区凾縺ｮ・・川梵縺ｮ・ｬ・輔ご繝ｼ繧ｸ縺・縺ｫ縺ｪ縺｣縺ｦ縺・◆縺ｮ縺ｧ縲√％縺薙〒菫ｮ豁｣
-BASE:・ｬ・・= MAXBASE:・ｬ・・
-;・誤ｳ繧ｲ繝ｼ繧ｸ縺ｮ險ｭ螳・
-BASE:MASTER:・誤ｳ = 0
-MAXBASE:MASTER:・誤ｳ = 10000 - TALENT:MASTER:・ｰ・ｨ * 5000 + TALENT:MASTER:・ｫ・・* 5000
-;縺ｾ縺隗｣豸医＠縺ｦ縺ｪ縺・半尞舌ｒ・・舌ヵ繧ｧ繝ｼ繧ｹ縺ｫ蜿榊ｿ・
-TFLAG:・ｰ・川梵・誤ｪｨ・・= CFLAG:・誤ｪｨ
-TFLAG:・誤ｪｨ・・= CFLAG:MASTER:・誤ｪｨ
+;開始時の죠교자の사정ゲージが0になっていたので、ここで修正
+BASE:사정 = MAXBASE:사정
+;소변ゲージの設定
+BASE:MASTER:소변 = 0
+MAXBASE:MASTER:소변 = 10000 - TALENT:MASTER:조루 * 5000 + TALENT:MASTER:싫증 * 5000
+;まだ解消してない피폐を죠교フェースに反応
+TFLAG:조교자소모도 = CFLAG:소모
+TFLAG:소모도 = CFLAG:MASTER:소모
 
-TCVAR:MASTER:・懋ｸｰ・・= 1000 * (BASE:MASTER:・ｬ・・+ 5000) * (MAXBASE:MASTER:・ｴ・ｱ - BASE:MASTER:・ｴ・ｱ) / ((MAXBASE:MASTER:・ｬ・・+ 5000) * MAXBASE:MASTER:・ｴ・ｱ)
+TCVAR:MASTER:발기도 = 1000 * (BASE:MASTER:사정 + 5000) * (MAXBASE:MASTER:이성 - BASE:MASTER:이성) / ((MAXBASE:MASTER:사정 + 5000) * MAXBASE:MASTER:이성)
 
-;髟ｷ譛滔ｳｴ・募､逕ｨ蛻晄悄蛹門・逅・
+;長期보정値用初期化処理
 CALL ACT_M_RESEARCH_L(0)
 
-CALLF _UNEXTRACTION(MASTER, 1, 0)	;・壱ｹｼ・・・・驕・ｻｶ蛻､螳夬伯・俾ｷｸ蛻晄悄蛹法revkoishi(14/07/15)
+CALLF _UNEXTRACTION(MASTER, 1, 0)	;안빼고상태遅延判定플래그初期化@revkoishi(14/07/15)
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;莉雁屓縺ｮ・ｩ・ｨ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・夋晏庄閭ｽ縺ｪ・・護｡ｱ・ｴ・溢侃縺後＞縺上▽縺ゅｋ縺・
-蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ = 0
+;────────────────────────────────────
+;今回の방침
+;────────────────────────────────────
+;선택可能な대만족보너스がいくつあるか
+可能만족보数 = 0
 FOR LCOUNT, 0, 12
 	SIF SATISBONUS_ABLE(LCOUNT)
-		蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ++
+		可能만족보数++
 NEXT
 
 
-;縺碑､堤ｾ弱′縺ゅ▲縺溘→縺阪・・ｩ・ｨ螟画峩繧帝｣帙・縺吶ｈ縺・↓
-IF (!CFLAG:・護｡ｱ・ｴ && CFLAG:・誤ｪｨ <= 5 && CFLAG:MASTER:・誤ｪｨ <= 5 && CFLAG:・・尖壱ｲｨ > 4) || !蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ
-	;縺雁ｰｻ繧偵＞縺倥ａ縺ｦ縺ｿ繧医≧縺九↑蜃ｦ逅・ｼ・
-	;縺ｪ繧薙□縺薙ｌ諢丞袖繧上°繧峨ｓ窶ｦ・｡・専ｰ∽ｸ翫′繧九⊇縺ｩ蜃ｺ縺ｫ縺上￥縺ｪ繧九・・・
-	;證ｫ螳壽ｮ九＠
-	SELECTCASE ABL:MASTER:・｡・専ｰ・
+;ご褒美があったときは방침変更を飛ばすように
+IF (!CFLAG:만족보 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5 && CFLAG:죠교레벨 > 4) || !可能만족보数
+	;お尻をいじめてみようかな処理？
+	;なんだこれ意味わからん…Ａ감각上がるほど出にくくなるの？
+	;暫定残し
+	SELECTCASE ABL:MASTER:Ａ감각
 		CASE 0
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:3
+			TFLAG:금일의방침 = !RAND:3
 		CASE 1
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:4
+			TFLAG:금일의방침 = !RAND:4
 		CASE 2
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:6
+			TFLAG:금일의방침 = !RAND:6
 		CASE 3
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:8
+			TFLAG:금일의방침 = !RAND:8
 		CASE 4
-			TFLAG:・溢攵・俯ｰｩ・ｨ = !RAND:12
+			TFLAG:금일의방침 = !RAND:12
 	ENDSELECT
-	;遒ｺ邇・〒縺・▽繧ゅ←縺翫ｊ縺ｧ縺ｪ縺・ｰｩ・ｨ繧偵→繧九ｈ縺・↓
+	;確率でいつもどおりでない방침をとるように
 	IF !RAND:5
 		LOCAL = RAND:4
-		IF BASE:MASTER:・ｴ・･ < 2 * MAXBASE:MASTER:・ｴ・･ / 3 && LOCAL == 0
-			TFLAG:・溢攵・俯ｰｩ・ｨ = 4
-		ELSEIF	BASE:MASTER:・ｬ・・< 9 * MAXBASE:MASTER:・ｴ・･ / 10 && LOCAL == 1
-			TFLAG:・溢攵・俯ｰｩ・ｨ = 3
-		ELSEIF ITEM:・罹ｪｩ・ｸ・ｴ  && LOCAL == 2
-			TFLAG:・溢攵・俯ｰｩ・ｨ = 6
+		IF BASE:MASTER:체력 < 2 * MAXBASE:MASTER:체력 / 3 && LOCAL == 0
+			TFLAG:금일의방침 = 4
+		ELSEIF	BASE:MASTER:사정 < 9 * MAXBASE:MASTER:체력 / 10 && LOCAL == 1
+			TFLAG:금일의방침 = 3
+		ELSEIF ITEM:개목걸이  && LOCAL == 2
+			TFLAG:금일의방침 = 6
 		;ELSEIF GETBIT(FLAG:60,0)  && LOCAL == 3
-		;	TFLAG:・溢攵・俯ｰｩ・ｨ = 9
-		;・母ｳ・・縺ｯ・俯ｰ應ｾ晏ｭ倥↓嵂壱共縺・′莉墓ｧ倥′縺輔□縺ｾ縺｣縺ｦ縺・↑縺・・縺ｧ蠕悟屓縺・
-		;ELSEIF RAND:((2 + MARK:・倆墳・・攤) * (TALENT:・壱糖 + 1)) > RAND:30
-		;	TFLAG:・溢攵・俯ｰｩ・ｨ = 2
+		;	TFLAG:금일의방침 = 9
+		;징계・は반발依存に했다いが仕様がさだまっていないので後回し
+		;ELSEIF RAND:((2 + MARK:반항각인) * (TALENT:새드 + 1)) > RAND:30
+		;	TFLAG:금일의방침 = 2
 		ENDIF
 	ENDIF
 ENDIF
 
-;・・宣幕蟋苦ｵｬ・・
+;죠교開始구상
 DRAWLINE
 RESULT = 0
-IF CFLAG:・誤ｪｨ > 5
+IF CFLAG:소모 > 5
 	CALL KOJO_EVENT(11, 1)
-ELSEIF CFLAG:MASTER:・誤ｪｨ > 5
+ELSEIF CFLAG:MASTER:소모 > 5
 	CALL KOJO_EVENT(11, 2)
 ELSE
 	CALL KOJO_EVENT(11)
 ENDIF
 
 LOCAL = 0
-IF 蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ && CFLAG:・護｡ｱ・ｴ && CFLAG:嶸ｸ・・> 1000 && !TFLAG:・溢攵・俯ｰｩ・ｨ && CFLAG:・誤ｪｨ <= 5 && CFLAG:MASTER:・誤ｪｨ <= 5
+IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일의방침 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5
 	SKIPDISP 0
 	PRINTL
-	CALL PRINT_RAINBOW2W(@"笘・・%CALLNAME:TARGET%・・・・護｡ｱ ・ｴ・溢侃笘・・", 30)
+	CALL PRINT_RAINBOW2W(@"★★%CALLNAME:TARGET%님 대만족 보너스★★", 30)
 	PRINTL
-	;・､奝・ｨ・懊・髫帙・蜃ｦ逅・
-	IF FLAG:・､奝・ｨ・・> 0
-		LOCAL = FLAG:・ｰ・・・護｡ｱ・ｴ・溢侃 % 100
+	;오토모드の際の処理
+	IF FLAG:오토모드 > 0
+		LOCAL = FLAG:우선대만족보너스 % 100
 		SIF LOCAL == 12
 			LOCAL = RAND:12
 		SIF !LOCAL:1 && LOCAL == 6
-			LOCAL = FLAG:・ｰ・・・護｡ｱ・ｴ・溢侃 / 100
+			LOCAL = FLAG:우선대만족보너스 / 100
 		SIF !LOCAL:2 && LOCAL == 7
-			LOCAL = FLAG:・ｰ・・・護｡ｱ・ｴ・溢侃 / 100
-		;驕ｸ繧薙□繧ゅ・縺悟ｮ溯｡後〒縺阪↑縺・ｴ蜷・
+			LOCAL = FLAG:우선대만족보너스 / 100
+		;選んだものが実行できない場合
 		IF !SATISBONUS_ABLE(LOCAL)
 			FOR LCOUNT, 0, 20
 				SIF SATISBONUS_ABLE(LCOUNT)
 					LOCAL = LCOUNT
 			NEXT
 		ENDIF
-		PRINTFORMW %AUTO_SPLIT("・ｸ・罹ｘ・俯涵/﨑ｭ・ｸ・・ｴｴ・ｭ嶸/・母ｳ・紛/・ｩ・ｬ﨑俾ｲ・・卓・・・ｬ・・・晝ｰ・壱阜・護ｧ/・野乱・懦紛/・・侠﨑ｴ/・ｬ・・謚ｱ縺九ｌ縺溘＞/・餓ぎ﨑俾ｲ・縺九ｏ縺・′縺｣縺ｦ/繝ｩ繝ｳ繝繝", "/", LOCAL)%(・・・ｼ ・夋晨毎・ｵ・壱共
+		PRINTFORMW %AUTO_SPLIT("언제나처럼/항문을괴롭혀/징계해/격렬하게/응석부리게/망가질때까지/밖에서해/임신해/쉬게/抱かれたい/봉사하게/かわいがって/ランダム", "/", LOCAL)%(을)를 선택했습니다
 		RESULT = LOCAL
 		LOCAL = 0
-	;奝ｵ・√・蜃ｦ逅・
-	;OriginalString : (@"%HTMLBUTTON("[ 0] - ・ｸ・罹ｘ・俯涵", "0", "奝ｵ・・)%")
-	;OriginalString : (@"%HTMLBUTTON("[ 1] - 﨑ｭ・ｸ・・・ｴ・ｭ嶸", "1", @"\@ 
+	;통상の処理
+	;OriginalString : (@"%HTMLBUTTON("[ 0] - 언제나처럼", "0", "통상")%")
+	;OriginalString : (@"%HTMLBUTTON("[ 1] - 항문을 괴롭혀", "1", @"\@ 
 	ELSE
 		CALL KOJO_EVENT(16)
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・､・ｰ ・ｰ・・擽 ・駆捩 ・ｨ・ｵ・ｼ・・ ・､・們捩 ・ｴ・・揆 﨑俾ｳ ・ｶ・・ｧ ・壱ｬｸ嵂壱共
+		PRINTFORMW %CALLNAME:TARGET%(은)는 매우 기분이 좋은 모습으로, 오늘은 무엇을 하고 싶을지 질문했다
 		PRINTL
 		SIF SATISBONUS_ABLE(0)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 0] - ・ｸ・罹ｘ・俯涵", "0", "奝ｵ・・)%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 0] - 언제나처럼", "0", "통상")%")
 		SIF SATISBONUS_ABLE(1)
 			{
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 1] - 﨑ｭ・ｸ・・・ｴ・ｭ嶸", "1", @"\@ 
-			CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && (TALENT:TARGET:弡・ム・俯ｦｬ || ITEM:寬俯笈・､・ｴ・・ 
-			? ・ｱ・・+ # ・・ｴ++ ・・ｵｬ++ ・﨑・ \@")%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 1] - 항문을 괴롭혀", "1", @"\@ 
+			CFLAG:M호의 + CFLAG:호의 >= 10000 && (TALENT:TARGET:후타나리 || ITEM:페니스밴드) 
+			? 성교++ # 애무++ 도구++ 가학+ \@")%")
 			}
-		;OriginalString : (@"%HTMLBUTTON("[ 2] - ・母ｳ・紛", "2", "・母ｳ・・嵓誤椈・ｸ縺檎ｫ九▽")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 2] - 징계해", "2", "징계・플래그が立つ")%")
 		SIF SATISBONUS_ABLE(2)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 2] - ・母ｳ・紛", "2", "・母ｳ・・嵓誤椈・ｸ縺檎ｫ九▽")%")
-		;OriginalString : (@"%HTMLBUTTON("[ 3] - ・ｩ・ｬ﨑俾ｲ・, "3", "・・ｵｬ+ ・餓ぎ+ ・﨑・+")%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 2] - 징계해", "2", "징계・플래그が立つ")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 3] - 격렬하게", "3", "도구+ 봉사+ 가학++")%")
 		SIF SATISBONUS_ABLE(3)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 3] - ・ｩ・ｬ﨑俾ｲ・, "3", "・・ｵｬ+ ・餓ぎ+ ・﨑・+")%")
-		;OriginalString : (@"%HTMLBUTTON("[ 4] - ・卓・・・ｬ・・, "4", @"\@ 
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 3] - 격렬하게", "3", "도구+ 봉사+ 가학++")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 4] - 응석부리게", "4", @"\@ 
 		SIF SATISBONUS_ABLE(4)
 			{
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 4] - ・卓・・・ｬ・・, "4", @"\@ 
-			CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && ITEM:寬俯笈・､・ｴ・・&& !PENIS(MASTER) 
-			? ・ｱ・・+ # ・・ｴ+ ・餓ぎ++ \@")%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 4] - 응석부리게", "4", @"\@ 
+			CFLAG:M호의 + CFLAG:호의 >= 10000 && ITEM:페니스밴드 && !PENIS(MASTER) 
+			? 성봉++ # 애무+ 봉사++ \@")%")
 			}
-		;OriginalString : (@"%HTMLBUTTON("[ 5] - ・晝ｰ・壱阜・護ｧ", "5", "・﨑・+ ・ｴ・・+")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 5] - 망가질때까지", "5", "가학++ 이상++")%")
 		SIF SATISBONUS_ABLE(5)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 5] - ・晝ｰ・壱阜・護ｧ", "5", "・﨑・+ ・ｴ・・+")%")
-;OriginalString : (@"%HTMLBUTTON("[ 6] - ・野乱・懦紛", "6", "・ｼ・ｸ嵓誤溢擽")%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 5] - 망가질때까지", "5", "가학++ 이상++")%")
+;OriginalString : (@"%HTMLBUTTON("[ 6] - 밖에서해", "6", "야외플레이")%")
 		SIF SATISBONUS_ABLE(6)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 6] - ・野乱・懦紛", "6", "・ｼ・ｸ嵓誤溢擽")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[ 7] - %CALLNAME%・們揆 ・・侠・懦う・・, "7", "・ｱ・・+")%")
-		;OriginalString : (@"%HTMLBUTTON("[ 8] - ・ｬ・・, "8", "弴ｴ・昴↓繧医ｋ・・舌・繧ｹ繧ｭ繝・・")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[ 9] - %CALLNAME%・們乱・・・一ｸｰ・・, "9", "・ｱ・・+")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[10] - %CALLNAME%・們揆 ・餓ぎ﨑俾ｲ・, "10", "・餓ぎ++")%")
-		;OriginalString : (@"%HTMLBUTTON(@"[11] - ・・ｬ・醐紛", "11", @"巐醐剩+ ・・ｴ++\@ 
-		;嶸ｸ・・嶸ｸ・尖巡10000莉･荳翫・｣・川梵縺護桷・縺ｧ縺阪ｋ
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 6] - 밖에서해", "6", "야외플레이")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[ 7] - %CALLNAME%님을 임신시키게", "7", "성봉++")%")
+		;OriginalString : (@"%HTMLBUTTON("[ 8] - 쉬게", "8", "휴식による죠교のスキップ")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[ 9] - %CALLNAME%님에게 안기게", "9", "성교++")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[10] - %CALLNAME%님을 봉사하게", "10", "봉사++")%")
+		;OriginalString : (@"%HTMLBUTTON(@"[11] - 귀여워해", "11", @"회화+ 애무++\@ 
+		;호의+호감도10000以上、죠교자が임신できる
 		SIF SATISBONUS_ABLE(7)
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 7] - %CALLNAME%・們揆 ・・侠・懦う・・, "7", "・ｱ・・+")%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 7] - %CALLNAME%님을 임신시키게", "7", "성봉++")%")
 		SIF SATISBONUS_ABLE(8)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 8] - ・ｬ・・, "8", "弴ｴ・昴↓繧医ｋ・・舌・繧ｹ繧ｭ繝・・")%")
-		;嶸ｸ・・嶸ｸ・尖巡10000莉･荳・
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 8] - 쉬게", "8", "휴식による죠교のスキップ")%")
+		;호의+호감도10000以上
 		SIF SATISBONUS_ABLE(9)
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 9] - %CALLNAME%・們乱・・・一ｸｰ・・, "9", "・ｱ・・+")%")
-		;・倆墳・・攤縺ｪ縺励°縺､M嶸ｸ・・000莉･荳・
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 9] - %CALLNAME%님에게 안기게", "9", "성교++")%")
+		;반항각인なしかつM호의1000以上
 		SIF SATISBONUS_ABLE(10)
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[10] - %CALLNAME%・們揆 ・餓ぎ﨑俾ｲ・, "10", "・餓ぎ++")%")
-		;嶸ｸ・・000, M嶸ｸ・・000縺醐符・・
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[10] - %CALLNAME%님을 봉사하게", "10", "봉사++")%")
+		;호의2000, M호의1000が필요
 		SIF SATISBONUS_ABLE(11)
 			{
-			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[11] - ・・ｬ・醐紛", "11", @"巐醐剩+ ・・ｴ++\@ 
-			!TALENT:MASTER:・ｨ・・?  ・ｱ・・ # \@")%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[11] - 귀여워해", "11", @"회화+ 애무++\@ 
+			!TALENT:MASTER:남자 ?  성교+ # \@")%")
 			}
 		REDRAW 0
 		$INPUT_LOOP
@@ -611,165 +235,165 @@ IF 蜿ｯ閭ｽ・護｡ｱ・ｴ謨ｰ && CFLAG:・護｡ｱ・ｴ && CFLAG:嶸
 		REDRAW 1
 	ENDIF
 	SELECTCASE RESULT
-		;奝ｵ・・
+		;통상
 		CASE 0
-		;﨑ｭ・ｸ
+		;항문
 		CASE 1
-		;・母ｳ・・
+		;징계・
 		CASE 2
-			TFLAG:・母ｳ・・嵓誤椈・ｸ = 1
-		;﨑俯糖
+			TFLAG:징계・플래그 = 1
+		;하드
 		CASE 3
-		;繧､繝√Ε繧､繝√Ε
+		;イチャイチャ
 		CASE 4
-		;・ｴ・・
+		;이상
 		CASE 5
-		;・ｼ・ｸ
+		;야외
 		CASE 6
-			TEQUIP:・ｼ・ｸ嵓誤溢擽 = 1
-		;・・誤豆・ｰ
+			TEQUIP:야외플레이 = 1
+		;애만들기
 		CASE 7
-		;弴ｴ・・
+		;휴식
 		CASE 8
-		;謚ｱ縺・※
+		;抱いて
 		CASE 9
-		;縺罷ｴ餓ぎ
+		;ご봉사
 		CASE 10
-		;・・ｬ・醐紛
+		;귀여워해
 		CASE 11
 	ENDSELECT
-	TFLAG:・溢攵・俯ｰｩ・ｨ = RESULT
-	TCVAR:・溢攵・護｡ｱ・ｴ・溢侃 = RESULT
-	;縺薙％縺ｧ繝ｪ繧ｻ繝・ヨ縺輔ｌ繧九→・溢攵・俯ｰｩ・ｨ邂・園縺ｧ縺ｮ蜿ら・縺ｫ菴ｿ縺医↑縺・・縺ｧ繧ｳ繝｡繝ｳ繝医い繧ｦ繝・
-	;CFLAG:・護｡ｱ・ｴ = 0
+	TFLAG:금일의방침 = RESULT
+	TCVAR:금일만족보너스 = RESULT
+	;ここでリセットされると금일의방침箇所での参照に使えないのでコメントアウト
+	;CFLAG:만족보 = 0
 	PRINTL
 	CALL KOJO_EVENT(16, 1)
 	CALL VOIDLINE_IF(RESULT)
-	SIF TFLAG:・溢攵・俯ｰｩ・ｨ != 8
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・・ｵ・・・､・ｼ・ｴ ・ｰ・川攪 ・・・･ｼ ・懍梠嵂壱共
+	SIF TFLAG:금일의방침 != 8
+		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 대답을 들으면 조교의 준비를 시작했다
 	LOCAL = 1
-	IF FLAG:・､奝・ｨ・・> 0 && FLAG:・､奝・ｨ・懦像・懍└・・== 1
+	IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
 		SKIPDISP 1
 	ENDIF
 ENDIF
 
-IF !LOCAL && TFLAG:・溢攵・俯ｰｩ・ｨ
+IF !LOCAL && TFLAG:금일의방침
 	CALL KOJO_EVENT(17)
 	CALL VOIDLINE_IF(RESULT)
 ENDIF
 
-;・ｩ・ｨ豎ｺ螳壼ｾ後・蝨ｰ縺ｮ譁・
-SELECTCASE POLICY("・溢攵")
-	CASE "奝ｵ・・
-	CASE "﨑ｭ・ｸ"
+;방침決定後の地の文
+SELECTCASE POLICY("금일")
+	CASE "통상"
+	CASE "항문"
 		{
-		PRINTFORMW ・ｴ・・CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・禄@ CFLAG:・護｡ｱ・ｴ 
-		? 繝ｪ繧ｯ繧ｨ繧ｹ繝医↓蠢懊∴縲・# \@﨑ｭ・ｸ繧帝幕逋ｺ縺吶ｋ縺薙→縺ｫ豎ｺ繧√◆窶ｦ
+		PRINTFORMW 이번%CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의\@ CFLAG:만족보 
+		? リクエストに応え、 # \@항문を開発することに決めた…
 		}
-	CASE "・母ｳ・・"
+	CASE "징계・"
 		{
-		PRINTFORMW %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%\@ CFLAG:・護｡ｱ・ｴ 
-		? 縺ｮ繝ｪ繧ｯ繧ｨ繧ｹ繝医↓蠢懊∴縲・# 縺ｫ \@・母ｳ・・繧偵☆繧九％縺ｨ縺ｫ嵂壱共窶ｦ
+		PRINTFORMW %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%\@ CFLAG:만족보 
+		? のリクエストに応え、 # に \@징계・をすることに했다…
 		}
-	CASE "﨑俯糖"
+	CASE "하드"
 		{
-		PRINTFORMW %CALLNAME:TARGET%(・)・・\@ CFLAG:・護｡ｱ・ｴ 
-		? %CALLNAME:MASTER%・・繝ｪ繧ｯ繧ｨ繧ｹ繝医↓蠢懊∴縲・# \@縺・▽繧ゅｈ繧頑ｿ縺励￥・・舌☆繧九％縺ｨ縺ｫ嵂壱共窶ｦ
+		PRINTFORMW %CALLNAME:TARGET%(은)는 \@ CFLAG:만족보 
+		? %CALLNAME:MASTER%의 リクエストに応え、 # \@いつもより激しく죠교することに했다…
 		}
-	CASE "繧､繝√Ε繧､繝√Ε"
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・川ｧ・﨑ｴ, ・・Η﨑俾ｲ・・ｴ・溢葺・､窶ｦ 
-	CASE "・ｴ・・     ;蝸懆剞縺ｨ・菩囎縺ｨ險縺｣縺ｦ繧りｦ√☆繧九↓・ｴ・∫ｳｻ縺ｨ縺・≧縺縺代↑繧薙〒蠕ｮ螯吶↑豌励・縺吶ｋ
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・ｰ﨑呟ｳｼ ・菩囎・・・ｸ・・・溢愍・・%CALLNAME:MASTER%(・・・ｼ ・卓亨﨑ｴ ・罷共窶ｦ
-	CASE "・ｼ・ｸ"
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｩ・ｸ・ｴ・ｼ ・呷擽・・﨑俯ｩｴ(・・, ・ｸ・懍攪 ・・・･ｼ ・懍梠嵂壱共窶ｦ
-	;莉･荳九√＃隍堤ｾ弱〒縺励°蜃ｺ縺ｪ縺・
-	CASE "・・誤豆・ｰ"
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・・擽・ｼ ・ｴ・､ ・ｼ・罹株 ・・攪 ・ｰ・・罹ｶ奓ｰ%CALLNAME:MASTER%・・・肥ｧ・・､・・､・・・・罷共窶ｦ
-	CASE "弴ｴ・・
-		;弴ｴ・昴・NFO.ERB縺ｫ蜃ｦ逅・ｒ遘ｻ蜍・
-	CASE "謚ｱ縺・※"
+	CASE "イチャイチャ"
+		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 손짓 해, 상냥하게 껴안았다… 
+	CASE "이상"     ;嗜虐と정욕と言っても要するに이상系というだけなんで微妙な気はする
+		PRINTFORMW %CALLNAME:TARGET%(은)는 기학과 정욕에 미친 눈으로 %CALLNAME:MASTER%(을)를 응시해 왔다…
+	CASE "야외"
+		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 목걸이를 붙이게 하면, 외출의 준비를 시작했다…
+	;以下、ご褒美でしか出ない
+	CASE "애만들기"
+		PRINTFORMW %CALLNAME:TARGET%(은)는 아이를 내려 주시는 것의 기대로부터%CALLNAME:MASTER%에 바짝 다가오고는 왔다…
+	CASE "휴식"
+		;휴식。INFO.ERBに処理を移動
+	CASE "抱いて"
 		{
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・・壱ｶ奓ｰ ・一ｸｰ・・・・乱・・・ｰ・・・・・ｴ・ｼ ・ｨ・・ｳ ・・・・ｶ・・・・壱共%CALLNAME:MASTER%(・・・ｼ\@ 
-		!TALENT:・壱糖 ? 蜆ｪ縺励￥ # \@謚ｱ縺榊ｯ・○縺溪ｦ
+		PRINTFORMW %CALLNAME:TARGET%(은)는 지금부터 안기는 것에의 기대에 신체를 뜨겁고 불 비출 수 있는 %CALLNAME:MASTER%(을)를\@ 
+		!TALENT:새드 ? 優しく # \@抱き寄せた…
 		}
-	CASE "縺罷ｴ餓ぎ"
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・ｰ孖ｹ﨑・・懍攪(・・ｭ)・・・護｡ｱ・ｸ ・ｸ・誤･ｼ ・・垈・ｴ・・%CALLNAME:MASTER%(・・・ｼ ・壱洳 ・・ ・ｸ ・ｸ・ｬ・ｼ ・・Η﨑俾ｲ・・ｴ・ｨ・護｡誤共窶ｦ
-	CASE "・・ｬ・醐紛"
-		PRINTFORMW %CALLNAME:TARGET%(・)・・・ｸ・護ｧ・ｼ・ｴ・・%CALLNAME:MASTER%・・・・護寥・ｸ, ・｡・・・ｴ・ｸ・ｸ・・・・ｧ樌ｶ､嵂壱共窶ｦ
+	CASE "ご봉사"
+		PRINTFORMW %CALLNAME:TARGET%(은)는 기특한 제의(신청)에 만족인 미소를 띄우면서, %CALLNAME:MASTER%(을)를 불러 대고 그 머리를 상냥하게 어루만졌다…
+	CASE "귀여워해"
+		PRINTFORMW %CALLNAME:TARGET%(은)는 미소지으면서 %CALLNAME:MASTER%에 가까워져, 액에 살그머니 입맞춤했다…
 ENDSELECT
 
-;・溢攵・俯ｰｩ・ｨ蝨ｰ縺ｮ譁・ｒ謚懊￠縺ｦ縺九ｉ繝ｪ繧ｻ繝・ヨ
-CFLAG:・護｡ｱ・ｴ = 0
+;금일의방침地の文を抜けてからリセット
+CFLAG:만족보 = 0
 
-IF FLAG:・､奝・ｨ・・> 0 && FLAG:・､奝・ｨ・懦像・懍└・・== 1
+IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
 	CALL SHOW_AUTOMODE_UPCHECK, 1
 	SKIPDISP 0
 	DRAWLINE
-	PRINTFORML {FLAG:・ｰ・・1}・кFLAG:・ｼ・・1}・ｼ・ｸ(%GET_TIME()%) %GET_SEASON()% %GET_DAY()%・・嵂・縲・ｨ寬ｸ・假ｼ・CALLNAME:1%
+	PRINTFORML {FLAG:연수+1}년{FLAG:일수+1}일째(%GET_TIME()%) %GET_SEASON()% %GET_DAY()%의 행 　남편님：%CALLNAME:1%
 	DRAWLINE
 	SKIPDISP 1
 ENDIF
 
-;・・護｡ｱ・ｴ・溢侃縺ｮ蜿ｯ蜷ｦ
+;대만족보너스の可否
 @SATISBONUS_ABLE(ARG)
 #FUNCTION
-;・・護｡ｱ・ｴ・溢侃閾ｪ菴薙′・餓攤縺輔ｌ縺ｦ縺・ｌ縺ｰ0繧定ｿ斐☆
-SIF CFLAG:・・護｡ｱ・ｴ・溢侃・餓攤
+;대만족보너스自体が봉인されていれば0を返す
+SIF CFLAG:대만족보너스봉인
 	RETURNF 0
 SELECTCASE ARG
-	;・ｸ・罹ｘ・俯涵
+	;언제나처럼
 	CASE 0
-	;﨑ｭ・ｸ・・ｴｴ・ｭ嶸
+	;항문을괴롭혀
 	CASE 1
-	;・母ｳ・紛
+	;징계해
 	CASE 2
-	;・ｩ・ｬ﨑俾ｲ・
+	;격렬하게
 	CASE 3
-	;・卓・・・ｬ・・
+	;응석부리게
 	CASE 4
-	;・晝ｰ・壱阜・護ｧ
+	;망가질때까지
 	CASE 5
-	;・野乱・懦紛
+	;밖에서해
 	CASE 6
-		SIF !ITEM:・罹ｪｩ・ｸ・ｴ
+		SIF !ITEM:개목걸이
 			RETURNF 0
-	;・・侠﨑ｴ
+	;임신해
 	CASE 7
-		SIF !(CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && !TALENT:・・侠 && FLAG:・・侠 && !TALENT:・ｨ・・&& PENIS(MASTER))
+		SIF !(CFLAG:M호의 + CFLAG:호의 >= 10000 && !TALENT:임신 && FLAG:임신 && !TALENT:남자 && PENIS(MASTER))
 			RETURNF 0
-	;・ｬ・・
+	;쉬게
 	CASE 8
-	;・溢符・ｬ・ｼ・ｴ
+	;안아줬으면
 	CASE 9
-		SIF !(CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && !TALENT:MASTER:・ｨ・・&& (TALENT:弡・ム・俯ｦｬ || ITEM:寬俯笈・､・ｴ・・)
+		SIF !(CFLAG:M호의 + CFLAG:호의 >= 10000 && !TALENT:MASTER:남자 && (TALENT:후타나리 || ITEM:페니스밴드))
 			RETURNF 0
-	;・餓ぎ﨑俾ｲ・
+	;봉사하게
 	CASE 10
-		SIF !(!MARK:・倆墳・・攤 && CFLAG:M嶸ｸ・・>= 1000)
+		SIF !(!MARK:반항각인 && CFLAG:M호의 >= 1000)
 			RETURNF 0
-	;縺九ｏ縺・′縺｣縺ｦ
+	;かわいがって
 	CASE 11
-		SIF !(CFLAG:嶸ｸ・・>= 2000 && CFLAG:M嶸ｸ・・>= 1000)
+		SIF !(CFLAG:호의 >= 2000 && CFLAG:M호의 >= 1000)
 			RETURNF 0
 	[SKIPSTART]
-	螳溯｣・☆繧句ｴ蜷医・繝壹ル繝舌Φ縺ｨ謗剃ｻ悶↓縺吶∋縺阪°・・
-	縺ｨ縺・≧縺倶ｻ頑峩蛻･譫縺ｧ繧・ｋ諢丞袖縺ｯ阮・＞縲ゅｄ繧九↑繧雅ｰｩ・ｨ[9]縺ｨ邨ｱ蜷医＠縺ｦ蜀・Κ縺ｧ蛻・￠繧区婿縺後＞縺・°縺ｪ
-	;蟄輔∪縺帙※
+	実装する場合はペニバンと排他にすべきか？
+	というか今更別枠でやる意味は薄い。やるなら방침[9]と統合して内部で分ける方がいいかな
+	;孕ませて
 	CASE 12
-		SIF !(CFLAG:M嶸ｸ・・+ CFLAG:嶸ｸ・・>= 10000 && !TALENT:MASTER:・・侠 && FLAG:・・尖劇・・桷・ && !TALENT:MASTER:・ｨ・・&& TALENT:弡・ム・俯ｦｬ)
+		SIF !(CFLAG:M호의 + CFLAG:호의 >= 10000 && !TALENT:MASTER:임신 && FLAG:죠교대상임신 && !TALENT:MASTER:남자 && TALENT:후타나리)
 			RETURN 0
 	[SKIPEND]
-	;譛ｪ螳夂ｾｩ
+	;未定義
 	CASEELSE
 		RETURNF 0
 ENDSELECT
-;蛟句挨縺ｫ・餓攤縺輔ｌ縺ｦ縺・↑縺代ｌ縺ｰ
+;個別に봉인されていなければ
 RETURNF !CFLAG:(1200+ARG)
 
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;豎壹ｌ縺ｮ繝ｪ繧ｻ繝・ヨ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;汚れのリセット
+;────────────────────────────────────
 @STAIN_RESET
 RESET_STAIN MASTER
 RESET_STAIN TARGET
@@ -779,4 +403,3 @@ SIF ASSI:2 >= 0
 	RESET_STAIN ASSI:2
 SIF ASSI:3 >= 0
 	RESET_STAIN ASSI:3
->>>>>>> d29239f180aad384a1e39d65cf6a8a750783a09d

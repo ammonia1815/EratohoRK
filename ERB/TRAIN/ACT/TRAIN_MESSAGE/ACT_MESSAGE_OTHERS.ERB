@@ -1,784 +1,406 @@
-﻿<<<<<<< HEAD
-・ｿ
+﻿
 ;------------------------------------------------------------------------
-;EDIT	001		KOremi			2011/11/04		蜈ｨ菴薙・譖ｸ縺咲峩縺励∽ｸｦ縺ｹ譖ｿ縺・;												ACT_APPLY_PROCESS.ERB縺九ｉ蝨ｰ縺ｮ譁・ｒ蛻・ｊ蜃ｺ縺・;												・菩懦ヨ・倥・梵・ｼ夋溢攪蜃ｦ逅・ｒ隱ｿ謨ｴ
+;EDIT	001		KOremi			2011/11/04		全体の書き直し、並べ替え
+;												ACT_APPLY_PROCESS.ERBから地の文を切り出す
+;												강제탈의、자주탈의処理を調整
 ;------------------------------------------------------------------------
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;諡堤ｵｶ譎ょ慍縺ｮ譁・繝ｪ繧｢繧ｯ繧ｷ繝ｧ繝ｳ縺ｫ繧医▲縺ｦ・・舌′・ｨ・後＆繧後ｋ)
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;拒絶時地の文(リアクションによって죠교が취소される)
+;────────────────────────────────────
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｱ・舌・・ｨ・・;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;성교の취소
+;────────────────────────────────────
 @CANCEL_INSERT_TO_M_MESSAGE
 PRINTL 
-;・ｱ・宣幕蟋区凾
-IF TFLAG:ACT・・･・== 3
-	PRINTFORML %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%(・)・ｼ ・ｱ・戦葺・､・ 嵂溢ｧ・・ %CALLNAME:MASTER%(・)・・・・ｰ・ｴ ・・・們ｧ ・喜葺・､窶ｦ
-;・ｱ・川､・ELSE
-	PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｽ・・葺・ ・溢来・・・ %CALLNAME:MASTER%(・)・・・・ｰ・溢愍・・・・ｼ・ｨ ・ｸ・誤遭 ・・・野乱 ・・来・､窶ｦ
+;성교開始時
+IF TFLAG:ACT분류 == 3
+	PRINTFORML %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%(와)과 성교하려고 했지만, %CALLNAME:MASTER%(은)는 날뛰어 잘 되지 않았다…
+;성교중
+ELSE
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 삽입하고 있었지만, %CALLNAME:MASTER%(은)는 날뛰었으므로 일단 그만둘 수 밖에 없었다…
 ENDIF
 RETURN 1
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｱ・尖ｴ餓ぎ縺ｮ・ｨ・・;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;성교봉사の취소
+;────────────────────────────────────
 @CANCEL_INSERT_TO_T_MESSAGE
 PRINTL 
-;・ｱ・宣幕蟋区凾
-IF TFLAG:ACT・・･・== 10
-	;ACT縺醐墳・ｸ・ｹ・､・懦お・､縺ｪ繧・	IF IS_NOWACTNAME("﨑ｭ・ｸ・ｹ・､・懦お・､")
-		PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・禄@ TEQUIP:寬俯笈・､・ｴ・・? 寬俯笈・､・ｴ・・# 寬俯笈・､ \@(・・・ｼ ・・・・､・・・ｽ・・・懦う・､・ 嵂溢ｧ・・ %CALLNAME:MASTER%(・)・・・・ｰ・ｴ ・・・們ｧ ・喜葺・､窶ｦ
-	;縺昴・莉・	ELSE
-		PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・禄@ TEQUIP:寬俯笈・､・ｴ・・? 寬俯笈・､・ｴ・・# 寬俯笈・､ \@(・・・ｼ ・ｴ・・・・ｽ・・・懦う・､・ 嵂溢ｧ・・ %CALLNAME:MASTER%(・)・・・・ｰ・溢愍・・・・ｼ・ｨ ・ｸ・誤遭 ・・・野乱 ・・来・､窶ｦ
-	ENDIF
-;・ｱ・川､・ELSE
-	;﨑ｭ・ｸ・ｹ・､・・・縺ｧ縺ゅｌ縺ｰ
-	IF TEQUIP:・ｱ・尖ｴ餓ぎ・・== 6
-		PRINTFORML %CALLNAME:MASTER%(・)・・・・ｰ・一ｸｰ ・誤ｬｸ・・ %CALLNAME:TARGET%・・・・・・､・・・ｽ・・据・ ・壱腰\@ TEQUIP:寬俯笈・､・ｴ・・? 寬俯笈・､・ｴ・・# 寬俯笈・､ \@・ ・・ｸ ・・ｸ・､窶ｦ
-	;縺昴・莉・	ELSE
-		PRINTFORML %CALLNAME:MASTER%(・)・・・・ｰ・一ｸｰ ・誤ｬｸ・・ %CALLNAME:TARGET%・・・ｽ・・据・ ・壱腰\@ TEQUIP:寬俯笈・､・ｴ・・? 寬俯笈・､・ｴ・・# 寬俯笈・､ \@・ ・・ｸ ・・ｸ・､窶ｦ
-	ENDIF
-ENDIF
-RETURN 1
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・﨑吶・・・懦伯・溢擽縺ｮ・ｨ・鯉ｼ一ｳ奝ｵ縲・ｵｬ・阪・・・懊・擽夋茨ｼ・;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｬ・作ｷｨ・・@CANCEL_TEQUIP_RESTRAINT_MESSAGE
-PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・%CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｬ・作揆 峵・壱共窶ｦ
-RETURN 1
-;・ｼ・・ｪｩ・溢ｷｨ・・@CANCEL_TEQUIP_W_HORSE_MESSAGE
-PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・%CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%(・・・ｼ ・ｩ・壱｡罹ｶ奓ｰ ・ｴ・ｸ・､窶ｦ
-RETURN 1
-;・ｼ・ｸ嵓誤溢擽・ｨ・・@CANCEL_TEQUIP_OUTDOOR_MESSAGE
-PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・%CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%(・・・ｼ ・ｰ・ｼ ・ｩ・ｼ・・・護符・罷共窶ｦ
-RETURN 1
-;・ｰ・ｸ・ｨ・・@CANCEL_TEQUIP_MIRROR_MESSAGE
-PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・%CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%(・・・ｼ ・ｰ・ｼ ・ｰ・ｸ ・樌乱・・・ｨ・ｴ・誤共窶ｦ
-RETURN 1
-;・肥侃嵓・溢ｷｨ・・@CANCEL_TEQUIP_COSPLAY_MESSAGE
-PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・%CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・溢符・・搆・・嵭壱攷﨑ｴ, ・肥侃嵓・・・們メ・・巐護・嵂壱共窶ｦ
-RETURN 1
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;迚ｹ谿顔憾豕∵凾蝨ｰ縺ｮ譁・迚ｹ蛻･縺ｪ迥ｶ豕√′襍ｷ縺阪◆譎ゅ・蝨ｰ縺ｮ譁・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・川怱・溢墓凾縺ｮ蝨ｰ縺ｮ譁・｡ｨ遉ｺ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-@ONANIE_EX_MESSAGE
-;ACT縺護梵・・・蝣ｴ蜷亥・螳ｹ縺瑚｢ｫ繧九・縺ｧ陦ｨ遉ｺ縺励↑縺・SIF TFLAG:ACT == GET_ACTNUM("・川怱")
-	RETURN 0
-;寬俯笈・､縺ゅｊ
-IF PENIS(MASTER)
-	;REACT・・･倥′・・ｷｹ・・愍・・﨑罹共邉ｻ
-	IF IS_COMGRONAME("・・ｷｹ・・愍・・﨑罹共")
-		;鬘泌ｰ・梵・・溢・		IF ME_PLAYER(1) == 9
-			PRINTFORML %CALLNAME:MASTER%(・)・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・ｴ・・・ｧ ・ｬ・倣腹 ・・揆 ・・葺・ｴ,
-			PRINTFORML %CALLNAME:TARGET%(・)・・・・・・樌乱・・・・揆 ・誤ｦｬ・ 嶸・ｼ ・ｴ・・ｴ, ・・・・・・ｼ ・・揆 ・・ｹ嵂壱共窶ｦ
-		;縺昴・莉・		ELSE
-			PRINTFORML %CALLNAME:MASTER%(・)・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・ｴ・・・ｬ・菩擽 ・・護垓 ・・揆 ・・葺・ｴ,
-			PRINTFORML %CALLNAME:TARGET%(・)・・・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・ｴ・・ｦｴ ・・揆 ・・毎・､窶ｦ
-		ENDIF
-	;REACT・・･倥′縺昴・莉・	ELSE
-		;鬘泌ｰ・梵・・溢・		IF ME_PLAYER(1) == 9
-			PRINTFORML %CALLNAME:TARGET%(・)・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・・%CALLNAME:MASTER%・・・溢菩揆 嵭､・・､
-			PRINTFORML ・・・・樌乱・・・・揆 ・誤ｦｬ・ 嶸・ｼ ・ｴ・・ｴ, ・・・・・・ｼ ・・揆 ・・ｹ嵂壱共窶ｦ
-		;縺昴・莉・		ELSE
-			PRINTFORML %CALLNAME:TARGET%(・)・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・・%CALLNAME:MASTER%・・・溢菩揆 嵭､・・､
-			PRINTFORML ・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・ｴ・・ｦｴ ・・揆 ・・毎・､窶ｦ
-		ENDIF
-	ENDIF
-ELSE
-	;REACT・・･倥′・・ｷｹ・・愍・・﨑罹共邉ｻ
-	IF IS_COMGRONAME("・・ｷｹ・・愍・・﨑罹共")
-		PRINTFORML %CALLNAME:MASTER%(・)・・・川侠・・・醐雰・・・們｣ｽ﨑俾ｳ ・誤ｦｬ・ｴ・・・溢菩擽 ・・護垓 ・・揆 ・・葺・ｴ,
-		PRINTFORML %CALLNAME:TARGET%(・)・・・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・・・ｦｴ ・・揆 ・・毎・､窶ｦ
-	;REACT・・･倥′縺昴・莉・	ELSE
-		PRINTFORML %CALLNAME:TARGET%(・)・・・川侠・・・醐雰・・・護ｧ・滝ｱｰ・ｬ・ ・壱株 %CALLNAME:MASTER%・・・溢菩揆 嵭､・・､
-		PRINTFORML ・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・・・ｦｴ ・・揆 ・・毎・､窶ｦ
-	ENDIF
-ENDIF
-RETURN 1
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;螳溯｡梧凾蝨ｰ縺ｮ譁・ACT遞ｮ縺ｫ繧医ｉ縺ｪ縺・慍縺ｮ譁・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｸ・ｽ繝ｻ・懍・菴ｿ逕ｨ譎ゅ・蝨ｰ縺ｮ譁・・ｬ・∬｡ｨ遉ｺ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-@USE_MESSAGE
-;・ｸ・ｽ繝ｻ・懍・繧剃ｽｿ逕ｨ嵂壱共譌ｨ縺ｮ繝｡繝・そ繝ｼ繧ｸ繧定｡ｨ遉ｺ縺励∪縺・;縺薙％縺ｮ謾ｹ陦悟・逅・・縺ゅｄ縺励＞縺ｮ縺ｧ蠕後〒縺・ｍ縺・ｍ隱ｿ謨ｴ縺醐符・・
-;RESULT蛻晄悄蛹・RESULT = 0
-
-;・ｸ・ｽ・ｱ・ｬ・ｩ・ｬ・∝他縺ｳ蜃ｺ縺・IF TFLAG:・ｸ・ｽ・ｱ・ｬ・ｩ・ｬ・・&& ((ASSI:1) < 0 || TCVAR:(ASSI:1):・ｰ・連CT != 71)
-	PRINTL 
-	CALL KOJO_USE
-ENDIF
-
-;・ｬ・∬｡ｨ遉ｺ蠕悟慍縺ｮ譁・ｒ陦ｨ遉ｺ縺吶ｋ蝣ｴ蜷・SIF RESULT && TFLAG:・ｸ・ｽ・ｱ・ｬ・ｩ・・ｸ・､墲ｵ
-	PRINTL 
-;蝨ｰ縺ｮ譁・｡ｨ遉ｺ遞ｮ蛻･縺ｫ繧医▲縺ｦ蛻・ｲ・SELECTCASE TFLAG:・ｸ・ｽ・ｱ・ｬ・ｩ・・ｸ・､墲ｵ
-	;・懍・
-	CASE 1
-		;・ｰ・伜鵠蜉帶凾
-		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):・ｰ・連CT == 71
-			ALIGNMENT RIGHT
-			PRINTFORML %CALLNAME:(ASSI:1)%・(・・ %CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
-			ALIGNMENT LEFT
-		;・ｰ・倬撼蜊泌鴨譎・		ELSE
-			PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
-		ENDIF
-	;・ｸ・ｽ
-	CASE 2
-		;・ｰ・伜鵠蜉帶凾
-		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):・ｰ・連CT == 71
-			ALIGNMENT RIGHT
-			PRINTFORML %CALLNAME:(ASSI:1)%・(・・ %CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
-			ALIGNMENT LEFT
-		;墲､・､譎・		ELSEIF IS_NOWACTNAME("墲､・､")
-			PRINTFORML %CALLNAME:TARGET%(・)・・・､・､・・・ｸ・ｽ・・・溢・, 墲､・､ 﨑俯ｩｴ・・・ｸ・・揆 ・・愍・・%CALLNAME:MASTER%・専ｲ・・ｹ・・､窶ｦ
-		;・ｰ・倬撼蜊泌鴨譎・		ELSE
-			PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
-		ENDIF
-	;・懍・・・ｯｸ・ｽ
-	CASE 3
-		;・ｰ・伜鵠蜉帶凾
-		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):・ｰ・連CT == 71
-			ALIGNMENT RIGHT
-			PRINTFORML %CALLNAME:(ASSI:1)%・(・・ %CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
-			PRINTFORML 﨑懍ｸｵ ・・%CALLNAME:(ASSI:1)%(・)・・・壱ｹｨ・懍ｧ・%CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
-			ALIGNMENT LEFT
-		;墲､・､譎・		ELSEIF IS_NOWACTNAME("墲､・､")
-			PRINTFORML %CALLNAME:TARGET%(・)・・・､・､・・・ｸ・ｽ・・・溢・, 墲､・､ 﨑俯ｩｴ・・・ｸ・・揆 ・・愍・・%CALLNAME:MASTER%・専ｲ・・ｹ・・､窶ｦ
-			PRINTFORML 﨑懍ｸｵ ・・・・ｧ樌ｶ､﨑・・・｡・・壱ｹｨ・懍ｧ・%CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
-		;・ｰ・倬撼蜊泌鴨譎・		ELSE
-			PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
-			PRINTFORML 﨑懍ｸｵ ・・%CALLNAME:TARGET%(・)・・・壱ｹｨ・懍ｧ・%CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
-		ENDIF
-ENDSELECT
-WAIT
-
-;-----------EDIT 001 START--------------
-;荳ｻ縺ｫ蠑墓焚縺ｫ繧医▲縺ｦ蛻､螳壹☆繧区婿蠑上↓螟画峩
-;---------------------------------------
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・菩懦ヨ・倥・梵・ｼ夋溢攪譎ゅ・蝨ｰ縺ｮ譁・・ｬ・∬｡ｨ遉ｺ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・菩懦ヨ・倥・・川｣ｼ夋溢攪縺ｮ繝｡繝・そ繝ｼ繧ｸ繧定｡ｨ遉ｺ縺励∪縺・
-;夋溢攪蟇ｸ蜑阪〒縺ｮ蝨ｰ縺ｮ譁・・ｬ・・@DATUI_MESSAGE(ARG, ARG:1)
-
-;夋溢攪蜑阪↓・ｵ・･・・菫晏ｭ倥☆繧・夋溢攪逶ｴ蠕後〒縺ｮ蝨ｰ縺ｮ譁・〒蛻ｩ逕ｨ)
-CALLF CLOTHE_SAVE(TARGET)
-CALLF CLOTHE_SAVE(MASTER)
-
-;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵☆繧句ｴ蜷・IF NOWASSIACTNAME(ASSI:1) == "夋溢攪"
-	ALIGNMENT RIGHT
-	PRINTFORML %CALLNAME:(ASSI:1)%(・)・・・護硫, %CALLNAME:MASTER%・・・ｷ・・・川揆 ・・壱共窶ｦ
-	ALIGNMENT LEFT
-	;・・川梵夋溢攪繧ら匱逕・	SIF ARG:1 > 0
-		PRINTFORML %CALLNAME:TARGET%・・・川侠・・・俯ｳｵ・・・川揆 ・・ｴ ・隷ｸｰ ・懍梠嵂壱共窶ｦ
-	WAIT
-;・・尖劇・√・｣・川梵縺ｨ繧ゅ↓夋溢攪
-ELSEIF ARG > 0 && ARG:1 > 0
-	PRINTFORMW %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%(・)・ｼ ・川侠・・・ｷ・・・川揆 ・・壱共窶ｦ
-;・・尖劇・・ヨ・・ELSEIF ARG > 0
-	PRINTFORMW %CALLNAME:TARGET%(・)・・・護硫, %CALLNAME:MASTER%・・・ｷ・・・川揆 ・・壱共窶ｦ
-;・・川梵夋溢攪
-ELSEIF ARG:1 > 0
-	PRINTFORMW %CALLNAME:TARGET%(・)・・・川侠・・・俯ｳｵ・・・川揆 ・・ｴ ・隷ｸｰ ・懍梠嵂壱共窶ｦ
-ENDIF
-
-;RESULT蛻晄悄蛹・RESULT = 0
-;夋溢攪譎れｵｬ・∝他縺ｳ蜃ｺ縺・CALL KOJO_DATUI
-
-;・・尖劇・・ヨ・伜､ｱ謨・IF TFLAG:・菩懦ヨ・・< 0
-	PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｷ・・・隷ｸｰ・､・ 嵂溢ｧ・・ %CALLNAME:MASTER%・・・ｩ﨑ｴ・幗葺・､窶ｦ
-;・・尖劇・・ヨ・俶・蜉・ELSEIF ARG > 0
-	;LOCAL蛻晄悄蛹・	VARSET LOCAL
-	;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵☆繧句ｴ蜷・	IF NOWASSIACTNAME(ASSI:1) == "夋溢攪"
-		;・・川梵夋溢攪繧ら匱逕・		SIF ARG:1 > 0
-			ALIGNMENT RIGHT
-		PRINTFORM %CALLNAME:(ASSI:1)%・(・・ %CALLNAME:MASTER%・・	;PRINTFORM %CALLNAME:(ASSI:1)%\@ ARG:1 > 0 ? 﨑們ｧ・・# 﨑・\@%CALLNAME:MASTER%・・
-	;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵＠縺ｪ縺・ｴ蜷・	ELSE
-		PRINTFORM %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・
-	ENDIF
-	;夋溢攪譫壽焚遒ｺ隱・LOCAL:1縺ｫ夋溢攪譫壽焚繧剃ｻ｣蜈･)
-	FOR LOCAL, 0, 7
-		SIF GETBIT(ARG, LOCAL)
-			LOCAL:1 ++
-	NEXT
-	;譛邨ら捩陦｣譫壽焚遒ｺ隱・LOCAL:2縺ｫ譛邨ら捩陦｣譫壽焚繧剃ｻ｣蜈･)
-	FOR LOCAL, 0, 7
-		SIF TEQUIP:MASTER:LOCAL != 0 && !GETBIT(ARG, LOCAL)
-			LOCAL:2 ++
-	NEXT
-	;譛邨ら捩陦｣縺護・攵縺ｪ繧・	IF LOCAL:2 == 0
-		;夋溢攪譫壽焚縺・譫壻ｻ･荳・		IF LOCAL:1 > 2
-;OriginalString : 郤上≧・們メ繧偵☆縺ｹ縺ｦ
-			PRINT ・・ｳ ・壱株 ・ｷ・・・ｨ・・
-		;夋溢攪譫壽焚縺・譫・		ELSEIF LOCAL:1 == 2
-			PRINTFORM ・俯･・・ｨ・ ・・揆 
-		;夋溢攪譫壽焚縺・譫・夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
-		ELSE
-			CALL DATUI_MESSAGE_SORT(0, ARG, MASTER)
-		ENDIF
-	;・作亶縺ｮ縺ｿ夋溢攪譎ゅ∵ｮ狗捩陦｣縺ゅｊ
-	ELSEIF !(ARG & ~12) && (LOCAL:2 >= 0)
-		;﨑俯ｰ們侠縲・メ・們侠・餓亶
-		IF TEQUIP:MASTER:﨑俯ｰ們侠・餓亶 && TEQUIP:MASTER:・・ｰ們侠・餓亶
-			PRINTFORM %OUTER_T(MASTER, 0, 1)%(・)・ｼ %OUTER_B(MASTER, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;﨑俯ｰ們侠・餓亶
-		ELSEIF TEQUIP:MASTER:﨑俯ｰ們侠・餓亶
-			PRINTFORM %OUTER_B(MASTER, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;・・ｰ們侠縲・・侠・餓亶
-		ELSEIF TEQUIP:MASTER:・・ｰ們侠・餓亶 || TEQUIP:MASTER:・・侠・餓亶
-			PRINTFORM %OUTER_T(MASTER, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;迚・婿縺ｮ・作亶縺ｮ縺ｿ夋溢攪(夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
-		ELSEIF LOCAL:1 == 1
-			CALL DATUI_MESSAGE_SORT(0, ARG, MASTER)
-		;縺昴・莉・		ELSE
-			PRINTFORM ・作亶 ・ｨ・ ・・揆
-		ENDIF
-	;譛邨ら捩陦｣縺護・攵莉･螟悶↑繧・	ELSE
-		;夋溢攪譫壽焚縺梧怙邨ら捩陦｣莉･荳九↑繧駕ヨ・伜・繧定｡ｨ遉ｺ
-		IF LOCAL:1 <= LOCAL:2
-			CALL DATUI_MESSAGE_SORT(0, ARG, MASTER)
-		;縺昴≧縺ｧ縺ｪ縺代ｌ縺ｰ逹陦｣蛛ｴ繧定｡ｨ遉ｺ
-		ELSE
-			CALL DATUI_MESSAGE_SORT(1, ARG, MASTER)
-		ENDIF
-	ENDIF
-	;閼ｱ縺・□邨先棡・・攵
-	IF LOCAL:2 == 0
-		PRINTFORML ・ｵ・・・\@ ARG:1 > 0 ? ・隷ｲｨ ・・攵・・﨑俯ｩｴ, # ・隷ｲｨ, ・・攵・・嵂壱共窶ｦ \@
-	;閼ｱ縺・□邨先棡・・攵莉･螟・	ELSE
-		PRINTFORML ・ｵ・・・\@ ARG:1 > 0 ? ・隷ｸｰ・ｴ, # ・隷ｲｼ・､窶ｦ \@
-	ENDIF
-	ALIGNMENT LEFT
-ENDIF
-;・・川梵夋溢攪逋ｺ逕・IF ARG:1 > 0
-	;LOCAL蛻晄悄蛹・	VARSET LOCAL
-	;・・尖劇・・ヨ・伜､ｱ謨玲凾
-	IF TFLAG:・菩懦ヨ・・< 0
-		PRINTFORM %CALLNAME:TARGET%(・)・・・ｨ・戦紛 ・川侠・・
-	;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵☆繧句ｴ蜷・	ELSEIF NOWASSIACTNAME(ASSI:1) == "夋溢攪"
-		PRINTFORM %CALLNAME:TARGET%・・・川侠・・
-	;・・尖劇・・ヨ・俶・蜉滓凾
-	ELSEIF ARG > 0
-;OriginalString : 閾ｪ蛻・ｂ
-		PRINT ・川侠・・
-	;・・尖劇・・ヨ・倅ｸ咲匱逕滓凾
+;성교開始時
+IF TFLAG:ACT분류 == 10
+	;ACTが항문섹스시킨다なら
+	IF IS_NOWACTNAME("항문섹스시킨다")
+		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의\@ TEQUIP:페니스밴드 ? 페니스밴드 # 페니스 \@(을)를 아누스에 삽입 시키려고 했지만, %CALLNAME:MASTER%(은)는 날뛰어 잘 되지 않았다…
+	;その他
 	ELSE
-		PRINTFORM %CALLNAME:TARGET%(・)・・・川侠・・
+		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의\@ TEQUIP:페니스밴드 ? 페니스밴드 # 페니스 \@(을)를 보지에 삽입 시키려고 했지만, %CALLNAME:MASTER%(은)는 날뛰었으므로 일단 그만둘 수 밖에 없었다…
 	ENDIF
-	;夋溢攪譫壽焚遒ｺ隱・LOCAL:1縺ｫ夋溢攪譫壽焚繧剃ｻ｣蜈･)
-	FOR LOCAL, 0, 7
-		SIF GETBIT(ARG:1, LOCAL)
-			LOCAL:1 ++
-	NEXT
-	;譛邨ら捩陦｣譫壽焚遒ｺ隱・LOCAL:2縺ｫ譛邨ら捩陦｣譫壽焚繧剃ｻ｣蜈･)
-	FOR LOCAL, 0, 7
-		SIF TEQUIP:LOCAL != 0 && !GETBIT(ARG:1, LOCAL)
-			LOCAL:2 ++
-	NEXT
-	;譛邨ら捩陦｣縺護・攵縺ｪ繧・	IF LOCAL:2 == 0
-		;夋溢攪譫壽焚縺・譫壻ｻ･荳・		IF LOCAL:1 > 2
-;OriginalString : 郤上≧・們メ繧偵☆縺ｹ縺ｦ
-			PRINT ・専ｸｰ・・・們メ・・・ｨ・・
-		;夋溢攪譫壽焚縺・譫・		ELSEIF LOCAL:1 == 2
-			PRINTFORM ・俯･・・ｨ・ ・・揆 
-		;夋溢攪譫壽焚縺・譫・夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
-		ELSE
-			CALL DATUI_MESSAGE_SORT(0, ARG:1, TARGET)
-		ENDIF
-	;・作亶縺ｮ縺ｿ夋溢攪譎ゅ∵ｮ狗捩陦｣縺ゅｊ
-	ELSEIF !(ARG:1 & ~12) && (LOCAL:2 >= 0)
-		;﨑俯ｰ們侠縲・メ・們侠・餓亶
-		IF TEQUIP:﨑俯ｰ們侠・餓亶 && TEQUIP:・・ｰ們侠・餓亶
-			PRINTFORM %OUTER_T(TARGET, 0, 1)%(・)・ｼ %OUTER_B(TARGET, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;﨑俯ｰ們侠・餓亶
-		ELSEIF TEQUIP:﨑俯ｰ們侠・餓亶
-			PRINTFORM %OUTER_B(TARGET, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;・・ｰ們侠縲・・侠・餓亶
-		ELSEIF TEQUIP:・・ｰ們侠・餓亶 || TEQUIP:・・侠・餓亶
-			PRINTFORM %OUTER_T(TARGET, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;迚・婿縺ｮ・作亶縺ｮ縺ｿ夋溢攪(夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
-		ELSEIF LOCAL:1 == 1
-			CALL DATUI_MESSAGE_SORT(0, ARG:1, TARGET)
-		;縺昴・莉・		ELSE
-			PRINTFORM ・作亶 ・ｨ・ ・・揆 
-		ENDIF
-	;譛邨ら捩陦｣縺護・攵莉･螟悶↑繧・	ELSE
-		;夋溢攪譫壽焚縺梧怙邨ら捩陦｣莉･荳九↑繧駕ヨ・伜・繧定｡ｨ遉ｺ
-		IF LOCAL:1 <= LOCAL:2
-			CALL DATUI_MESSAGE_SORT(0, ARG:1, TARGET)
-		;縺昴≧縺ｧ縺ｪ縺代ｌ縺ｰ逹陦｣蛛ｴ繧定｡ｨ遉ｺ
-		ELSE
-			CALL DATUI_MESSAGE_SORT(1, ARG:1, TARGET)
-		ENDIF
-	ENDIF
-	;閼ｱ縺・□邨先棡・・攵
-	IF LOCAL:2 == 0
-		PRINTFORML  ・霊牟, ・・攵・ ・們来・､窶ｦ
-	;閼ｱ縺・□邨先棡・・攵莉･螟・	ELSE
-		PRINTFORML  ・霊牟 ・們｡誤共窶ｦ
-	ENDIF
-ENDIF
-;・・尖劇・・ヨ・伜､ｱ謨玲凾
-SIF TFLAG:・菩懦ヨ・・< 0
-	PRINTFORML %CALLNAME:TARGET%(・)・・・､ 嶹罷ｘ ・壱株 ・・・呱共窶ｦ
-WAIT
-
-RETURN RESULT
-
-;夋溢攪逶ｴ蠕後〒縺ｮ蝨ｰ縺ｮ譁・・ｬ・・@DATUI_MESSAGE2(ARG, ARG:1)
-PRINTL 
-;・・尖劇・√・｣・川梵夋溢攪譎らｵ先棡繧定｡ｨ遉ｺ
-SIF ARG > 0
-	CALL CLOTHE_SHOW(MASTER)
-SIF ARG:1 > 0
-	CALL CLOTHE_SHOW(TARGET)
-SIF  ARG > 0 || ARG:1 > 0
-	WAIT
-
-@DATUI_MESSAGE_SORT(ARG, ARG:1, ARG:2)
-;夋溢攪(譛邨ら捩陦｣)遞ｮ繧貞､門・縺九ｉ鬆・↓陦ｨ遉ｺ
-;ARG:0	0 = 夋溢攪遞ｮ縲1 = 譛邨ら捩陦｣遞ｮ
-;ARG:1	夋溢攪謖・ｮ夐Κ菴・;ARG:2	・・∬・
-;LOCAL蛻晄悄蛹・VARSET LOCAL
-
-;螟門・縺ｮ逹陦｣縺九ｉ遒ｺ隱・LOCAL = 6
-;辟｡髯舌Ν繝ｼ繝・WHILE 1
-	;遒ｺ隱咲捩陦｣繧弟ヨ・・逹陦｣)縺励※縺・◆蝣ｴ蜷・	IF  TEQUIP:(ARG:2):LOCAL != 0 && !ARG == GETBIT(ARG:1, LOCAL)
-		;莠後▽逶ｮ莉･髯阪・郢九℃隱槭ｂ陦ｨ遉ｺ
-		SIF LOCAL:1
-;OriginalString : 縺ｨ
-			PRINT (・)・ｼ 
-		;夋溢攪(逹陦｣)蜀・ｮｹ繧定｡ｨ遉ｺ
-;OriginalString : CLOTHES(LOCAL, ARG:2)
-		PRINTS CLOTHES(LOCAL, ARG:2) 
-		;陦ｨ遉ｺ謨ｰ繧ｫ繧ｦ繝ｳ繝・		LOCAL:1++
-	ENDIF
-	;遒ｺ隱阪☆繧矩Κ菴阪′辟｡縺代ｌ縺ｰ閼ｱ蜃ｺ
-	SIF LOCAL == 0
-		BREAK
-	;遒ｺ隱咲捩陦｣繧貞・蛛ｴ縺ｸ繧ｷ繝輔ヨ
-	LOCAL--
-WEND
-;夋溢攪遞ｮ陦ｨ遉ｺ譎・IF ARG == 0
-;OriginalString : 繧・	PRINT (・・・ｼ
-;譛邨ら捩陦｣遞ｮ陦ｨ遉ｺ譎・ELSE
-;OriginalString : 莉･螟悶・・們メ蜈ｨ縺ｦ繧・	PRINT  ・ｴ・ｸ・・・們メ ・ｨ・尖･ｼ 
-ENDIF
-;-----------EDIT 001 END  --------------
-=======
-・ｿ
-;------------------------------------------------------------------------
-;EDIT	001		KOremi			2011/11/04		蜈ｨ菴薙・譖ｸ縺咲峩縺励∽ｸｦ縺ｹ譖ｿ縺・
-;												ACT_APPLY_PROCESS.ERB縺九ｉ蝨ｰ縺ｮ譁・ｒ蛻・ｊ蜃ｺ縺・
-;												・菩懦ヨ・倥・梵・ｼ夋溢攪蜃ｦ逅・ｒ隱ｿ謨ｴ
-;------------------------------------------------------------------------
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;諡堤ｵｶ譎ょ慍縺ｮ譁・繝ｪ繧｢繧ｯ繧ｷ繝ｧ繝ｳ縺ｫ繧医▲縺ｦ・・舌′・ｨ・後＆繧後ｋ)
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｱ・舌・・ｨ・・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-@CANCEL_INSERT_TO_M_MESSAGE
-PRINTL 
-;・ｱ・宣幕蟋区凾
-IF TFLAG:ACT・・･・== 3
-	PRINTFORML %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%(・)・ｼ ・ｱ・戦葺・､・ 嵂溢ｧ・・%CALLNAME:MASTER%(・)・・・・・・・ｰ・ｴ ・・・們ｧ ・喜葺・､窶ｦ
-;・ｱ・川､・
+;성교중
 ELSE
-	PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｽ・・葺・ ・溢来・・・%CALLNAME:MASTER%(・)・・・・・・・ｰ・溢愍・・・・ｼ・ｨ ・ｸ・誤遭 ・・・野乱 ・・来・､窶ｦ
-ENDIF
-RETURN 1
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｱ・尖ｴ餓ぎ縺ｮ・ｨ・・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-@CANCEL_INSERT_TO_T_MESSAGE
-PRINTL 
-;・ｱ・宣幕蟋区凾
-IF TFLAG:ACT・・･・== 10
-	;ACT縺醐墳・ｸ・ｹ・､・懦お・､縺ｪ繧・
-	IF IS_NOWACTNAME("﨑ｭ・ｸ・ｹ・､・懦お・､")
-		PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・禄@ TEQUIP:寬俯笈・､・ｴ・・? ・們囎嶸・# 寬俯笈・､ \@(・・・ｼ ・・・・､・・・ｽ・・・懦う・､・ 嵂溢ｧ・・%CALLNAME:MASTER%(・)・・・・・・・ｰ・ｴ ・・・們ｧ ・喜葺・､窶ｦ
-	;縺昴・莉・
+	;항문섹스상태であれば
+	IF TEQUIP:성교봉사중 == 6
+		PRINTFORML %CALLNAME:MASTER%(은)는 날뛰었기 때문에, %CALLNAME:TARGET%의 아누스에 삽입되고 있던\@ TEQUIP:페니스밴드 ? 페니스밴드 # 페니스 \@가 빠져 버렸다…
+	;その他
 	ELSE
-		PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・禄@ TEQUIP:寬俯笈・､・ｴ・・? ・們囎嶸・# 寬俯笈・､ \@(・・・ｼ ・ｴ・・・・ｽ・・・懦う・､・ 嵂溢ｧ・・%CALLNAME:MASTER%(・)・・・・・・・ｰ・溢愍・・・・ｼ・ｨ ・ｸ・誤遭 ・・・野乱 ・・来・､窶ｦ
-	ENDIF
-;・ｱ・川､・
-ELSE
-	;﨑ｭ・ｸ・ｹ・､・・・縺ｧ縺ゅｌ縺ｰ
-	IF TEQUIP:・ｱ・尖ｴ餓ぎ・・== 6
-		PRINTFORML %CALLNAME:MASTER%(・)・・・・・・・ｰ・一ｸｰ ・誤ｬｸ・・%CALLNAME:TARGET%・・・・・・､・・・ｽ・・据・ ・溢来・､\@ TEQUIP:寬俯笈・､・ｴ・・? ・們囎嶸・# 寬俯笈・､ \@﨑們ｧ・・・・ｸ ・・ｸ・､窶ｦ
-	;縺昴・莉・
-	ELSE
-		PRINTFORML %CALLNAME:MASTER%(・)・・・・・・・ｰ・一ｸｰ ・誤ｬｸ・・%CALLNAME:TARGET%・・・ｽ・・据・ ・溢来・､\@ TEQUIP:寬俯笈・､・ｴ・・? ・們囎嶸・# 寬俯笈・､ \@﨑們ｧ・・・・ｸ ・・ｸ・､窶ｦ
+		PRINTFORML %CALLNAME:MASTER%(은)는 날뛰었기 때문에, %CALLNAME:TARGET%에 삽입되고 있던\@ TEQUIP:페니스밴드 ? 페니스밴드 # 페니스 \@가 빠져 버렸다…
 	ENDIF
 ENDIF
 RETURN 1
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・﨑吶・・・懦伯・溢擽縺ｮ・ｨ・鯉ｼ一ｳ奝ｵ縲・ｵｬ・阪・・・懊・擽夋茨ｼ・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｬ・作ｷｨ・・
+;────────────────────────────────────
+;가학、노출플레이の취소（고통、구속、노출、이탈）
+;────────────────────────────────────
+;구속취소
 @CANCEL_TEQUIP_RESTRAINT_MESSAGE
 PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｬ・作揆 峵・壱共窶ｦ
+PRINTFORML %CALLNAME:MASTER%의 애원을 들어줘 %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 구속을 풀었다…
 RETURN 1
-;・ｼ・・ｪｩ・溢ｷｨ・・
+;삼각목마취소
 @CANCEL_TEQUIP_W_HORSE_MESSAGE
 PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%(・・・ｼ ・ｩ・壱｡罹ｶ奓ｰ ・ｴ・ｸ・､窶ｦ
+PRINTFORML %CALLNAME:MASTER%의 애원을 들어줘 %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%(을)를 목마로부터 내렸다…
 RETURN 1
-;・ｼ・ｸ嵓誤溢擽・ｨ・・
+;야외플레이취소
 @CANCEL_TEQUIP_OUTDOOR_MESSAGE
 PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%(・・・ｼ ・ｰ・ｼ ・ｩ・ｼ・・・護符・罷共窶ｦ
+PRINTFORML %CALLNAME:MASTER%의 애원을 들어줘 %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%(을)를 따라 방으로 돌아왔다…
 RETURN 1
-;・ｰ・ｸ・ｨ・・
+;거울취소
 @CANCEL_TEQUIP_MIRROR_MESSAGE
 PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%(・・・ｼ ・ｰ・ｼ ・ｰ・ｸ・・・・ｶ奓ｰ ・ｨ・ｴ・誤共窶ｦ
+PRINTFORML %CALLNAME:MASTER%의 애원을 들어줘 %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%(을)를 따라 거울 앞에서 떨어졌다…
 RETURN 1
-;・肥侃嵓・溢ｷｨ・・
+;코스프레취소
 @CANCEL_TEQUIP_COSPLAY_MESSAGE
 PRINTL 
-PRINTFORML %CALLNAME:MASTER%・・・・川揆 ・､・ｴ・・CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・溢符・・搆・・嵭壱攷﨑ｴ, ・肥侃嵓・・・們メ・・巐護・嵂壱共窶ｦ
+PRINTFORML %CALLNAME:MASTER%의 애원을 들어줘 %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 갈아입음을 허락해, 코스프레 의상을 회수했다…
 RETURN 1
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;迚ｹ谿顔憾豕∵凾蝨ｰ縺ｮ譁・迚ｹ蛻･縺ｪ迥ｶ豕√′襍ｷ縺阪◆譎ゅ・蝨ｰ縺ｮ譁・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;特殊状況時地の文(特別な状況が起きた時の地の文)
+;────────────────────────────────────
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・川怱・溢墓凾縺ｮ蝨ｰ縺ｮ譁・｡ｨ遉ｺ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;자위절정時の地の文表示
+;────────────────────────────────────
 @ONANIE_EX_MESSAGE
-;ACT縺護梵・・・蝣ｴ蜷亥・螳ｹ縺瑚｢ｫ繧九・縺ｧ陦ｨ遉ｺ縺励↑縺・
-SIF TFLAG:ACT == GET_ACTNUM("・川怱")
+;ACTが자위の場合内容が被るので表示しない
+SIF TFLAG:ACT == GET_ACTNUM("자위")
 	RETURN 0
-;寬俯笈・､縺ゅｊ
+;페니스あり
 IF PENIS(MASTER)
-	;REACT・・･倥′・・ｷｹ・・愍・・﨑罹共邉ｻ
-	IF IS_COMGRONAME("・・ｷｹ・・愍・・﨑罹共")
-		;鬘泌ｰ・梵・・溢・
+	;REACT분류が적극적으로 한다系
+	IF IS_COMGRONAME("적극적으로 한다")
+		;顔射자위절정
 		IF ME_PLAYER(1) == 9
-			PRINTFORML %CALLNAME:MASTER%(・)・・・・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・ｴ・・・ｬ・菩擽 ・・護垓 ・・揆 ・・葺・ｴ(・・,
-			PRINTFORML %CALLNAME:TARGET%(・)・・・ｹ・ｬ・・・樌乱・・嶸・滝ｳｼ ・･ ・ｴ・・ｴ, ・・・・護ｧ 甯語ｲｬ﨑俯同・ｴ ・・ｹ嵂壱共窶ｦ
-		;縺昴・莉・
+			PRINTFORML %CALLNAME:MASTER%(은)는 자신의 음경을 훑어 내면서 곧 사정할 것을 전하면,
+			PRINTFORML %CALLNAME:TARGET%(은)는 귀두 앞에서 입을 벌리고 혀를 내밀어, 입속에 낼 것을 명령했다…
+		;その他
 		ELSE
-			PRINTFORML %CALLNAME:MASTER%(・)・・・・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・ｴ・・・ｬ・菩擽 ・・護垓 ・・揆 ・・葺・ｴ(・・,
-			PRINTFORML %CALLNAME:TARGET%(・)・・・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・ｴ ・ｵ・卓乱 ・・毎・､窶ｦ
+			PRINTFORML %CALLNAME:MASTER%(은)는 자신의 음경을 훑어 내면서 사정이 가까운 것을 전하면,
+			PRINTFORML %CALLNAME:TARGET%(은)는 추잡한 말을 속삭임이면서 혼자서 내버릴 것을 명했다…
 		ENDIF
-	;REACT・・･倥′縺昴・莉・
+	;REACT분류がその他
 	ELSE
-		;鬘泌ｰ・梵・・溢・
+		;顔射자위절정
 		IF ME_PLAYER(1) == 9
-			PRINTFORML %CALLNAME:TARGET%(・)・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・ ・壱共%CALLNAME:MASTER%・・・溢菩揆 嵭､・・､
-			PRINTFORML ・ｹ・ｬ・・・樌乱・・嶸・滝ｳｼ ・･ ・ｴ・・ｴ, ・・・・護ｧ 甯語ｲｬ﨑俯同・ｴ ・・ｹ嵂壱共窶ｦ
-		;縺昴・莉・
+			PRINTFORML %CALLNAME:TARGET%(은)는 자신의 음경을 훑어 내는 %CALLNAME:MASTER%의 절정을 헤아려
+			PRINTFORML 귀두 앞에서 입을 벌리고 혀를 내밀어, 입속에 낼 것을 명령했다…
+		;その他
 		ELSE
-			PRINTFORML %CALLNAME:TARGET%(・)・・・川侠・・・語ｲｽ・・弡卓牟 ・ｴ・ ・壱共%CALLNAME:MASTER%・・・溢菩揆 嵭､・・､
-			PRINTFORML ・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・ｴ ・ｵ・卓乱 ・・毎・､窶ｦ
+			PRINTFORML %CALLNAME:TARGET%(은)는 자신의 음경을 훑어 내는 %CALLNAME:MASTER%의 절정을 헤아려
+			PRINTFORML 추잡한 말을 속삭임이면서 혼자서 내버릴 것을 명했다…
 		ENDIF
 	ENDIF
 ELSE
-	;REACT・・･倥′・・ｷｹ・・愍・・﨑罹共邉ｻ
-	IF IS_COMGRONAME("・・ｷｹ・・愍・・﨑罹共")
-		PRINTFORML %CALLNAME:MASTER%(・)・・・・・・川侠・・・醐雰・・・們｣ｽ﨑俾ｳ ・誤ｦｬ・ｴ・・・溢菩擽 ・・護垓 ・・揆 ・・葺・ｴ(・・,
-		PRINTFORML %CALLNAME:TARGET%(・)・・・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・ｴ ・ｵ・卓乱 ・・毎・､窶ｦ
-	;REACT・・･倥′縺昴・莉・
+	;REACT분류が적극적으로 한다系
+	IF IS_COMGRONAME("적극적으로 한다")
+		PRINTFORML %CALLNAME:MASTER%(은)는 자신의 음핵을 반죽하고 돌리면서 절정이 가까운 것을 전하면,
+		PRINTFORML %CALLNAME:TARGET%(은)는 추잡한 말을 속삭임이면서 혼자서 가버릴 것을 명했다…
+	;REACT분류がその他
 	ELSE
-		PRINTFORML %CALLNAME:TARGET%(・)・・・川侠・・・醐雰・・・護ｧ・滝ｱｰ・ｬ・ ・壱共%CALLNAME:MASTER%・・・溢菩揆 嵭､・・､
-		PRINTFORML ・肥棕﨑・・川揆 ・作く・・擽・ｴ・・嶸ｼ・川・ ・ｴ ・ｵ・卓乱 ・・毎・､窶ｦ
+		PRINTFORML %CALLNAME:TARGET%(은)는 자신의 음핵을 만지작거리고 있는 %CALLNAME:MASTER%의 절정을 헤아려
+		PRINTFORML 추잡한 말을 속삭임이면서 혼자서 가버릴 것을 명했다…
 	ENDIF
 ENDIF
 RETURN 1
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;螳溯｡梧凾蝨ｰ縺ｮ譁・ACT遞ｮ縺ｫ繧医ｉ縺ｪ縺・慍縺ｮ譁・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;実行時地の文(ACT種によらない地の文)
+;────────────────────────────────────
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｸ・ｽ繝ｻ・懍・菴ｿ逕ｨ譎ゅ・蝨ｰ縺ｮ譁・・ｬ・∬｡ｨ遉ｺ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+;────────────────────────────────────
+;미약・로션使用時の地の文/구상表示
+;────────────────────────────────────
 @USE_MESSAGE
-;・ｸ・ｽ繝ｻ・懍・繧剃ｽｿ逕ｨ嵂壱共譌ｨ縺ｮ繝｡繝・そ繝ｼ繧ｸ繧定｡ｨ遉ｺ縺励∪縺・
-;縺薙％縺ｮ謾ｹ陦悟・逅・・縺ゅｄ縺励＞縺ｮ縺ｧ蠕後〒縺・ｍ縺・ｍ隱ｿ謨ｴ縺醐符・・
+;미약・로션を使用했다旨のメッセージを表示します
+;ここの改行処理はあやしいので後でいろいろ調整が필요
 
-;RESULT蛻晄悄蛹・
+;RESULT初期化
 RESULT = 0
 
-;・ｸ・ｽ・ｱ・ｬ・ｩ・ｬ・∝他縺ｳ蜃ｺ縺・
-IF TFLAG:・ｸ・ｽ・ｱ・ｬ・ｩ・ｬ・・&& ((ASSI:1) < 0 || TCVAR:(ASSI:1):・ｰ・連CT != 71)
+;미약등사용구상呼び出し
+IF TFLAG:미약등사용구상 && ((ASSI:1) < 0 || TCVAR:(ASSI:1):조수ACT != 71)
 	PRINTL 
 	CALL KOJO_USE
 ENDIF
 
-;・ｬ・∬｡ｨ遉ｺ蠕悟慍縺ｮ譁・ｒ陦ｨ遉ｺ縺吶ｋ蝣ｴ蜷・
-SIF RESULT && TFLAG:・ｸ・ｽ・ｱ・ｬ・ｩ・・ｸ・､墲ｵ
+;구상表示後地の文を表示する場合
+SIF RESULT && TFLAG:미약등사용지문스킵
 	PRINTL 
-;蝨ｰ縺ｮ譁・｡ｨ遉ｺ遞ｮ蛻･縺ｫ繧医▲縺ｦ蛻・ｲ・
-SELECTCASE TFLAG:・ｸ・ｽ・ｱ・ｬ・ｩ・・ｸ・､墲ｵ
-	;・懍・
+;地の文表示種別によって分岐
+SELECTCASE TFLAG:미약등사용지문스킵
+	;로션
 	CASE 1
-		;・ｰ・伜鵠蜉帶凾
-		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):・ｰ・連CT == 71
+		;조수協力時
+		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):조수ACT == 71
 			ALIGNMENT RIGHT
-			PRINTFORML %CALLNAME:(ASSI:1)%﨑・CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
+			PRINTFORML %CALLNAME:(ASSI:1)%은(는) %CALLNAME:MASTER%의 몸에 로션을 발랐다…
 			ALIGNMENT LEFT
-		;・ｰ・倬撼蜊泌鴨譎・
+		;조수非協力時
 		ELSE
-			PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
+			PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 몸에 로션을 발랐다…
 		ENDIF
-	;・ｸ・ｽ
+	;미약
 	CASE 2
-		;・ｰ・伜鵠蜉帶凾
-		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):・ｰ・連CT == 71
+		;조수協力時
+		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):조수ACT == 71
 			ALIGNMENT RIGHT
-			PRINTFORML %CALLNAME:(ASSI:1)%﨑・CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
+			PRINTFORML %CALLNAME:(ASSI:1)%은(는) %CALLNAME:MASTER%에 미약을 사용했다…
 			ALIGNMENT LEFT
-		;墲､・､譎・
-		ELSEIF IS_NOWACTNAME("墲､・､")
-			PRINTFORML %CALLNAME:TARGET%(・)・・・､・､・・・ｸ・ｽ・・・溢・, 墲､・､ 﨑俯ｩｴ・・・ｸ・・揆 ・ｬ・・愍・・%CALLNAME:MASTER%・・・ｹ・・､窶ｦ
-		;・ｰ・倬撼蜊泌鴨譎・
+		;키스時
+		ELSEIF IS_NOWACTNAME("키스")
+			PRINTFORML %CALLNAME:TARGET%(은)는 스스로 미약을 마셔, 키스 하면서 그것을 입으로 %CALLNAME:MASTER%에게 먹였다…
+		;조수非協力時
 		ELSE
-			PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
+			PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 미약을 사용했다…
 		ENDIF
-	;・懍・・・ｯｸ・ｽ
+	;로션＆미약
 	CASE 3
-		;・ｰ・伜鵠蜉帶凾
-		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):・ｰ・連CT == 71
+		;조수協力時
+		IF (ASSI:1) >= 0 && TCVAR:(ASSI:1):조수ACT == 71
 			ALIGNMENT RIGHT
-			PRINTFORML %CALLNAME:(ASSI:1)%﨑・CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
-			PRINTFORML 﨑懍ｸｵ ・・%CALLNAME:(ASSI:1)%(・)・・・壱ｹｨ・懍ｧ・%CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
+			PRINTFORML %CALLNAME:(ASSI:1)%은(는) %CALLNAME:MASTER%에 미약을 사용했다…
+			PRINTFORML 한층 더 %CALLNAME:(ASSI:1)%(은)는 새빨개진 %CALLNAME:MASTER%의 몸에 로션을 발랐다…
 			ALIGNMENT LEFT
-		;墲､・､譎・
-		ELSEIF IS_NOWACTNAME("墲､・､")
-			PRINTFORML %CALLNAME:TARGET%(・)・・・､・､・・・ｸ・ｽ・・・溢・, 墲､・､ 﨑俯ｩｴ・・・ｸ・・揆 ・ｬ・・愍・・%CALLNAME:MASTER%・・・ｹ・・､窶ｦ
-			PRINTFORML 﨑懍ｸｵ ・・・・ｧ樌ｶ､﨑・・・｡・・壱ｹｨ・懍ｧ・%CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
-		;・ｰ・倬撼蜊泌鴨譎・
+		;키스時
+		ELSEIF IS_NOWACTNAME("키스")
+			PRINTFORML %CALLNAME:TARGET%(은)는 스스로 미약을 마셔, 키스 하면서 그것을 입으로 %CALLNAME:MASTER%에게 먹였다…
+			PRINTFORML 한층 더 입맞춤한 채로 새빨개진 %CALLNAME:MASTER%의 몸에 로션을 발랐다…
+		;조수非協力時
 		ELSE
-			PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｸ・ｽ・・・ｬ・ｩ嵂壱共窶ｦ
-			PRINTFORML 﨑懍ｸｵ ・・%CALLNAME:TARGET%(・)・・・壱ｹｨ・懍ｧ・%CALLNAME:MASTER%・・・ｸ・・・懍・・・・罹梵・､窶ｦ
+			PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 미약을 사용했다…
+			PRINTFORML 한층 더 %CALLNAME:TARGET%(은)는 새빨개진 %CALLNAME:MASTER%의 몸에 로션을 발랐다…
 		ENDIF
 ENDSELECT
 WAIT
 
 ;-----------EDIT 001 START--------------
-;荳ｻ縺ｫ蠑墓焚縺ｫ繧医▲縺ｦ蛻､螳壹☆繧区婿蠑上↓螟画峩
+;主に引数によって判定する方式に変更
 ;---------------------------------------
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・菩懦ヨ・倥・梵・ｼ夋溢攪譎ゅ・蝨ｰ縺ｮ譁・・ｬ・∬｡ｨ遉ｺ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・菩懦ヨ・倥・・川｣ｼ夋溢攪縺ｮ繝｡繝・そ繝ｼ繧ｸ繧定｡ｨ遉ｺ縺励∪縺・
+;────────────────────────────────────
+;강제탈의、자주탈의時の地の文/구상表示
+;────────────────────────────────────
+;강제탈의・자주탈의のメッセージを表示します
 
-;夋溢攪蟇ｸ蜑阪〒縺ｮ蝨ｰ縺ｮ譁・・ｬ・・
+;탈의寸前での地の文/구상
 @DATUI_MESSAGE(ARG, ARG:1)
 
-;夋溢攪蜑阪↓・ｵ・･・・菫晏ｭ倥☆繧・夋溢攪逶ｴ蠕後〒縺ｮ蝨ｰ縺ｮ譁・〒蛻ｩ逕ｨ)
+;탈의前に복장을 保存する(탈의直後での地の文で利用)
 CALLF CLOTHE_SAVE(TARGET)
 CALLF CLOTHE_SAVE(MASTER)
 
-;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵☆繧句ｴ蜷・
-IF NOWASSIACTNAME(ASSI:1) == "夋溢攪"
+;조수が탈의の손伝いをする場合
+IF NOWASSIACTNAME(ASSI:1) == "탈의"
 	ALIGNMENT RIGHT
-	PRINTFORML %CALLNAME:(ASSI:1)%(・)・・・護硫,%CALLNAME:MASTER%・・・ｷ・・・川揆 ・・壱共窶ｦ
+	PRINTFORML %CALLNAME:(ASSI:1)%(은)는 돌연, %CALLNAME:MASTER%의 옷에 손을 대었다…
 	ALIGNMENT LEFT
-	;・・川梵夋溢攪繧ら匱逕・
+	;죠교자탈의も発生
 	SIF ARG:1 > 0
-		PRINTFORML %CALLNAME:TARGET%・・・川侠・・・俯ｳｵ・・・川揆 ・・ｴ ・隷ｸｰ ・懍梠嵂壱共窶ｦ
+		PRINTFORML %CALLNAME:TARGET%도 자신의 의복에 손을 대어 벗기 시작했다…
 	WAIT
-;・・尖劇・√・｣・川梵縺ｨ繧ゅ↓夋溢攪
+;죠교대상、죠교자ともに탈의
 ELSEIF ARG > 0 && ARG:1 > 0
-	PRINTFORMW %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%(・)・ｼ ・川侠・・・ｷ・・・川揆 ・・壱共窶ｦ
-;・・尖劇・・ヨ・・
+	PRINTFORMW %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%(와)과 자신의 옷에 손을 대었다…
+;죠교대상탈의
 ELSEIF ARG > 0
-	PRINTFORMW %CALLNAME:TARGET%(・)・・・護硫,%CALLNAME:MASTER%・・・ｷ・・・川揆 ・・壱共窶ｦ
-;・・川梵夋溢攪
+	PRINTFORMW %CALLNAME:TARGET%(은)는 돌연, %CALLNAME:MASTER%의 옷에 손을 대었다…
+;죠교자탈의
 ELSEIF ARG:1 > 0
-	PRINTFORMW %CALLNAME:TARGET%(・)・・・川侠・・・俯ｳｵ・・・川揆 ・・ｴ ・隷ｸｰ ・懍梠嵂壱共窶ｦ
+	PRINTFORMW %CALLNAME:TARGET%(은)는 자신의 의복에 손을 대어 벗기 시작했다…
 ENDIF
 
-;RESULT蛻晄悄蛹・
+;RESULT初期化
 RESULT = 0
-;夋溢攪譎れｵｬ・∝他縺ｳ蜃ｺ縺・
+;탈의時구상呼び出し
 CALL KOJO_DATUI
 
-;・・尖劇・・ヨ・伜､ｱ謨・
-IF TFLAG:・菩懦ヨ・・< 0
-	PRINTFORML %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・・ｷ・・・隷ｸｰ・､・ 嵂溢ｧ・・%CALLNAME:MASTER%・・・ｩ﨑ｴ・幗葺・､窶ｦ
-;・・尖劇・・ヨ・俶・蜉・
+;죠교대상탈의失敗
+IF TFLAG:강제탈의 < 0
+	PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 옷을 벗기려고 했지만, %CALLNAME:MASTER%에 방해받았다…
+;죠교대상탈의成功
 ELSEIF ARG > 0
-	;LOCAL蛻晄悄蛹・
+	;LOCAL初期化
 	VARSET LOCAL
-	;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵☆繧句ｴ蜷・
-	IF NOWASSIACTNAME(ASSI:1) == "夋溢攪"
-		;・・川梵夋溢攪繧ら匱逕・
+	;조수が탈의の손伝いをする場合
+	IF NOWASSIACTNAME(ASSI:1) == "탈의"
+		;죠교자탈의も発生
 		SIF ARG:1 > 0
 			ALIGNMENT RIGHT
-		PRINTFORM %CALLNAME:(ASSI:1)%\@ ARG:1 > 0 ? 﨑們ｧ・・# 﨑・\@%CALLNAME:MASTER%・・
-	;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵＠縺ｪ縺・ｴ蜷・
+		PRINTFORM %CALLNAME:(ASSI:1)%은(는) %CALLNAME:MASTER%의
+	;PRINTFORM %CALLNAME:(ASSI:1)%\@ ARG:1 > 0 ? 하지만 # 하 \@%CALLNAME:MASTER%의 
+	;조수が탈의の손伝いをしない場合
 	ELSE
-		PRINTFORM %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・
+		PRINTFORM %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 
 	ENDIF
-	;夋溢攪譫壽焚遒ｺ隱・LOCAL:1縺ｫ夋溢攪譫壽焚繧剃ｻ｣蜈･)
+	;탈의枚数確認(LOCAL:1に탈의枚数を代入)
 	FOR LOCAL, 0, 7
 		SIF GETBIT(ARG, LOCAL)
 			LOCAL:1 ++
 	NEXT
-	;譛邨ら捩陦｣譫壽焚遒ｺ隱・LOCAL:2縺ｫ譛邨ら捩陦｣譫壽焚繧剃ｻ｣蜈･)
+	;最終着衣枚数確認(LOCAL:2に最終着衣枚数を代入)
 	FOR LOCAL, 0, 7
 		SIF TEQUIP:MASTER:LOCAL != 0 && !GETBIT(ARG, LOCAL)
 			LOCAL:2 ++
 	NEXT
-	;譛邨ら捩陦｣縺護・攵縺ｪ繧・
+	;最終着衣が전라なら
 	IF LOCAL:2 == 0
-		;夋溢攪譫壽焚縺・譫壻ｻ･荳・
+		;탈의枚数が3枚以上
 		IF LOCAL:1 > 2
-;OriginalString : 郤上≧・們メ繧偵☆縺ｹ縺ｦ
-			PRINT ・専ｸｰ・・・們メ・・・ｨ・・
-		;夋溢攪譫壽焚縺・譫・
+;OriginalString : 纏う의상をすべて
+			PRINT 입고 있는 옷을 모두 
+		;탈의枚数が2枚
 		ELSEIF LOCAL:1 == 2
-			PRINTFORM ・俯･・・ｨ・ ・・揆
-		;夋溢攪譫壽焚縺・譫・夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
+			PRINTFORM 의류 모든 것을 
+		;탈의枚数が1枚(탈의側を表示)
 		ELSE
 			CALL DATUI_MESSAGE_SORT(0, ARG, MASTER)
 		ENDIF
-	;・作亶縺ｮ縺ｿ夋溢攪譎ゅ∵ｮ狗捩陦｣縺ゅｊ
+	;속옷のみ탈의時、残着衣あり
 	ELSEIF !(ARG & ~12) && (LOCAL:2 >= 0)
-		;﨑俯ｰ們侠縲・メ・們侠・餓亶
-		IF TEQUIP:MASTER:﨑俯ｰ們侠・餓亶 && TEQUIP:MASTER:・・ｰ們侠・餓亶
-			PRINTFORM %OUTER_T(MASTER, 0, 1)%(・)・ｼ%OUTER_B(MASTER, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;﨑俯ｰ們侠・餓亶
-		ELSEIF TEQUIP:MASTER:﨑俯ｰ們侠・餓亶
-			PRINTFORM %OUTER_B(MASTER, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;・・ｰ們侠縲・・侠・餓亶
-		ELSEIF TEQUIP:MASTER:・・ｰ們侠・餓亶 || TEQUIP:MASTER:・・侠・餓亶
-			PRINTFORM %OUTER_T(MASTER, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;迚・婿縺ｮ・作亶縺ｮ縺ｿ夋溢攪(夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
+		;하반신、상반신겉옷
+		IF TEQUIP:MASTER:하반신겉옷 && TEQUIP:MASTER:상반신겉옷
+			PRINTFORM %OUTER_T(MASTER, 0, 1)%(와)과 %OUTER_B(MASTER, 0, 1)%(을)를 남겨 속옷만 
+		;하반신겉옷
+		ELSEIF TEQUIP:MASTER:하반신겉옷
+			PRINTFORM %OUTER_B(MASTER, 0, 1)%(을)를 남겨 속옷만 
+		;상반신、전신겉옷
+		ELSEIF TEQUIP:MASTER:상반신겉옷 || TEQUIP:MASTER:전신겉옷
+			PRINTFORM %OUTER_T(MASTER, 0, 1)%(을)를 남겨 속옷만 
+		;片方の속옷のみ탈의(탈의側を表示)
 		ELSEIF LOCAL:1 == 1
 			CALL DATUI_MESSAGE_SORT(0, ARG, MASTER)
-		;縺昴・莉・
+		;その他
 		ELSE
-			PRINTFORM ・作亶 ・ｨ・ ・・揆
+			PRINTFORM 속옷 모든 것을
 		ENDIF
-	;譛邨ら捩陦｣縺護・攵莉･螟悶↑繧・
+	;最終着衣が전라以外なら
 	ELSE
-		;夋溢攪譫壽焚縺梧怙邨ら捩陦｣莉･荳九↑繧駕ヨ・伜・繧定｡ｨ遉ｺ
+		;탈의枚数が最終着衣以下なら탈의側を表示
 		IF LOCAL:1 <= LOCAL:2
 			CALL DATUI_MESSAGE_SORT(0, ARG, MASTER)
-		;縺昴≧縺ｧ縺ｪ縺代ｌ縺ｰ逹陦｣蛛ｴ繧定｡ｨ遉ｺ
+		;そうでなければ着衣側を表示
 		ELSE
 			CALL DATUI_MESSAGE_SORT(1, ARG, MASTER)
 		ENDIF
 	ENDIF
-	;閼ｱ縺・□邨先棡・・攵
+	;脱いだ結果전라
 	IF LOCAL:2 == 0
-		PRINTFORML ・ｵ・・彌@ ARG:1 > 0 ? ・隷ｲｨ・・攵・・﨑俯ｩｴ, # ・隷ｲｨ,・・攵・戦毎・､窶ｦ \@
-	;閼ｱ縺・□邨先棡・・攵莉･螟・
+		PRINTFORML 억지로 \@ ARG:1 > 0 ? 벗겨 전라로 하면, # 벗겨, 전라로 했다… \@
+	;脱いだ結果전라以外
 	ELSE
-		PRINTFORML ・ｵ・・彌@ ARG:1 > 0 ? ・隷ｸｰ・ｴ, #・隷ｲｼ・､窶ｦ \@
+		PRINTFORML 억지로 \@ ARG:1 > 0 ? 벗기면, # 벗겼다… \@
 	ENDIF
 	ALIGNMENT LEFT
 ENDIF
-;・・川梵夋溢攪逋ｺ逕・
+;죠교자탈의発生
 IF ARG:1 > 0
-	;LOCAL蛻晄悄蛹・
+	;LOCAL初期化
 	VARSET LOCAL
-	;・・尖劇・・ヨ・伜､ｱ謨玲凾
-	IF TFLAG:・菩懦ヨ・・< 0
-		PRINTFORM %CALLNAME:TARGET%(・)・・・ｨ・戦紛 ・川侠・・
-	;・ｰ・倥′夋溢攪縺ｮ・蝉ｼ昴＞繧偵☆繧句ｴ蜷・
-	ELSEIF NOWASSIACTNAME(ASSI:1) == "夋溢攪"
-		PRINTFORM %CALLNAME:TARGET%・・・川侠・・
-	;・・尖劇・・ヨ・俶・蜉滓凾
+	;죠교대상탈의失敗時
+	IF TFLAG:강제탈의 < 0
+		PRINTFORM %CALLNAME:TARGET%(은)는 단념해 자신의 
+	;조수が탈의の손伝いをする場合
+	ELSEIF NOWASSIACTNAME(ASSI:1) == "탈의"
+		PRINTFORM %CALLNAME:TARGET%도 자신의 
+	;죠교대상탈의成功時
 	ELSEIF ARG > 0
-;OriginalString : 閾ｪ蛻・ｂ
-		PRINT ・川侠・・
-	;・・尖劇・・ヨ・倅ｸ咲匱逕滓凾
+;OriginalString : 自分も
+		PRINT 자신도 
+	;죠교대상탈의不発生時
 	ELSE
-		PRINTFORM %CALLNAME:TARGET%(・)・・・川侠・・
+		PRINTFORM %CALLNAME:TARGET%(은)는 자신의 
 	ENDIF
-	;夋溢攪譫壽焚遒ｺ隱・LOCAL:1縺ｫ夋溢攪譫壽焚繧剃ｻ｣蜈･)
+	;탈의枚数確認(LOCAL:1に탈의枚数を代入)
 	FOR LOCAL, 0, 7
 		SIF GETBIT(ARG:1, LOCAL)
 			LOCAL:1 ++
 	NEXT
-	;譛邨ら捩陦｣譫壽焚遒ｺ隱・LOCAL:2縺ｫ譛邨ら捩陦｣譫壽焚繧剃ｻ｣蜈･)
+	;最終着衣枚数確認(LOCAL:2に最終着衣枚数を代入)
 	FOR LOCAL, 0, 7
 		SIF TEQUIP:LOCAL != 0 && !GETBIT(ARG:1, LOCAL)
 			LOCAL:2 ++
 	NEXT
-	;譛邨ら捩陦｣縺護・攵縺ｪ繧・
+	;最終着衣が전라なら
 	IF LOCAL:2 == 0
-		;夋溢攪譫壽焚縺・譫壻ｻ･荳・
+		;탈의枚数が3枚以上
 		IF LOCAL:1 > 2
-;OriginalString : 郤上≧・們メ繧偵☆縺ｹ縺ｦ
-			PRINT ・専ｸｰ・・・們メ・・・ｨ・・
-		;夋溢攪譫壽焚縺・譫・
+;OriginalString : 纏う의상をすべて
+			PRINT 감기는 의상을 모두 
+		;탈의枚数が2枚
 		ELSEIF LOCAL:1 == 2
-			PRINTFORM ・俯･・・ｨ・ ・・揆
-		;夋溢攪譫壽焚縺・譫・夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
+			PRINTFORM 의류 모든 것을 
+		;탈의枚数が1枚(탈의側を表示)
 		ELSE
 			CALL DATUI_MESSAGE_SORT(0, ARG:1, TARGET)
 		ENDIF
-	;・作亶縺ｮ縺ｿ夋溢攪譎ゅ∵ｮ狗捩陦｣縺ゅｊ
+	;속옷のみ탈의時、残着衣あり
 	ELSEIF !(ARG:1 & ~12) && (LOCAL:2 >= 0)
-		;﨑俯ｰ們侠縲・メ・們侠・餓亶
-		IF TEQUIP:﨑俯ｰ們侠・餓亶 && TEQUIP:・・ｰ們侠・餓亶
-			PRINTFORM %OUTER_T(TARGET, 0, 1)%(・)・ｼ%OUTER_B(TARGET, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;﨑俯ｰ們侠・餓亶
-		ELSEIF TEQUIP:﨑俯ｰ們侠・餓亶
-			PRINTFORM %OUTER_B(TARGET, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;・・ｰ們侠縲・・侠・餓亶
-		ELSEIF TEQUIP:・・ｰ們侠・餓亶 || TEQUIP:・・侠・餓亶
-			PRINTFORM %OUTER_T(TARGET, 0, 1)%(・・・ｼ ・ｨ・ｨ ・作亶・・
-		;迚・婿縺ｮ・作亶縺ｮ縺ｿ夋溢攪(夋溢攪蛛ｴ繧定｡ｨ遉ｺ)
+		;하반신、상반신겉옷
+		IF TEQUIP:하반신겉옷 && TEQUIP:상반신겉옷
+			PRINTFORM %OUTER_T(TARGET, 0, 1)%(와)과 %OUTER_B(TARGET, 0, 1)%(을)를 남겨 속옷만 
+		;하반신겉옷
+		ELSEIF TEQUIP:하반신겉옷
+			PRINTFORM %OUTER_B(TARGET, 0, 1)%(을)를 남겨 속옷만 
+		;상반신、전신겉옷
+		ELSEIF TEQUIP:상반신겉옷 || TEQUIP:전신겉옷
+			PRINTFORM %OUTER_T(TARGET, 0, 1)%(을)를 남겨 속옷만 
+		;片方の속옷のみ탈의(탈의側を表示)
 		ELSEIF LOCAL:1 == 1
 			CALL DATUI_MESSAGE_SORT(0, ARG:1, TARGET)
-		;縺昴・莉・
+		;その他
 		ELSE
-			PRINTFORM ・作亶 ・ｨ・ ・・揆
+			PRINTFORM 속옷 모든 것을 
 		ENDIF
-	;譛邨ら捩陦｣縺護・攵莉･螟悶↑繧・
+	;最終着衣が전라以外なら
 	ELSE
-		;夋溢攪譫壽焚縺梧怙邨ら捩陦｣莉･荳九↑繧駕ヨ・伜・繧定｡ｨ遉ｺ
+		;탈의枚数が最終着衣以下なら탈의側を表示
 		IF LOCAL:1 <= LOCAL:2
 			CALL DATUI_MESSAGE_SORT(0, ARG:1, TARGET)
-		;縺昴≧縺ｧ縺ｪ縺代ｌ縺ｰ逹陦｣蛛ｴ繧定｡ｨ遉ｺ
+		;そうでなければ着衣側を表示
 		ELSE
 			CALL DATUI_MESSAGE_SORT(1, ARG:1, TARGET)
 		ENDIF
 	ENDIF
-	;閼ｱ縺・□邨先棡・・攵
+	;脱いだ結果전라
 	IF LOCAL:2 == 0
-		PRINTFORML ・霊牟, ・・攵・ ・們来・､窶ｦ
-	;閼ｱ縺・□邨先棡・・攵莉･螟・
+		PRINTFORML  벗어, 전라가 되었다…
+	;脱いだ結果전라以外
 	ELSE
-		PRINTFORML ・霊牟 ・們｡誤共窶ｦ
+		PRINTFORML  벗어 던졌다…
 	ENDIF
 ENDIF
-;・・尖劇・・ヨ・伜､ｱ謨玲凾
-SIF TFLAG:・菩懦ヨ・・< 0
-	PRINTFORML %CALLNAME:TARGET%(・)・・・､ 嶹罷ｘ ・壱株 ・・・呱共窶ｦ
+;죠교대상탈의失敗時
+SIF TFLAG:강제탈의 < 0
+	PRINTFORML %CALLNAME:TARGET%(은)는 꽤 화나 있는 것 같다…
 WAIT
 
 RETURN RESULT
 
-;夋溢攪逶ｴ蠕後〒縺ｮ蝨ｰ縺ｮ譁・・ｬ・・
+;탈의直後での地の文/구상
 @DATUI_MESSAGE2(ARG, ARG:1)
 PRINTL 
-;・・尖劇・√・｣・川梵夋溢攪譎らｵ先棡繧定｡ｨ遉ｺ
+;죠교대상、죠교자탈의時結果を表示
 SIF ARG > 0
 	CALL CLOTHE_SHOW(MASTER)
 SIF ARG:1 > 0
@@ -787,44 +409,43 @@ SIF  ARG > 0 || ARG:1 > 0
 	WAIT
 
 @DATUI_MESSAGE_SORT(ARG, ARG:1, ARG:2)
-;夋溢攪(譛邨ら捩陦｣)遞ｮ繧貞､門・縺九ｉ鬆・↓陦ｨ遉ｺ
-;ARG:0	0 = 夋溢攪遞ｮ縲1 = 譛邨ら捩陦｣遞ｮ
-;ARG:1	夋溢攪謖・ｮ夐Κ菴・
-;ARG:2	・・∬・
+;탈의(最終着衣)種を外側から順に表示
+;ARG:0	0 = 탈의種　1 = 最終着衣種
+;ARG:1	탈의指定部位
+;ARG:2	대상者
 
-;LOCAL蛻晄悄蛹・
+;LOCAL初期化
 VARSET LOCAL
 
-;螟門・縺ｮ逹陦｣縺九ｉ遒ｺ隱・
+;外側の着衣から確認
 LOCAL = 6
-;辟｡髯舌Ν繝ｼ繝・
+;無限ループ
 WHILE 1
-	;遒ｺ隱咲捩陦｣繧弟ヨ・・逹陦｣)縺励※縺・◆蝣ｴ蜷・
+	;確認着衣を탈의(着衣)していた場合
 	IF  TEQUIP:(ARG:2):LOCAL != 0 && !ARG == GETBIT(ARG:1, LOCAL)
-		;莠後▽逶ｮ莉･髯阪・郢九℃隱槭ｂ陦ｨ遉ｺ
+		;二つ目以降は繋ぎ語も表示
 		SIF LOCAL:1
-;OriginalString : 縺ｨ
-			PRINT (・)・ｼ 
-		;夋溢攪(逹陦｣)蜀・ｮｹ繧定｡ｨ遉ｺ
+;OriginalString : と
+			PRINT (와)과 
+		;탈의(着衣)内容を表示
 ;OriginalString : CLOTHES(LOCAL, ARG:2)
 		PRINTS CLOTHES(LOCAL, ARG:2) 
-		;陦ｨ遉ｺ謨ｰ繧ｫ繧ｦ繝ｳ繝・
+		;表示数カウント
 		LOCAL:1++
 	ENDIF
-	;遒ｺ隱阪☆繧矩Κ菴阪′辟｡縺代ｌ縺ｰ閼ｱ蜃ｺ
+	;確認する部位が無ければ脱出
 	SIF LOCAL == 0
 		BREAK
-	;遒ｺ隱咲捩陦｣繧貞・蛛ｴ縺ｸ繧ｷ繝輔ヨ
+	;確認着衣を内側へシフト
 	LOCAL--
 WEND
-;夋溢攪遞ｮ陦ｨ遉ｺ譎・
+;탈의種表示時
 IF ARG == 0
-;OriginalString : 繧・
-	PRINT (・・・ｼ
-;譛邨ら捩陦｣遞ｮ陦ｨ遉ｺ譎・
+;OriginalString : を
+	PRINT (을)를
+;最終着衣種表示時
 ELSE
-;OriginalString : 莉･螟悶・・們メ蜈ｨ縺ｦ繧・
-	PRINT  ・ｴ・ｸ・・・們メ ・ｨ・尖･ｼ 
+;OriginalString : 以外の의상全てを
+	PRINT  이외의 의상 모두를 
 ENDIF
 ;-----------EDIT 001 END  --------------
->>>>>>> d29239f180aad384a1e39d65cf6a8a750783a09d

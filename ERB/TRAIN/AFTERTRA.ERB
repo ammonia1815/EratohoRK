@@ -1,319 +1,167 @@
-﻿<<<<<<< HEAD
-・ｿ;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・・千ｵゆｺ・・蜃ｦ逅・;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+﻿;────────────────────────────────────
+;죠교終了の処理
+;────────────────────────────────────
 @EVENTEND
 
-;繝繝ｩ繝繝ｩ繝ｪ繧ｻ繝・ヨ
+;ムラムラリセット
 SIF TARGET > 0
-	CFLAG:・ｴ・ｼ・ｴ・ｼ = 0
+	CFLAG:무라무라 = 0
 SIF ASSI:1 > 0
-	CFLAG:(ASSI:1):・ｴ・ｼ・ｴ・ｼ = 0
+	CFLAG:(ASSI:1):무라무라 = 0
 SIF ASSI:2 > 0
-	CFLAG:(ASSI:2):・ｴ・ｼ・ｴ・ｼ = 0
+	CFLAG:(ASSI:2):무라무라 = 0
 
-;MASTER蛛ｴ縺ｮCFLAG縺ｫ隱ｰ縺ｫ縺ｩ繧後□縺第誓繧峨ｌ縺溘°繧底ｸｰ・・;荳蝗槭〒譛螟ｧ5000縺上ｉ縺・ｼ・CFLAG:MASTER:(2200 + NO:TARGET) += TFLAG:・ｨ・晤ｧ壱･ * (5 + CFLAG:・ｭ增ｬ) / 5
-;ASSI縺ｯTARGET縺ｮ1/5
+;MASTER側のCFLAGに誰にどれだけ搾られたかを기록
+;一回で最大5000くらい？
+CFLAG:MASTER:(2200 + NO:TARGET) += TFLAG:취득마력 * (5 + CFLAG:랭크) / 5
+;ASSIはTARGETの1/5
 FOR LOCAL, 0, 9
 	IF ASSI:(LOCAL + 1) > 0
-		CFLAG:MASTER:(2200 + NO:(ASSI:(LOCAL + 1))) += TFLAG:・ｨ・晤ｧ壱･ * (5 + CFLAG:(ASSI:(LOCAL + 1)):・ｭ增ｬ) / 25
+		CFLAG:MASTER:(2200 + NO:(ASSI:(LOCAL + 1))) += TFLAG:취득마력 * (5 + CFLAG:(ASSI:(LOCAL + 1)):랭크) / 25
 	ENDIF
 NEXT
 
-;・・・ｧ壱･
+;누적마력
 SIF TARGET > 0
-	CFLAG:・・・ｧ壱･ += TFLAG:・ｨ・晤ｧ壱･
+	CFLAG:누적마력 += TFLAG:취득마력
 
-;・・千ｵゆｺ・FLAG:・ｰ・川､・= 0
-;OriginalString : ・・舌・邨ゅｏ繧翫∪嵂壱共縲・PRINTW ・ｰ・尖株 ・晤ぎ・ｵ・壱共.
+;죠교終了
+FLAG:조교중 = 0
+;OriginalString : 죠교は終わりま했다。
+PRINTW 조교는 끝났습니다.
 
-EXP:MASTER:・ｱ・・・+= TFLAG:・ｽ・ｼ・懋ｰ・/ 10
-EXP:・ｱ・・・+= TFLAG:・ｽ・ｼ・懋ｰ・/ 10
+EXP:MASTER:성지식 += TFLAG:경과시간 / 10
+EXP:성지식 += TFLAG:경과시간 / 10
 
-;・・川亨・・ｒ繝√ぉ繝・け縺励※・ｰ・・・懍棗繝ｻ・罹卿)
-SIF TFLAG:・ｽ・ｼ・懋ｰ・> FLAG:・懍棗・・川亨・・ｸｰ・・	FLAG:・懍棗・・川亨・・ｸｰ・・= TFLAG:・ｽ・ｼ・懋ｰ・SIF TFLAG:・ｽ・ｼ・懋ｰ・> 0 && (TFLAG:・ｽ・ｼ・懋ｰ・< FLAG:・罹卿・・川亨・・ｸｰ・・|| FLAG:・罹卿・・川亨・・ｸｰ・・== 0)
-	FLAG:・罹卿・・川亨・・ｸｰ・・= TFLAG:・ｽ・ｼ・懋ｰ・
-;ACT髟ｷ譛滔ｳｴ・募､縺ｮ荳諡ｬ邂怜・
+;죠교시간をチェックして기록(최장・최단)
+SIF TFLAG:경과시간 > FLAG:최장죠교시간기록
+	FLAG:최장죠교시간기록 = TFLAG:경과시간
+SIF TFLAG:경과시간 > 0 && (TFLAG:경과시간 < FLAG:최단죠교시간기록 || FLAG:최단죠교시간기록 == 0)
+	FLAG:최단죠교시간기록 = TFLAG:경과시간
+
+;ACT長期보정値の一括算入
 CALL ACT_M_RESEARCH_L(1)
 
-;繝・・繧ｿ繝吶・繧ｹ險伜・
+;データベース記入
 CALL DATABASE_INPUT_T
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｨ・縺ｮ萓｡蛟､縺ｮ險育ｮ・;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-SIF TALENT:MASTER:・ｨ・・ｴ・・&& TFLAG:・・川亨・・> 0
+;────────────────────────────────────
+;모유の価値の計算
+;────────────────────────────────────
+SIF TALENT:MASTER:모유체질 && TFLAG:죠교시간 > 0
 	CALL SELL_MILK
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;繝ｬ繝吶Ν繧｢繝・・縲ゅ◆縺上＆繧縄ｲｽ嵭們ｹ倥◆繧√※繧ゆｸ蝗槭・・・舌・荳蠎ｦ縺縺代Ξ繝吶Ν繧｢繝・・縺ｧ縺阪ｋ莉墓ｧ倥〒縺・;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-IF TFLAG:・ｼ巐醐惷・・== 0
-	IF CFLAG:MASTER:・・専ｲｽ嵭・> CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・		CFLAG:MASTER:・・尖壱ｲｨ += 1
-		CFLAG:MASTER:・・専ｲｽ嵭・-= CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・		CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・+= 100 + CFLAG:MASTER:・・尖壱ｲｨ * CFLAG:MASTER:・・尖壱ｲｨ * 10
-		;繝ｬ繝吶Ν・托ｼ蝉ｻ･髯削符・緋ｲｽ嵭們ｹ倥・諤･縺ｫ荳翫′繧翫∪縺吶′縲・擽・・ｲｽ嵭倥〒霆ｽ貂帙〒縺阪∪縺・		LOCAL = 250 + (CFLAG:MASTER:・・尖壱ｲｨ - 5) * CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・/ 3 - EXP:MASTER:・ｴ・・ｲｽ嵭・* 20
-		SIF LOCAL > 0 && CFLAG:MASTER:・・尖壱ｲｨ > 10
-			CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・+= LOCAL
-		PRINTFORMW %CALLNAME:MASTER%・・・ｰ・・・壱ｲｨ・[{CFLAG:MASTER:・・尖壱ｲｨ}](・ｴ)・ ・們来・ｵ・壱共
-		MAXBASE:MASTER:・ｴ・･ += 100 + 10 * RAND:6
-		MAXBASE:MASTER:・ｰ・･ += 50 + 10 * RAND:6
+;────────────────────────────────────
+;レベルアップ。たくさん경험치ためても一回の죠교は一度だけレベルアップできる仕様です
+;────────────────────────────────────
+IF TFLAG:일회휴게 == 0
+	IF CFLAG:MASTER:죠교경험 > CFLAG:MASTER:필요경험치
+		CFLAG:MASTER:죠교레벨 += 1
+		CFLAG:MASTER:죠교경험 -= CFLAG:MASTER:필요경험치
+		CFLAG:MASTER:필요경험치 += 100 + CFLAG:MASTER:죠교레벨 * CFLAG:MASTER:죠교레벨 * 10
+		;レベル１０以降필요경험치は急に上がりますが、이상경험で軽減できます
+		LOCAL = 250 + (CFLAG:MASTER:죠교레벨 - 5) * CFLAG:MASTER:필요경험치 / 3 - EXP:MASTER:이상경험 * 20
+		SIF LOCAL > 0 && CFLAG:MASTER:죠교레벨 > 10
+			CFLAG:MASTER:필요경험치 += LOCAL
+		PRINTFORMW %CALLNAME:MASTER%의 조교 레벨은[{CFLAG:MASTER:죠교레벨}](이)가 되었습니다
+		MAXBASE:MASTER:체력 += 100 + 10 * RAND:6
+		MAXBASE:MASTER:기력 += 50 + 10 * RAND:6
 	ENDIF
 	
-	IF CFLAG:・・専ｲｽ嵭・> CFLAG:﨑・囈・ｽ嵭們ｹ・		CFLAG:・・尖壱ｲｨ += 1
-		CFLAG:・・専ｲｽ嵭・-= CFLAG:﨑・囈・ｽ嵭們ｹ・		CFLAG:﨑・囈・ｽ嵭們ｹ・+= 100 + CFLAG:・・尖壱ｲｨ * CFLAG:・・尖壱ｲｨ * 10
-		LOCAL = 250 + (CFLAG:・・尖壱ｲｨ - 5) * CFLAG:﨑・囈・ｽ嵭們ｹ・/ 3 - EXP:MASTER:・ｴ・・ｲｽ嵭・* 20
-		SIF LOCAL > 0 && CFLAG:・・尖壱ｲｨ > 10
-			CFLAG:﨑・囈・ｽ嵭們ｹ・+= LOCAL
-		PRINTFORMW %CALLNAME:TARGET%・・・ｰ・・・壱ｲｨ・[{CFLAG:・・尖壱ｲｨ}](・ｴ)・ ・們来・ｵ・壱共
-		MAXBASE:・ｴ・･ += 100 + 10 * RAND:6
-		MAXBASE:・ｰ・･ += 50 + 10 * RAND:6
+	IF CFLAG:죠교경험 > CFLAG:필요경험치
+		CFLAG:죠교레벨 += 1
+		CFLAG:죠교경험 -= CFLAG:필요경험치
+		CFLAG:필요경험치 += 100 + CFLAG:죠교레벨 * CFLAG:죠교레벨 * 10
+		LOCAL = 250 + (CFLAG:죠교레벨 - 5) * CFLAG:필요경험치 / 3 - EXP:MASTER:이상경험 * 20
+		SIF LOCAL > 0 && CFLAG:죠교레벨 > 10
+			CFLAG:필요경험치 += LOCAL
+		PRINTFORMW %CALLNAME:TARGET%의 조교 레벨은[{CFLAG:죠교레벨}](이)가 되었습니다
+		MAXBASE:체력 += 100 + 10 * RAND:6
+		MAXBASE:기력 += 50 + 10 * RAND:6
 	ENDIF
 	
-	TFLAG:・ｨ・晤ｧ壱･ = MAX(TFLAG:・ｨ・晤ｧ壱･, 10)
-	PRINTFORMW %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%(・ｼ)・罹ｶ奓ｰ ・ｨ・・・､・ｸ ・簿･・・{TFLAG:・ｨ・晤ｧ壱･}・・・壱･・ｼ・・・嶹倆毎・､
-	CFLAG:・壱･ += TFLAG:・ｨ・晤ｧ壱･
+	TFLAG:취득마력 = MAX(TFLAG:취득마력, 10)
+	PRINTFORMW %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%(으)로부터 빨아 들인 정력을 {TFLAG:취득마력}의 마력으로 변환했다
+	CFLAG:마력 += TFLAG:취득마력
 	
 	[SKIPSTART]
-	IF CFLAG:嶸ｸ・・>= 500 && CFLAG:M・ｰ・ｨ == 0
-		CFLAG:M・ｰ・ｨ = 1
-		PRINTFORML %CALLNAME:TARGET%・・%CALLNAME:MASTER%(・・・ｼ ・ｴ・・・溢擽 ・ｴ・・葺・､窶ｦ
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・嶸ｸ・俯･ｼ ・・ｰ ・懍梠﨑・・・・呱共
-		IF CFLAG:嶸ｸ・・/ 250 >= CFLAG:・・尖壱ｲｨ - CFLAG:MASTER:・・尖壱ｲｨ
-			CFLAG:M・ｰ・ｨ = 2
-			PRINTFORMW ・ｸ ・尖ｧ・・・笈・ｼ, %CALLNAME:TARGET%・・%CALLNAME:MASTER%・川攪 ・懍腹・・・菩擽 ・ｹ孖ｼ ・・・呱共
+	IF CFLAG:호의 >= 500 && CFLAG:M연모 == 0
+		CFLAG:M연모 = 1
+		PRINTFORML %CALLNAME:TARGET%의 %CALLNAME:MASTER%(을)를 보는 눈이 이상하다…
+		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 호의를 대기 시작한 것 같다
+		IF CFLAG:호의 / 250 >= CFLAG:죠교레벨 - CFLAG:MASTER:죠교레벨
+			CFLAG:M연모 = 2
+			PRINTFORMW 그 뿐만 아니라, %CALLNAME:TARGET%에 %CALLNAME:MASTER%에의 친애의 정이 싹튼 것 같다
 		ENDIF
 	ENDIF
-	IF CFLAG:嶸ｸ・・/ 250 >= CFLAG:・・尖壱ｲｨ - CFLAG:MASTER:・・尖壱ｲｨ && CFLAG:M・ｰ・ｨ == 1
-		CFLAG:M・ｰ・ｨ = 2
-		PRINTFORML %CALLNAME:TARGET%・・%CALLNAME:MASTER%(・・・ｼ ・ｴ・・・溢擽 ・ｴ・・葺・､窶ｦ
-		PRINTFORMW %CALLNAME:TARGET%・・%CALLNAME:MASTER%・川攪 ・懍腹・・・菩擽 ・ｹ孖ｼ ・・・呱共
+	IF CFLAG:호의 / 250 >= CFLAG:죠교레벨 - CFLAG:MASTER:죠교레벨 && CFLAG:M연모 == 1
+		CFLAG:M연모 = 2
+		PRINTFORML %CALLNAME:TARGET%의 %CALLNAME:MASTER%(을)를 보는 눈이 이상하다…
+		PRINTFORMW %CALLNAME:TARGET%에 %CALLNAME:MASTER%에의 친애의 정이 싹튼 것 같다
 	ENDIF
 	[SKIPEND]
 ENDIF
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;蟷ｳ譎ゎ符・ｼ・ｴ・俯巡縺ｮ螟牙虚
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-LOCAL = 10 * CFLAG:・・攵・ｴ・俯巡 - CFLAG:尞餓メ・・LOCAL:1 = (CFLAG:SM・ｱ・ｩ + CFLAG:・､・ｰ・・+ 200) / 2
-;・ｱ・ｩ縺ｧ蛟咲紫縺梧ｱｺ縺ｾ繧九・;譛蟆丞､50(M繝・Ξ)縲∵怙螟ｧ蛟､150(S繝・Φ)縲∫ｴ雉ｪ螟牙虚縺励↑縺・縺輔○縺ｪ縺・く繝｣繝ｩ縺ｧ縺ｯB = 100
-CFLAG:尞餓メ・・+= LOCAL * (LOCAL >= 0 ? 200 - LOCAL:1 # LOCAL:1) / 500
-IF CFLAG:尞餓メ・・> 100 && MARK:5 == 0
+;────────────────────────────────────
+;平時아라이멘도の変動
+;────────────────────────────────────
+LOCAL = 10 * CFLAG:아라이멘도 - CFLAG:평상시
+LOCAL:1 = (CFLAG:SM성격 + CFLAG:츤데레 + 200) / 2
+;성격で倍率が決まる。
+;最小値50(Mデレ)、最大値150(Sツン)、素質変動しない/させないキャラではB = 100
+CFLAG:평상시 += LOCAL * (LOCAL >= 0 ? 200 - LOCAL:1 # LOCAL:1) / 500
+IF CFLAG:평상시 > 100 && MARK:5 == 0
 	MARK:5 = 1
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 200 && MARK:5 == 1
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 200 && MARK:5 == 1
 	MARK:5 = 2
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 300 && MARK:5 == 2
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 300 && MARK:5 == 2
 	MARK:5 = 3
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 400 && MARK:5 == 3
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 400 && MARK:5 == 3
 	MARK:5 = 4
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 500 && MARK:5 == 4
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 500 && MARK:5 == 4
 	MARK:5 = 5
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 600 && MARK:5 == 5
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 600 && MARK:5 == 5
 	MARK:5 = 6
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 700 && MARK:5 == 6
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 700 && MARK:5 == 6
 	MARK:5 = 7
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 800 && MARK:5 == 7
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 800 && MARK:5 == 7
 	MARK:5 = 8
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 900 && MARK:5 == 8
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 900 && MARK:5 == 8
 	MARK:5 = 9
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 950 && MARK:5 == 9
+	CFLAG:반발제거 = 1
+ELSEIF CFLAG:평상시 > 950 && MARK:5 == 9
 	MARK:5 = 10
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
+	CFLAG:반발제거 = 1
 ENDIF
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・罹攵・ｴ・ｬ・輔・繝ｼ繝翫せ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-IF TCVAR:MASTER:・罹攵・ｴ・ｬ・菩・ > 0 
-	IF MAXBASE:MASTER:・ｬ・・< 7500 + CFLAG:MASTER:・簿･﨑懋ｳ・* 500
-		MAXBASE:MASTER:・ｬ・・= MIN(MAXBASE:MASTER:・ｬ・・+ TCVAR:MASTER:・罹攵・ｴ・ｬ・菩・ * 100, 7500 + CFLAG:MASTER:・簿･﨑懋ｳ・* 500)
-		PRINTFORML 﨑懋ｳ・･ｼ ・們牟 ・懍｡語ｸｰ ・誤ｬｸ・・ %CALLNAME:MASTER%・・・ｱ・・・ｰ・･・ｴ ・倣剩・們来・ｵ・壱共
+;────────────────────────────────────
+;드라이사정ボーナス
+;────────────────────────────────────
+IF TCVAR:MASTER:드라이사정수 > 0 
+	IF MAXBASE:MASTER:사정 < 7500 + CFLAG:MASTER:정력한계 * 500
+		MAXBASE:MASTER:사정 = MIN(MAXBASE:MASTER:사정 + TCVAR:MASTER:드라이사정수 * 100, 7500 + CFLAG:MASTER:정력한계 * 500)
+		PRINTFORML 한계를 넘어 짜졌기 때문에, %CALLNAME:MASTER%의 성적 기능이 강화되었습니다
 	ELSE
-		PRINTFORML ・ｱ・・・ｰ・･・・・倣剩・ 﨑懋ｳ・乱 ・ｴ・ｴ・ ・溢慣・壱共
+		PRINTFORML 성적 기능의 강화가 한계에 이르고 있습니다
 	ENDIF
-	TCVAR:MASTER:・罹攵・ｴ・ｬ・菩・ = 0
+	TCVAR:MASTER:드라이사정수 = 0
 ENDIF
 
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;繝ｪ繧ｻ繝・ヨ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・誤ｳ繧ｲ繝ｼ繧ｸ繧呈ｶ医☆
-MAXBASE:MASTER:・誤ｳ = TALENT:MASTER:・､・護矯・・? MAXBASE:MASTER:・誤ｳ # 0
-;・・舌〒闢・ｩ削毎・､嵓ｼ尞舌ｒ・ｼ・√↓蜉邂・CFLAG:MASTER:・誤ｪｨ = MIN(CFLAG:MASTER:・誤ｪｨ + MAX(TFLAG:63, 0), 20)
+;────────────────────────────────────
+;リセット
+;────────────────────────────────────
+;소변ゲージを消す
+MAXBASE:MASTER:소변 = TALENT:MASTER:오줌싸개 ? MAXBASE:MASTER:소변 # 0
+;죠교で蓄積했다피폐を일상に加算
+CFLAG:MASTER:소모 = MIN(CFLAG:MASTER:소모 + MAX(TFLAG:63, 0), 20)
 SIF TARGET >= 0
-	CFLAG:TARGET:・誤ｪｨ += MAX(TFLAG:62, 0)
+	CFLAG:TARGET:소모 += MAX(TFLAG:62, 0)
 
 BEGIN TURNEND
-=======
-・ｿ;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・・千ｵゆｺ・・蜃ｦ逅・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-@EVENTEND
-
-;繝繝ｩ繝繝ｩ繝ｪ繧ｻ繝・ヨ
-SIF TARGET > 0
-	CFLAG:・ｴ・ｼ・ｴ・ｼ = 0
-SIF ASSI:1 > 0
-	CFLAG:(ASSI:1):・ｴ・ｼ・ｴ・ｼ = 0
-SIF ASSI:2 > 0
-	CFLAG:(ASSI:2):・ｴ・ｼ・ｴ・ｼ = 0
-
-;MASTER蛛ｴ縺ｮCFLAG縺ｫ隱ｰ縺ｫ縺ｩ繧後□縺第誓繧峨ｌ縺溘°繧底ｸｰ・・
-;荳蝗槭〒譛螟ｧ5000縺上ｉ縺・ｼ・
-CFLAG:MASTER:(2200 + NO:TARGET) += TFLAG:・ｨ・晤ｧ壱･ * (5 + CFLAG:・ｭ增ｬ) / 5
-;ASSI縺ｯTARGET縺ｮ1/5
-FOR LOCAL, 0, 9
-	IF ASSI:(LOCAL + 1) > 0
-		CFLAG:MASTER:(2200 + NO:(ASSI:(LOCAL + 1))) += TFLAG:・ｨ・晤ｧ壱･ * (5 + CFLAG:(ASSI:(LOCAL + 1)):・ｭ增ｬ) / 25
-	ENDIF
-NEXT
-
-;・・・ｧ壱･
-SIF TARGET > 0
-	CFLAG:・・・ｧ壱･ += TFLAG:・ｨ・晤ｧ壱･
-
-;・・千ｵゆｺ・
-FLAG:・ｰ・川､・= 0
-;OriginalString : ・・舌・邨ゅｏ繧翫∪嵂壱共縲・
-PRINTW ・ｰ・尖株 ・晤ぎ・ｵ・壱共.
-
-EXP:MASTER:・ｱ・・・+= TFLAG:・ｽ・ｼ・懋ｰ・/ 10
-EXP:・ｱ・・・+= TFLAG:・ｽ・ｼ・懋ｰ・/ 10
-
-;・・川亨・・ｒ繝√ぉ繝・け縺励※・ｰ・・・懍棗繝ｻ・罹卿)
-SIF TFLAG:・ｽ・ｼ・懋ｰ・> FLAG:・懍棗・・川亨・・ｸｰ・・
-	FLAG:・懍棗・・川亨・・ｸｰ・・= TFLAG:・ｽ・ｼ・懋ｰ・
-SIF TFLAG:・ｽ・ｼ・懋ｰ・> 0 && (TFLAG:・ｽ・ｼ・懋ｰ・< FLAG:・罹卿・・川亨・・ｸｰ・・|| FLAG:・罹卿・・川亨・・ｸｰ・・== 0)
-	FLAG:・罹卿・・川亨・・ｸｰ・・= TFLAG:・ｽ・ｼ・懋ｰ・
-
-;ACT髟ｷ譛滔ｳｴ・募､縺ｮ荳諡ｬ邂怜・
-CALL ACT_M_RESEARCH_L(1)
-
-;繝・・繧ｿ繝吶・繧ｹ險伜・
-CALL DATABASE_INPUT_T
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・ｨ・縺ｮ萓｡蛟､縺ｮ險育ｮ・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-SIF TALENT:MASTER:・ｨ・・ｴ・・&& TFLAG:・・川亨・・> 0
-	CALL SELL_MILK
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;繝ｬ繝吶Ν繧｢繝・・縲ゅ◆縺上＆繧縄ｲｽ嵭們ｹ倥◆繧√※繧ゆｸ蝗槭・・・舌・荳蠎ｦ縺縺代Ξ繝吶Ν繧｢繝・・縺ｧ縺阪ｋ莉墓ｧ倥〒縺・
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-IF TFLAG:・ｼ巐醐惷・・== 0
-	IF CFLAG:MASTER:・・専ｲｽ嵭・> CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・
-		CFLAG:MASTER:・・尖壱ｲｨ += 1
-		CFLAG:MASTER:・・専ｲｽ嵭・-= CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・
-		CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・+= 100 + CFLAG:MASTER:・・尖壱ｲｨ * CFLAG:MASTER:・・尖壱ｲｨ * 10
-		;繝ｬ繝吶Ν・托ｼ蝉ｻ･髯削符・緋ｲｽ嵭們ｹ倥・諤･縺ｫ荳翫′繧翫∪縺吶′縲・擽・・ｲｽ嵭倥〒霆ｽ貂帙〒縺阪∪縺・
-		LOCAL = 250 + (CFLAG:MASTER:・・尖壱ｲｨ - 5) * CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・/ 3 - EXP:MASTER:・ｴ・・ｲｽ嵭・* 20
-		SIF LOCAL > 0 && CFLAG:MASTER:・・尖壱ｲｨ > 10
-			CFLAG:MASTER:﨑・囈・ｽ嵭們ｹ・+= LOCAL
-		PRINTFORMW %CALLNAME:MASTER%・・・ｰ・・・壱ｲｨ・[{CFLAG:MASTER:・・尖壱ｲｨ}](・ｴ)・ ・們来・ｵ・壱共
-		MAXBASE:MASTER:・ｴ・･ += 100 + 10 * RAND:6
-		MAXBASE:MASTER:・ｰ・･ += 50 + 10 * RAND:6
-	ENDIF
-	
-	IF CFLAG:・・専ｲｽ嵭・> CFLAG:﨑・囈・ｽ嵭們ｹ・
-		CFLAG:・・尖壱ｲｨ += 1
-		CFLAG:・・専ｲｽ嵭・-= CFLAG:﨑・囈・ｽ嵭們ｹ・
-		CFLAG:﨑・囈・ｽ嵭們ｹ・+= 100 + CFLAG:・・尖壱ｲｨ * CFLAG:・・尖壱ｲｨ * 10
-		LOCAL = 250 + (CFLAG:・・尖壱ｲｨ - 5) * CFLAG:﨑・囈・ｽ嵭們ｹ・/ 3 - EXP:MASTER:・ｴ・・ｲｽ嵭・* 20
-		SIF LOCAL > 0 && CFLAG:・・尖壱ｲｨ > 10
-			CFLAG:﨑・囈・ｽ嵭們ｹ・+= LOCAL
-		PRINTFORMW %CALLNAME:TARGET%・・・ｰ・・・壱ｲｨ・[{CFLAG:・・尖壱ｲｨ}](・ｴ)・ ・們来・ｵ・壱共
-		MAXBASE:・ｴ・･ += 100 + 10 * RAND:6
-		MAXBASE:・ｰ・･ += 50 + 10 * RAND:6
-	ENDIF
-	
-	TFLAG:・ｨ・晤ｧ壱･ = MAX(TFLAG:・ｨ・晤ｧ壱･, 10)
-	PRINTFORMW %CALLNAME:TARGET%(・)・・%CALLNAME:MASTER%(・ｼ)・罹ｶ奓ｰ ・ｨ・・・､・ｸ ・簿･・кTFLAG:・ｨ・晤ｧ壱･}・・・壱･・ｼ・・・嶹倆毎・､
-	CFLAG:・壱･ += TFLAG:・ｨ・晤ｧ壱･
-	
-	[SKIPSTART]
-	IF CFLAG:嶸ｸ・・>= 500 && CFLAG:M・ｰ・ｨ == 0
-		CFLAG:M・ｰ・ｨ = 1
-		PRINTFORML %CALLNAME:TARGET%・・%CALLNAME:MASTER%(・・・ｼ ・ｴ・・・溢擽 ・ｴ・・葺・､窶ｦ
-		PRINTFORMW %CALLNAME:TARGET%・(・・ %CALLNAME:MASTER%・・嶸ｸ・俯･ｼ ・・ｰ ・懍梠﨑・・・・呱共
-		IF CFLAG:嶸ｸ・・/ 250 >= CFLAG:・・尖壱ｲｨ - CFLAG:MASTER:・・尖壱ｲｨ
-			CFLAG:M・ｰ・ｨ = 2
-			PRINTFORMW ・ｸ ・尖ｧ・・・笈・ｼ,%CALLNAME:TARGET%・・%CALLNAME:MASTER%・川攪 ・懍腹・・・菩擽 ・ｹ孖ｼ ・・・呱共
-		ENDIF
-	ENDIF
-	IF CFLAG:嶸ｸ・・/ 250 >= CFLAG:・・尖壱ｲｨ - CFLAG:MASTER:・・尖壱ｲｨ && CFLAG:M・ｰ・ｨ == 1
-		CFLAG:M・ｰ・ｨ = 2
-		PRINTFORML %CALLNAME:TARGET%・・%CALLNAME:MASTER%(・・・ｼ ・ｴ・・・溢擽 ・ｴ・・葺・､窶ｦ
-		PRINTFORMW %CALLNAME:TARGET%・・%CALLNAME:MASTER%・川攪 ・懍腹・・・菩擽 ・ｹ孖ｼ ・・・呱共
-	ENDIF
-	[SKIPEND]
-ENDIF
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;蟷ｳ譎ゎ符・ｼ・ｴ・俯巡縺ｮ螟牙虚
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-LOCAL = 10 * CFLAG:・・攵・ｴ・俯巡 - CFLAG:尞餓メ・・
-LOCAL:1 = (CFLAG:SM・ｱ・ｩ + CFLAG:・､・ｰ・・+ 200) / 2
-;・ｱ・ｩ縺ｧ蛟咲紫縺梧ｱｺ縺ｾ繧九・
-;譛蟆丞､50(M繝・Ξ)縲∵怙螟ｧ蛟､150(S繝・Φ)縲∫ｴ雉ｪ螟牙虚縺励↑縺・縺輔○縺ｪ縺・く繝｣繝ｩ縺ｧ縺ｯB = 100
-CFLAG:尞餓メ・・+= LOCAL * (LOCAL >= 0 ? 200 - LOCAL:1 # LOCAL:1) / 500
-IF CFLAG:尞餓メ・・> 100 && MARK:5 == 0
-	MARK:5 = 1
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 200 && MARK:5 == 1
-	MARK:5 = 2
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 300 && MARK:5 == 2
-	MARK:5 = 3
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 400 && MARK:5 == 3
-	MARK:5 = 4
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 500 && MARK:5 == 4
-	MARK:5 = 5
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 600 && MARK:5 == 5
-	MARK:5 = 6
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 700 && MARK:5 == 6
-	MARK:5 = 7
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 800 && MARK:5 == 7
-	MARK:5 = 8
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 900 && MARK:5 == 8
-	MARK:5 = 9
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ELSEIF CFLAG:尞餓メ・・> 950 && MARK:5 == 9
-	MARK:5 = 10
-	CFLAG:・俯ｰ懍懋ｱｰ = 1
-ENDIF
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・罹攵・ｴ・ｬ・輔・繝ｼ繝翫せ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-IF TCVAR:MASTER:・罹攵・ｴ・ｬ・菩・ > 0 
-	IF MAXBASE:MASTER:・ｬ・・< 7500 + CFLAG:MASTER:・簿･﨑懋ｳ・* 500
-		MAXBASE:MASTER:・ｬ・・= MIN(MAXBASE:MASTER:・ｬ・・+ TCVAR:MASTER:・罹攵・ｴ・ｬ・菩・ * 100, 7500 + CFLAG:MASTER:・簿･﨑懋ｳ・* 500)
-		PRINTFORML 﨑懋ｳ・･ｼ ・們牟 ・懍｡語ｸｰ ・誤ｬｸ・・%CALLNAME:MASTER%・・・ｱ・・・ｰ・･・ｴ ・倣剩・們来・ｵ・壱共
-	ELSE
-		PRINTFORML ・ｱ・・・ｰ・･・・・倣剩・ 﨑懋ｳ・乱 ・ｴ・ｴ・ ・溢慣・壱共
-	ENDIF
-	TCVAR:MASTER:・罹攵・ｴ・ｬ・菩・ = 0
-ENDIF
-
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;繝ｪ繧ｻ繝・ヨ
-;笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
-;・誤ｳ繧ｲ繝ｼ繧ｸ繧呈ｶ医☆
-MAXBASE:MASTER:・誤ｳ = TALENT:MASTER:・､・護矯・・? MAXBASE:MASTER:・誤ｳ # 0
-;・・舌〒闢・ｩ削毎・､嵓ｼ尞舌ｒ・ｼ・√↓蜉邂・
-CFLAG:MASTER:・誤ｪｨ = MIN(CFLAG:MASTER:・誤ｪｨ + MAX(TFLAG:63, 0), 20)
-SIF TARGET >= 0
-	CFLAG:TARGET:・誤ｪｨ += MAX(TFLAG:62, 0)
-
-BEGIN TURNEND
->>>>>>> d29239f180aad384a1e39d65cf6a8a750783a09d
