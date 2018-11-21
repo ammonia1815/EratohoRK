@@ -133,7 +133,7 @@ RETURN 0
 ;────────────────────────────────────
 ;ARG～ARG:4は대상となるキャラの번호
 @DAILY_LIFE_1_0(ARG, ARG:1, ARG:2, ARG:3)
-PRINTFORML 부엌에 선다%CALLNAME:MASTER%(은)는 배후로부터의 단 한숨을 깨달아 되돌아 본다
+PRINTFORML 부엌에 서 있는 %CALLNAME:MASTER%(은)는 배후로부터의 단 한숨을 깨달아 되돌아 본다
 PRINTFORMW …%CALLNAME:ARG%(이)다
 ;죠교대상が남자の場合もしくは1/2の確率
 IF TALENT:MASTER:남자 || !RAND:2
@@ -207,7 +207,7 @@ SELECTCASE RESULT
 					PRINTL 
 					;202, 0-5（ぱんつお着替えさせてくれま했다）
 					CALL KOJO_EVENT(202, 5, ARG)
-					PRINTFORML %CALLNAME:ARG%하정액그리고 질척질척이 되었다%CALLNAME:MASTER%의 아래벌을 벗게 하면
+					PRINTFORML %CALLNAME:ARG%하정액그리고 질척질척이 된 %CALLNAME:MASTER%의 아래벌을 벗게 하면
 					PRINTFORMW 새로운 속옷을 가져와했다…
 				ENDIF
 				;MASTERの경험増加と内容の表示
@@ -223,7 +223,7 @@ SELECTCASE RESULT
 				EXP:ARG:수음경험 += 1 
 				PRINTFORML （%CALLNAME:ARG%）수음경험 +1
 				EXP:ARG:절정시킨경험 += 1
-				PRINTFORML （%CALLNAME:ARG%）이나 키경험 +1
+				PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +1
 				BASE:MASTER:사정 -= 300
 				;MASTERの精力0の場合
 				SIF FLAG:일상제어 == 2
@@ -235,7 +235,7 @@ SELECTCASE RESULT
 					PRINTL 
 					;202, 0-5（ぱんつお着替えさせてくれま했다）
 					CALL KOJO_EVENT(202, 5, ARG)
-					PRINTFORML %CALLNAME:ARG%(은)는 애액으로 질척질척이 되었다%CALLNAME:MASTER%의 아래벌을 벗게 하면
+					PRINTFORML %CALLNAME:ARG%(은)는 애액으로 질척질척이 된 %CALLNAME:MASTER%의 아래벌을 벗게 하면
 					PRINTFORMW 새로운 속옷을 가져와했다…
 				ENDIF
 				;MASTERの경험増加と内容の表示
@@ -247,7 +247,7 @@ SELECTCASE RESULT
 				EXP:ARG:수음경험 += 1 
 				PRINTFORML （%CALLNAME:ARG%）수음경험 +1
 				EXP:ARG:절정시킨경험 += 1
-				PRINTFORML （%CALLNAME:ARG%）이나 키경험 +1
+				PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +1
 			ENDIF
 		;その他
 		ELSE
@@ -260,7 +260,7 @@ SELECTCASE RESULT
 			EXP:ARG:수음경험 += 1 
 			PRINTFORML （%CALLNAME:ARG%）수음경험 +1
 			EXP:ARG:절정시킨경험 += 1
-			PRINTFORML （%CALLNAME:ARG%）이나 키경험 +1
+			PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +1
 		ENDIF
 		;ムラムラ解消
 		CFLAG:ARG:무라무라 = 0
@@ -346,7 +346,7 @@ IF MARK:ARG:굴복각인 > 4 &&
 				EXP:ARG:구음경험 += 1
 				PRINTFORML （%CALLNAME:ARG%）구음경험 +1
 				EXP:ARG:절정시킨경험 += 1
-				PRINTFORML （%CALLNAME:ARG%）이나 키경험 +1
+				PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +1
 				;BASE:사정が減少
 				BASE:MASTER:사정 -= 300
 				;精力ボーナス
@@ -370,7 +370,7 @@ IF MARK:ARG:굴복각인 > 4 &&
 				EXP:ARG:구음경험 += 1 
 				PRINTFORML （%CALLNAME:ARG%）구음경험 +1
 				EXP:ARG:절정시킨경험 += 1
-				PRINTFORML （%CALLNAME:ARG%）이나 키경험 +1
+				PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +1
 			ENDIF
 			[SKIPSTART]
 			//これまではスキンシップによって각인を취득했다りしなかったりしていた
@@ -417,8 +417,8 @@ SIF !GETBIT(CFLAG:ARG:각인, 11)
 CALL KOJO_EVENT(204, 0, ARG)
 PRINTFORMW %CALLNAME:MASTER%(은)는 복도를 걷고 있으면 배후로부터%CALLNAME:ARG%에 불러 세울 수 있었다
 {
-PRINTFORML %CALLNAME:ARG%(은)는 싱글벙글 하면서 %CALLNAME:MASTER%에 가까워지면(자),\@ TALENT:ARG:수줍음 || TALENT:ARG:청초 
-	? 少했다めらいながら # 不意に\@%CALLNAME:MASTER%의 頭をつかんで
+PRINTFORML %CALLNAME:ARG%(은)는 싱글벙글 하면서 %CALLNAME:MASTER%에 다가가, \@ TALENT:ARG:수줍음 || TALENT:ARG:청초 
+	? 슬그머니 # 갑자기\@ %CALLNAME:MASTER%의 머리를 잡고
 }
 ;204, 2-1（いきなりちゅぅ）
 CALL KOJO_EVENT(204, 1, ARG)
@@ -484,7 +484,7 @@ SIF MARK:ARG:굴복각인 < 5 || !GETBITOR(CFLAG:ARG:각인, 2, 3, 12, 19, 28)
 	RETURN 0
 ;206, 4-0（お食事ご一緒いいかしら？）
 CALL KOJO_EVENT(206, 0, ARG)
-PRINTFORMW %CALLNAME:MASTER%(은)는 식사를 배달시키고 있으면%CALLNAME:ARG%(이)가 합석해도 될까 물어 왔다
+PRINTFORMW %CALLNAME:MASTER%(은)는 식사를 먹고 있으면 %CALLNAME:ARG%(이)가 합석해도 될까 물어 왔다
 ;OriginalString : [0] - 嫌な予感がする　
 PRINT [0] - 싫은 예감이 한다 
 ;OriginalString : [1] - 一緒に食べる
@@ -495,7 +495,7 @@ SELECTCASE RESULT
 	CASE 0
 		;206, 4-1（マッハで食って逃げま했다）
 		CALL KOJO_EVENT(206, 1, ARG)
-		PRINTFORMW %CALLNAME:MASTER%(은)는 나머지의 요리를 맹렬한 기세로 평정하면 허둥지둥 식당으로부터 도망출했다
+		PRINTFORMW %CALLNAME:MASTER%(은)는 나머지의 요리를 맹렬한 기세로 먹고 허둥지둥 식당에서 도망쳤다
 		CFLAG:ARG:평상시 -= 100
 		SIF CFLAG:ARG:평상시 < -999
 			CFLAG:ARG:평상시 = -999
@@ -506,15 +506,15 @@ SELECTCASE RESULT
 	CASE 1
 		;206, 4-2（テーブルの下でしゃぶられてます）
 		CALL KOJO_EVENT(206, 2, ARG)
-		PRINTFORML %CALLNAME:MASTER%(은)는 쾌락해 요리를 몫로 하면, %CALLNAME:ARG%하
-		PRINTFORMW 테이블아래에 잠수 손에 익은 손놀림으로 페니스를 꺼내 빨기 시작했다…
+		PRINTFORML %CALLNAME:MASTER%(이)가 수긍하면, %CALLNAME:ARG%(이)가
+		PRINTFORMW 테이블 아래에 들어가 익숙한 손놀림으로 페니스를 꺼내 빨기 시작했다…
 		;206, 4-3（どくんどくん）
 		CALL KOJO_EVENT(206, 3, ARG)
-		PRINTFORML 눈 깜짝할  순간에 고째%CALLNAME:ARG%의 입안에사정하는 것도,
-		PRINTFORMW 민감(이)가 되었다페니스에 달라붙어 다음의사정(을)를 재촉해 온다
+		PRINTFORML 눈 깜짝할  순간에 %CALLNAME:ARG%의 입안에 사정해버리고,
+		PRINTFORMW 민감하게 된 페니스에 달라붙어 다음의 사정을 재촉해 온다
 		;206, 4-4（倍プッシュだ）
 		CALL KOJO_EVENT(206, 4, ARG)
-		PRINTFORMW 결국, %CALLNAME:MASTER%(은)는 식사를 끝낼 때까지 짜지고 속했다…
+		PRINTFORMW 결국, %CALLNAME:MASTER%(은)는 식사를 끝낼 때까지 착정당했다…
 		;MASTERの경험増加と内容の表示
 		EXP:MASTER:Ｃ경험   += 10
 		PRINTL Ｃ경험 +10
@@ -528,7 +528,7 @@ SELECTCASE RESULT
 		EXP:ARG:구음경험   += 3
 		PRINTFORML （%CALLNAME:ARG%）구음경험 +3
 		EXP:ARG:절정시킨경험 += 3
-		PRINTFORML （%CALLNAME:ARG%）이나 키경험 +3
+		PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +3
 		;MASTERのBASE:사정が減少
 		BASE:MASTER:사정 -= 600
 		;精力ボーナス
@@ -593,11 +593,11 @@ SELECTCASE RESULT
 			PRINTFORMW %CALLNAME:ARG%(이)가 뜨거운 시선을 향하면서 무엇인가 말에들 머뭇머뭇 하고 있다…
 			;207, 5-3（おくちにほしいなーオーラ）
 			CALL KOJO_EVENT(207, 3, ARG)
-			PRINTFORML %CALLNAME:MASTER%(은)는 입다물고 수긍하면%CALLNAME:ARG%(은)는 희들로서 무릎 꿇어
-			PRINTFORMW 고간으로부터페니스를 꺼내 빨기 시작했다
+			PRINTFORML %CALLNAME:MASTER%(은)는 입다물고 수긍하면 %CALLNAME:ARG%(은)는 희들로서 무릎 꿇어
+			PRINTFORMW 고간으로부터 페니스를 꺼내 빨기 시작했다
 			;207, 5-4（おいしかったです）
 			CALL KOJO_EVENT(207, 4, ARG)
-			PRINTFORML %CALLNAME:MASTER%(은)는 발했다정액(을)를 맛있을 것 같게 삼키면(자)
+			PRINTFORML %CALLNAME:MASTER%(이)가 발한 정액을 맛있을 것 같게 삼키면
 			PRINTFORMW 또 도와 주는군이라고 말하다가 남긴 떠나 갔다…
 			;MASTERの경험増加と内容の表示
 			EXP:MASTER:Ｃ경험 += 5
@@ -612,7 +612,7 @@ SELECTCASE RESULT
 			EXP:ARG:구음경험 += 1 
 			PRINTFORML （%CALLNAME:ARG%）구음경험 +1
 			EXP:ARG:절정시킨경험 += 1
-			PRINTFORML （%CALLNAME:ARG%）이나 키경험 +1
+			PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +1
 			BASE:MASTER:사정 -= 300
 			;구강사정
 			;SIF !GETBIT(CFLAG:ARG:각인, 28)
@@ -647,7 +647,7 @@ SELECTCASE RESULT
 			EXP:ARG:정액경험 += 3                           ;ARG정액경험
 			PRINTFORML （%CALLNAME:ARG%）정액경험 +3
 			EXP:ARG:절정시킨경험 += 1                         ;ARG절정시킨경험
-			PRINTFORML (%CALLNAME:ARG%)이나 키경험 +1
+			PRINTFORML (%CALLNAME:ARG%)절정시킨경험 +1
 			BASE:MASTER:사정 -= 500
 			[SKIPSTART]
 			;성교
@@ -690,7 +690,7 @@ SELECTCASE RESULT
 			EXP:ARG:정액경험 += 3                           ;ARG정액경험
 			PRINTFORML （%CALLNAME:ARG%）정액경험 +3
 			EXP:ARG:절정시킨경험 += 1                         ;ARG절정시킨경험
-			PRINTFORML （%CALLNAME:ARG%）이나 키경험 +1
+			PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +1
 			BASE:MASTER:사정 -= 500
 			[SKIPSTART]
 			;성교
@@ -776,7 +776,7 @@ IF PENIS(MASTER)
 	EXP:ARG:수음경험 += 1 
 	PRINTFORML （%CALLNAME:ARG%）수음경험 +1
 	EXP:ARG:절정시킨경험 += 2
-	PRINTFORML （%CALLNAME:ARG%）이나 키경험 +2
+	PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +2
 	BASE:MASTER:사정 -= 500
 	;精力ボーナス
 	SIF FLAG:일상제어 == 2
@@ -811,7 +811,7 @@ ELSE
 	EXP:ARG:수음경험 += 3 
 	PRINTFORML （%CALLNAME:ARG%）수음경험 +3
 	EXP:ARG:절정시킨경험 += 3
-	PRINTFORML （%CALLNAME:ARG%）이나 키경험 +3
+	PRINTFORML （%CALLNAME:ARG%）절정시킨경험 +3
 	;다중절정
 	;SIF !GETBIT(CFLAG:ARG:300, 37)
 ENDIF
@@ -1079,7 +1079,7 @@ CALL KOJO_EVENT(212, 0, ARG)
 PRINTFORMW 식당에서 쉬고 있으면%CALLNAME:ARG%(이)가 티폿트와 과자를 얹은 쟁반을 가지고 와 근처에 앉았다
 ;212, 일상0-1（楽しいお茶たいむで했다）
 CALL KOJO_EVENT(212, 1, ARG)
-PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%(와)과 홍차를 마시면서 담소해, 즐거운 한 때를 과 섬했다
+PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME:ARG%(와)과 홍차를 마시면서 담소해, 즐거운 한 때를 보냈다
 ;MASTERとARGの경험増加と内容の表示
 EXP:MASTER:회화경험 += 5
 EXP:ARG:회화경험    += 5
@@ -1102,7 +1102,7 @@ SIF GROUPMATCH(FLAG:계절, 1, 3) > 0
 	RETURN 0
 ;地の文→구상表示の順でないとどうにもならない感があるので、表示タイミングを変えてみる
 ;	と思ったけどどうなんだろう感が無きにしもあらず
-PRINTFORMW 지나는 길에, 뜰의\@ TALENT:ARG:햇빛혐오 ? 日陰になっている # 日のあたる \@장소에서 %CALLNAME:ARG%(을)를 찾아냈다……
+PRINTFORMW 지나는 길에, 뜰의 \@ TALENT:ARG:햇빛혐오 ? 日陰になっている # 日のあたる \@장소에서 %CALLNAME:ARG%(을)를 찾아냈다……
 ;213, 1-0（お昼寝発見）
 CALL KOJO_EVENT(213, 0, ARG)
 PRINTFORML %CALLNAME:ARG%(은)는 모포를 깔아 게다가로 둥글어져 자고 있다
@@ -1137,8 +1137,8 @@ CFLAG:ARG:반발제거 = 0
 ;214, 반항除去（懐柔당했다ようです）
 CALL KOJO_EVENT(214, 0, ARG)
 PRINTL
-PRINTFORML %CALLNAME:ARG%에 회유당했다싶은 %CALLNAME:MASTER%의반항마음이 희박해짐했다
-PRINTFORML 반항각인하지만{LOCAL}에했다
+PRINTFORML %CALLNAME:ARG%에 회유당한 %CALLNAME:MASTER%의 반항심이 희박해졌다
+PRINTFORML 반항각인이 {LOCAL}이 됬다
 WAIT
 RETURN 1
 
