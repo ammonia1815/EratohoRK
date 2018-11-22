@@ -459,7 +459,7 @@ RETURNF POWER(LOCAL + 10, 2) * LIMIT(MAX(CFLAG:MASTER:죠교레벨 * 10 / (CFLAG
 ;-------------------------------------------------
 @GET_ABL(ARG, ARGS)
 #FUNCTION
-;ARGSが空なら0を返す
+;ARGSが空なら0을반환
 SIF ARGS == ""
 	RETURNF 0
 ;指定が間違っていたらエラー落ちしてくれるはず
@@ -513,7 +513,7 @@ RETURNF ARG:1 - ARG:2 * ARG:1 / (ARG:2 + ARG:0)
 ;ARG:0(=X)と返り値(=Y)との関係は「Y=A√X」となる
 ;※このときAはARG:1,2によって決まる
 ;
-;※ARG:1が0であると、どうにもならないので0を返す
+;※ARG:1が0であると、どうにもならないので0을반환
 ;
 ;計算誤差が大きいので注意！
 ;-------------------------------------------------
@@ -521,7 +521,7 @@ RETURNF ARG:1 - ARG:2 * ARG:1 / (ARG:2 + ARG:0)
 #FUNCTION
 ;LOCAL初期化
 VARSET LOCAL
-;ARGのどれかが0の時は、常に0を返す
+;ARGのどれかが0の時は、常に0을반환
 SIF ARG:0 == 0 || ARG:1 == 0 || ARG:2 == 0
 	RETURNF 0
 ;ARG:0が負なら正にして、返り値の符号を反転する
@@ -539,7 +539,7 @@ LOCAL = SQRT(ARG:0 * 10000) * ARG:2 / SQRT(ARG:1) / 100
 ;ARG:0が負だったときの、返り値の符号反転
 SIF LOCAL:1
 	LOCAL = -LOCAL
-;値を返す
+;値을반환
 RETURNF LOCAL
 
 
@@ -564,9 +564,9 @@ RETURNF LOCAL
 ;※まず、「Y=A√X, Y=A'X」が共にARG:1,2の条件を만족するよう設定し、
 ;　その後ARG:3,4の条件を満たすBを設定する
 ;
-;※ARG:1が0であると、どうにもならないので0を返す
-;※ARG:3が0の時、ARG:4も0なら平方根法利用、それ以外なら0を返す
-;※ARG:3がARG:1と等しい時、ARG:4もARG:2と等しいなら平方根法利用、それ以外なら0を返す
+;※ARG:1が0であると、どうにもならないので0을반환
+;※ARG:3が0の時、ARG:4も0なら平方根法利用、それ以外なら0을반환
+;※ARG:3がARG:1と等しい時、ARG:4もARG:2と等しいなら平方根法利用、それ以外なら0을반환
 ;
 ;計算誤差が大きいので注意！
 ;-------------------------------------------------
@@ -574,7 +574,7 @@ RETURNF LOCAL
 #FUNCTION
 ;LOCAL初期化
 VARSET LOCAL
-;ARG,0-2のどれかが0の時は、常に0を返す
+;ARG,0-2のどれかが0の時は、常に0을반환
 SIF ARG:0 == 0 || ARG:1 == 0 || ARG:2 == 0
 	RETURNF 0
 ;ARG:0が負なら正にして、返り値の符号を反転する
@@ -589,14 +589,14 @@ IF ARG:1 < 0
 ENDIF
 ;目標値と第二目標値が同じ
 IF ARG:1 == ARG:3
-	;ARG:4がARG:2と等しくなければ0を返す
+	;ARG:4がARG:2と等しくなければ0을반환
 	SIF ARG:4 != ARG:2
 		RETURNF 0
 	;平方根法利用
 	LOCAL = 0
 ;第二目標値が0
 ELSEIF ARG:3 == 0
-	;ARG:4が0でなければ0を返す
+	;ARG:4が0でなければ0을반환
 	SIF ARG:4 != 0
 		RETURNF 0
 	;平方根法利用
@@ -620,7 +620,7 @@ LOCAL = (LOCAL:1 + LOCAL:2) / 10000
 ;ARG:0が負だったときの、返り値の符号反転
 SIF LOCAL:3
 	LOCAL = -LOCAL
-;値を返す
+;値을반환
 RETURNF LOCAL
 
 
@@ -800,7 +800,7 @@ LFLAG = ABS(LFLAG)
 LFLAG--
 ;命令がなかった場合
 IF LFLAG == -1
-	;0を返す
+	;0을반환
 	LOCAL = 0
 ;命令が一つしかなかった場合
 ELSEIF LFLAG == 0
@@ -832,7 +832,7 @@ IF LLIM
 	;LIMIT処理
 	LOCAL = LIMIT(LOCAL, LLIM:1, LLIM:2)
 ENDIF
-;値を返す
+;値을반환
 RETURNF LOCAL
 
 
@@ -924,10 +924,10 @@ SIF ARG:2 != 0
 	LOCAL = LOG10(ABS(ARG)) + 1 - ARG:2
 ;絶対桁指定と比較し、大きいものを採用
 LOCAL = MAX(LOCAL, ARG:3)
-;桁指定が0以下になればそのままの値を返す
+;桁指定が0以下になればそのままの値을반환
 SIF LOCAL <= 0
 	RETURNF ARG
-;桁指定がARGを超過했다場合0を返す
+;桁指定がARGを超過했다場合0을반환
 SIF LOCAL > LOG10(ABS(ARG)) + 1
 	RETURNF 0
 ;最近接偶数への丸め時、振り分け処理
@@ -953,7 +953,7 @@ LOCAL:1 = ABS(ARG) / POWER(10, LOCAL) % 10
 ;切り上げなら+-1を발す
 SIF ARG:1 == 2
 	LOCAL:1++
-;桁を戻して結果を返す
+;桁を戻して結果을반환
 RETURNF SIGN(ARG) * LOCAL:1 * POWER(10, LOCAL)
 
 ;-------------------------------------------------
