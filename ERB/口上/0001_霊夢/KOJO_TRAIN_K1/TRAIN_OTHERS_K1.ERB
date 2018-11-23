@@ -393,7 +393,7 @@ ENDIF
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 IF 구상記入チェック(50) && IS_CONDITION(TARGET, "분노")
 ;PRINTFORMW 「うぎぎ！退治してやろうかしら…」
-	PRINTFORMW 「의문！퇴치하고 해 줄까…」
+	PRINTFORMW 「우그극！ 퇴치해버릴까…」
 	RETURN 1
 ENDIF
 
@@ -526,16 +526,29 @@ ENDIF
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;죠교대상[순종]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && ARG == 0
-	PRINTFORMW 「그래. 순종이 첫번째야」
+IF 구상記入チェック(25) && ARG == 0
+	SELECTCASE ABL:MASTER:순종
+		CASE 1 TO 3
+			PRINTFORMW 「그래, 순종이 첫번째야」
+		CASEELSE
+			PRINTFORM 「옳지♪ 착하다 착해
+			CALL HEARTBW
+	ENDSELECT
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;죠교대상[욕망]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && ARG == 1
-	PRINTFORMW 「좀 더 하고싶어？」
+IF 구상記入チェック(25) && ARG == 1
+	SELECTCASE ABL:MASTER:욕망
+		CASE 1 TO 3
+			PRINTFORMW 「이제 좀 즐거워졌어？」
+		CASEELSE
+			PRINTFORM 「…………변태
+			CALL HEARTBW
+	ENDSELECT
+	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
@@ -547,13 +560,16 @@ ENDIF
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;죠교대상[Ｃ감각]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && ARG == 3
+IF 구상記入チェック(25) && ARG == 3
+	IF TALENT:MASTER:남자 == 1
+		PRINTFORMW 「응… 역시 여기가 가장 확실해…」
+	ENDIF
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;죠교대상[Ｖ감각]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && ARG == 4
+IF 구상記入チェック(25) && ARG == 4
 	SELECTCASE ABL:MASTER:Ｖ감각
 		CASE 1 TO 3
 			PRINTFORM 「좋은 상태가 되고 있잖아
@@ -569,24 +585,33 @@ ENDIF
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;죠교대상[Ａ감각]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && ARG == 5
+IF 구상記入チェック(25) && ARG == 5
 	;あえて開発途上で一回だけ感想
-	IF ABL:MASTER:Ａ감각 == 3
-		PRINTFORML 「…완전히…변태니까」
-	ELSE
-	ENDIF
+	SELECTCASE ABL:MASTER:Ａ감각
+		CASE 3
+			PRINTFORML 「…완전히…변태니까」
+		CASE IS >= 5
+			PRINTFORML 「……이제 애널의 노예가 되어버렸구나」
+			PRINTFORM 「몹쓸 남편
+			CALL HEARTBW
+		CASEELSE
+			PRINTFORMW
+	ENDSELECT
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;죠교대상[Ｂ감각]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && ARG == 6
-	;당신にまんまんがある場合
-	IF TALENT:MASTER:남자 == 0
-		
-	;당신にちんちんがある場合
+IF 구상記入チェック(25) && ARG == 6
+	IF TALENT:MASTER:남자
+		SELECTCASE ABL:MASTER:Ｂ감각
+		CASE 1 TO 3
+			PRINTFORMW 「반응이 꽤 재밌어♪」
+		CASEELSE
+			PRINTFORMW 「남자인데도 여기로 느낀다니… 변태」
+		ENDSELECT
 	ELSE
-		
+		PRINTFORMW
 	ENDIF
 	RETURN 1
 ENDIF
@@ -610,14 +635,16 @@ ENDIF
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;주인님さま[욕망]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && ARG == 1
+IF 구상記入チェック(100) && ARG == 1
+	PRINTFORML 「이거, 빠져들 것 같아…」
+	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;주인님さま[기교]アップ
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 IF 구상記入チェック(100) && ARG == 2
-	PRINTFORML 「조금씩 너의 일, 알아 왔어요」
+	PRINTFORML 「조금씩 너의 몸, 알 것 같아」
 	RETURN 1
 ENDIF
 
@@ -714,7 +741,7 @@ IF 記入チェック && ARG:0
 	SELECTCASE ARG:0
 		;고통각인Lv2
 		CASE 2
-		;고통각인Lv9…[굳셈]がある場合、それを失う
+		;고통각인Lv9…[굳셈]이있는경우、그걸잃는다
 		CASE 9
 		;表示しない
 		CASEELSE
@@ -752,12 +779,12 @@ IF 記入チェック && ARG:2
 		CASE 2
 			PRINTFORMW 「이제, 따라서 주는 것일까？」
 		;성교に至るまでには7に至らない可能性が高い
-		;굴복각인Lv7…[반항적]がある場合、それを失う
+		;굴복각인Lv7…[반항적]이있는경우、그걸잃는다
 		CASE 7
 			;この言い回しではむしろ煽ってしまう為コメントアウト
 			;PRINTFORMW 「もう、降参かしら？」
 			PRINTFORMW 「너는, 충분히 가져 견뎠어요」
-		;굴복각인Lv10…[프라이드높음]がある場合、それを失う
+		;굴복각인Lv10…[프라이드높음]이있는경우、그걸잃는다
 		CASE 10
 			;降参시킨다のくだすと神降ろしのおろすが紛らわしいので調整コメントアウト
 			;山芋をすりおろすと鬼が角と勘違いして逃げる
@@ -792,9 +819,9 @@ IF 記入チェック && ARG:1
 	SELECTCASE ARG:1
 		;쾌락각인Lv2
 		CASE 2
-		;쾌락각인Lv5…[쾌감을부정]がある場合、それを失う
+		;쾌락각인Lv5…[쾌감을부정]이있는경우、그걸잃는다
 		CASE 5
-		;쾌락각인Lv7…[억압]がある場合、それを失う
+		;쾌락각인Lv7…[억압]이있는경우、그걸잃는다
 		CASE 7
 		;쾌락각인Lv10…[쾌감에솔직]がない場合、それを得る
 		CASE 10
