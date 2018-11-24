@@ -1,10 +1,10 @@
 ﻿
 ;────────────────────────────────────
-;関数初期化
+;関数初期化 ;함수 초기화
 ;────────────────────────────────────
 @ACT_M_INIT(ARG)
 #DIM LCOUNT
-;変数を初期化
+;変数を初期化 ;변수 초기화
 CALL SET_CRI_VAR
 FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 	LOCAL = ACTM_NUM(ARG, LCOUNT)
@@ -18,9 +18,15 @@ NEXT
 ;보정値加算に関しては系列内でも共有の物を加算했다りしなかったりがあるので
 ;共通処理にはしない。その気になれば出来るだろって？
 ;面倒なんだよ。言わせんな恥ずかしい@これみ
+; 보정 값 계산
+; ────────────────────────────────────
+; 보정 값 가산 관해서는 계열 내에서 공유의 물건을 추가했다 리시 않거나 있으므로
+; 일반적인 처리는하지 않는다. 그 마음 만 먹으면 할 수있을라고?
+; 귀찮은거야. 말하게 거 창피 @ これみ
+
 @ACT_ACTM_CORRECTION(ARG)
 #DIM LCOUNT
-;보정値を判定値に加算する
+;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
 FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 	LOCAL = ACTM_NUM(ARG, LCOUNT)
 	CALL ACT_M_RES_FETCH(LOCAL)
@@ -28,11 +34,11 @@ FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 NEXT
 
 ;────────────────────────────────────
-;구상ACT분류보정값加算
+;구상ACT분류보정값加算 ;추가
 ;────────────────────────────────────
 @ACT_MENU_KOJO_CORRECTION_T
 #DIM LCOUNT
-;보정値を判定値に加算する
+;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
 FOR LCOUNT, 0, STRCOUNT(MENULIST(), "/")
 	CALL ADD_CRI_VAR(MENU(LCOUNT), 0, GET_KOJO_MENU_CORRECTION(MENU(LCOUNT), TARGET))
 NEXT
@@ -110,7 +116,7 @@ ENDIF
 ;────────────────────────────────────
 @ACT_ACTM_KOJO_CORRECTION_T(ARG)
 #DIM LCOUNT
-;보정値を判定値に加算する
+;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
 FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 	LOCAL = ACTM_NUM(ARG, LCOUNT)
 	CALL ADD_CRI_VAR(GET_ACTNAME(LOCAL), 0, GET_KOJO_CORRECTION(GET_ACTNAME(ACTM_NUM(ARG, LCOUNT)), , TARGET))
