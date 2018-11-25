@@ -5,7 +5,7 @@
 ;1以上なら判定を行わない
 #DIM LCOUNT, 1
 
-;関数初期化
+;関数初期化 ;함수 초기화
 CALL ACT_M_INIT(3)
 
 ;処理開始
@@ -86,7 +86,7 @@ CALL CHA_CRI_VAR, "実行判定"
 CALLFORM %LOCALS%_ABLE
 
 ;────────────────────────────────────
-;最終判定
+;최종판정
 ;────────────────────────────────────
 CALL DEF_CRI_VAR("最大前者")
 LOCAL = GET_CRI_VAR("決定")
@@ -118,6 +118,26 @@ CALL ANA_CRI_VAR()
 ;-------------------------------------------------------------------------
 @ACT_ACTM3_REFERENCE
 
+	;실험 코드
+	SELECTCASE FLAG:항문조교옵션
+		CASE 0 ;피스팅까지 모두 허용
+			
+		CASE 1 ;손가락, 혀, 도구, 애널성교 허용
+			
+		CASE 2 ;손가락, 혀, 애널성교 허용
+			
+		CASE 3 ;손가락, 혀, 도구 허용
+			CALL ADD_CRI_VAR("항문섹스", -999)
+		CASE 4 ;손가락, 혀만 허용
+			CALL ADD_CRI_VAR("항문섹스", -999)
+		CASE 5 ;혀만 허용
+			CALL ADD_CRI_VAR("항문섹스", -999)
+		CASE 6 ;손가락만 허용
+			CALL ADD_CRI_VAR("항문섹스", -999)
+		CASE 7 ;항문조교 불가
+			CALL ADD_CRI_VAR("항문섹스", -999)
+	ENDSELECT
+	
 ;要らないかもと思ったので試しに無効化@これみ
 [SKIPSTART]
 CALL ADD_CRI_VAR("정상위", 10)
@@ -505,7 +525,7 @@ IF ARG
 		CALL ACT_M_RES_CALC(LCOUNT, GET_CRI_VAR(GET_ACTNAME(LCOUNT) + "累計"))
 	NEXT
 ELSE
-	;보정値を判定値に加算する
+	;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
 	CALL ACT_ACTM_CORRECTION(3)
 ENDIF
 

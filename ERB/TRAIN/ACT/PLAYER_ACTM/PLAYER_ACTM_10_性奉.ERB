@@ -5,7 +5,7 @@
 ;1以上なら判定を行わない
 #DIM LCOUNT, 1
 
-;関数初期化
+;関数初期化 ;함수 초기화
 CALL ACT_M_INIT(10)
 
 ;処理開始
@@ -56,7 +56,7 @@ CALL CHA_CRI_VAR, "実行判定"
 CALLFORM %LOCALS%_ABLE
 
 ;────────────────────────────────────
-;最終判定
+;최종판정
 ;────────────────────────────────────
 CALL DEF_CRI_VAR("最大前者")
 LOCAL = GET_CRI_VAR("決定")
@@ -92,6 +92,20 @@ CALL ANA_CRI_VAR()
 ;基準値
 ;-------------------------------------------------------------------------
 @ACT_ACTM10_REFERENCE
+	
+	;실험 코드
+	SELECTCASE FLAG:항문봉사옵션
+		CASE 0 ;애널성교까지 허용
+			
+		CASE 1 ;손가락, 혀만 허용
+			CALL ADD_CRI_VAR("항문섹스시킨다", -999)
+		CASE 2 ;혀만 허용
+			CALL ADD_CRI_VAR("항문섹스시킨다", -999)
+		CASE 3 ;손가락만 허용
+			CALL ADD_CRI_VAR("항문섹스시킨다", -999)
+		CASE 4 ;항문봉사 불가
+			CALL ADD_CRI_VAR("항문섹스시킨다", -999)
+	ENDSELECT
 
 ;要らないかもと思ったので試しに無効化@これみ
 [SKIPSTART]
@@ -125,8 +139,7 @@ ENDSELECT
 ;-------------------------------------------------------------------------
 ;죠교자の素質を参照
 ;-------------------------------------------------------------------------
-@ACT_ACTM10_TALENT_T
-
+@ACT_ACTM10_TALENT_T	
 ;죠교자が겁쟁이/굳셈
 IF TALENT:겁쟁이
 	CALL ADD_CRI_VAR("정상위시킨다", , 2)
@@ -377,7 +390,7 @@ IF ARG
 	NEXT
 	CALL ACT_M_RES_CALC(103, GET_CRI_VAR("역강간累計"))
 ELSE
-	;보정値を判定値に加算する
+	;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
 	CALL ACT_ACTM_CORRECTION(10)
 ENDIF
 
