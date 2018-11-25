@@ -31,15 +31,50 @@ DO
 		PRINTFORML %SIGNS(FLAG:AI자유도 ? FLAG:AI자유도 / 15 # -1, "OFF", "일부ON", "ON"), 30, RIGHT%
 	ENDIF
 	PRINTFORML %"[ 9] 조교중 인터페이스", 50, LEFT%%\@ FLAG:죠교UI패드화 ? 패드 # 노멀 \@, 30, RIGHT%
+	
+	PRINTFORM %"[10] 항문 조교 옵션 설정", 50, LEFT%
+	SELECTCASE FLAG:항문조교옵션
+		CASE 0 
+			PRINTFORML %"피스팅까지 모두 허용", 30, RIGHT%
+		CASE 1 
+			PRINTFORML %"손가락, 혀, 도구, 애널성교 허용", 30, RIGHT%
+		CASE 2 
+			PRINTFORML %"손가락, 혀, 애널성교 허용", 30, RIGHT%
+		CASE 3 
+			PRINTFORML %"손가락, 혀, 도구 허용", 30, RIGHT%
+		CASE 4 
+			PRINTFORML %"손가락, 혀만 허용", 30, RIGHT%
+		CASE 5 
+			PRINTFORML %"혀만 허용", 30, RIGHT%
+		CASE 6 
+			PRINTFORML %"손가락만 허용", 30, RIGHT%
+		CASE 7 
+			PRINTFORML %"항문조교 불가", 30, RIGHT%
+	ENDSELECT
+	
+	PRINTFORM %"[11] 항문 봉사 옵션 설정", 50, LEFT%
+	SELECTCASE FLAG:항문봉사옵션
+		CASE 0
+			PRINTFORML %"애널성교까지 허용", 30, RIGHT%
+		CASE 1
+			PRINTFORML %"손가락, 혀만 허용", 30, RIGHT%
+		CASE 2
+			PRINTFORML %"혀만 허용", 30, RIGHT%
+		CASE 3
+			PRINTFORML %"손가락만 허용", 30, RIGHT%
+		CASE 4
+			PRINTFORML %"항문봉사 불가", 30, RIGHT%
+	ENDSELECT
+	
 	DO
 		INPUT
-		LOCAL:0 = !INRANGE(RESULT, 0, 9)								;範囲チェック
+		LOCAL:0 = !INRANGE(RESULT, 0, 11)								;範囲チェック ;범위체크
 		LOCAL:0 |= (RESULT == 1 && KOJO_CONF:0 <= 0)					;推奨設定が無い
 		LOCAL:0 |= (RESULT == 2 && (FLAG:디버그 !| KOJO_CONF:1 > 0))	;디버그모드でも독심능력オンでもない
 		LOCAL:0 |= (RESULT == 8 && FLAG:모드 != 1)					;SANDBOX모드でない
 		IF LOCAL:0
 			CLEARLINE 1
-			REUSELASTLINE 入力値が範囲外です
+			REUSELASTLINE 입력 값이 범위를 벗어났습니다
 		ENDIF
 	LOOP LOCAL:0
 	LOCAL:0 = RESULT
@@ -68,6 +103,14 @@ DO
 			FLAG:노예임신 = RESULT
 		CASE 7 TO 9
 			CALLFORM CONFIG_%CONF_FUNC:(LOCAL:0 - 7)%
+		CASE 10
+			PRINTFORML 항문조교를 당할지의 여부를 설정합니다\n[ 0] 피스팅까지 모두 허용\n[ 1] 손가락, 혀, 도구, 애널성교 허용\n[ 2] 손가락, 혀, 애널성교 허용\n[ 3] 손가락, 혀, 도구 허용\n[ 4] 손가락, 혀만 허용\n[ 5] 혀만 허용\n[ 6] 손가락만 허용\n[ 7] 항문조교 불가
+			CALL INPUT_RANGE(0, 7)
+			FLAG:항문조교옵션 = RESULT
+		CASE 11
+			PRINTFORML 항문봉사를 시킬지의 여부를 설정합니다\n[ 0] 애널성교까지 허용\n[ 1] 손가락, 혀만 허용\n[ 2] 혀만 허용\n[ 3] 손가락만 허용\n[ 4] 항문봉사 불가
+			CALL INPUT_RANGE(0, 4)
+			FLAG:항문봉사옵션 = RESULT
 	ENDSELECT
 LOOP LOCAL:0
 REDRAW LOCAL:2
