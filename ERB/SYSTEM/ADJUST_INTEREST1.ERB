@@ -10,7 +10,7 @@
 #DIM LTEMP
 
 IF ARG == 1
-	;ACT長期보정値に加算
+	;ACT長期보정値に加算 ;ACT 장기 보정 값에 추가
 	FOR LCOUNT, 0, 200
 		RESULT:LCOUNT += ABSQSI(LOCAL:LCOUNT)
 	NEXT
@@ -20,42 +20,42 @@ IF ARG == 1
 	RETURN RESULT
 ENDIF
 
-;ACT範囲外(ACT非実行時に呼ばれた等)の場合脱出
+;ACT範囲外(ACT非実行時に呼ばれた等)の場合脱出 ;; ACT 범위를 벗어난 ACT (비 실행시에 불린 등)의 경우 탈출
 SIF GET_NORMALACTNUM(TFLAG:ACT) < 0 || VARSIZE("LOCAL") <= GET_NORMALACTNUM(TFLAG:ACT)
 	RETURN 0
 
-;最終的に加算する흥미値
+;最終的に加算する흥미値 ;결국 가산하는 흥미값
 LTEMP = 0
 
-;날뛴다なら常に흥미-2
+;날뛴다なら常に흥미-2 ;날뛴다면 항상 흥미 -2
 SIF IS_COMGRONAME("날뛴다/逃げる/거부")
 	LTEMP -= CFLAG:MASTER:죠교레벨 < 10 ? 2 # 4
 
-;싫어한다なら常に흥미-1 // 날뛴다扱いの時は弾くように
+;싫어한다なら常に흥미-1 // 날뛴다扱いの時は弾くように ;; 싫어한다라면 항상 흥미 -1 // 날뛴다 취급시에는 연주처럼
 SIF IS_NOWCOMNAME("싫어한다") && IS_COMGRONAME("소극적으로 한다")
 	LTEMP -= CFLAG:MASTER:죠교레벨 < 10 ? 1 # 2
 
-;죠교자のプライドが高い場合、애무/성교系で貶されるとムキになる
+;죠교자のプライドが高い場合、애무/성교系で貶されるとムキになる ;죠교자의 프라이드가 높은 경우, 애무 / 성교 계에서 비방하면 정색을하게
 {
 SIF TALENT:프라이드높음 && IS_NOWCOMNAME("서투르다고 모욕한다") 
 && (MENUMATCH(TFLAG:ACT, "애무") || MENUMATCH(TFLAG:ACT, "성교"))
 }
 	LTEMP += 2
 
-;特定状況での効果up
+;特定状況での効果up ;특정 상황에서의 효과 up
 {
 SIF IS_NOWCOMNAME("애정을 담아 한다") && 
 (MENUMATCH(TFLAG:ACT, "봉사") || MENUMATCH(TFLAG:ACT, "성봉") || IS_NOWACTNAME("기승위"))
 }
 	LTEMP += 3
 
-;새드は노예の悲鳴を喜ぶ
+;새드は노예の悲鳴を喜ぶ ;새드는 노예의 비명을 기뻐
 SIF TALENT:새드 && IS_NOWCOMNAME("비명지른다")
 	LTEMP += 2
 
 
 ;///////////
-;ACT毎の보정
+;ACT毎の보정 ;ACT마다의 보정
 ;///////////
 SELECTCASE GET_ACTNAME(TFLAG:ACT)
 	;ACT분류/회화系
