@@ -97,15 +97,17 @@ IF 구상記入チェック(100) && !FLAG:모드
 	PRINTFORML
 	;もてなす側の%CALLNAME:TARGET%は%CALLNAME:MASTER%が一입目を입にするまで待つ
 ;OriginalString : ずぞぞっ…
-	PRINTFORMDL …
+	PRINTFORMDL 흐릅…
 ;OriginalString : ずずっ…
 	PRINTFORMW 후룩…
 ;OriginalString : 
 	PRINTFORML 
 ;OriginalString : 「ところで…」
 	PRINTFORMW 「그래…」
+	PRINTFORMDW 
 ;OriginalString : 「금일からあんたと私、夫婦ね」
 	PRINTFORMW 「오늘부터 너와 나, 부부」
+	PRINTFORMDW 
 ;OriginalString : 
 	PRINTFORML 
 ;OriginalString : その宣告はあまりにも唐突で、しかし彼女らしくもあった
@@ -145,7 +147,308 @@ ENDIF
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;エンディング
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100)
+IF 구상記入チェック(100) ;이거 30일 되면 호감도 상관 없이 무조건 실행되는거 맞나?
+
+
+;엔딩 시험중
+;레이무의 대사는 PRINTFORMW 「레이무할말」
+;그외 대사는 PRINTFORMDW 나레이션대사
+;아나타가 하는 말, 생각은 나레이션으로 당신은 ~~했다. ~~라고 말했다 이런 식으로 처리됨
+;PRINTFORMDW 「아나타 할말」으로 표시해 아나타가 하는 말로 표시하는 경우는 내가 최초. 분위기파괴 위험성 있음
+
+;줄 넘기기
+FOR LOCAL, 0, 100
+	PRINTL
+NEXT
+
+PRINTFORMDW ...
+PRINTFORMDW ..
+PRINTFORMDW .
+PRINTFORMDW 엔딩 조건 달성!
+PRINTFORMDW
+PRINTFORML [1] 계속한다
+CALL INPUTINT(1)
+SELECTCASE RESULT
+	CASE 1
+ENDSELECT
+
+;줄 넘기기
+FOR LOCAL, 0, 100
+	PRINTL
+NEXT
+;;;;;;;엔딩 공통 출발점
+		PRINTFORMW 「저기… 나」
+		PRINTFORMW 「일이 있어서, 당분간 신사를 비워야 할 것 같아」
+		PRINTFORMDW 이변, 비슷한 일인가 하고 %CALLNAME:MASTER%(은)는 물어봤다.
+		PRINTFORMW 「그래. 아마도 이변일거야, 아주 큰 이변.」
+		PRINTFORMDW 환상향을 지키는 하쿠레이의 무녀라는 건 바쁘나 보다.
+		PRINTFORMW 「아마 삼흘 정도？ 아무리 늦어도 일주일 안에는 돌아올게」
+		PRINTFORMW 「………」
+			
+		IF CFLAG:M호의 <= 3000
+			PRINTFORMW 「물론 신사의 결계는 풀어주지 않을거야」
+			PRINTFORMW 「네가 도망치는것도 염두하고 있지만, 게다가 밖은 위험하고… 내가 옆에 없잖아？」
+			PRINTFORMW 「\@ TALENT:MASTER:남자 ? 남편을 지키는 것도 아내의 의무니깐 # 너의 안전을 위해서야 \@.」
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 자신을 감금하고 떠나는 게 불만스러웠지만 그저 입을 다물고만 있었다.
+			PRINTFORMW 「응. 갖다올게. 허튼 짓하지 말고.」
+			PRINTFORMDW 레이무는 경고를 뒤로 한 체 신사를 떠났다.
+		
+		ELSE
+			PRINTFORMW 「미안… 이제 와서 \@ TALENT:MASTER:남자 ? 남편을 # 너를 \@ 못믿는건 아닌데」
+			PRINTFORMW 「그래도 신사의 결계는 풀어주지 않을거야」
+			PRINTFORMW 「도망치진 않을 거라는걸 알지만, 그래도 밖은 위험하고… 내가 옆에 없잖아？」
+			PRINTFORMW 「\@ TALENT:MASTER:남자 ? 남편을 지키는 것도 아내의 의무니깐 # 너의 안전을 위해서야 \@.」
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 결계 얘기는 일체 하지 않고 그저 기다릴 테니 빨리 돌아오라고만 말했다.
+			PRINTFORMW 「응. 갖다올게. 밥 잘 챙겨먹고, 청소 빼먹지 말고.」
+			PRINTFORMDW 레이무는 엄마가 할 법한 잔소리를 뒤로 하고 신사를 떠났다.
+		ENDIF
+		
+		PRINTFORMDW …
+		PRINTFORMDW …
+		PRINTFORMDW …
+;;;;;;;엔딩 공통 출발점 (끝)
+		
+	;YM엔딩: 광기가 붙어있으면 무조건 YM엔딩
+	IF TALENT:MASTER:광기
+		
+		PRINTFORMDW 레이무가 없어진 지금, %CALLNAME:MASTER%(은)는 좀 더 상황을 이성적으로 판단할 수 있었다.
+		PRINTFORMDW 처음에는 아무런 문제 없이 평화롭고, 무난한 관계였다. 그저 서로의 마음을 털어놓을 수 있는 그런 좋은 친구였다.
+		PRINTFORMDW 그러나 갑작스런, 일방적인 고백. 감금, 고문.
+		PRINTFORMDW 싫다고, 그만둬달라고, 용서해달라 빌어도, 울부짖어도 계속되는 고통…
+		PRINTFORMDW
+		PRINTFORMDW ……그리고 쾌락
+		PRINTFORMDW 처음부터 지금까지 나는 이 이야기에 출현하지도 않았던 거다.
+		PRINTFORMDW 감금당해 자유를 빼았기고, 고통과 쾌락 앞에 굴복하여 레이무의 장난감으로 소유됬을 뿐.
+		PRINTFORMDW 
+		SIF !(CFLAG:ARG:아이가짐 == 0 && CFLAG:MASTER:아이가짐 == 0) ;출산을 했을 경우
+			PRINTFORMDW 이 아이도 나와 마찬가지…
+		PRINTFORMDW …
+		PRINTFORMDW 이 관계는 처음부터 잘못되었으며, 나중에도 제대로 유지되지 못하고 깨질 것이다.
+		PRINTFORMDW 레이무가 빨리 돌아왔다면 이런 잡념에 들지 않고 다시 이전처럼 고통과 쾌락에 놀아났을텐데
+		PRINTFORMDW 떠난 지 2주가 되자 지금의 결론에 이르렀다.
+		PRINTFORMDW 그리고 마침내, 신사의 결계가 해제되었다.
+		PRINTFORMDW 레이무가 예상한 최후의 마지노선이 2주인 것인가… 그렇게 결계는 깨지고, 
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 언제든지 나갈 수 있는 자유의 몸이 되었다.
+		PRINTFORMDW 그러나 %CALLNAME:MASTER%(은)는 나가지 않았다.
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 이런 식으로 이야기를 끝내고 싶지 않았다.
+		PRINTFORMDW 레이무의 소품으로서 존재하기보단, 자기 자신도 이 이야기에 출현하여 등장인물로서 존재감을 내비치고 싶었다.
+		PRINTFORMDW 신사의 결계와 함께 해제된 레이무의 방의 결계.
+		PRINTFORMDW 레이무가 절대 들어가지 말라고 엄중히 경고했던 그곳.
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 금기의 장소를 사막에서 바늘을 찾는 듯한 의지로 수색한다.
+		PRINTFORMDW 그리고 등장인물로 출현할 수 있는, 아니 등장인물도 아닌 주인공까지 격상할 수 있는 물건을 찾았다…
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 동방조교전……
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 본래 인간의 몸으론 얻을 수 없는 고통과 쾌락. 구슬로 조종되는 육체와 정신. 
+		PRINTFORMDW 마력으로 변환되는 정령. 마력의 무궁무진한 사용처.
+		PRINTFORMDW …
+		PRINTFORMDW 책의 페이지의 일부분이 갑자기 바뀌어간다.
+		PRINTFORMDW 
+		PRINTFORMDW 일정량의 현찰로 소환, 능력이 봉인되는 환상향의 소녀들. 조교. 인신매매.
+		PRINTFORMDW 더 많은 현찰을 바치면 쉽게 얻을 수 있는 금단의 지식, 약물, 능력들.
+		PRINTFORMDW 
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 신사가 무너지란듯이 크게 웃었다.
+		PRINTFORMDW ...
+		PRINTFORMDW ..
+		PRINTFORMDW .
+		PRINTFORMDW 레이무가 돌아왔다. 옷은 찢어지고 몸 곳곳에 상처가 심한 모습이다. 정말 반가웠다. 
+		PRINTFORMW 「헉… 헉… 좀 많이 늦었구나… 정말 미안해… %CALLNAME:MASTER%. 그래도 이젠 다 괜찮아…」
+		PRINTFORMDW 레이무는 마치 영원히 헤어질 뻔했다는 듯 감격스러워하는 표정으로 %CALLNAME:MASTER%(을)를 껴안았다
+		PRINTFORMDW ...
+		PRINTFORMW 「？！」
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 촉수를 소환해서 레이무의 사지를 묶는다.
+		PRINTFORMW 「%CALLNAME:MASTER%！ 그 책을 본거야？ 내가 절대 방에 들어가지 말라고 했잖아！！」
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 말없이 고개를 살짝 끄덕여 수긍한다.
+		PRINTFORMDW 그리고 잠깐동안 레이무의 표정을 감상한다. 
+		PRINTFORMDW 당황과 배신감.
+		PRINTFORMDW 그리고 곧바로 절망으로 어두워지는 표정. 이런 상황에도 직감은 좋은건가.
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 「걱정마 레이무. 너는 절대 죽이거나 팔지 않아」
+		PRINTFORMDW 
+		PRINTFORMDW 「그래…」
+		PRINTFORMDW 
+		PRINTFORMDW 「오늘부터 너와 나, 부부」
+		PRINTFORMDW 
+		PRINTFORMDW 그건 프로포즈나 청혼같은게 아닌 통보, 레이무에게 선택권은 없었다.
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		
+		REDRAW 0
+		SETFONT "ＭＳ 明朝"
+		FONTSTYLE 3
+		
+		CALL FULLCUTIN(40, 17, "eratohoYM――"," "," ","      ――죠교가, 시작된다")
+		
+		FOR LOCAL, 0, 100
+			PRINTL
+		NEXT
+		
+		FONTSTYLE 0
+		SETFONT "ＭＳ ゴシック"
+
+		PRINTFORMDW 레이무_K_ED1_YM엔딩
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		
+		CALL K1_GAME_OVER
+		
+	;탈주엔딩 : 아나타의 호감도가 3000이하
+	;ELSEIF CFLAG:ARG:아이가짐 == 0 && CFLAG:MASTER:아이가짐 == 0 && TALENT:ARG:임신 == 0 && CFLAG:M호의 <= 3000
+	ELSEIF CFLAG:M호의 <= 3000
+	
+		PRINTFORMDW 레이무가 없어진 지금, %CALLNAME:MASTER%(은)는 좀 더 상황을 이성적으로 판단할 수 있었다.
+		PRINTFORMDW 처음에는 아무런 문제 없이 평화롭고, 무난한 관계였다. 그저 서로의 마음을 털어놓을 수 있는 그런 좋은 친구였다.
+		PRINTFORMDW 그러나 갑작스런, 일방적인 고백. 감금, 고문.
+		PRINTFORMDW 싫다고, 그만둬달라고, 용서해달라 빌어도, 울부짖어도 계속되는 고통…
+		PRINTFORMDW
+		PRINTFORMDW ……그리고 쾌락
+		PRINTFORMDW 처음부터 지금까지 나는 이 이야기에 출현하지도 않았던 거다.
+		PRINTFORMDW 감금당해 자유를 빼았기고, 고통과 쾌락 앞에 굴복하여 레이무의 장난감으로 소유됬을 뿐.
+		PRINTFORMDW 
+		SIF !(CFLAG:ARG:아이가짐 == 0 && CFLAG:MASTER:아이가짐 == 0) ;출산을 했을 경우
+			PRINTFORMDW 이 아이도 나와 마찬가지…
+		PRINTFORMDW …
+		PRINTFORMDW 이 관계는 처음부터 잘못되었으며, 나중에도 제대로 유지되지 못하고 깨질 것이다.
+		PRINTFORMDW 레이무가 빨리 돌아왔다면 이런 잡념에 들지 않고 다시 이전처럼 고통과 쾌락에 놀아났을텐데
+		PRINTFORMDW 떠난 지 2주가 되자 지금의 결론에 이르렀다.
+		PRINTFORMDW 그리고 마침내, 레이무가 쓰던 개인 방의 결계가 해제되었다.
+		PRINTFORMDW 레이무가 절대 들어가지 말라고 엄중히 경고했던 그곳.
+		PRINTFORMDW 레이무가 예상한 최후의 마지노선이 2주인 것인가… 그렇게 결계는 깨지고, %CALLNAME:MASTER%(은)는 방으로 들어갈 수 있었다.
+		PRINTFORMDW 이 곳의 결계가 깨졌다면 신사의 결계도 마찬가지일 터, %CALLNAME:MASTER%(은)는 방에서 현금을 어느 정도 챙기고
+		
+		IF !(CFLAG:ARG:아이가짐 == 0 && CFLAG:MASTER:아이가짐 == 0) ;출산을 했을 경우
+			PRINTFORMDW 아이를 대리고 신사를 빠져 나와 최대한 멀리 떨어진 인간이 사는 마을로 향했다.
+		ELSE
+			PRINTFORMDW 신사를 빠져 나와 최대한 멀리 떨어진 인간이 사는 마을로 향했다.
+		ENDIF
+		PRINTFORMDW 그 이후로 %CALLNAME:MASTER%(은)는 평범하지만 소중한 일상을 되찼았다.
+		PRINTFORMDW 레이무는 %CALLNAME:MASTER%(을)를 찾아오지 않았다.  
+		PRINTFORMDW 레이무의 능력과 인맥이면 충분히 찾을 수 있을 터인데도, 그런 일은 없었다.
+		PRINTFORMDW 그렇다고 내가 신사를 찾아갈만큼 궁금한 것도 아니다. 다만 지난 악몽을 모두 잊고 싶을 뿐이다.
+		
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 레이무_K_ED2_탈출엔딩
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		
+		CALL K1_GAME_OVER2
+		
+	;순애엔딩 : YM,탈주엔딩이 아닐 경우
+	ELSE
+	
+		PRINTFORMDW 레이무가 없어진 지금, %CALLNAME:MASTER%(은)는 좀 더 상황을 이성적으로 판단할 수 있었다.
+		PRINTFORMDW 처음에는 아무런 문제 없이 평화롭고, 무난한 관계였다. 그저 서로의 마음을 털어놓을 수 있는 그런 좋은 친구였다.
+		PRINTFORMDW 그러나 갑작스런, 일방적인 고백. 감금, 고문.
+		PRINTFORMDW 싫다고, 그만둬달라고, 용서해달라 빌어도, 울부짖어도 계속되는 고통…
+		PRINTFORMDW
+		PRINTFORMDW ……그리고 쾌락
+		PRINTFORMDW 처음부터 잘못되었다.
+		PRINTFORMDW 처음부터 우리는 그저 그런 좋은 친구가 아니였다.
+		PRINTFORMDW 분명히 서로에게 마음을 품고 있는데도, 서로 눈치채고 있는데도,
+		PRINTFORMDW 용기가 없는건지 자존심만 강한건지 서로 끙끙 앓고 있기만 하다가
+		PRINTFORMDW 어느 한쪽이 참지 못하고 용기를 냈을 뿐인 이야기였다.
+		PRINTFORMDW 감금당해 자유를 빼았기고, 고통과 쾌락에 굴복했을 뿐이라도
+		PRINTFORMDW 레이무가 나에게 행하는 거라면 감금이든 고문이든 쾌락이든 전부 사랑스럽다.
+		PRINTFORMDW 레이무가 있었다면 이런 나의 마음을 고백했을텐데,
+		PRINTFORMDW 떠난 지 2주가 되어서야 비로소 깨달았다.
+		PRINTFORMDW 그리고 마침내, 신사의 결계가 해제되었다.
+		PRINTFORMDW 레이무가 예상한 최후의 마지노선이 2주인 것인가… 그렇게 결계는 깨지고, 
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 언제든지 나갈 수 있는 자유의 몸이 되었다.
+		PRINTFORMDW 신사의 결계와 함께 레이무의 방의 결계도 해제되었다.
+		PRINTFORMDW 레이무가 절대 들어가지 말라고 엄중히 경고했던 그곳.
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 주저하지 않고 들어가 현금, 지도, 이변에 대한 기록 등 필요한 것을 챙겨
+		PRINTFORMDW 신사 밖을 나선다.
+		PRINTFORMDW 아무리 늦어도 일주일 안에 돌아온다고 했지만,
+		PRINTFORMDW 2주가 지나, 결계가 해제될 때까지도 돌아오지 않는다는 것은
+		PRINTFORMDW 분명 상황이 심각하다는 얘기다.
+		IF !(CFLAG:ARG:아이가짐 == 0 && CFLAG:MASTER:아이가짐 == 0) ;출산을 했을 경우
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 아이를 가까운 마을에 맡기고, 레이무의 뒤를 쫒는다.
+		ELSE
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 이변의 흔적을 따라 레이무의 뒤를 쫒는다.
+		ENDIF
+		PRINTFORMDW ...
+		PRINTFORMDW ..
+		PRINTFORMDW .
+		PRINTFORMDW 신사를 나와 레이무를 찾아다닌지 2주가 지났다.
+		PRINTFORMDW 세상 곳곳을 돌아다니며 죽을 고비를 몇번씩 넘기며 조사하니 이변에 대해 어느정도 정보를 얻을 수 있었다.
+		PRINTFORMDW 환상향의 존재 자체를 뒤흔들었던 이변. 환상, 외계, 현실이 뒤섞여 융합하거나 공멸할 수도 있었던 대규모의 이변.
+		PRINTFORMDW 그러나 갑자기 이변은 해결되었고, 레이무의 흔적은 갑자기 끊겨 사라졌다.
+		PRINTFORMDW 이게 어떻게 된 거지？ 
+		PRINTFORMDW 의문을 가져도 파훼법은 보이지 않는다.
+		PRINTFORMDW 일단 신사로 돌아가기로 했다. 처음부터 다시 시작한다. 절대 포기할 수는 없다.
+		PRINTFORMDW ...
+		PRINTFORMDW ..
+		PRINTFORMDW .
+		PRINTFORMDW 삼흘이 걸려 신사로 돌아왔다.
+		PRINTFORMDW 신사인지 폐가인지 구분이 안될 정도로 엉망이다.
+		PRINTFORMDW 쓰래기는 부숴진 살림살이와 함께 나뒹굴고 있고,
+		PRINTFORMDW 빈 술병은 술냄새를 풍기며 쌓여 있고,
+		SIF !(CFLAG:ARG:아이가짐 == 0 && CFLAG:MASTER:아이가짐 == 0 && TALENT:ARG:임신 == 0) ;출산을 했거나 임신된 상태로 엔딩을 볼 경우
+			PRINTFORMDW 아이는 쓰래기더미에 방치되어 자고 있고,
+		PRINTFORMDW 그 가운데에
+		PRINTFORMDW 눈은 초첨을 잃고,
+		PRINTFORMDW 옷은 찢어지고 몸은 성한 곳 없는 상처투성이에,
+		PRINTFORMDW 폐인처럼 술에 찌들어 버렸지만,
+		PRINTFORMDW 
+		PRINTFORMDW 정말 안어울리게도
+		PRINTFORMDW 세상에서 가장 아름다운
+		PRINTFORMW 레이무
+		PRINTFORMDW 
+		PRINTFORMW 「바보！바보！바보！ %CALLNAME:MASTER% 바보！！！」
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 레이무에게 욕지거리와 험담을 들으며 일방적으로 구타당한다.
+		PRINTFORMDW 고통… %CALLNAME:MASTER%(은)는 이마저도 사랑스럽다고 생각한다.
+		PRINTFORMDW 얼마나 지났을까…
+		PRINTFORMDW 바닥에 엎어진 %CALLNAME:MASTER%(은)는 폭행을 멈춘 레이무를 올려다본다.
+		PRINTFORMDW 초점을 잃었던 눈은 생기를 되찾았지만, 눈물로 글썽이는 눈은 곧 한방울 떨어트릴 것 같다.
+		PRINTFORMW 「날… 버린 줄 알고……」
+		PRINTFORMW 「아니 처음부터… 이런 강제적인 관계라니…… 말도 안되잖아……」
+		PRINTFORMDW 레이무의 눈에서 눈물이 왈칵 쏟아져 흐른다.
+		PRINTFORMDW ………아름답다.
+		PRINTFORMDW 
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 한쪽 무릎을 꿇고 품에서 반지를 꺼내 레이무의 손가락에 끼운다.
+		PRINTFORMDW 
+		PRINTFORMW 「…？！」
+		PRINTFORMDW 
+		PRINTFORMDW 「강제적인 관계가 아니야」
+		PRINTFORMDW 
+		PRINTFORMDW 「그래…」
+		PRINTFORMDW 
+		PRINTFORMDW 「오늘부터 너와 나, 부부」
+		PRINTFORMDW 
+		PRINTFORMDW 그건 강제나 통보같은게 아닌 청혼, 레이무는 선택할 필요가 없었다.
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORM 「………미안해 %CALLNAME:MASTER%
+		CALL HEARTBW
+		PRINTFORMW 「나 이제… 더는 참을 수가 없어！！！」
+		PRINTFORMDW 레이무는 %CALLNAME:MASTER%(을)를 덮쳐, 부적을 붙이고 옷을 찢어 버렸다.
+		PRINTFORMDW 레이무의 아름다운 눈은 초점이 사라지… 아니, 마치 분홍색 하트가 세겨진 듯 하다.
+		PRINTFORMDW 
+		PRINTFORMDW %CALLNAME:MASTER%(은)는 사랑스러운 레이무에게 강제적으로 착정당하며 행복에 취한다.
+		
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 레이무_K_ED3_순애엔딩
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+		PRINTFORMDW 
+
+		CALL K1_GAME_OVER3
+	ENDIF
+[SKIPSTART]
 ;OriginalString : 
 	PRINTFORML
 ;OriginalString : そしてそれから……
@@ -182,7 +485,9 @@ IF 구상記入チェック(100)
 	PRINTFORML
 ;OriginalString : %CALLNAME:MASTER%의 손に、%CALLNAME:TARGET%がそっと손を重ねてくる
 	PRINTFORMW %CALLNAME:MASTER%의 손에, %CALLNAME:TARGET%는 살그머니 손을 모아 온다
-	
-	;戻り値は1で決めうちしておきます
+[SKIPEND]
+
+	;戻り値は1で決めうちしておきます ;반환 값은 1에서 결정한 가운데 둡니다
 	RETURN 1
+	
 ENDIF
