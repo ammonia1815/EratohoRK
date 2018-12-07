@@ -9,31 +9,31 @@
 ;========================================================================
 ;회화系 ACT0～9
 ;========================================================================
-;・TFLAG:ACT(0=지금 기분을 묻다/1=자신에게의 마음을 묻다/2=성에 관한 이야기를 하다/3=상냥하게 위로한다/4=엄하게 위협한다/5=의상 변경을 요구한다/6=합의를 요구한다/7=징계한다고 위협한다/8=고함치다/9=기분나쁘게 웃다)
-;・TFLAG:ACT분류 == 0に該当
-;・ACT9, 기분나쁘게 웃다は이상系ACT분류から派生する場合がある
-;・汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "회화")で拾う事が可能
+;?TFLAG:ACT(0=지금 기분을 묻다/1=자신에게의 마음을 묻다/2=성에 관한 이야기를 하다/3=상냥하게 위로한다/4=엄하게 위협한다/5=의상 변경을 요구한다/6=합의를 요구한다/7=징계한다고 위협한다/8=고함치다/9=기분나쁘게 웃다)
+;?TFLAG:ACT분류 == 0に該?
+;?ACT9, 기분나쁘게 웃다は이상系ACT분류から派生する場合がある
+;?汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "회화")で拾う事が可能
 ;-------------------------------------------------
-;・戻り値(RESULT)について
-;・システム側では구상側のRESULT(終端のRETURN 1など)によって구상が表示당했다のか否か、
-;・また箇所毎の特有の挙動(미약等구상をスキップなど)を制御しています
-;・@구상記入チェックの場合代入処理を省略できますが、RESULT値は구상側で決めうちする필요があります
-;・特別な理由がない限り、テンプレとしてはRETURN 1を記述しておきます
+;??り値(RESULT)について
+;?システム側では구상側のRESULT(終端のRETURN 1など)によって구상が表示당했다のか否か、
+;?また箇所?の特有の?動(미약等구상をスキップなど)を制御しています
+;?@구상記入チェックの場合代入?理を省略できますが、RESULT値は구상側で決めうちする필요があります
+;?特別な理由がない限り、テンプレとしてはRETURN 1を記述しておきます
 ;-------------------------------------------------
 ;────────────────────────────────────
 ;ACT0, 지금 기분을 묻다
 ;────────────────────────────────────
-;・今の気分について聞いてくる
-;・죠교대상の反応に応じてREACT以降でACT파생への代入が行われる
-;・턴방침が"이상"なら発生しない
+;?今の?分について聞いてくる
+;?죠교대상の反?に?じてREACT以降でACT파생への代入が行われる
+;?턴방침が"이상"なら?生しない
 ;-------------------------------------------------
 @KOJO_ACT_K15_0
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;関数@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
+;??@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
 ;@EQUIPACTION_DESCRIPTIONによってTEQUIP(안면승마/안면승마항문/자위중)で地の文は변화する可能性がある
-;全て埋める필요はないので、기타・조건없음を最初に埋めた上で、あとは好みで分岐を増減してください
+;全て埋める필요はないので、기타?조건없음を最初に埋めた上で、あとは好みで分岐を?減してください
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT0, 지금 기분을 묻다
@@ -45,9 +45,9 @@ IF 구상記入チェック(100)
 	;처음
 	;=================================================
 	IF 구상記入チェック(100) && FIRSTACT(0)
-		PRINTFORMW 「어와……릴리와 조금 이야기 합시다？」
-		PRINTFORMW 「릴리에%CNAME(MASTER, TARGET)%, 여러가지 가르쳐 주셨으면 합니다」
-		PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 싫어하는 것은 하고 싶지 않습니까들……그런데？」
+		PRINTFORMW 「저기……릴리와 조금 이야기 할까요？」
+		PRINTFORMW 「릴리에게%CNAME(MASTER, TARGET)%, 여러가지 가르쳐 주셨으면 해요」
+		PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 싫어하는 것은 하고 싶지 않으……니까？」
 		PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분, 들려주세요」
 		RETURN 1
 	ENDIF
@@ -57,18 +57,18 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 2
 		IF FAVOR(0, 2000)
-			PRINTFORM 「보지안, 자리-째응으로 가득 나와 버렸습니다
+			PRINTFORM 「보지안,  가득 나와 버렸어요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORMW 「후후♪　요정 상대에게 이렇게 내, 이케나이 자지군요♪」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%도 기분 좋았습니까？」
+			PRINTFORMW 「후후♪　요정 상대에게 이렇게 싸, 글러먹은 자지군요♪」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%도 기분 좋았나요？」
 		ELSE
-			PRINTFORMW 「응♪　싶고 응--했는데, 자지 카치카치군요
+			PRINTFORMW 「응♪　잔뜩 퓻퓻했는데, 자지 카치카치네요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORMW 「릴리의 ··응·와♪　그렇게 좋았습니까？」
+			PRINTFORMW 「릴리의 보·지♪　그렇게 좋았나요？」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -78,19 +78,19 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 1
 		IF FAVOR(0, 2000)
-			PRINTFORM 「,♪　가득 사정해 버렸다……
+			PRINTFORM 「햐우, 후아아♪　가득 사정해 버렸다……
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORMW 「기분 좋다라고, 보지안--하는 것 버릇이 되어 버립니다♪」
-			PRINTFORMW 「응,%CNAME(MASTER, TARGET)%의 보지도……좀 더 릴리에 범해지고 싶습니까？」
+			PRINTFORMW 「기분 좋다라고, 보지안에 퓻퓻하는 것 버릇이 되어 버려요♪」
+			PRINTFORMW 「저기,%CNAME(MASTER, TARGET)%의 보지도……좀 더 릴리에 범해지고 싶나요？」
 		ELSE
-			PRINTFORM 「응은♪　질내사정기분
+			PRINTFORM 「응하아♪　질내사정 기분죠아욧
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORMW 「응♪　%CNAME(MASTER, TARGET)%의 아기의 방, 릴리의 키-역에서 가득해 무릎♪」
-			PRINTFORMW 「--되어 버려서, 어떤 기분입니까？」
+			PRINTFORMW 「응♪　%CNAME(MASTER, TARGET)%의 아기방, 릴리의 정액으로 가득해요♪」
+			PRINTFORMW 「잔뜩 퓻퓻되어 버려서, 어떤 기분인가요？」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -101,24 +101,24 @@ IF 구상記入チェック(100)
 	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
 		;가버려なのを참다している
 		IF TCVAR:MASTER:가버려 > 5
-			PRINTFORM 「이 나무 그런%CNAME(MASTER, TARGET)%의 얼굴……사랑스럽습니다
+			PRINTFORM 「가버린 %CNAME(MASTER, TARGET)%의 얼굴……사랑스러워요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORM 「실룩실룩은 떨려, 이제 참을 수 없습니다 것이군요
+			PRINTFORM 「움찔움찔 떨려, 이제 참을 수 없는, 거네요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
 			PRINTL  
 			PRINTFORMDW %CALLNAME:MASTER%(은)는 열파로부터 피하려고, 불쾌하게 허리를 꿈틀거리며 절정을 참고 있다
-			PRINTFORMDW %CALLNAME:MASTER%의 모습에 릴리는 만족스럽게 미소지어, 신체를 꼭과 밀착시켜 왔다
+			PRINTFORMDW %CALLNAME:MASTER%의 모습에 릴리는 만족스럽게 미소지어, 신체를 꼭 밀착시켜 왔다
 			PRINTL  
-			PRINTFORMW 「귀엽다……후후……응, 어째서 갖고 싶습니까」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분을 알고 싶은거야……이봐요, 인 졸라 주세요♪」
+			PRINTFORMW 「귀엽다……후후……저기, 어째서 원하나요?」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분을 알고 싶은거야……자, 야한것 졸라 주세요♪」
 		ELSE
 			IF FAVOR(0, 2000)
 				IF RAND:2 == 0
-					PRINTFORM 「저것？　이제 이 나무 그렇습니까
+					PRINTFORM 「어라？　벌써 가버렸나요?
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTW 」
@@ -126,26 +126,26 @@ IF 구상記入チェック(100)
 					PRINTL  
 					PRINTFORMDW 절정의 기색을 감지했는지, 릴리가 재촉 하는 것 같은 시선을 향하여 온다
 					PRINTL  
-					PRINTFORMW 「이크 때는 어떻게 하기 때문에 했던가？　후후♪」
-					PRINTFORMW 「·이군요·이다· 해요♪」
+					PRINTFORMW 「갈 때는 어떻게 하기로 했더라？　후후♪」
+					PRINTFORMW 「부·탁·해 라고 해볼까요♪」
 				ELSE
-					PRINTFORMW 「 이제 참을 수 없게 되어 버렸다일까……후후」
-					PRINTFORM 「제일 기분이 좋은 타이밍으로, 마음껏 이있어요
+					PRINTFORMW 「 이제 참을 수 없게 되어 버린걸까……후후」
+					PRINTFORM 「제일 기분 좋은 타이밍으로, 마음껏 가버리자구요
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTW 」
 					PRINTL  
 					PRINTFORMDW 절정의 기색을 감지했는지, 릴리가 재촉 하는 것 같은 시선을 향하여 온다
 					PRINTL  
-					PRINTFORM 「%CNAME(MASTER, TARGET)%안의정령, 전부 토출있읍시다
+					PRINTFORM 「%CNAME(MASTER, TARGET)%안의 정액, 전부 내보내 버리자구욧
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTW 」
 				ENDIF
 			ELSE
-				PRINTFORMW 「저것, 이제 이있을 것 같네요」
-				PRINTFORMW 「릴리에 정령을 바치는 것 버릇에 응입니까？ 후후♪」
-				PRINTFORMW 「응, 릴리로 보여져 이우노, 그렇게 기분입니까？」
+				PRINTFORMW 「어라, 이제 가버렸네요」
+				PRINTFORMW 「릴리에게 정액을 바치는 것 버릇이 돼버렸나요？ 후후♪」
+				PRINTFORMW 「저기, 릴리한테 보여지며 가는것, 그렇게 기분좋나요？」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -158,50 +158,50 @@ IF 구상記入チェック(100)
 		IF FAVOR(0, 2000)
 			;죠교자が자위중
 			IF GETBIT(TEQUIP:자위중, 1)
-				PRINTFORMDW 손을 뻗으면 닿는 위치에서, 릴리는 자신의 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 농악의 가사……
+				PRINTFORMDW 손을 뻗으면 닿는 위치에서, 릴리는 자신의 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 노래한다……
 				PRINTL  
-				PRINTFORM 「-봐♪ 또 만지작거려 느낌아
+				PRINTFORM 「릴리를 봐♪ 또 만지작거려 기분죠햐앗
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「히♪……응, 인 아이로 면허인 히
+				PRINTFORM 「히잇♪……응, 야한아이라 제송헤요옷
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「도 , 기라있고로……-를 봐 개-분해
+				PRINTFORM 「흣 , 시러하지말아줘…… 릴리를 보고 흥분해줘!?
 				CALL HEARTCB
 				PRINTFORMW 」
 			;통상
 			ELSE
-				PRINTFORMW 「이봐요, 릴리의 얼굴 분명하게 봐 주세요♪」
+				PRINTFORMW 「자, 릴리의 얼굴 제대로 봐 주세요♪」
 				PRINTL  
-				PRINTFORMDW 상체를 꼭이라고 대어, 릴리가 물기를 띤 눈동자로 응시해 온다
-				PRINTFORMDW 긴 머리카락으로부터 감도는 달콤한 향기에, 반대가 응에도 신체가 반응해 버린다
+				PRINTFORMDW 상체를 딱 붙이고, 릴리가 물기를 띤 눈동자로 응시해 온다
+				PRINTFORMDW 긴 머리카락으로부터 감도는 달콤한 향기에, 싫어도 신체가 반응해 버린다
 				PRINTL  
-				PRINTFORMW 「지금부터%CNAME(MASTER, TARGET)%(은)는 릴리에 가득 착정 되어 버립니다」
-				PRINTFORM 「후후♪　상상하면 릴리도 두근두근 해 와 버렸습니다
+				PRINTFORMW 「지금부터 %CNAME(MASTER, TARGET)%(은)는 릴리에게 잔뜩 착정 되어 버려요」
+				PRINTFORM 「후후♪　상상하니 릴리도 두근두근 해버렸어요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTW 」
-				PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 어떻습니까？　듣고 싶은데♪」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 어떤가요？　듣고 싶은데♪」
 			ENDIF
 		ELSE
 			;죠교자が자위중
 			IF GETBIT(TEQUIP:자위중, 1)
-				PRINTFORMDW 릴리는 불 비친 피부로부터 구슬땀을 띄워%CALLNAME:MASTER%에 물기를 띤 눈동자를 향했다……
+				PRINTFORMDW 릴리는 뜨거워진 피부로부터 구슬땀을 띄워 %CALLNAME:MASTER%에 물기를 띤 눈동자를 향했다……
 				PRINTL  
-				PRINTFORM 「뭐-봐……두는 것도, 봐 창고 차이
+				PRINTFORM 「자위 봐……줘, 뎌 봐주세요!
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「-군요……매우 로, 상스럽다……, 후~
+				PRINTFORM 「릴리는……정말 야하고, 상스러워……응,하아 ~
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「도 , 싫어하지 마……-를 봐 개-분해
+				PRINTFORM 「그치만 , 싫어하지 마……릴리를 보고 흥분해줘?!
 				CALL HEARTCB
 				PRINTFORMW 」
 			;통상
 			ELSE
-				PRINTFORMW 「릴리에%CNAME(MASTER, TARGET)%, 좀 더 여러가지 가르쳐 주셨으면 합니다」
-				PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 싫어하는 것은 하고 싶지 않습니까들……그런데？」
-				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분, 릴리에 들려주세요」
+				PRINTFORMW 「릴리에게%CNAME(MASTER, TARGET)%에 대해, 좀 더 여러가지 가르쳐 줬으면 해요」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 싫어하는 것은 하고 싶지 않으니까……네？」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분, 릴리에게 들려주세요」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -214,69 +214,70 @@ IF 구상記入チェック(100)
 		;相互자위
 		IF GETBIT(TEQUIP:자위중, 0)
 			IF RAND:2 == 0
-				PRINTFORM 「자위 서로 보여줘……%CNAME(MASTER, TARGET)%(으)로 보여져 , 응구, 아
+				PRINTFORM 「자위 서로 보여줘서……%CNAME(MASTER, TARGET)%에게 보여져버려서엇 , 응읏, 아우
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「-의 째씨도 , 응, 평소보다 민감하게 아
+				PRINTFORM 「릴리의 콩씨도 , 응, 평소보다 민감하게 데버렷
 				CALL HEARTCB
 				PRINTFORMW 」
 				PRINTL  
-				PRINTFORMDW 릴리는 충혈한 뇌를 빚고 돌려, 음탕한 표정으로 자위에 빠지고 있다……
-				PRINTFORMDW 바깥 공기에 노출된 연어 핑크의 육 벽이 수치않다 빌려주어 기분에 히크히크와 준 있다……
+				PRINTFORMDW 릴리는 충혈된 꽃봉오리를 빚고 돌려, 음탕한 표정으로 자위에 빠지고 있다……
+				PRINTFORMDW 바깥 공기에 노출된 핑크의 육벽이 부끄러운 기분에 실룩실룩 떨고 있다……
 				PRINTL  
-				PRINTFORM 「후후♪　-들……헨타이씨가 되어 버렸군요
+				PRINTFORM 「후후♪　우리들……변태씨가 되어 버렸네요
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「후~, 응……응,%CNAME(MASTER, TARGET)%도 개-응, 시인가
+				PRINTFORM 「하아, 응……저기,%CNAME(MASTER, TARGET)%도 흥분, 했나요?
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSE
-				PRINTFORM 「응♪　볼 수 있고 하는 것 , 기분-군요
+				PRINTFORM 「으응♪　보여지며 하는 것 , 기분좋네-요
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「이봐요……소매치기 소매치기는 할게♪……응은
+				PRINTFORM 「자……슬쩍슬쩍 할게요♪……하아
 				CALL HEARTCB
 				PRINTFORMW 」
 				PRINTL  
-				PRINTFORMDW 릴리는 돌기에 접한 손가락끝을 조금씩 움직여, 인가 스친 한숨을 흘려 치열에 잠겨 있었다……
-				PRINTFORMDW %CALLNAME:MASTER%(은)는 릴리의 치태에 이끌리는 것처럼, 수치와 열락 중(안)에서 열중해 자신을 위로했다……
+				PRINTFORMDW 릴리는 돌기에 접한 손가락끝을 조금씩 움직여, 한숨을 흘려 치열에 잠겨 있었다……
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 릴리의 치태에 이끌리는 것처럼, 수치와 열락 안에서 열중해 자신을 위로했다……
 				PRINTL  
-				PRINTFORM 「%CNAME(MASTER, TARGET)%(으)로 보여지는 것입니다 어휘
+				PRINTFORM 「%CNAME(MASTER, TARGET)%에게 보여지는 것 굉장해
 				CALL HEARTCB
-				PRINTFORM  응, 버릇에
+				PRINTFORM  응, 버릇이 될것가타...
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORMW 「,%CNAME(MASTER, TARGET)%도……는♪　개-응, 히 비친다？」
+				PRINTFORMW 「자,%CNAME(MASTER, TARGET)%도……하아♪　흥분, 해써？」
 			ENDIF
 		;죠교자자위를과시한다中
 		ELSE
 			IF RAND:2 == 0
-				PRINTFORMDW 가는 손가락끝이 슬릿의 제방에 더해지면(자) 「」와 소리를 내 음순이 열린다
-				PRINTFORMDW 핑크 연어의 아름다운 암컷 점막으로부터는 끈적거리는 애액이와 목표 없게 솟아 올라 나와 있다……
-				PRINTFORMDW ……릴리는 상도 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 농악의 가사……
+				PRINTFORMDW 가는 손가락끝이 슬릿의 제방에 더해지면(자) 「츄읍」소리를 내 음순이 열린다
+				PRINTFORMDW 핑크의 아름다운 암컷 점막으로부터는 끈적거리는 애액이 멈추지 않고 솟아 오르고 있다……
+				PRINTFORMDW ……릴리는 상도 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 노래한다……
 				PRINTL  
-				PRINTFORM 「-봐♪ 또 만지작거려 느낌아
+				PRINTFORM 「릴리좀 봐봐♪ 또 만지작거려 기분죠앗
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「히♪……응, 인 아이로 면허인 히
+				PRINTFORM 「히잇♪……응, 야한아이라 제송해여!
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「%CNAME(MASTER, TARGET)%도……-를 봐 개-분해
+				PRINTFORM 「%CNAME(MASTER, TARGET)%도……릴리를 봐서 흥분해?
+
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSE
-				PRINTFORMDW 릴리는 불 비친 피부로부터 구슬땀을 띄워%CALLNAME:MASTER%에 물기를 띤 눈동자를 향했다……
-				PRINTFORMDW 「」와 진한 애액이 흘러넘쳐 천천히 살집의 좋은 허벅지를 타 떨어졌다……
+				PRINTFORMDW 릴리는 뜨거워진 피부로부터 구슬땀을 띄워%CALLNAME:MASTER%에게 물기를 띤 눈동자를 향했다……
+				PRINTFORMDW 「주륵」 진한 애액이 흘러넘쳐 천천히 살집의 허벅지를 타 떨어졌다……
 				PRINTL  
-				PRINTFORM 「뭐-봐……두는 것도, 봐 창고 차이
+				PRINTFORM 「자위봐……줘, 더 봐주세요
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「-군요……매우 로, 상스럽다……, 후~
+				PRINTFORM 「릴리는……정말 야하고, 상스러워……, 응하아
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「%CNAME(MASTER, TARGET)%하……이런 , -가 오종도
+				PRINTFORM 「%CNAME(MASTER, TARGET)%는……이런 , 릴리가 슈인님이라도
 				CALL HEARTCB
-				PRINTFORMW 응구, 인가？」
+				PRINTFORMW 응?, 괜찮나요？」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -287,18 +288,18 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 >= 1000
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「아……자지 카치코치군요」
-			PRINTFORMW 「흥분해 버렸습니다인가？　후후♪」
+			PRINTFORMW 「앗……자지 카치코치네요」
+			PRINTFORMW 「흥분해 버렸나요？　후후♪」
 			PRINTL  
-			PRINTFORMDW 수치를 부추기는 사랑스러운 소리에, 격분한 음경이“비쿤”(와)과 뛰어 응한다
-			PRINTFORMDW 거무스름하고 추악한 육 간이 한층 더 쾌락을 기대하고, 또 일단 경도를 주었다
+			PRINTFORMDW 수치를 부추기는 사랑스러운 소리에, 격분한 음경이“비쿳” 뛰어 응한다
+			PRINTFORMDW 거무스름하고 추악한 육봉이 한층 더 쾌락을 기대하고, 또 일단 경도를 주었다
 			PRINTL  
-			PRINTFORMW 「이렇게 오게 해……도대체 무엇을 생각하고 있는 군요♪」
+			PRINTFORMW 「이렇게 커져서……도대체 무엇을 생각하고 있는 걸까요♪」
 		ELSE
-			PRINTFORMW 「자지 발기해 버렸습니다」
-			PRINTFORMW 「오징어 수상한 냄새로 어둡게들 해버릴……후후♪」
+			PRINTFORMW 「자지 발기해 버렸네요」
+			PRINTFORMW 「오징어같은 냄새로 부글부글 해버려요……후후♪」
 			PRINTL  
-			PRINTFORMW 「응, 이렇게 발기시켜 무엇을 기대합니까？」
+			PRINTFORMW 「응, 이렇게 발기시켜선, 무엇을 기대하는건가요？」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -307,43 +308,43 @@ IF 구상記入チェック(100)
 	;萎えた
 	;=================================================
 	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 < TCVAR:MASTER:전발기도
-		;사정後（膣以外、펠라・손コキ・파이즈리とか？）
+		;사정後（膣以外、펠라?손コキ?파이즈리とか？）
 		IF TCVAR:MASTER:사정후경과턴 == 1
 			IF FAVOR(0, 1500)
 				IF RAND:2 == 0
-					PRINTFORM 「응♪　키-역 있었는지있고
+					PRINTFORM 「응♪　정액 나왔네요
 					CALL HEARTCB
 					PRINTFORMW 」
-					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 「기분 이이」는 기분, 릴리에도 전해져 왔어♪」
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%의 「기분 좋아」라는 생각, 릴리에게도 전해져 왔어♪」
 					PRINTL  
-					PRINTFORMDL 릴리의 졸졸의 긴 염발로부터 감도는 달콤한 향기에 정욕이 자극되고
+					PRINTFORMDL 릴리의 흘러내린 긴 염발로부터 감도는 달콤한 향기에 정욕이 자극되고
 					PRINTFORMDW %CALLNAME:MASTER%(은)는 쇠약해졌음이 분명한 음경에 다시 혈류가 모여 가는 것을 느꼈다
 					PRINTL  
-					PRINTFORMW 「후후♪　응, 다음은 어떤 바람하고 싶습니까？」
+					PRINTFORMW 「후후♪　저기, 다음은 어떤 걸로 퓻퓻하고 싶나요？」
 				ELSE
-					PRINTFORMW 「능숙하게 키-할 수 있었어요♪　대단한 대단하다♪」
+					PRINTFORMW 「능숙하게 정액 퓻퓻할 수 있었네요♪　대단해 대단해♪」
 					PRINTL  
-					PRINTFORMDL 릴리의 졸졸의 긴 염발로부터 감도는 달콤한 향기에 정욕이 자극되고
+					PRINTFORMDL 릴리의 흘러내린 긴 염발로부터 감도는 달콤한 향기에 정욕이 자극되고
 					PRINTFORMDW %CALLNAME:MASTER%(은)는 쇠약해졌음이 분명한 음경에 다시 혈류가 모여 가는 것을 느꼈다
 					PRINTL  
-					PRINTFORMW 「응, 다음은 어떤 금년이라고 보고 싶다？」
-					PRINTFORM 「릴리의 소중한 테크닉으로 메로메로로 해 주는군
+					PRINTFORMW 「응, 다음은 어떤 걸 해보고 싶어요？」
+					PRINTFORM 「릴리의 소중한 테크닉으로 메로메로로 해 줄게요
 					CALL HEARTCB
 					PRINTFORMW 」
 				ENDIF
 			ELSE
-				PRINTFORMW 「능숙하게 키-할 수 있었어요♪　후후♪」
+				PRINTFORMW 「능숙하게 정액 퓻퓻할 수 있었네요♪ 후후♪」
 				PRINTL  
-				PRINTFORMDL 릴리의 졸졸의 긴 염발로부터 감도는 달콤한 향기에 정욕이 자극되고
+				PRINTFORMDL 릴리의 흘러내린 긴 염발로부터 감도는 달콤한 향기에 정욕이 자극되고
 				PRINTFORMDW %CALLNAME:MASTER%(은)는 쇠약해졌음이 분명한 음경에 다시 혈류가 모여 가는 것을 느꼈다
 				PRINTL  
-				PRINTFORMW 「응, 다음은 어떤 일을 해 보고 싶습니까？」
+				PRINTFORMW 「응, 다음은 어떤 일을 해 보고 싶어요？」
 			ENDIF
-		;単純に萎えた（수치、가학、매도系から？）
+		;?純に萎えた（수치、가학、매도系から？）
 		ELSE
-			PRINTFORMW 「아……자지, 건강 없어져 버렸습니다」
-			PRINTFORMW 「릴리, 혹시 무리시켜 버렸습니다인가？」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%가 건강한 실, 릴리도 외롭습니다……」
+			PRINTFORMW 「아우……자지, 기운 없어져 버렸어요」
+			PRINTFORMW 「릴리, 혹시 무리시켜 버렸나요？」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%가 기운없으면, 릴리도 외로워요……」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -354,27 +355,27 @@ IF 구상記入チェック(100)
 	IF 구상記入チェック(100)
 		;안면승마系
 		IF TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
-			PRINTFORMW 「응……아, , 몹시 능숙해요♪」
-			PRINTFORMW 「 좀 더 꽉 누른 (분)편이 빨고 쉬울까요？」
+			PRINTFORMW 「응……아,하읏, 엄청 능숙하네요♪」
+			PRINTFORMW 「 좀 더 꽉 누른 편이 빨기 쉬울까요？」
 			PRINTL  
 			PRINTFORMDW 릴리는 결코 괴롭지 않은 정도로 허리를 띄워, 부드러운 엉덩이로%CALLNAME:MASTER%의 안면을 압박하고 있다
-			PRINTFORMDW %CALLNAME:MASTER%(은)는 치혈에 봉사를 하면, 릴리는 사랑스러운 소리를 높여 백자의 허벅지를 실룩실룩진동시킨다……
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 치혈에 봉사를 하면, 릴리는 사랑스러운 소리를 높여 하얀 허벅지를 실룩실룩 진동시킨다……
 			PRINTL  
-			PRINTFORMW 「……응, 릴리의 엉덩이에 깔려, 팥고물♪ 이제♪」
-			PRINTFORMW 「릴리의 저기, 날름날름 한다 라고 어떤 기분입니까？」
+			PRINTFORMW 「……저기, 릴리의 엉덩이에 깔려, 앙♪  정말♪」
+			PRINTFORMW 「릴리의 거기, 날름날름 해서 어떤 기분인가요？」
 		ELSE
 			IF FAVOR(0, 2000)
-				PRINTFORMW 「이봐요, 릴리의 얼굴 분명하게 봐, 조금 이야기 합시다？」
+				PRINTFORMW 「자, 릴리의 얼굴 확실히 보고, 조금 이야기 해요？」
 				PRINTL  
-				PRINTFORMDW 상체를 꼭이라고 대어, 릴리가 물기를 띤 눈동자로 응시해 온다
+				PRINTFORMDW 상체를 꼭 기대어, 릴리가 물기를 띤 눈동자로 응시해 온다
 				PRINTL  
-				PRINTFORMW 「……응,%CNAME(MASTER, TARGET)%도 흥분합니까？　두근두근 합니까？」
-				PRINTFORMW 「……그렇지 않으면, 역시 아직 불안합니까？」
-				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분, 릴리에 가르치기를 원하는데」
+				PRINTFORMW 「……응,%CNAME(MASTER, TARGET)%도 흥분했나요？　두근두근 하나요？」
+				PRINTFORMW 「……그런데도, 역시 아직 불안한가요？」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분, 릴리에게 가르쳐주기를 원하는데」
 			ELSE
 				PRINTFORMW 「%CNAME(MASTER, TARGET)%의 일, 좀 더 들려주세요」
-				PRINTFORMW 「무엇을 생각하고 있는 것인가……어떤 기분인가……」
-				PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 싫어하는 것은 하고 싶지 않습니까들……그런데？」
+				PRINTFORMW 「무엇을 생각하고 있는지……어떤 기분인지……」
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(이)가 싫어하는 것은 하고 싶지 않으니까……요？」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -384,21 +385,21 @@ ENDIF
 ;────────────────────────────────────
 ;ACT1, 자신에게의 마음을 묻다
 ;────────────────────────────────────
-;・自分のことをどう思うか聞く
-;・죠교대상の反応に応じてREACT以降でACT파생への代入が行われる
-;・턴방침が"이상"なら発生しない
-;・話題『호의』が既出となり、以後、同一조교중では抑制される
+;?自分のことをどう思うか聞く
+;?죠교대상の反?に?じてREACT以降でACT파생への代入が行われる
+;?턴방침が"이상"なら?生しない
+;?話題『호의』が?出となり、以後、同一조교중では抑制される
 ;-------------------------------------------------
 @KOJO_ACT_K15_1
 ;-------------------------------------------------
-;関数@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
+;??@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
 ;@EQUIPACTION_DESCRIPTIONによってTEQUIP(안면승마/안면승마항문/자위중)で地の文は변화する可能性がある
-;全て埋める필요はないので、기타・조건없음を最初に埋めた上で、あとは好みで分岐を増減してください
+;全て埋める필요はないので、기타?조건없음を最初に埋めた上で、あとは好みで分岐を?減してください
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT1, 자신에게의 마음을 묻다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;記入チェック（=0, 非表示、1, 表示、2, 表示して미약等구상をスキップ）
 ;━━━━━━━━━━━━━━━━━━━━━━━━
@@ -409,9 +410,9 @@ IF 구상記入チェック(100)
 	;처음
 	;=================================================
 	IF 구상記入チェック(100) && FIRSTACT(0)
-		PRINTFORMW 「저, 군요……어와……」
-		PRINTFORMW 「릴리의 일……어떻게 생각합니까？」
-		PRINTFORMW 「%CNAME(MASTER, TARGET)%의 기분……들려주세요」
+		PRINTFORMW 「저, 그러니까……에또……」
+		PRINTFORMW 「릴리의 일……어떻게 생각하나요？」
+		PRINTFORMW 「%CNAME(MASTER, TARGET)%의 생각……알려주세요」
 		RETURN 1
 	ENDIF
 	
@@ -419,14 +420,14 @@ IF 구상記入チェック(100)
 	;성교봉사系で질내사정의後
 	;=================================================
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 2
-		PRINTFORM 「응, 후~♪　--되어 버렸습니다
+		PRINTFORM 「응, 하앗♪　잔뜩 퓻퓻 되어 버렸네요
 		CALL HEARTCB
 		PRINTFORMW 」
-		PRINTFORMW 「응, 릴리의 보지의 감촉 어땠습니까？」
+		PRINTFORMW 「저, 릴리의 보지의 감촉 어땠나요？」
 		PRINTL  
-		PRINTFORMDW 릴리는인가 스친 뜨거운 한숨을 토해내, 추님이 신체를 꽉 눌러 온다
+		PRINTFORMDW 릴리는 뜨거운 한숨을 토해내, 매달리듯 신체를 꽉 눌러 온다
 		PRINTL  
-		PRINTFORMW 「이봐요♪　자지같이, 솔직해져 주세요♪」
+		PRINTFORMW 「봐요♪　자지같이, 솔직해져 주세요♪」
 		RETURN 1
 	ENDIF
 	
@@ -434,8 +435,8 @@ IF 구상記入チェック(100)
 	;성교系で질내사정의後
 	;=================================================
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 1
-		PRINTFORMW 「♪　보지의 나카, 아개 있고입니다♪」
-		PRINTFORMW 「어떻습니까？　릴리, 좀 더 좋아하게 되어 버렸습니다인가？」
+		PRINTFORMW 「응우웃♪　보지의 안... 뜨거워요♪」
+		PRINTFORMW 「어때요？　릴리를, 좀 더 좋아하게 되어 버렸나요？」
 		RETURN 1
 	ENDIF
 	
@@ -445,17 +446,17 @@ IF 구상記入チェック(100)
 	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
 		;가버려なのを참다している
 		IF TCVAR:MASTER:가버려 > 5
-			PRINTFORMW 「후후……기분 이이군요 」
-			PRINTFORMW 「응, 참지 않아 좋아요♪」
+			PRINTFORMW 「후후……기분 좋네요 」
+			PRINTFORMW 「응, 참지 않아도 좋아요♪」
 			PRINTL  
-			PRINTFORMDW %CALLNAME:MASTER%(은)는 절정이 가까운 일을 간파해져 수치로 전신와 떨려 버린다
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 절정이 가까운 일을 간파해져 수치로 전신이 떨려 버린다
 			PRINTL  
-			PRINTFORMW 「남편님에게 능숙함에 산등성이다 해 주세요♪」
+			PRINTFORMW 「주인님에게 능숙하게 졸라 주세요♪」
 		ELSE
-			PRINTFORMW 「후후, 이제 이 나무 그렇습니까？」
+			PRINTFORMW 「후후, 이제 가버렸나요？」
 			PRINTFORMW 「%CNAME(MASTER, TARGET)%가 그 기분이라면, 좀더 좀더 기분 좋게 해 줄 수 있어요」
-			PRINTFORMW 「이봐요……～라고♪ 아하하」
-			PRINTFORMW 「릴리졸라 , 기분이야～구이는 주세요♪」
+			PRINTFORMW 「봐요……쿠츄쿠～라고♪ 아하하」
+			PRINTFORMW 「릴리에게 졸라 , 기분잔~뜩 좋아져 주세요♪」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -468,55 +469,55 @@ IF 구상記入チェック(100)
 		IF GETBIT(TEQUIP:자위중, 1)
 			;相互자위
 			IF GETBIT(TEQUIP:자위중, 0)
-				PRINTFORM 「응♪　볼 수 있고 하는 것 , 기분-군요
+				PRINTFORM 「응♪ 보여지며 하는 것 , 기분좋아요
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「 좀 더 마셔라고라고♪……응은
+				PRINTFORM 「 좀 더 질척질척햐는거 봐줘♪……읏...하앙
 				CALL HEARTCB
 				PRINTFORMW 」
 				PRINTL  
-				PRINTFORMDW 릴리는 돌기에 접한 손가락끝을 조금씩 움직여, 인가 스친 한숨을 흘려 치열에 잠겨 있었다……
-				PRINTFORMDW %CALLNAME:MASTER%(은)는 릴리의 치태에 이끌리는 것처럼, 수치와 열락 중(안)에서 열중해 자신을 위로했다……
+				PRINTFORMDW 릴리는 돌기에 접한 손가락끝을 조금씩 움직여, 한숨을 흘려 치열에 잠겨 있었다……
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 릴리의 치태에 이끌리는 것처럼, 수치와 열락 중에서 열중해 자신을 위로했다……
 				PRINTL  
-				PRINTFORM 「%CNAME(MASTER, TARGET)%(으)로 보여지는 것입니다 어휘
+				PRINTFORM 「%CNAME(MASTER, TARGET)%에게 보여지는거 굉장해!
 				CALL HEARTCB
-				PRINTFORM  응, 버릇에
+				PRINTFORM  응, 버릇이 대어버려효!
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORMW 「후~, 응구,%CNAME(MASTER, TARGET)%하……인 아이는 싫습니까？」
-				PRINTFORM 「상스러운 아이라도 응
+				PRINTFORMW 「하앗, 응?,%CNAME(MASTER, TARGET)%은(는)……야한 아이는 싫나요？」
+				PRINTFORM 「상스러운 아이라도...읏
 				CALL HEARTCB
-				PRINTFORMW 이이인가？」
+				PRINTFORMW 괜찮나요？」
 			ELSE
-				PRINTFORMDW 가는 손가락끝이 슬릿의 제방에 더해지면(자) 「」와 소리를 내 음순이 열린다
-				PRINTFORMDW 핑크 연어의 아름다운 암컷 점막으로부터는 끈적거리는 애액이와 목표 없게 솟아 올라 나와 있다……
-				PRINTFORMDW ……릴리는 상도 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 농악의 가사……
+				PRINTFORMDW 가는 손가락끝이 슬릿의 제방에 더해지면(자) 「치걱」 소리를 내 음순이 열린다
+				PRINTFORMDW 핑크의 아름다운 암컷 점막으로부터는 끈적거리는 애액이 끊임없이 솟아 오르고 있다……
+				PRINTFORMDW ……릴리는 상도 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 노래한다……
 				PRINTL  
-				PRINTFORM 「-의 째씨♪ %CNAME(MASTER, TARGET)%의 시선으로 느끼면아
+				PRINTFORM 「릴리의 콩씨♪ %CNAME(MASTER, TARGET)%의 시선으로 느껴버려엇..흑
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「손 멈추고히♪……응, 인 아이로 면허인 히
+				PRINTFORM 「손 멈추지아나♪……응, 야한 아이라 제송헤여어!
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「괴롭고 , 상스러운 아이도 , 있고-인가
+				PRINTFORM 「햐우 , 상스러운 아이라도오 , 괜찬나여?
 				CALL HEARTCB
 				PRINTFORMW 」
 			ENDIF
 		;통상
 		ELSE
 			IF FAVOR(3000, 3000)
-				PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 릴리의 일, 어떻게 생각합니까？」
-				PRINTFORM 「분명하게 말로,%CNAME(MASTER, TARGET)%의 입으로부터 (듣)묻고 싶은데……
+				PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 릴리에 대해, 어떻게 생각하나요？」
+				PRINTFORM 「분명하게 말로,%CNAME(MASTER, TARGET)%의 입으로부터 듣고 싶은데……
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSEIF FAVOR(0, 2000)
-				PRINTFORMW 「릴리와%CNAME(MASTER, TARGET)%하……어떤 관계이지요」
-				PRINTFORMW 「남편님과 노예입니까？　그렇지 않으면, 좀 더 다르다……후후♪」
-				PRINTFORMW 「응,%CNAME(MASTER, TARGET)%(은)는 어떻게 생각합니까？」
+				PRINTFORMW 「릴리와%CNAME(MASTER, TARGET)%는……어떤 관계인가요」
+				PRINTFORMW 「주인님과 노예인가요？　그렇지 않으면, 좀 더 다른……후후♪」
+				PRINTFORMW 「응,%CNAME(MASTER, TARGET)%(은)는 어떻게 생각해요？」
 			ELSE
-				PRINTFORMW 「릴리어떻게 생각하고 있는 지요？」
-				PRINTFORMW 「기분 좋게 해 주는 상냥한 남편님？　그렇지 않으면 공포의 대상？」
-				PRINTFORMW 「……설마, 울분 푸는 대상이라든지 생각하지 않았습니다 군요？」
+				PRINTFORMW 「릴리에 대해 어떻게 생각하고 있나요？」
+				PRINTFORMW 「기분 좋게 해 주는 상냥한 주인님？　그렇지 않으면 공포의 대상？」
+				PRINTFORMW 「……설마, 울분 푸는 대상이라든지 생각하지 않았겠죠？」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -529,72 +530,72 @@ IF 구상記入チェック(100)
 		;相互자위
 		IF GETBIT(TEQUIP:자위중, 0)
 			IF RAND:2 == 0
-				PRINTFORM 「째씨 괴롭혀……%CNAME(MASTER, TARGET)%(으)로 보여져 , 응구, 아
+				PRINTFORM 「콩씨 괴롭혀……%CNAME(MASTER, TARGET)%에게 보여져어 , 응?, 아우
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「-도 , 응, 평소보다 민감하게 아
+				PRINTFORM 「릴리도 , 응, 평소보다 민감하게 대버려
 				CALL HEARTCB
 				PRINTFORMW 」
 				PRINTL  
-				PRINTFORMDW 릴리는 충혈한 뇌를 빚고 돌려, 음탕한 표정으로 자위에 빠지고 있다……
-				PRINTFORMDW 바깥 공기에 노출된 연어 핑크의 육 벽이 수치않다 빌려주어 기분에 히크히크와 준 있다……
+				PRINTFORMDW 릴리는 충혈한 보지를 빚고 돌려, 음탕한 표정으로 자위에 빠지고 있다……
+				PRINTFORMDW 바깥 공기에 노출된 핑크빛 육벽이 부끄러운 기분에 움찔움찔 하고 있다……
 				PRINTL  
-				PRINTFORM 「후후♪　-들……헨타이씨가 되어 버렸군요
+				PRINTFORM 「후후♪　우리들……변태씨가 되어 버렸네요
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「후~, 응♪……헨타이인 릴리에서도 , 함께 있어 줘
+				PRINTFORM 「하아, 저기♪……변태인 릴리라도 , 함께 있어 줄래요?
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSE
-				PRINTFORM 「응♪　볼 수 있고 하는 것 , 기분-군요
+				PRINTFORM 「응♪　보여지며 하는것 , 기분좋아요
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「이봐요……좀 더 나카도 봐♪……응은
+				PRINTFORM 「저기……좀 더 안쪽도 봐♪……응,하앗
 				CALL HEARTCB
 				PRINTFORMW 」
 				PRINTL  
-				PRINTFORMDW 릴리는 돌기에 접한 손가락끝을 조금씩 움직여, 인가 스친 한숨을 흘려 치열에 잠겨 있었다……
-				PRINTFORMDW %CALLNAME:MASTER%(은)는 릴리의 치태에 이끌리는 것처럼, 수치와 열락 중(안)에서 열중해 자신을 위로했다……
+				PRINTFORMDW 릴리는 돌기에 접한 손가락끝을 조금씩 움직여, 한숨을 흘려 치열에 잠겨 있었다……
+				PRINTFORMDW %CALLNAME:MASTER%(은)는 릴리의 치태에 이끌리는 것처럼, 수치와 열락 중에서 열중해 자신을 위로했다……
 				PRINTL  
-				PRINTFORM 「%CNAME(MASTER, TARGET)%(으)로 보여지는 것입니다 어휘
+				PRINTFORM 「%CNAME(MASTER, TARGET)%에게 보여지는 것 굉장해...
 				CALL HEARTCB
-				PRINTFORM  응, 버릇에
+				PRINTFORM  응, 버릇이 대어버려효
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORMW 「후~, 응구,%CNAME(MASTER, TARGET)%하……인 아이는 싫습니까？」
+				PRINTFORMW 「하아~, 응?,%CNAME(MASTER, TARGET)%는……야한 아이는 싫나요？」
 				PRINTFORM 「상스러운 아이라도 응
 				CALL HEARTCB
-				PRINTFORMW 이이 나오고 인가？」
+				PRINTFORMW 좋은건가요？」
 			ENDIF
 		;죠교자자위를과시한다中
 		ELSE
 			IF RAND:2 == 0
 				PRINTFORMDW 가는 손가락끝이 슬릿의 제방에 더해지면(자) 「」와 소리를 내 음순이 열린다
-				PRINTFORMDW 핑크 연어의 아름다운 암컷 점막으로부터는 끈적거리는 애액이와 목표 없게 솟아 올라 나와 있다……
-				PRINTFORMDW ……릴리는 상도 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 농악의 가사……
+				PRINTFORMDW 핑크의 아름다운 암컷 점막으로부터는 끈적거리는 애액이 끊임없이 솟아 올라 나와 있다……
+				PRINTFORMDW ……릴리는 상도 음핵을 빚고 돌려, 말투가 흐트러진 요염한 소리로 노래한다……
 				PRINTL  
-				PRINTFORM 「-♪ %CNAME(MASTER, TARGET)%의 시선으로 느끼면아
+				PRINTFORM 「릴릿-♪ %CNAME(MASTER, TARGET)%의 시선으로 느껴버려엇!
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「손 멈추고히♪……응, 인 아이로 면허인 히
+				PRINTFORM 「손 멈추지않아♪……응, 야한 아이라 제송헤여어!
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「상스러운 아이도 , 있고-인가
+				PRINTFORM 「상스러운 아이도 , 좋아하시나요?
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSE
-				PRINTFORMDW 릴리는 불 비친 피부로부터 구슬땀을 띄워%CALLNAME:MASTER%에 물기를 띤 눈동자를 향했다……
-				PRINTFORMDW 「」와 진한 애액이 흘러넘쳐 천천히 살집의 좋은 허벅지를 타 떨어졌다……
+				PRINTFORMDW 릴리는 열기오른 피부로부터 구슬땀을 띄워%CALLNAME:MASTER%에 물기를 띤 눈동자를 향했다……
+				PRINTFORMDW 「주륵」 진한 애액이 흘러넘쳐 천천히 살집의 좋은 허벅지를 타 떨어졌다……
 				PRINTL  
-				PRINTFORM 「뭐-봐……다음 두는, 봐 창고 차이
+				PRINTFORM 「자위봐……그만둘때까지, 더 더 봐주세효!
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「-군요……매우 로, 상스럽다……, 후~
+				PRINTFORM 「릴리는요……엄청 야하고, 상스럽다……으뮤, 하아
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORM 「%CNAME(MASTER, TARGET)%하……이런 , -가 오종도
+				PRINTFORM 「%CNAME(MASTER, TARGET)%는……이런 , 릴리가 슈인님이라도오
 				CALL HEARTCB
-				PRINTFORMW 응구, 인가？」
+				PRINTFORMW 응?, 좋나요？」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -605,25 +606,25 @@ IF 구상記入チェック(100)
 	;-------------------------------------------------	
 	IF 구상記入チェック(100) && TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
 		IF RAND:2 == 0
-			PRINTFORMDW 릴리는 결코 괴롭지 않은 정도로 허리를 띄워, 부드러운 엉덩이로%CALLNAME:MASTER%의 안면을 압박하고 있다
-			PRINTFORMDW %CALLNAME:MASTER%(은)는 치혈에 봉사를 하면, 릴리는 사랑스러운 소리를 높여 백자의 허벅지를 실룩실룩진동시킨다……
+			PRINTFORMDW 릴리는 결코 괴롭지 않은 정도로 허리를 띄워, 부드러운 엉덩이로 %CALLNAME:MASTER%의 안면을 압박하고 있다
+			PRINTFORMDW %CALLNAME:MASTER%(은)는 치혈에 봉사를 하면, 릴리는 사랑스러운 소리를 높여 새하얀 허벅지를 실룩실룩 진동시킨다……
 			PRINTL  
-			PRINTFORM 「히, , 아……
+			PRINTFORM 「히우,아 , 앗…
 			CALL HEARTCB
-			PRINTFORM  안에 , 삽입은……아, 응, 기분이 좋습니다
+			PRINTFORM  안에 , 삽입은……아우, 응, 기분좋아요..
 			CALL HEARTCB
 			PRINTFORMW 」
-			PRINTFORMW 「버릇이 되어버릴, 응♪ 릴리의 저기, 어떻습니까？」
+			PRINTFORMW 「버릇이 되어버릴, 응♪ 릴리의 저기, 어떤가요？」
 		ELSE
-			PRINTFORMW 「응……아, , 몹시 능숙해요♪」
-			PRINTFORMW 「 좀 더 꽉 누른 (분)편이 빨고 쉬울까요？」
+			PRINTFORMW 「응……아, 햐읏, 몹시 능숙하네요♪」
+			PRINTFORMW 「 좀 더 꽉 누른 편이 빨기 쉬울까요？」
 			PRINTL  
 			PRINTFORMDW 부드러운 히프에 안면을 싸여%CALLNAME:MASTER%(은)는 입가에 꽉 눌린 치혈에 혀로 봉사를 하고 있다
 			PRINTFORMDW 릴리는 결코 괴롭지 않은 정도로 허리를 띄워, %CALLNAME:MASTER%(은)는 봉사하기 쉬운 위치로 허리를 구군요들 다툰다
-			PRINTFORMDW 혀끝을 날카롭게 할 수 있는 안을 지와 릴리가 백자의 허벅지가 큐우와 꼭 죄여, 안면에의 압박감이 한층 강해진다……
+			PRINTFORMDW 혀끝을 날카롭게 해 안을 찌르자 릴리의 새하얀 허벅지가 뀨우ㅡ 하고 꼭 죄여, 안면에의 압박감이 한층 강해진다……
 			PRINTL  
-			PRINTFORMW 「……응, 릴리의 엉덩이에 깔려, 팥고물♪ 이제♪」
-			PRINTFORMW 「응, 릴리의 저기♪ 맛있습니까？」
+			PRINTFORMW 「……응, 릴리의 엉덩이에 깔려, 앙♪ 정말♪」
+			PRINTFORMW 「저기, 릴리의 그곳♪ 맛있나요？」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -632,14 +633,14 @@ IF 구상記入チェック(100)
 	;발기
 	;=================================================
 	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 >= 1000
-		PRINTFORMW 「자지, 빈빈에 나무 해 버렸다」
+		PRINTFORMW 「자지, 빙빙하고 커져 버렸네요」
 		PRINTFORMW 「부끄러운 곳, 전부 훤히 들여다보여요♪」
 		PRINTL  
-		PRINTFORMDW 기쁜 듯한 릴리의 소리에 수치심을 부추겨져 페니스는 더욱 딱딱하고 흘립 해 버린다
-		PRINTFORMDW 그런데 새로 한 릴리의 시선이, 귀두로부터 음낭으로 빨도록 이동해 나간다
+		PRINTFORMDW 기쁜 듯한 릴리의 소리에 수치심을 부추겨져 페니스는 더욱 딱딱하게 서버린다
+		PRINTFORMDW 그런데 새로이 릴리의 시선이, 귀두로부터 음낭으로 빨도록 이동해 나간다
 		PRINTL  
-		PRINTFORMW 「혹시, 릴리로 보여져 흥분해 버렸습니다인가？　후후♪」
-		PRINTFORMW 「……그렇다면, 매우 기쁘다♪」
+		PRINTFORMW 「혹시, 릴리에게 보여져 흥분해 버렸나요？　후후♪」
+		PRINTFORMW 「……그렇다면, 정말 기쁘네요♪」
 		RETURN 1
 	ENDIF
 	
@@ -647,32 +648,32 @@ IF 구상記入チェック(100)
 	;萎えた
 	;=================================================
 	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 < TCVAR:MASTER:전발기도
-		PRINTFORMW 「후후♪ --해 지쳐 버렸습니다인가？」
+		PRINTFORMW 「후후♪ 븃븃해서 지쳐 버렸나요？」
 		PRINTL  
-		PRINTFORMDW 작아진 음경을 돌보도록(듯이), 릴리가 상냥하게 미소지었다
+		PRINTFORMDW 작아진 음경을 돌보듯이, 릴리가 상냥하게 미소지었다
 		PRINTL  
-		PRINTFORMW 「휴가하는 김에%CNAME(MASTER, TARGET)%의 기분을 (듣)묻고 싶어져 버렸습니다♪」
-		PRINTFORMW 「%CNAME(MASTER, TARGET)%에 있어, 릴리는 어떤 존재입니까」
+		PRINTFORMW 「쉬는 김에 %CNAME(MASTER, TARGET)%의 기분을 듣고 싶어져 버렸어요♪」
+		PRINTFORMW 「%CNAME(MASTER, TARGET)%에 있어, 릴리는 어떤 존재인가요」
 		RETURN 1
 	ENDIF
 	
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(3000, 3000)
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 릴리의 일, 어떻게 생각합니까？」
-			PRINTFORMW 「무서운 남편님？　그렇지 않으면 인 요정씨일까？　후후♪」
-			PRINTFORMW 「(듣)묻고 싶은데……%CNAME(MASTER, TARGET)%의 기분……가득 들려주며」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 릴리에 대해, 어떻게 생각하나요？」
+			PRINTFORMW 「무서운 주인님？　그렇지 않으면 야한 요정씨일까？　후후♪」
+			PRINTFORMW 「듣고 싶네……%CNAME(MASTER, TARGET)%의 기분……잔뜩 들려줘」
 		ELSEIF FAVOR(0, 2000)
-			PRINTFORMW 「릴리와%CNAME(MASTER, TARGET)%하……어떤 관계입니까？」
-			PRINTFORMW 「남편님과 노예？　그렇지 않으면……후후♪」
-			PRINTFORMW 「응,%CNAME(MASTER, TARGET)%(은)는 어떻게 생각합니까？」
+			PRINTFORMW 「릴리와%CNAME(MASTER, TARGET)%는……어떤 관계인가요？」
+			PRINTFORMW 「주인님과 노예？　그렇지 않으면……후후♪」
+			PRINTFORMW 「응,%CNAME(MASTER, TARGET)%(은)는 어떻게 생각하나요？」
 		ELSE
-			PRINTFORMW 「릴리의 일, 어떻게 생각합니까？」
-			PRINTFORMW 「릴리는 분명하게%CNAME(MASTER, TARGET)%의 오종 인님 되어있을까요」
-			PRINTFORMW 「(듣)묻고 싶다……%CNAME(MASTER, TARGET)%의 기분.　차분히……그런데♪」
+			PRINTFORMW 「릴리의 일, 어떻게 생각하나요？」
+			PRINTFORMW 「릴리는 분명하게%CNAME(MASTER, TARGET)%의 주인님 되어있을까요」
+			PRINTFORMW 「듣고 싶어……%CNAME(MASTER, TARGET)%의 기분.　차분히……요♪」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -681,21 +682,21 @@ ENDIF
 ;────────────────────────────────────
 ;ACT2, 성에 관한 이야기를 하다
 ;────────────────────────────────────
-;・죠교자が性についての지식を語り始める
-;・TFLAG:징계・플래그が立っていると発生しない
-;・턴방침が"이상"だと発生しない
-;・죠교자に성지식が無いと発生しない
-;・話題『지식』が既出となり、以後、同一조교중では抑制される
+;?죠교자が性についての지식を語り始める
+;?TFLAG:징계?플래그が立っていると?生しない
+;?턴방침が"이상"だと?生しない
+;?죠교자に성지식が無いと?生しない
+;?話題『지식』が?出となり、以後、同一조교중では抑制される
 ;-------------------------------------------------
 @KOJO_ACT_K15_2
 ;-------------------------------------------------
-;関数@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
+;??@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
 ;@EQUIPACTION_DESCRIPTIONによってTEQUIP(안면승마/안면승마항문/자위중)で地の文は변화する可能性がある
-;全て埋める필요はないので、기타・조건없음を最初に埋めた上で、あとは好みで分岐を増減してください
+;全て埋める필요はないので、기타?조건없음を最初に埋めた上で、あとは好みで分岐を?減してください
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT2, 성에 관한 이야기를 하다
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 IF 구상記入チェック(100)
@@ -706,14 +707,14 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && FIRSTACT(0)
 		PRINTFORMW 「%CNAME(MASTER, TARGET)%의 정말 좋아하는 공부의 시간이에요♪」
-		PRINTFORMW 「여자 아이가 느끼는 곳(중)이라든지,%CNAME(MASTER, TARGET)%의 정말 좋아하는 「저기」로 인가……」
-		PRINTFORM 「릴리의 신체로 자세하게 있어요
+		PRINTFORMW 「여자 아이가 느끼는 곳이라든지,%CNAME(MASTER, TARGET)%의 정말 좋아하는 「저기」라든지……」
+		PRINTFORM 「릴리의 신체로 자세하게 알아볼까요
 		CALL HEARTCB
 		PRINTFORMW 」
 		IF TALENT:MASTER:동정 == 1
 			PRINTL  
-			PRINTFORMW 「(군)양과 게으름 피우지 못하고 공부할 수 있으면……」
-			PRINTFORM 「-에 릴리가%CNAME(MASTER, TARGET)%의 동정, 받아 주네요
+			PRINTFORMW 「제대로 게으름 피우지 고 공부할 수 있으면……」
+			PRINTFORM 「릴리가 %CNAME(MASTER, TARGET)%의 동정, 받아 줄게요?
 			CALL HEARTCB
 			PRINTFORMW 」
 		ENDIF
@@ -721,20 +722,20 @@ IF 구상記入チェック(100)
 	ENDIF
 
 	;-------------------------------------------------
-	;성교봉사系で질내사정의後　リリーが사정される
+	;성교봉사系で질내사정의後　リリ?が사정される
 	;=================================================
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 2
 		IF RAND:3 == 0
-			PRINTFORMW 「후후♪　가득 사정할 수 있었다♪」
+			PRINTFORMW 「후후♪　가득 사정할 수 있었네요♪」
 			PRINTFORM 「 좀 더 난폭하게 해 주어도, 릴리는 괜찮아요
 			CALL HEART
 ;OriginalString : 」
 			PRINTW 」
 		ELSEIF RAND:2 == 0
-			PRINTFORMW 「나카로 내면(자) 아기 할 수 있어 버립니다, 알고 있었습니다？　후후♪」
-			PRINTFORMW 「어？　그렇지만 인간과 요정에서도 할 수 있는 것입니까…………」
+			PRINTFORMW 「안에 싸면 아기 임신할 수 있어 버려요, 알고 있었나요？　후후♪」
+			PRINTFORMW 「어라？그렇지만 인간과 요정 사이에서도 할 수 있는 건가요…………」
 			PRINTL  
-			PRINTFORMDW 릴리는 팔장을 껴, 무엇인가 어려운 얼굴을 하고 있다……
+			PRINTFORMDW 릴리는 팔짱을 껴, 무엇인가 어려운 얼굴을 하고 있다……
 			PRINTFORMDW 그리고, 그야말로 「번쩍였다」라고 한 상태에 순진한 웃는 얼굴을 향하여 왔다
 			PRINTL  
 			PRINTFORM 「 좀 더 가득 사정하면, 알지도 모르겠네요
@@ -744,7 +745,7 @@ IF 구상記入チェック(100)
 		ELSE
 			PRINTFORMW 「 이제……릴리의 자궁은 아기를 위한 방에서 만나며,
 			PRINTFORMW 　%CNAME(MASTER, TARGET)%의 정액 탱크가 아니어요？　후후♪」
-			PRINTFORM 「착각 해버릴 정도, 릴리의 보지 기분 좋았지요
+			PRINTFORM 「착각 해버릴 정도로, 릴리의 보지 기분 좋았지요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
@@ -753,7 +754,7 @@ IF 구상記入チェック(100)
 	ENDIF
 	
 	;-------------------------------------------------
-	;성교系で질내사정의後　リリーが사정する
+	;성교系で질내사정의後　リリ?が사정する
 	;記入チェック
 	;-------------------------------------------------
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 1
@@ -762,7 +763,7 @@ IF 구상記入チェック(100)
 			CALL HEART
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORMW 「요정 정액이라면 인간도 잉응은 우노에……그런데♪」
+			PRINTFORMW 「요정 정액이라면 인간도 임신해버려……요♪」
 			PRINTFORMW 「저것, 혹시 잊고 있었습니다？　후후♪」
 		ELSEIF RAND:2 == 0
 			PRINTFORMW 「여자 아이가 태어나면(자),%CNAME(MASTER, TARGET)%(와)과 함께 부모와 자식사발……」
@@ -790,15 +791,15 @@ IF 구상記入チェック(100)
 	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
 		;가버려なのを참다している
 		IF TCVAR:MASTER:가버려 > 5
-			PRINTFORMW 「자지 가치가치로 이제 참을 수 없다♪」
-			PRINTFORMW 「이봐요♪　다음은 어떻게 되는지 압니까？」
-			PRINTFORM 「오징어 수상한 정액--해, 이응이에요
+			PRINTFORMW 「자지 가치가치로 이제 참을 수 없어요♪」
+			PRINTFORMW 「봐요♪　다음은 어떻게 되는지 아나요？」
+			PRINTFORM 「오징어 수상한 정액 븃븃해, 가버리는거에요
 			CALL HEARTCB
 			PRINTFORMW 」
 		ELSE
 			PRINTFORMW 「자지 가치가치구나♪」
-			PRINTFORMW 「릴리에 착정 되어버린다？　이제 참을 수 없다♪」
-			PRINTFORM 「이봐요♪　오징어 수상한 정액--해 이어
+			PRINTFORMW 「릴리에게 착정 되어버려요？　이제 참을 수 없어요♪」
+			PRINTFORM 「봐요♪　오징어 수상한 정액 븃븃해 가욧!
 			CALL HEARTCB
 			PRINTFORMW 」
 		ENDIF
@@ -809,9 +810,9 @@ IF 구상記入チェック(100)
 	;その죠교の最初のアクション
 	;=================================================
 	IF 구상記入チェック(100) && ONCEACT(0)
-		PRINTFORMW 「더 공부의 시간이에요♪」
-		PRINTFORMW 「사내 아이와 여자 아이의 인 비밀」
-		PRINTFORM 「릴리와 함께 공부해, 자세하게 있어요
+		PRINTFORMW 「야한 공부의 시간이에요♪」
+		PRINTFORMW 「사내 아이와 여자 아이의 야한 비밀」
+		PRINTFORM 「릴리와 함께 공부해, 자세하게 되어버려요
 		CALL HEARTCB
 		PRINTFORMW 」
 		RETURN 1
@@ -822,19 +823,19 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(80) && TCVAR:MASTER:발기도 >= 1000
 		IF AFFECTION("상사상애")
-			PRINTFORMW 「칼리목의 요철은 「타인의 정액을 긁어내기 때문에(위해)」에 있대요！」
-			PRINTFORMW 「난교 전제는……인간의 수컷은 매우 음란한 진화를 하고 있다고 생각하지 않습니까？」
-			PRINTFORM 「물론 「질벽에 의해 강한 쾌락을 주기 때문에(위해)」라는 이유도 있는 것 같지만
+			PRINTFORMW 「귀두의 요철은 「타인의 정액을 긁어내기 위해」에 있대요！」
+			PRINTFORMW 「난교 전제는……인간의 수컷은 매우 음란한 진화를 하고 있다고 생각하지 않나요？」
+			PRINTFORM 「물론 「질벽에 강한 쾌락을 주기 위해」라는 이유도 있는 것 같지만
 			CALL HEARTCB
 			PRINTFORMW 」
 		ELSE
 			PRINTFORMW 「 「Ｓ」(와)과 「Ｍ」(은)는 사람에 따라서 여러 가지 해석이 있군요」
 			PRINTFORMW 「말대로의 「새디스트」와 「매저키스트」……」
 			PRINTFORMW 「봉사의 해석에 따라서는 「서비스」와 「만족」……」
-			PRINTFORMW 「거기에 「스레이브」와 「마스터」……」
+			PRINTFORMW 「거기에 「슬레이브」와 「마스터」……」
 			PRINTL  
-			PRINTFORMW 「아무튼……생각은 다양합니다만, 중요한 것은 두 명이 「파트너」도 일이라도 생각합니다」
-			PRINTFORMW 「릴리들은 어떨까요, 분명하게 「파트너」가 될 수 있어있는 입니까？」
+			PRINTFORMW 「아무튼……생각은 다양하지만, 중요한 것은 두 명이 「파트너」가 될 수 있을까, 라고 생각합니다」
+			PRINTFORMW 「릴리들은 어떨까요, 분명하게 「파트너」가 될 수 있는건가요？」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -850,21 +851,21 @@ IF 구상記入チェック(100)
 	
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF RAND:2 == 0
-			PRINTFORM 「더 공부할까요
+			PRINTFORM 「야한것, 더 공부할까요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORMW 「어떻게 하면 기분 좋게 릴리에 착정 해 줄 수 있는지, 군요♪」
-			PRINTFORMW 「확실히 공부해, 충분히 토정 할 수 있게 되어요♪」
+			PRINTFORMW 「어떻게 하면 기분 좋게 릴리에 착정 해 줄 수 있는지, 네요♪」
+			PRINTFORMW 「확실히 공부해, 충분히 사정 할 수 있게 되어요♪」
 		ELSE
-			PRINTFORMW 「릴리에 괴롭힘을 당해 흥분해버리는 사람을 뭐라고 말할까 압니까？」
-			PRINTFORMW 「모르면 가르쳐 주기 때문에, 분명하게 기억해 주세요」
-			PRINTFORMW 「 「로리타」 「드Ｍ」 「헨타이」……즉%CNAME(MASTER, TARGET)%(으)로 무릎―, 후후♪」
-			PRINTFORM 「안심해 주세요♪ 릴리는 그런%CNAME(MASTER, TARGET)%(을)를 아주 좋아하기 때문에
+			PRINTFORMW 「릴리에게 괴롭힘을 당해 흥분해버리는 사람을 뭐라고 말하는지 알아요？」
+			PRINTFORMW 「모르면 가르쳐 드릴테니, 분명하게 기억해 주세요」
+			PRINTFORMW 「 「로리타」 「더Ｍ」 「헨타이」……즉 %CNAME(MASTER, TARGET)%에 대한거네요? 후후♪」
+			PRINTFORM 「안심해 주세요♪ 릴리는 그런 %CNAME(MASTER, TARGET)%(을)를 아주 좋아하니까요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
@@ -876,18 +877,18 @@ ENDIF
 ;────────────────────────────────────
 ;ACT3, 상냥하게 위로한다
 ;────────────────────────────────────
-;・죠교자が優しい言葉で慰めてくる
-;・TFLAG:징계・플래그が立っていると発生しない
-;・턴방침が"하드", "이상"だと発生しない
-;・話題『慰め』が既出となり、以後、同一조교중では抑制される
+;?죠교자が優しい言葉で慰めてくる
+;?TFLAG:징계?플래그が立っていると?生しない
+;?턴방침が"하드", "이상"だと?生しない
+;?話題『慰め』が?出となり、以後、同一조교중では抑制される
 ;-------------------------------------------------
 @KOJO_ACT_K15_3
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;関数@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
+;??@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)
 ;@EQUIPACTION_DESCRIPTIONによってTEQUIP(안면승마/안면승마항문/자위중)で地の文は변화する可能性がある
-;全て埋める필요はないので、기타・조건없음を最初に埋めた上で、あとは好みで分岐を増減してください
+;全て埋める필요はないので、기타?조건없음を最初に埋めた上で、あとは好みで分岐を?減してください
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT3, 상냥하게 위로한다
@@ -897,8 +898,8 @@ IF 구상記入チェック(100)
 	;처음
 	;=================================================
 	IF 구상記入チェック(100) && FIRSTACT(0)
-		PRINTFORMW 「인간이 요정에 조교되는 것은, 역시 괴로울까요……」
-		PRINTFORMW 「미안해요, 적어도%CNAME(MASTER, TARGET)%가 기분 좋게 될 수 있도록(듯이) 노력하네요」
+		PRINTFORMW 「인간이 요정에게 조교되는 것은, 역시 괴로울까요……」
+		PRINTFORMW 「미안해요, 적어도%CNAME(MASTER, TARGET)%가 기분 좋게 될 수 있도록 노력할게요」
 		RETURN 1
 	ENDIF
 	
@@ -907,29 +908,29 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 2
 		IF FAVOR(3000, 3000)
-			PRINTFORMW 「릴리의 보지,%CNAME(MASTER, TARGET)%태우고-역에서 가득하다……♪」
-			PRINTFORM 「후후♪　좀더 좀더, 좋아할 뿐(만큼) 릴리안--해도 좋아요
+			PRINTFORMW 「릴리의 보지,%CNAME(MASTER, TARGET)%의정액으로 가득해……♪」
+			PRINTFORM 「후후♪　좀더 좀더, 좋아하는 만큼 릴리안에 븃븃해도 좋아요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORM 「릴리를 마마로 해버릴 정도……그런데？ 파파
+			PRINTFORM 「릴리를 마마로 해버릴 정도로……요？ 파파
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
 		ELSEIF FAVOR(0, 2000)
-			PRINTFORM 「응, 후~♪　질내사정 오- 해 키쿠쿡 기분 좋았지요」
+			PRINTFORM 「응, 하아~♪　질내사정 섹스해 기분 좋았지요」
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
-			PRINTFORMW 「릴리의 질내에서 아직 벌벌 알아……후후♪」
-			PRINTFORM 「-에, 좋은 아이 좋은 아이 해 주네요
+			PRINTFORMW 「릴리의 질내에서 아직 움찔움찔 해요……후후♪」
+			PRINTFORM 「보상으로, 좋은 아이 좋은 아이 해 줄게요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTW 」
 		ELSE
-			PRINTFORMW 「릴리의 작은 아소코, 해 기분 좋았습니까？　후후」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 로리타씨이니까, 릴리와 생 하메 하면 사정 참을 수 없는 걸―♪」
-			PRINTFORMW 「그런데, 사랑스러운 릴리의 헨타이씨♪」
+			PRINTFORMW 「릴리의 작은 거기, ??해서 기분 좋았나요？　후후」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 로리타씨이니까, 릴리와 생 섹스 하면 사정 참을 수 없는 걸―♪」
+			PRINTFORMW 「그렇죠? 사랑스러운 릴리의 변태씨♪」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -939,9 +940,9 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && TFLAG:전회질싸 == 1
 		IF FAVOR(3000, 3000)
-			PRINTFORMW 「요정 정액 가득 주입군요―♪」
-			PRINTFORMW 「릴리의 아기잉의 기다려지네요♪」
-			PRINTFORMW 「안심해 주세요,%CNAME(MASTER, TARGET)%도 아기도 릴리가 분명하게 돌보기로부터♪」
+			PRINTFORMW 「요정 정액 가득 주입이에요―♪」
+			PRINTFORMW 「릴리의 아기 임신 기다려지네요♪」
+			PRINTFORMW 「안심해 주세요,%CNAME(MASTER, TARGET)%도 아기도 릴리가 분명하게 돌보니까요♪」
 		ELSEIF FAVOR(0, 2000)
 			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 질내, 릴리의 정액으로 가득하다♪」
 			PRINTFORMW 「이봐요, 정액 좀 더 발라 붐비어 준다」
@@ -959,17 +960,17 @@ IF 구상記入チェック(100)
 	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
 		;가버려なのを참다している
 		IF TCVAR:MASTER:가버려 > 5
-			PRINTFORMW 「 이제 이 올 것 같애, 매우 괴로운 것 같습니다……후후♪」
-			PRINTFORMW 「릴리로 보여져 흥분해버린다는, 헨타이씨이군요♪」
+			PRINTFORMW 「 이제 갈 것 같아, 매우 괴로운 것 같네요……후후♪」
+			PRINTFORMW 「릴리에게 보여져 흥분해버린다는, 변태씨네요♪」
 			PRINTL  
-			PRINTFORMW 「안심해 주세요, 릴리는 헨타이씨인%CNAME(MASTER, TARGET)%(을)를 아주 좋아하기 때문에」
-			PRINTFORM 「그러니까 한심하고 허리 털어, 좋아할 뿐(만큼) 사정해 주세요
+			PRINTFORMW 「안심해 주세요, 릴리는 변태씨인%CNAME(MASTER, TARGET)%(을)를 아주 좋아하니까」
+			PRINTFORM 「그러니 안심하고 허리 털어, 좋아하는 만큼 사정해 주세요
 			CALL HEARTCB
 			PRINTFORMW 」
 		ELSE
-			PRINTFORMW 「자지 기분 좋다♪ 인내는 하지 않아 좋아♪」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 제일 기분 좋을 때에, 마음껏 사정해 버리자♪」
-			PRINTFORMW 「이봐요♪ --！ ―！　아하하♪」
+			PRINTFORMW 「자지 기분 좋아♪ 인내는 하지 않아도 좋아요♪」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%가 제일 기분 좋을 때에, 마음껏 사정해 버리자♪」
+			PRINTFORMW 「봐요♪ 븃?븃?！ 뷰루룻―！　아하하♪」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -981,30 +982,30 @@ IF 구상記入チェック(100)
 		;相互자위
 		IF GETBIT(TEQUIP:자위중, 1)
 			IF RAND:2 == 0
-				PRINTFORM 「자위 서로 보여줘……%CNAME(MASTER, TARGET)%도 개-분해？　응
+				PRINTFORM 「자위 서로 보여줘……%CNAME(MASTER, TARGET)%도 흥분했나요？　응
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORMW 「-도……몹시 두근두근 하고 있어♪」
-				PRINTFORMW 「두 사람과도 헨타이씨가 되어 버렸군요
+				PRINTFORMW 「릴리도……몹시 두근두근 하고 있어♪」
+				PRINTFORMW 「두 사람 함께 변태씨가 되어 버렸네요
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSE
-				PRINTFORMW 「응♪　볼 수 있고 하는 것 , 기분-입니까？」
-				PRINTFORMW 「릴리도 여자글자, 자위 보여지고 느껴 버리고 있습니다♪」
-				PRINTFORM 「그러니까……릴리에는 기분-가 숨기지 않아 좋으니까
+				PRINTFORMW 「으읏♪　보여지며 하는 것 , 기분좋나요？」
+				PRINTFORMW 「릴리도 같아요, 자위 보여지고 느껴 버리고 있어요♪」
+				PRINTFORM 「그러니까……릴리에겐 마음 숨기지 않아도 좋으니까
 				CALL HEARTCB
 				PRINTFORMW 」
 			ENDIF
 		ELSE
 			IF RAND:2 == 0
-				PRINTFORMW 「볼 수 있고 하는 것 , 기분-입니까？」
-				PRINTFORMW 「릴리도 여자글자, 매우 기분 좋지요」
-				PRINTFORM 「그러니까……릴리에는 기분-가 숨기지 않아 좋으니까
+				PRINTFORMW 「으읏♪　보여지며 하는 것 , 기분좋나요？」
+				PRINTFORMW 「릴리도 같아요, 자위 보여지고 느껴 버리고 있어요♪」
+				PRINTFORM 「그러니까……릴리에겐 마음 숨기지 않아도 좋으니까
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSE
-				PRINTFORMW 「, 그렇게 켜 아프지 않을까요……？」
-				PRINTFORM 「만약 아파지면(자) 릴리가 치료해 주기 때문에, 언제라도 이는 주세요
+				PRINTFORMW 「그, 그렇게 커지면 아프지 않을까요……？」
+				PRINTFORM 「만약 아파지면 릴리가 치료해 줄거니까, 언제라도 가 주세요?
 				CALL HEARTCB
 				PRINTFORMW 」
 			ENDIF
@@ -1017,16 +1018,16 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 >= 1000
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「원！ 능숙하게 나무 할 수 있었어요♪」
-			PRINTFORMW 「드로드로의 정령으로 빵 빵에 부풀어 올라, 매우 괴로운 것 같습니다……후후♪」
-			PRINTFORMW 「이것, 마음껏 --하면 굉장히 기분 좋은것이겠지―？」
+			PRINTFORMW 「와아！ 능숙하게 커질 수 있었네요♪」
+			PRINTFORMW 「도로도로하는 정액으로 빵빵하게 부풀어 올라, 무척 괴로운 것 같아요……후후♪」
+			PRINTFORMW 「이것, 마음껏 븃븃 하면 굉장히 기분 좋은것이겠죠―？」
 			PRINTFORMW 「키득……기다려지네요♪」
 		ELSE
-			PRINTFORMW 「자지 가치가치군요―」
-			PRINTFORMW 「릴리로 보여지고 느껴 버렸다 입니까」
+			PRINTFORMW 「자지 가치가치네요―」
+			PRINTFORMW 「릴리에게 보여지고 느껴 버린건가요」
 			PRINTL  
 			PRINTFORMW 「……후후♪　안심해 주세요♪
-			PRINTFORM 「노출광의 헨타이씨라도, 릴리가 (군)양과 돌봐 주니까요
+			PRINTFORM 「노출광의 변태씨라도, 릴리가 제대로 돌봐 주니까요
 			CALL HEARTCB
 			PRINTFORMW 」
 		ENDIF
@@ -1037,27 +1038,27 @@ IF 구상記入チェック(100)
 	;萎えた
 	;=================================================
 	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 < TCVAR:MASTER:전발기도
-		;사정後（膣以外、펠라・손コキ・파이즈리とか？）
+		;사정後（膣以外、펠라?손コキ?파이즈리とか？）
 		IF TCVAR:MASTER:사정후경과턴 == 1
 			IF RAND:2 == 0
-				PRINTFORM 「릴리이기 때문에에 해 주었군요
+				PRINTFORM 「릴리꺼에 잔뜩 븃븃해 주었네요
 				CALL HEARTCB
 				PRINTFORMW 」
 				PRINTFORMW 「괜찮아요……릴리가 곧바로 크게 해 줄테니까♪」
 			ELSE
-				PRINTFORM 「후후♪　능숙하게 키-할 수 있었어요―
+				PRINTFORM 「후후♪　능숙하게 쌀 수 있었네요―
 				CALL HEARTCB
 				PRINTFORMW 」
-				PRINTFORMW 「자지도 작아져……후후, 어쩐지 사랑스럽습니다♪」
+				PRINTFORMW 「자지도 작아져……후후, 어쩐지 사랑스러워요♪」
 			ENDIF
 		;이상、가학とかで萎えた？もしくは죠교初期
 		ELSE
 			IF FAVOR(0, 2000)
 				PRINTFORMW 「자지, 쇠약해져 버렸어？」
-				PRINTFORMW 「괜찮아요……릴리가 곧바로 크게 해 주네요♪」
+				PRINTFORMW 「괜찮아요……릴리가 곧바로 크게 해 줄게요♪」
 			ELSE
-				PRINTFORMW 「자지, 줄어들어 버렸습니다？」
-				PRINTFORMW 「 그렇지만 이것은 이것대로……소울타리라고 로 하고 있어 사랑스럽습니다♪」
+				PRINTFORMW 「자지, 줄어들어 버렸어요？」
+				PRINTFORMW 「 그렇지만 이것은 이것대로……작게 부들부들 하고 있어 사랑스럽네요♪」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -1068,14 +1069,14 @@ IF 구상記入チェック(100)
 	;=================================================
 	IF 구상記入チェック(100) && ONCEACT(0)
 		IF FAVOR(3000, 3000)
-			PRINTFORMW 「릴리에 응석부리고 싶어져 버렸습니다？ 후후♪」
-			PRINTFORM 「좋아요♪ 이봐요 와
+			PRINTFORMW 「릴리에게 응석부리고 싶어져 버렸나요？ 후후♪」
+			PRINTFORM 「좋아요♪ 자, 오세요
 			CALL HEARTCB
 			PRINTFORMW 」
-			PRINTFORMW 「언제나 노력하고 있는 것이군요……라고 해 줍니다♪」
+			PRINTFORMW 「언제나 노력하고 있는 거네요……꼬옥 안아 줄게요♪」
 		ELSEIF FAVOR(0, 2000)
-			PRINTFORMW 「이봐요♪ 릴리라고 해 줍니다……응……」
-			PRINTFORMW 「분명하게 꼭 껴안고 있으니, 힘을 빼도 좋아」
+			PRINTFORMW 「자♪ 릴리가 꼬옥 안아 줄게요……응……」
+			PRINTFORMW 「분명하게 꼭 껴안고 있으니, 힘을 빼도 좋아요」
 			PRINTL  
 			PRINTFORMDW 어린 아이를 어르는 것 같은 자애로 가득 찬 소리로 릴리가 속삭인다
 			PRINTFORMDW 살짝 감도는 달콤한 향기가 전신의 긴장을 풀어 간다……
@@ -1083,8 +1084,8 @@ IF 구상記入チェック(100)
 			PRINTFORMW 「릴리만을 봐……쾌감에 몸을 맡겨……」
 			PRINTFORMW 「머리나 신체도, 둥실둥실 지르르 해 버리자♪」
 		ELSE
-			PRINTFORMW 「상냥하게 꼭 껴안아 주는군♪　와♪」
-			PRINTFORMW 「무서워하지 말고 몸을 맡겨……그랬더니 좀 더 기분 좋게 해 준다……」
+			PRINTFORMW 「상냥하게 꼭 껴안아 줄게요♪　오세요♪」
+			PRINTFORMW 「무서워하지 말고 몸을 맡겨……그러면 좀 더 기분 좋게 해 줄테니까……」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -1095,31 +1096,31 @@ IF 구상記入チェック(100)
 	IF 구상記入チェック(100) && TRUECHECK(TEQUIP:안면승마, TEQUIP:안면승마항문) > 0
 		IF RAND:2 == 0
 			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 얼굴, 매우 안정감이 좋아요♪」
-			PRINTFORM 「아, 응♪　오- 하지도 능숙하고, 응, 쭉 앉아 싶을 정도
+			PRINTFORM 「앗, 햐응♪　 능숙하고, 응, 쭉 앉아 싶을 정도
 			CALL HEARTCB
 			PRINTFORMW 」
-			PRINTFORMW 「응, 이대로 릴리 전용의 의자가 되어 버립니까？　후후♪」
+			PRINTFORMW 「저기, 이대로 릴리 전용 의자가 되어 버리나요？　후후♪」
 		ELSE
-			PRINTFORMW 「 오- 해 능숙한%CNAME(MASTER, TARGET)%에, 약간 -주네요♪」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 정말 좋아하는 엉덩이를 사용해……응 실마리♪」
+			PRINTFORMW 「봉사 능숙한 %CNAME(MASTER, TARGET)%에, 약간 보상 줄게요♪」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%이 정말 좋아하는 엉덩이를 사용해……영차♪」
 			PRINTL  
-			PRINTFORMW 릴리는%CNAME(MASTER, TARGET)%의 입에 비소를 꽉 누른 채로,%CNAME(MASTER, TARGET)%의 위에서 납죽 엎드림의 같은 자세가 된다
-			PRINTFORMW 좀 작지만 형태의 좋은, 희고 부드러운 엉덩이가 「」와 떠올라, 그리고……
+			PRINTFORMW 릴리는 %CNAME(MASTER, TARGET)%의 입에 비소를 꽉 누른 채로,%CNAME(MASTER, TARGET)%의 위에서 납죽 엎드림 같은 자세가 된다
+			PRINTFORMW 좀 작지만 형태 좋은, 희고 부드러운 엉덩이가 「후웃」하고 떠올라, 그리고……
 			PRINTL  
-			PRINTFORM 「살아요～♪　
+			PRINTFORM 「갑니다～♪　
 			CALL HEARTCB
-			PRINTFORM 
+			PRINTFORM 파후파후
 			CALL HEARTCB
 			PRINTFORMW 」
-			PRINTFORM 「
+			PRINTFORM 「파후파훗
 			CALL HEARTCB
-			PRINTFORM 
+			PRINTFORM 파후파후
 			CALL HEARTCB
-			PRINTFORM 
+			PRINTFORM 파후파후
 			CALL HEARTCB
 			PRINTFORMW 」
 			PRINTL  
-			PRINTFORM 「어떻습니까？　건강하게 되었습니까
+			PRINTFORM 「어때요？　건강하게 되었나요
 			CALL HEARTCB
 			PRINTFORMW 」
 		ENDIF
@@ -1128,20 +1129,20 @@ IF 구상記入チェック(100)
 	
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(3000, 3000)
-			PRINTFORMW 「이봐요♪ 릴리라고 해 줍니다……」
+			PRINTFORMW 「자♪ 릴리가 꼬옥 안아 줄게요……」
 			PRINTFORMW 「분명하게 꼭 껴안고 있으니, 안심해도 좋아？」
-			PRINTFORMW 「아기가 마마에게 응석부리는 것 같이 해……%CNAME(MASTER, TARGET)%의 전부, 받아 들여 준다♪」
+			PRINTFORMW 「아기가 마마에게 응석부리는 것 같이……%CNAME(MASTER, TARGET)%의 전부, 받아 들여 줄게요♪」
 		ELSEIF FAVOR(0, 2000)
-			PRINTFORMW 「라고 꼭 껴안아 주는군♪」
-			PRINTFORMW 「무서워하지 말고 몸을 맡겨……그랬더니 좀 더 기분 좋게 해 준다……」
-			PRINTFORMW 「……키득♪　마치 큰 아기같다♪」
+			PRINTFORMW 「꼬옥 하고 껴안아 주는군♪」
+			PRINTFORMW 「무서워하지 말고 몸을 맡겨……그러면 좀 더 기분 좋게 해 줄테니까……」
+			PRINTFORMW 「……키득♪　마치 큰 아기같아♪」
 		ELSE
-			PRINTFORMW 「상냥하게 꼭 껴안아 주네요」
-			PRINTFORMW 「이봐요, 와♪……후후, 사랑스럽다♪」
+			PRINTFORMW 「상냥하게 꼭 껴안아 줄게요」
+			PRINTFORMW 「자, 오세요♪……후후, 사랑스러워♪」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -1150,17 +1151,17 @@ ENDIF
 ;────────────────────────────────────
 ;ACT4, 엄하게 위협한다
 ;────────────────────────────────────
-;・厳しい言葉で脅す
-;・TFLAG:징계・플래그が立っていると発生しない
-;・턴방침が"소프트", "이상"だと発生しない
-;・話題『脅す』が既出となり、以後、同一조교중では抑制される
+;??しい言葉で脅す
+;?TFLAG:징계?플래그が立っていると?生しない
+;?턴방침が"소프트", "이상"だと?生しない
+;?話題『脅す』が?出となり、以後、同一조교중では抑制される
 ;-------------------------------------------------
 @KOJO_ACT_K15_4
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;関数@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)で地の文は변화する可能性がある
-;기타・조건없음を最初に埋めた上で、あとは好みで分岐を増減してください
+;??@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)で地の文は변화する可能性がある
+;기타?조건없음を最初に埋めた上で、あとは好みで分岐を?減してください
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT4, 엄하게 위협한다
@@ -1179,7 +1180,7 @@ IF 구상記入チェック(100)
 	;성교중
 	;=================================================
 	IF 구상記入チェック(0) && TEQUIP:성교중
-		;体位による派生
+		;?位による派生
 		SELECTCASE TEQUIP:성교중
 			;정상위				체중을 실어 %CALLNAME:MASTER%의 질내에 가득
 			CASE 1
@@ -1203,15 +1204,15 @@ IF 구상記入チェック(100)
 		RETURN 1
 	ENDIF
 	
-	;죠교대상のＣへの애무が行われている状況。TEQUIP관리なので可能性は割りとある
+	;죠교대상のＣへの애무が行われている?況。TEQUIP관리なので可能性は割りとある
 	;=================================================
 	;죠교대상Ｃ사용
 	;=================================================
 	IF 구상記入チェック(0) && GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2)
-		;수음・애무継続中
+		;수음?애무??中
 		IF TEQUIP:죠교대상Ｃ사용 == 1
 			PRINTFORMW 
-		;펠라・クンニ継続中
+		;펠라?クンニ??中
 		ELSE
 			PRINTFORMW 
 		ENDIF
@@ -1223,7 +1224,7 @@ IF 구상記入チェック(100)
 	;성교봉사중
 	;=================================================
 	IF 구상記入チェック(0) && TEQUIP:성교봉사중
-		;体位による派生
+		;?位による派生
 		SELECTCASE TEQUIP:성교봉사중
 			;정상위시킨다				大きく開いた股の間に迎え入れ
 			CASE 1
@@ -1234,7 +1235,7 @@ IF 구상記入チェック(100)
 			;역강간					ぬるぬるの膣できゅうきゅうと絞り上げ
 			CASE 3
 				PRINTFORMW 
-			;대면좌위시킨다				体を密着させて膣奥に歓迎し
+			;대면좌위시킨다				?を密着させて膣?に?迎し
 			CASE 4
 				PRINTFORMW 
 			;배면좌위시킨다				背を預けて堪能し
@@ -1263,28 +1264,28 @@ IF 구상記入チェック(100)
 	
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(0, 2000)
 			IF MARK:반항각인 >= 7 && RAND:2
-				PRINTFORMW 「 이제……반항적인 태도는 째！ (이에)예요？」
+				PRINTFORMW 「 이제……반항적인 태도는 때찌！ 예요？」
 				PRINTFORMW 「릴리를 화나게 하면 어떻게 될까……알고 있지요」
-				PRINTFORMW 「……다음에 울어 사과해도 늦으니까……후후♪」
+				PRINTFORMW 「……다음에 울며 사과해도 늦으니까……후후♪」
 			ELSE
-				PRINTFORMW 「분명하게 하는 것 (듣)묻지 않으면 째！ (이에)예요？」
-				PRINTFORMW 「……상냥하게 말해도 모릅니까？」
+				PRINTFORMW 「분명하게 하는 것 듣지 않으면 떼찌！ 예요？」
+				PRINTFORMW 「……상냥하게 말해도 모르나요？」
 				PRINTFORMW 「별로 구별이 없으면 망가질 정도로 격렬하게 해버리니까？」
-				PRINTFORMW 「릴리를 화나게 하면 무섭기 때문에……후후♪」
+				PRINTFORMW 「릴리를 화나게 하면 무서우니까……후후♪」
 			ENDIF
 		ELSEIF MARK:반항각인 == 10 && RAND:4 == 0
-			PRINTFORMW 「……혹시, 릴리가 상냥하게 하고 있으니는 본궤도에 오르지 않았습니다？」
+			PRINTFORMW 「……혹시, 릴리가 상냥하게 하고 있는건 본궤도에 오르지 않았나요？」
 			PRINTFORMW 「다만 아픈 것뿐 방법으로, 정령을 짜 취하는 것이라도 할 수 있기 때문에」
-			PRINTFORMW 「……아. 그렇지만%CNAME(MASTER, TARGET)%(은)는 드Ｍ그러니까, 아프게 여겨져도 기쁨응은 낳아 짊어질까」
+			PRINTFORMW 「……아. 그렇지만 %CNAME(MASTER, TARGET)%(은)는 드Ｍ이니까, 아프게 여겨져도 기쁨 낳아 짊어질까」
 			PRINTFORMW 「……정말, 구제님이 없는 변태군요」
 		ELSEIF MARK:반항각인 >= 7 && RAND:3 == 0
 			PRINTFORMW 「노예는 입장, 착각 하지 않습니까？」
-			PRINTFORMW 「릴리를 화나게 하면 어떻게 될까……시시한%CNAME(MASTER, TARGET)%그렇지만 안다고 생각했습니다만」
+			PRINTFORMW 「릴리를 화나게 하면 어떻게 될까……시시한 %CNAME(MASTER, TARGET)%그렇지만 안다고 생각했습니다만」
 			PRINTFORMW 「……망가져 버려서도 모르기 때문에」
 		ELSEIF MARK:반항각인 >= 4 && RAND:2
 			PRINTFORMW 「혹시, 릴리를 화나게 해야지라든가 생각하지 않았습니다？」
@@ -1306,20 +1307,20 @@ ENDIF
 ;────────────────────────────────────
 ;ACT5, 의상 변경을 요구한다
 ;────────────────────────────────────
-;・죠교자が의상の変更を要求してくる
-;・죠교대상の反応に応じて、何枚脱ぐか、あるいは脱がないのかにREACT以降で派生する
-;・TFLAG:ACT파생(0=服を脱ぐように命令/1=服を着るように命令)
-;・TEQUIP:밀어넘어지는중には発生しない
-;・TEQUIP:밧줄が真になっていると発生しない
+;?죠교자が의상の?更を要求してくる
+;?죠교대상の反?に?じて、何枚?ぐか、あるいは?がないのかにREACT以降で派生する
+;?TFLAG:ACT파생(0=服を?ぐように命令/1=服を着るように命令)
+;?TEQUIP:밀어넘어지는중には?生しない
+;?TEQUIP:밧줄が?になっていると?生しない
 ;-------------------------------------------------
 @KOJO_ACT_K15_5
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;地の文は"%CALLNAME:TARGET%は%CALLNAME:MASTER%に服を脱いでと命令했다…"となっており、これが변화する事はない
+;地の文は"%CALLNAME:TARGET%は%CALLNAME:MASTER%に服を?いでと命令했다…"となっており、これが변화する事はない
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;ACT5_0, 服を脱ぐように命令
+;ACT5_0, 服を?ぐように命令
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 IF 구상記入チェック(100) && !TFLAG:ACT파생
 	;=================================================
@@ -1335,13 +1336,13 @@ IF 구상記入チェック(100) && !TFLAG:ACT파생
 	;=================================================
 	IF 구상記入チェック(100) && ONCEACT(0)
 		IF FAVOR(3000, 3000)
-			PRINTFORMW 「그러면 파랑 양복 벗어 해요♪」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 부끄러운 곳, 전부 릴리에 보였으면 좋은데♪」
+			PRINTFORMW 「그러면 얼른 양복 벗어 버려요♪」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 부끄러운 곳, 전부 릴리에게 보였으면 좋겠는데♪」
 		ELSEIF FAVOR(0, 2000)
-			PRINTFORMW 「이봐요, 벗어 주세요♪」
+			PRINTFORMW 「자, 벗어 주세요♪」
 			PRINTFORMW 「알몸이 기분 좋아요―♪」
 		ELSE
-			PRINTFORMW 「이봐요 이봐요 , 양복탈는 있을까요」
+			PRINTFORMW 「자 자 , 옷 벗어버리자구요」
 			PRINTFORMW 「지금부터 조교되는데 그런 것 방해이지요♪」
 		ENDIF
 		RETURN 1
@@ -1352,26 +1353,26 @@ IF 구상記入チェック(100) && !TFLAG:ACT파생
 	;=================================================
 	IF 구상記入チェック(100) && TCVAR:MASTER:발기도 >= 1000
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「자지, 나무 해 버렸다♪」
-			PRINTFORMW 「숨겨도다-째！　텐트 치고 있으니 들키고 들키고야♪」
-			PRINTFORMW 「이봐요 이봐요 벗어♪　릴리에 발기응 보였으면 좋은데♪」
+			PRINTFORMW 「자지, 커져 버렸다♪」
+			PRINTFORMW 「숨겨도 안돼！　텐트 치고 있으니 들켜 들켜야♪」
+			PRINTFORMW 「자 자 벗어♪　릴리에게 발기자지 보였으면 좋겠는데♪」
 		ENDIF
 		RETURN 1
 	ENDIF
 	
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(3000, 3000)
-			PRINTFORMW 「그런데, 알몸이 되어 버릴까♪」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 부끄러운 곳, 릴리가 전부 봐 준다♪」
+			PRINTFORMW 「저기, 알몸이 되어 버릴까♪」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 부끄러운 곳, 릴리가 전부 봐 줄게요♪」
 		ELSEIF FAVOR(0, 2000)
-			PRINTFORMW 「이봐요, 양복 벗어 해요―♪」
-			PRINTFORMW 「알몸라고 하는 것 좋아합니다♪　후후♪」
+			PRINTFORMW 「자, 양복 벗어 버려요―♪」
+			PRINTFORMW 「알몸으로 껴안는 것 좋아하니까요♪　후후♪」
 		ELSE
-			PRINTFORMW 「이봐요, 양복탈는 있어요♪」
+			PRINTFORMW 「자, 옷 벗어버려요」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -1404,23 +1405,23 @@ ENDIF
 ;────────────────────────────────────
 ;ACT6, 합의를 요구한다
 ;────────────────────────────────────
-;・初めてを貰ってもいいかと聞く
-;・初めて＝처녀or동정(両方の場合もある)
-;・既に합의を得ている場合は発生しない
-;・죠교대상が처녀でも동정でもない場合は発生しない
-;・TFLAG:징계・플래그が立っていると発生しない
-;・턴방침が"이상"だと発生しない
-;・話題『합의』が既出となり、以後、同一조교중では抑制される
+;?初めてを貰ってもいいかと聞く
+;?初めて＝처녀or동정(?方の場合もある)
+;??に합의を得ている場合は?生しない
+;?죠교대상が처녀でも동정でもない場合は?生しない
+;?TFLAG:징계?플래그が立っていると?生しない
+;?턴방침が"이상"だと?生しない
+;?話題『합의』が?出となり、以後、同一조교중では抑制される
 ;-------------------------------------------------
 @KOJO_ACT_K15_6
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;関数@TARGET_DESCRIPTIONでTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)で地の文は변화する
-;あとは好みで分岐を増減してください
+;??@TARGET_DESCRIPTIONでTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)で地の文は변화する
+;あとは好みで分岐を?減してください
 ;-------------------------------------------------
 ;-------------------------------------------------
-;・죠교대상が여자の場合
+;?죠교대상が여자の場合
 ;-------------------------------------------------
 IF 구상記入チェック(100) && !PENIS(MASTER)
 	;-------------------------------------------------
@@ -1428,41 +1429,41 @@ IF 구상記入チェック(100) && !PENIS(MASTER)
 	;=================================================
 	IF 구상記入チェック(100) && FIRSTACT(0)
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「그……그……%CNAME(MASTER, TARGET)%에 중요한 이야기가 있어」
-			PRINTFORMW 「릴리군요……%CNAME(MASTER, TARGET)%의 전부를 갖고 싶어져 버렸습니다」
+			PRINTFORMW 「저……그……%CNAME(MASTER, TARGET)%에게 중요한 이야기가 있어」
+			PRINTFORMW 「릴리는요……%CNAME(MASTER, TARGET)%의 전부를 갖고 싶어져 버렸어요」
 			PRINTFORMW 「아픔도, 괴로움도, 기쁨도, 슬픔도……그리고 순결도」
 			PRINTL  
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 제일 깊은 곳에, 릴리를 조각하고 싶다……잊을 수 없게……」
-			PRINTFORMW 「응……릴리를,%CNAME(MASTER, TARGET)%의 처음의 인으로 해……」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 제일 깊은 곳에, 릴리를 조각하고 싶어……잊을 수 없게……」
+			PRINTFORMW 「응……릴리를,%CNAME(MASTER, TARGET)%의 첫 경험으로 해……」
 		ELSE
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 처음……릴리에 바쳤으면 좋은거야」
-			PRINTFORMW 「 좀 더 깊은 곳으로,%CNAME(MASTER, TARGET)%(와)과 1개(살)이 되고 싶으니까……」
-			PRINTFORMW 「그……안됩니까？」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 처음……릴리에게 바쳤으면 하는거야」
+			PRINTFORMW 「 좀 더 깊은 곳으로,%CNAME(MASTER, TARGET)%와 하나가 되고 싶으니까……」
+			PRINTFORMW 「그……안될, 까요？」
 		ENDIF
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「그……지난 번의 이야기, 기억합니까？」
-			PRINTFORMW 「……한번 더, (듣)묻네요」
-			PRINTFORMW 「릴리를……%CNAME(MASTER, TARGET)%의 처음의 인으로 했으면 좋습니다」
+			PRINTFORMW 「그……지난 번의 이야기, 기억하나요？」
+			PRINTFORMW 「……한번 더, 물을게요」
+			PRINTFORMW 「릴리를……%CNAME(MASTER, TARGET)%의 첫경험으로 했으면 좋습니다」
 			PRINTL  
 			PRINTFORMW 「그……역시 안될까요」
 		ELSE
-			PRINTFORMW 「일전에는 거절당해 버렸습니다지만……어떨까요」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 순결……릴리로부터 받을 수 있지 않습니까」
-			PRINTFORMW 「가능한 한 아프지 않게 할테니까……안 됨？」
+			PRINTFORMW 「일전에는 거절당해 버렸지만……어떨까요」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 순결……릴리로부터 받을 수 없나요」
+			PRINTFORMW 「가능한 한 아프지 않게 할테니까……안돼？」
 		ENDIF
 		RETURN 1
 	ENDIF
 ENDIF
 	
 ;-------------------------------------------------
-;・죠교대상が후타나리の場合
+;?죠교대상が후타나리の場合
 ;-------------------------------------------------
 IF 구상記入チェック(100) && TALENT:MASTER:후타나리
 	;-------------------------------------------------
@@ -1513,12 +1514,12 @@ IF 구상記入チェック(100) && TALENT:MASTER:후타나리
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		PRINTFORMW 「그……지난 번의 이야기, 기억합니까？」
-		PRINTFORMW 「……한번 더, (듣)묻네요」
-		PRINTFORMW 「릴리를……%CNAME(MASTER, TARGET)%의 처음의 인으로 했으면 좋습니다」
+		PRINTFORMW 「……한번 더, 묻네요」
+		PRINTFORMW 「릴리를……%CNAME(MASTER, TARGET)%의 첫경험으로 했으면 좋습니다」
 		PRINTL  
 		PRINTFORMW 「그……역시 안될까요」
 		RETURN 1
@@ -1526,7 +1527,7 @@ IF 구상記入チェック(100) && TALENT:MASTER:후타나리
 ENDIF
 
 ;-------------------------------------------------
-;・죠교대상이남자の場合
+;?죠교대상이남자の場合
 ;-------------------------------------------------
 IF 구상記入チェック(100) && TALENT:MASTER:남자
 	;-------------------------------------------------
@@ -1536,35 +1537,35 @@ IF 구상記入チェック(100) && TALENT:MASTER:남자
 	;=================================================
 	IF 구상記入チェック(100) && FIRSTACT(0)
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「그……그……%CNAME(MASTER, TARGET)%에 중요한 이야기가 있어」
-			PRINTFORMW 「릴리군요……%CNAME(MASTER, TARGET)%의 전부를 갖고 싶어져 버렸습니다」
-			PRINTFORMW 「 좀 더 깊고%CNAME(MASTER, TARGET)%(와)과 연결되어, 두 명이 1개가 되어 버릴 정도……」
+			PRINTFORMW 「저……그……%CNAME(MASTER, TARGET)%에 중요한 이야기가 있어」
+			PRINTFORMW 「릴리는요……%CNAME(MASTER, TARGET)%의 전부를 갖고 싶어져 버렸어요」
+			PRINTFORMW 「좀 더 깊고%CNAME(MASTER, TARGET)%와 연결되어, 두 명이 하나가 되어 버릴 정도……」
 			PRINTL  
-			PRINTFORMW 「릴리안에%CNAME(MASTER, TARGET)%(을)를 조각했으면 좋은거야……잊지 않게……」
-			PRINTFORMW 「응……릴리를,%CNAME(MASTER, TARGET)%의 처음의 인으로 해？」
+			PRINTFORMW 「릴리안에%CNAME(MASTER, TARGET)%(을)를 조각했으면 하는거야……잊지 않게……」
+			PRINTFORMW 「응……릴리를,%CNAME(MASTER, TARGET)%의 첫경험으로 해줘？」
 		ELSE
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 동정을……릴리에 바쳤으면 좋은거야」
-			PRINTFORMW 「 좀 더 깊은 곳으로,%CNAME(MASTER, TARGET)%(와)과 1개(살)이 되고 싶으니까……」
-			PRINTFORMW 「그……안됩니까？」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 동정을……릴리에게 바쳤으면 하는거야」
+			PRINTFORMW 「 좀 더 깊은 곳으로,%CNAME(MASTER, TARGET)%(와)과 하나가 되고 싶으니까……」
+			PRINTFORMW 「그……안될,까요？」
 		ENDIF
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「그……지난 번의 이야기, 기억합니까？」
-			PRINTFORMW 「……한번 더, (듣)묻네요」
-			PRINTFORMW 「릴리를……%CNAME(MASTER, TARGET)%의 처음의 인으로 했으면 좋습니다」
+			PRINTFORMW 「저……지난 번의 이야기, 기억하나요？」
+			PRINTFORMW 「……한번 더, 물을게요」
+			PRINTFORMW 「릴리를……%CNAME(MASTER, TARGET)%의 첫경험으로 했으면 좋겠어요」
 			PRINTL  
 			PRINTFORMW 「그……역시 안될까요」
 			RETURN 1
 		ELSE
-			PRINTFORMW 「일전에는 거절당해 버렸습니다지만……어떨까요」
-			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 동정……릴리로부터 받을 수 있지 않습니까」
-			PRINTFORMW 「잊을 수 없을 정도 , 기분 좋게 해 줄테니까……안 됨？」
+			PRINTFORMW 「일전에는 거절당해 버렸습지만……어떨까요」
+			PRINTFORMW 「%CNAME(MASTER, TARGET)%의 동정……릴리로부터 받을 수 있을까요」
+			PRINTFORMW 「잊을 수 없을 정도 , 기분 좋게 해 줄테니까……안 돼？」
 		ENDIF
 		RETURN 1
 	ENDIF
@@ -1573,16 +1574,16 @@ ENDIF
 ;────────────────────────────────────
 ;ACT7, 징계한다고 위협한다
 ;────────────────────────────────────
-;・これから징계・すると言い出す
-;・このACTが発生している時点でTFLAG:징계・플래그は立っている
-;・턴방침が"소프트", "이상"だと発生しない
-;・TEQUIP:밀어넘어지는중時には発生しない
+;?これから징계?すると言い出す
+;?このACTが?生している時点でTFLAG:징계?플래그は立っている
+;?턴방침が"소프트", "이상"だと?生しない
+;?TEQUIP:밀어넘어지는중時には?生しない
 ;-------------------------------------------------
 @KOJO_ACT_K15_7
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;ここでは地の文の변화はない。分岐の増減はお好みで
+;ここでは地の文の변화はない。分岐の?減はお好みで
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT7, 징계한다고 위협한다
@@ -1594,8 +1595,8 @@ IF 구상記入チェック(100)
 	;처음
 	;=================================================
 	IF 구상記入チェック(100) && FIRSTACT(0)
-		PRINTFORMW 「말하는 것 (듣)묻지 않는 아이는 어떻게 되는지, 가르쳐 주네요？」
-		PRINTFORMW 「……그렇습니다, 「오시오키」예요」
+		PRINTFORMW 「말하는 것 듣지 않는 아이는 어떻게 되는지, 가르쳐 줄게요？」
+		PRINTFORMW 「……그래요, 「벌칙」이에요」
 		PRINTFORMW 「적어도 사랑스럽게 울어, 릴리를 즐겁게 해 주세요？」
 		RETURN 1
 	ENDIF
@@ -1608,11 +1609,11 @@ IF 구상記入チェック(100)
 			PRINTFORMW 「역시 「아픔」이 제일 좋을까요？」
 			PRINTFORMW 「아무튼, 해 보면 아는 걸」
 			;	IF RAND:2 == 0
-					;스펭킹に続く
+					;스펭킹に?く
 					TCVAR:행동예약 = 60
 					WAIT
 			;	ELSE
-					;に続く
+					;に?く
 			;		TCVAR:행동예약 = 7
 			;		WAIT
 			;	ENDIF
@@ -1623,9 +1624,9 @@ IF 구상記入チェック(100)
 	;前COMが「기분좋게 해」（この恥知らず！）
 	;=================================================
 	IF 구상記入チェック(100) && IS_PREVCOMNAME("기분좋게 해")
-			PRINTFORMW 「철면피인 돼지씨에게는 무엇을 받읍시다……」
-			PRINTFORMW 「돼지씨는 뭐든지 기쁨 그렇고……응―, 어렵네요」
-		;に続く
+			PRINTFORMW 「철면피인 돼지씨에게는 무엇을 받을까요……」
+			PRINTFORMW 「돼지씨는 뭐든지 기뻐하고……응―, 어렵네요」
+		;に?く
 	;	TCVAR:행동예약 = 7
 	;	WAIT
 		RETURN 1
@@ -1635,8 +1636,7 @@ IF 구상記入チェック(100)
 	;前COMが「더 하드하게 해」（この豚め！）
 	;=================================================
 	IF 구상記入チェック(0) && IS_PREVCOMNAME("더 하드하게 해")
-			PRINTFORMW 「」
-		;に続く
+			PRINTFORMW 「더 강하게, 인가요? 후회할지도 몰라요?」		;に?く
 	;	TCVAR:행동예약 = 7
 	;	WAIT
 		RETURN 1
@@ -1646,13 +1646,13 @@ IF 구상記入チェック(100)
 	;前COMが「용서를 빌다」（許してもらえませんで했다）
 	;=================================================
 	IF 구상記入チェック(100) && IS_PREVCOMNAME("용서를 빌다")
-			PRINTFORMW 「그렇게 말하면, 릴리에 허락해 바라 있는이었지？　후후」
-			PRINTFORMW 「불안한 듯한 얼굴 하지 않아도, 허락하는에 정해져있는이 아닙니까」
+			PRINTFORMW 「그렇게 말하면, 릴리에게 허락을 바라는건가요？　후후」
+			PRINTFORMW 「불안한 듯한 얼굴 하지 않아도, 허락한다고 정해져있는것 아닌가요」
 			PRINTL  
 			PRINTFORMDW 릴리는 아이를 어르는 것 같은 상냥한 음색으로 %CALLNAME:MASTER%에 미소지어 걸친다
 			PRINTL  
-			PRINTFORMW 「 그렇지만, 그것은 「오시오키」가 끝나고 나서예요♪」
-		;스펭킹に続く
+			PRINTFORMW 「 그렇지만, 그것은 「벌칙」이 끝나고 나서예요♪」
+		;스펭킹に?く
 		TCVAR:행동예약 = 60
 		WAIT
 		RETURN 1
@@ -1662,9 +1662,9 @@ IF 구상記入チェック(100)
 	;前COMが「자위를 시작한다」（人の話を聞け！）
 	;=================================================
 	IF 구상記入チェック(100) && IS_PREVCOMNAME("자위를 시작한다")
-			PRINTFORMW 「릴리가 해 준다 라고 해 스스로 시작해 버립니다인가！？」
-			PRINTFORMW 「응도-！　믿을 수 없습니다！」
-		;に続く
+			PRINTFORMW 「릴리가 해 준다 라고 했는데도,스스로 시작해 버린건가요！？」
+			PRINTFORMW 「우웅-！　믿을 수 없어요！」
+		;に?く
 	;	TCVAR:행동예약 = 7
 	;	WAIT
 		RETURN 1
@@ -1672,17 +1672,17 @@ IF 구상記入チェック(100)
 	
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(0, 2000)
-			PRINTFORMW 「아하하♪　그렇게 오시오키 해 바라지 않습니다인가？」
-			PRINTFORMW 「좋아요―♪　이봐요, 와♪」
-			PRINTFORM 「드Ｍ의 돼지씨라도 울어버릴 정도 격렬한 것, 시테 주는
+			PRINTFORMW 「아하하♪　그렇게나 벌칙을 바라는건가요？」
+			PRINTFORMW 「좋아요―♪　자, 오세요♪」
+			PRINTFORM 「드Ｍ의 돼지씨라도 울어버릴 정도 격렬한 것, 해줄테니
 			CALL HEARTCB
 			PRINTFORMW 」
 			IF RAND:2 == 0
-				;Aフィストに続く
+				;Aフィストに?く
 				TCVAR:행동예약 = 71
 				WAIT
 			ELSE
@@ -1690,13 +1690,13 @@ IF 구상記入チェック(100)
 			ENDIF
 		ELSE
 			IF TALENT:새드
-				PRINTFORMW 「 이제, 말하는 것을 (듣)묻지 않는 아이는 오시오키라고 말했군요？」
-				PRINTFORMW 「설마, 아픈 것 정말 좋아하는 돼지씨입니까？」
-				PRINTFORMW 「후~……이봐요, 격렬하게 괴롭혀 주기 때문에, 분명하게 릴리를 즐겁게 해 주세요？」
+				PRINTFORMW 「 이제, 말하는 것을 듣지 않는 아이는 벌칙이라고 말했어요？」
+				PRINTFORMW 「설마, 아픈 것 정말 좋아하는 돼지씨인가요？」
+				PRINTFORMW 「하아……자, 격렬하게 괴롭혀 줄테니, 분명하게 릴리를 즐겁게 해 주세요？」
 			ELSE
-				PRINTFORMW 「 이제, 말하는 것을 (듣)묻지 않는 아이는 오시오키라고 말했군요？」
-				PRINTFORMW 「설마, 아픈 것 정말 좋아하는 돼지씨입니까？」
-				PRINTFORMW 「후~……이봐요, 격렬하게 괴롭혀 주기 때문에, 분명하게 릴리를 즐겁게 해 주세요？」
+				PRINTFORMW 「 이제, 말하는 것을 듣지 않는 아이는 벌칙이라고 말했어요？」
+				PRINTFORMW 「설마, 아픈 것 정말 좋아하는 돼지씨인가요？」
+				PRINTFORMW 「하아……자, 격렬하게 괴롭혀 줄테니, 분명하게 릴리를 즐겁게 해 주세요？」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -1706,15 +1706,15 @@ ENDIF
 ;────────────────────────────────────
 ;ACT8, 고함치다
 ;────────────────────────────────────
-;・大声で고함치다
-;・턴방침が"소프트", "노멀"では発生しない
-;・TFLAG:징계・플래그に関わらず、発生する可能性がある（징계・中にさらに고함치다可能性等）
+;?大?で고함치다
+;?턴방침が"소프트", "노멀"では?生しない
+;?TFLAG:징계?플래그に?わらず、?生する可能性がある（징계?中にさらに고함치다可能性等）
 ;-------------------------------------------------
 @KOJO_ACT_K15_8
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;地の文は"%CALLNAME:TARGET%は%CALLNAME:MASTER%を大声で怒鳴った…"のみで派生はない
+;地の文は"%CALLNAME:TARGET%は%CALLNAME:MASTER%を大?で怒鳴った…"のみで派生はない
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT8, 고함치다
@@ -1746,11 +1746,11 @@ IF 구상記入チェック(100)
 	
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
-		PRINTFORMW 「 이제……째, 예요！」
-		PRINTFORMW 「릴리, 지금 매우 화납니까들！」
+		PRINTFORMW 「 이제……땍, 예요！」
+		PRINTFORMW 「릴리, 지금 매우 화났으니까！」
 		RETURN 1
 	ENDIF
 ENDIF
@@ -1758,17 +1758,17 @@ ENDIF
 ;────────────────────────────────────
 ;ACT9, 기분나쁘게 웃다
 ;────────────────────────────────────
-;・不気味な微笑を浮かべる
-;・이상系から発生する場合もある
-;・금일의방침が"노닥노닥"だと発生しない
-;・話題『嗤う』が既出となり、以後、同一조교중では抑制される
+;?不?味な微笑を浮かべる
+;?이상系から?生する場合もある
+;?금일의방침が"노닥노닥"だと?生しない
+;?話題『嗤う』が?出となり、以後、同一조교중では抑制される
 ;-------------------------------------------------
 @KOJO_ACT_K15_9
-;구상独自内部処理
+;구상?自?部?理
 CALL DECIDEACTCHECK_K15
 ;-------------------------------------------------
-;関数@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)で地の文は변화する
-;기타・조건없음を最初に埋めた上で、あとは好みで分岐を増減してください
+;??@TARGET_DESCRIPTIONによってTEQUIP(성교중/죠교대상Ｃ사용/성교봉사중/자위중 & 2)で地の文は변화する
+;기타?조건없음を最初に埋めた上で、あとは好みで分岐を?減してください
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;ACT9, 기분나쁘게 웃다
@@ -1786,18 +1786,18 @@ IF 구상記入チェック(100)
 	;눈가리개장착中
 	;=================================================
 	IF 구상記入チェック(100) && TEQUIP:눈가리개
-		PRINTFORMW 「눈 가림하고 있다고(면) 불안？　응, 지금부터 무엇 되어버리는 군요？」
-		PRINTFORMW 「, 구후후♪　어쩐지 이상하네요♪」
+		PRINTFORMW 「눈 가리고 있다면 불안한가요？　저기, 지금부터 어떻게 되어버리는 걸까요？」
+		PRINTFORMW 「흣, 쿠후후♪　어쩐지 이상하네요♪」
 		PRINTL  
 		PRINTFORMDW 평상시의 사랑스러운 음색과는 분명하게 다르다……
-		PRINTFORMDW 어딘가 광기를 잉응이다 웃음 소리가 %CALLNAME:MASTER%의 불안을 일으켰다……
+		PRINTFORMDW 어딘가 광기를 품은 웃음 소리가 %CALLNAME:MASTER%의 불안을 일으켰다……
 		PRINTL  
-		PRINTFORMW 「후후, 미안해요？　, 조교하러 돌아와요♪」
+		PRINTFORMW 「후후, 미안해요？자아, 조교하러 돌아와요♪」
 		RETURN 1
 	ENDIF
 	
 	;-------------------------------------------------
-	;이상系から発生
+	;이상系から?生
 	;=================================================
 	IF 구상記入チェック(0) && TFLAG:ACT분류 == 7
 		PRINTFORMW 
@@ -1807,28 +1807,28 @@ IF 구상記入チェック(100)
 
 	;ここを最初に書きましょう
 	;=================================================
-	;기타・조건없음
+	;기타?조건없음
 	;=================================================
 	IF 구상記入チェック(100)
 		IF FAVOR(0, 2000)
 			IF RAND:3 == 0
-				PRINTFORMW 「, 응후후♪」
+				PRINTFORMW 「흣, 응후후♪」
 				PRINTL  
 				PRINTFORMDW 소중한 못된 장난을 생각해 낸 어린 아이와 같이,
 				PRINTFORMDW 릴리는 흥분이 숨기지 못할이라고 하는 모습으로 웃고 있다
 				PRINTL  
-				PRINTFORMW 「응♪　지금부터 무엇을 하셔버릴까 압니까？　후후♪」
-				PRINTFORM 「상상했다？　그러면 대답해 맞추어 시짊어지는군
+				PRINTFORMW 「저기♪　지금부터 무엇을 해버릴까 알겠나요？　후후♪」
+				PRINTFORM 「상상했어？　그러면 맞는지 알아볼까요?
 				CALL HEARTCB
 				PRINTFORMW 」
 			ELSEIF RAND:2 == 0
-				PRINTFORMW 「응, 릴리 매우 즐거운 장난을 생각해 냈습니다♪　후후♪」
+				PRINTFORMW 「응, 릴리 매우 즐거운 장난을 생각해 냈어요♪　후후♪」
 				PRINTL  
 				PRINTFORMDW 평상시의 사랑스러운 음색과는 분명하게 다르다……
-				PRINTFORMDW 어딘가 광기를 잉응이다 웃음 소리가 %CALLNAME:MASTER%의 불안을 일으켰다……
+				PRINTFORMDW 어딘가 광기를 품은 웃음 소리가 %CALLNAME:MASTER%의 불안을 일으켰다……
 				PRINTL  
-				PRINTFORMW 「키득♪　후후, 미안해요？　상상하면 즐거워져 버렸다♪」
-				PRINTFORMW 「……상상 이상의 반응하면, -주는군♪」
+				PRINTFORMW 「키득♪　후후, 미안해요？　상상하니 즐거워져 버렸어♪」
+				PRINTFORMW 「……상상 이상의 반응하면, 상을 줄게요♪」
 			ENDIF
 		ELSE
 			PRINTFORMW 「킥킥♪」
