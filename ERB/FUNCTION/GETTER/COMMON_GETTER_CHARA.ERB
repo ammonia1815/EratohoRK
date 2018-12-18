@@ -39,15 +39,15 @@ ARG:1 = ARG:1 != -2 ? ARG:1 # TARGET
 ;기본경칭의 처리
 SPLIT CSTR:(ARG:1):기본경칭, "/", 경칭대상, LOCAL
 FOR LCOUNT, 0, LOCAL
-	경칭내역:LCOUNT = %REPLACE(REPLACE(SUBSTRING(경칭대상:LCOUNT, STRFIND(경칭대상:LCOUNT, "_")+1), "이름", NAME:ARG), "통칭", CALLNAME:ARG)%
-	경칭대상:LCOUNT = %SUBSTRING(경칭대상:LCOUNT,0, STRFIND(경칭대상:LCOUNT, "_")-1)%
+	경칭내역:LCOUNT = %REPLACE(REPLACE(SUBSTRINGU(경칭대상:LCOUNT, STRFINDU(경칭대상:LCOUNT, "_")+1), "이름", NAME:ARG), "통칭", CALLNAME:ARG)%
+	경칭대상:LCOUNT = %SUBSTRINGU(경칭대상:LCOUNT,0, STRFINDU(경칭대상:LCOUNT, "_"))%
 NEXT
 
 ;통칭의 분류
 SPLIT CSTR:(ARG:1):호칭목록, "/", 통칭대상, LOCAL
 FOR LCOUNT, 0, LOCAL
-	통칭내역:LCOUNT = %REPLACE(REPLACE(SUBSTRING(통칭대상:LCOUNT, STRFIND(통칭대상:LCOUNT, "_")+1), "이름", NAME:ARG), "통칭", CALLNAME:ARG)%
-	통칭대상:LCOUNT = %SUBSTRING(통칭대상:LCOUNT,0, STRFIND(통칭대상:LCOUNT, "_")-1)%
+	통칭내역:LCOUNT = %REPLACE(REPLACE(SUBSTRINGU(통칭대상:LCOUNT, STRFINDU(통칭대상:LCOUNT, "_")+1), "이름", NAME:ARG), "통칭", CALLNAME:ARG)%
+	통칭대상:LCOUNT = %SUBSTRINGU(통칭대상:LCOUNT,0, STRFINDU(통칭대상:LCOUNT, "_"))%
 NEXT
 
 ;일시적으로 NAME를 넣는다
@@ -78,9 +78,8 @@ ELSE
 			CASE "기본"
 				LOCALS = %경칭내역:LCOUNT%
 			CASEELSE
-				;오류 수정 불가로 주석처리함
-				;SIF TALENT:ARG:(경칭대상:LCOUNT)
-					;LOCALS = %경칭내역:LCOUNT%
+				SIF TALENT:ARG:(경칭대상:LCOUNT)
+					LOCALS = %경칭내역:LCOUNT%
 		ENDSELECT
 	NEXT
 ENDIF
