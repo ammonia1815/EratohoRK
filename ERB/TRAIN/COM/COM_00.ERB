@@ -1,184 +1,184 @@
 ﻿;────────────────────────────────────
-;000,침묵한다（징계・포인트）
+;000, 침묵한다（징계·포인트）
 ;────────────────────────────────────
 @COM0
-;質問されて答えない場合は징계・포인트に加算
+;질문받아 대답하지 않는 경우는징계·포인트에 가산
 IF IS_NOWACTNAME("지금 기분을 묻다/자신에게의 마음을 묻다")
-	TFLAG:징계・포인트 += 1 + RAND:3 + MARK:반항각인 / 2 + BASE:초조함 / 100
-	;派生：質問に答えない
+	TFLAG:징계·포인트 += 1 + RAND:3 + MARK:반항각인 / 2 + BASE:초조함 / 100
+	;파생:질문에 답하지 않는다
 	TFLAG:REACT파생 = 1
 ELSE
-	;派生：ただの沈黙
+	;파생:단순한 침묵
 	TFLAG:REACT파생 = 0
 ENDIF
-;COM印象
-CALL SET_COMIMP("悪印象小")
+;COM 인상
+CALL SET_COMIMP("나쁜인상")
 ;의존도변화
 CALL ADD_DEPEND(-1, -1)
 RETURN 1
 
 
 ;────────────────────────────────────
-;001,마음 약하게 응답한다（트라우마、굴종、공포、소극적으로 한다、애원）
+;001, 마음 약하게 응답한다（트라우마, 굴종, 공포, 소극적으로 한다, 애원）
 ;────────────────────────────────────
 @COM1
-;트라우마化加速
+;트라우마화 가속
 TIMES SOURCE:MASTER:트라우마 , 1.20
-;굴종SOURCE増加
+;굴종SOURCE 증가
 SOURCE:MASTER:굴종 += 100 + MARK:굴복각인 * 20
-;ACT条件により공포SOURCE増加
+;ACT 조건에 의해공포SOURCE 증가
 SIF IS_NOWACTNAME("엄하게 위협한다/징계한다고 위협한다/고함치다/기분나쁘게 웃다/매도")
 	SOURCE:MASTER:공포 += 200 + MARK:MASTER:트라우마 * 50
-;大体の状況は소극적으로 한다になるが、特定の状況で애원になります
+;대개의 상황은소극적으로 한다가 되지만, 특정의 상황으로애원가 됩니다
 LOCAL = PALAM:MASTER:굴복 / 1000 + PALAM:MASTER:공순 / 1000 + PALAM:MASTER:공포 / 1000 + PALAM:MASTER:고통 / 1500 + PALAM:MASTER:불쾌 / 2000
 LOCAL -= PALAM:MASTER:반항 / 200 - MARK:반항각인 * 2
 ;OriginalString : 
 PRINTL 
 IF (IS_NOWACTNAME("엄하게 위협한다/징계한다고 위협한다/고함치다/밀어 넘어트린다/매도")) && LOCAL > 0
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("용서를 빌다")
-	;派生：애원する
+	;파생:애원 한다
 	TFLAG:REACT파생 = 1
 ELSE
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("소극적으로 한다")
-	;派生：마음 약하게 응답한다
+	;파생:마음 약하게 응답한다
 	TFLAG:REACT파생 = 0
 ENDIF
 ;OriginalString : 
 PRINTL 
-;COM印象
-CALL SET_COMIMP("好印象小")
+;COM 인상
+CALL SET_COMIMP("약간좋은인상")
 ;의존도변화
 CALL ADD_DEPEND(0, +1)
 RETURN 1
 
 
 ;────────────────────────────────────
-;002,무뚝뚝하게 응답한다（반항、징계・포인트）
+;002, 무뚝뚝하게 응답한다（반항, 징계·포인트）
 ;────────────────────────────────────
 @COM2
-;반항SOURCE増加
+;반항SOURCE 증가
 SOURCE:MASTER:반항 += 200
-;징계・포인트加算
-TFLAG:징계・포인트 += RAND:5 + MARK:반항각인 / 2 + BASE:초조함 / 100 - BASE:이성 / 100
-;COM印象
-CALL SET_COMIMP("悪印象小")
+;징계·포인트가산
+TFLAG:징계·포인트 += RAND:5 + MARK:반항각인 / 2 + BASE:초조함 / 100 - BASE:이성 / 100
+;COM 인상
+CALL SET_COMIMP("나쁜인상")
 ;의존도변화
 CALL ADD_DEPEND(-2, -2)
 RETURN 1
 
 
 ;────────────────────────────────────
-;003,상냥하게 응답한다（달성、열락、적극적으로 한다）
+;003, 상냥하게 응답한다（달성, 열락, 적극적으로 한다）
 ;────────────────────────────────────
 @COM3
-;달성、열락SOURCE増加
+;달성, 열락SOURCE 증가
 SOURCE:MASTER:달성 += 200
 SOURCE:MASTER:열락 += 50 + MARK:MASTER:쾌락각인 * 20 + SOURCE:MASTER:쾌Ｃ / 8 + SOURCE:MASTER:쾌Ｖ / 8 + SOURCE:MASTER:쾌Ａ / 8 + SOURCE:MASTER:쾌Ｂ / 8
-;COM分類
+;COM 분류
 CALL SET_COMGRO("적극적으로 한다")
-;COM印象
-CALL SET_COMIMP("好印象大")
+;COM 인상
+CALL SET_COMIMP("좋은인상")
 ;의존도변화
 CALL ADD_DEPEND(+3, +1)
 RETURN 1
 
 
 ;────────────────────────────────────
-;004,강하게 응답한다（반항、징계・포인트）
+;004, 강하게 응답한다（반항, 징계·포인트）
 ;────────────────────────────────────
 @COM4
-;반항SOURCE増加
+;반항SOURCE 증가
 SOURCE:MASTER:반항 += 500 + MARK:반항각인 * 10
-;징계・포인트加算
-TFLAG:징계・포인트 += 5 + MARK:반항각인 / 2 + BASE:초조함 / 100 - BASE:흥미 / 100
-;ACT条件により派生
+;징계·포인트가산
+TFLAG:징계·포인트 += 5 + MARK:반항각인 / 2 + BASE:초조함 / 100 - BASE:흥미 / 100
+;ACT 조건에 의해 파생
 IF IS_NOWACTNAME("밀어 넘어트린다")
-	;派生：밀어넘어짐に屈しない
+	;파생:밀어넘어짐에 굴하지 않는다
 	TFLAG:REACT파생 = 1
 ELSE
-	;派生：強気に応答
+	;파생:강하게 응답
 	TFLAG:REACT파생 = 0
 ENDIF
-;COM印象
-CALL SET_COMIMP("悪印象小")
+;COM 인상
+CALL SET_COMIMP("나쁜인상")
 ;의존도변화
 CALL ADD_DEPEND(-1, -3)
 RETURN 1
 
 
 ;────────────────────────────────────
-;005,빈정거린다（굴종、반항、소극적으로 한다、징계・포인트）
+;005, 빈정거린다（굴종, 반항, 소극적으로 한다, 징계·포인트）
 ;────────────────────────────────────
 @COM5
-;굴종、반항SOURCE増加
+;굴종, 반항SOURCE 증가
 SOURCE:MASTER:굴종 += 250 - MARK:반항각인 * 20
 SOURCE:MASTER:반항 += 250 - MARK:굴복각인 * 20
-;징계・포인트加算
-TFLAG:징계・포인트 += 3 + RAND:5 + MARK:반항각인 / 5
-;質問でなければ태연하게 한다分類
+;징계·포인트가산
+TFLAG:징계·포인트 += 3 + RAND:5 + MARK:반항각인 / 5
+;질문이 아니면태연하게 한다분류
 SIF !IS_NOWACTNAME("지금 기분을 묻다/자신에게의 마음을 묻다")
 	CALL SET_COMGRO("태연하게 한다")
-;COM印象
-CALL SET_COMIMP("悪印象小")
+;COM 인상
+CALL SET_COMIMP("나쁜인상")
 ;의존도변화
 CALL ADD_DEPEND(-3, -1)
 RETURN 1
 
 
 ;────────────────────────────────────
-;006,더 하드하게 해（굴종、징계・포인트）
+;006, 더 하드하게 해（굴종, 징계·포인트）
 ;────────────────────────────────────
 @COM6
-;굴종SOURCE増加
+;굴종SOURCE 증가
 SOURCE:MASTER:굴종 += 50 + MARK:MASTER:고통각인 * 20 + GET_ABL(MASTER, "마조끼") * CFLAG:MASTER:죠교레벨 * 2
-;この恥知らずのメス豚め！とか言いながら징계・になります
+;이 철면피의 암퇘지놈! 라든지 말하면서징계·이 됩니다
 LOCAL = BASE:초조함 / 100 + TALENT:새드 * 3 + TALENT:심술궂음 * 5 - TALENT:마음씨착한 * 5 - MARK:굴복각인 - CFLAG:아라이멘도 / 10 + RAND:5
 IF LOCAL > 0
-	;징계・포인트加算
-	TFLAG:징계・포인트 += LOCAL
-	;派生：「この恥知らずのメス豚め！」
+	;징계·포인트가산
+	TFLAG:징계·포인트 += LOCAL
+	;파생:「이 철면피의 암퇘지놈!」
 	TFLAG:REACT파생 = 1
 ELSE
-	;派生：「ふーん」
+	;파생:「흐음」
 	TFLAG:REACT파생 = 0
 ENDIF
-CALL SET_COMGRO("受け入れる")
-;COM印象
-CALL SET_COMIMP("0から遠ざかる")
+CALL SET_COMGRO("받아들인다")
+;COM 인상
+CALL SET_COMIMP("0에서멀어짐")
 ;의존도변화
 CALL ADD_DEPEND(0, +3)
 RETURN 1
-;快SOURCEに応じてREACTION_MESSAGEで分岐시킨다なら、REACT파생にも反映시킨다べき気がする
-;条件そのまま書けば参照可能だが、そういう問題ではないと考えます@/L
+;쾌SOURCE에 응해 REACTION_MESSAGE로 분기시킨다라면, REACT파생에도 반영시킨다나무 생각이 든다
+;조건 그대로 쓰면 참조 가능하지만, 그러한 문제는 아니라고 생각합니다@/L
 
 ;────────────────────────────────────
-;007,용서를 빌다（굴종、공포、애원、징계・포인트）
+;007, 용서를 빌다（굴종, 공포, 애원, 징계·포인트）
 ;────────────────────────────────────
 @COM7
-;굴종、공포SOURCE増加
+;굴종, 공포SOURCE 증가
 SOURCE:MASTER:굴종 += 200 + MARK:굴복각인 * MARK:MASTER:트라우마 * 10
 SOURCE:MASTER:공포 += SOURCE:MASTER:고통 / 3 + SOURCE:MASTER:구속 / 5 + SOURCE:MASTER:이탈 / 4 + SOURCE:MASTER:트라우마 / 3
-;意見を出すなんていい度가슴だね！とか言いながら징계・になります
+;의견을 내다니 좋은 번가슴구나! 라든지 말하면서징계·이 됩니다
 LOCAL = BASE:초조함 / 80 - BASE:이성 / 100 - CFLAG:아라이멘도 / 10 + PALAM:MASTER:반항 / 1000 + TALENT:새드 * 5 + TALENT:심술궂음 * 5 - TALENT:마음씨착한 * 5 - MARK:MASTER:트라우마 / 2
-SIF IS_POLICY("今", "이상")
+SIF IS_POLICY("지금", "이상")
 	LOCAL += RAND:7
-;COM印象が共通なのは納得いかなかったのでを派生毎に別ける@/L
+;COM 인상이 공통된 것은 납득 가지 않았기 때문에를 파생마다별 찬다@/L
 IF LOCAL > 0 && !IS_NOWACTNAME("공중육변기플레이")
-	;징계・포인트加算
-	TFLAG:징계・포인트 += LOCAL
-	;派生：「意見を出すなんていい度가슴だね！」
+	;징계·포인트가산
+	TFLAG:징계·포인트 += LOCAL
+	;파생:「의견을 내다니 좋은 번가슴구나!」
 	TFLAG:REACT파생 = 1
-	;COM印象
-	CALL SET_COMIMP("0から遠ざかる")
+	;COM 인상
+	CALL SET_COMIMP("0에서멀어짐")
 ELSE
-	;派生：「ふーん」
+	;파생:「흐음」
 	TFLAG:REACT파생 = 0
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("용서를 빌다")
-	;COM印象
-	CALL SET_COMIMP("0に近づく")
+	;COM 인상
+	CALL SET_COMIMP("0에가까워짐")
 ENDIF
 ;의존도변화
 CALL ADD_DEPEND(0, +2)
@@ -186,26 +186,26 @@ RETURN 1
 
 
 ;────────────────────────────────────
-;008,기분좋게 해（열락、受け入れる、징계・포인트）
+;008, 기분좋게 해（열락, 받아들인다, 징계·포인트）
 ;────────────────────────────────────
 @COM8
-;열락SOURCE増加
+;열락SOURCE 증가
 SOURCE:MASTER:열락 += PALAM:MASTER:욕정 / 5 + CFLAG:MASTER:죠교레벨 * GET_ABL(MASTER, "욕망") * MARK:MASTER:쾌락각인 / 10
-;この恥知らずのメス豚め！とか言いながら징계・になります
+;이 철면피의 암퇘지놈! 라든지 말하면서징계·이 됩니다
 LOCAL = BASE:초조함 / 100 - CFLAG:아라이멘도 / 10 - CFLAG:MASTER:죠교레벨 + TALENT:새드 * 3 + TALENT:심술궂음 * 5 + MARK:MASTER:쾌락각인 / 2 + RAND:5
 IF LOCAL > 0
-	;징계・포인트加算
-	TFLAG:징계・포인트 += LOCAL
-	;派生：「この恥知らずのメス豚め！」
+	;징계·포인트가산
+	TFLAG:징계·포인트 += LOCAL
+	;파생:「이 철면피의 암퇘지놈!」
 	TFLAG:REACT파생 = 1
 ELSE
-	;派生：「ふーん」
+	;파생:「흐음」
 	TFLAG:REACT파생 = 0
 ENDIF
-;COM分類
-CALL SET_COMGRO("受け入れる")
-;COM印象
-CALL SET_COMIMP("0から遠ざかる")
+;COM 분류
+CALL SET_COMGRO("받아들인다")
+;COM 인상
+CALL SET_COMIMP("0에서멀어짐")
 ;의존도변화
 CALL ADD_DEPEND(+2, +1)
 RETURN 1

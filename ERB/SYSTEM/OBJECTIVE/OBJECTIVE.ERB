@@ -1,133 +1,133 @@
 ﻿;==================================================
 ;
-;죠교목적処理
+;죠교목적처리
 ;
 ;==================================================
 ;────────────────────────────────────
-;죠교목적処理(관리)
-;ARGS 実行内容
+;죠교목적처리(관리)
+;ARGS 실행 내용
 ;────────────────────────────────────
 @OBJECTIVE(ARG, ARGS, ARGS:1 = "")
 ;────────────────────────────────────
-;죠교목적処理(죠교대상/個別)
+;죠교목적처리(죠교대상/개별)
 ;────────────────────────────────────
 [SKIPSTART]
-;脱走
+;탈주
 @OBJECTIVE_M_(ARGS)
 SELECTCASE ARGS
-	;목적解説文更新
+	;목적해설문 갱신
 	CASE "CONF"
 		;죠교목적
-		STR:죠교목적 = 脱走
-		;목적解説文
-		STR:목적解説 = この状況から脱出するのが목적です
-		;목적詳細解説
-		STR:목적詳細 = 
-	;목적달성確認
+		STR:죠교목적 =탈주
+		;목적해설문
+		STR:목적해설 =이 상황으로부터 탈출하는 것이목적입니다
+		;목적상세 해설
+		STR:목적상세 = 
+	;목적달성확인
 	CASE "ACHI"
-		;脱走成功
+		;탈주 성공
 		
-	;小목적指向処理
+	;소목적지향 처리
 	CASE "POIN"
-		;죠교대상にはなし
+		;죠교대상로는 없음
 ENDSELECT
 ;────────────────────────────────────
-;죠교목적処理(죠교자/個別)
+;죠교목적처리(죠교자/개별)
 ;────────────────────────────────────
-;죠교자共通
+;죠교자공통
 @OBJECTIVE_T_(ARGS)
 SELECTCASE ARGS
-	;목적解説文更新(ありません)
+	;목적해설문 갱신(없습니다)
 	CASE "CONF"
 		;죠교목적
 		STR:죠교목적 = 
-		;목적解説文
-		STR:목적解説 = 
-		;목적詳細解説
-		STR:목적詳細 = 
-	;목적달성確認
+		;목적해설문
+		STR:목적해설 = 
+		;목적상세 해설
+		STR:목적상세 = 
+	;목적달성확인
 	CASE "ACHI"
-		;달성しません
-	;小목적指向処理
+		;달성 하지 않습니다
+	;소목적지향 처리
 	CASE "POIN"
-		;現状確認
+		;현상 확인
 ENDSELECT
 
-;마력収集
+;마력수집
 @OBJECTIVE_T_MAG(ARGS)
 SELECTCASE ARGS
-	;목적解説文更新
+	;목적해설문 갱신
 	CASE "CONF"
 		;죠교목적
-		STR:죠교목적 = 마력収集
-		;목적解説文
-		STR:목적解説 = 마력を効率良く集めるのが목적です
-		;목적詳細解説
-		STR:목적詳細 = 
-	;목적달성確認
+		STR:죠교목적 = 마력수집
+		;목적해설문
+		STR:목적해설 = 마력를 효율 좋게 모으는 것이목적입니다
+		;목적상세 해설
+		STR:목적상세 = 
+	;목적달성확인
 	CASE "ACHI"
-		;달성しません
-	;小목적指向処理
+		;달성 하지 않습니다
+	;소목적지향 처리
 	CASE "POIN"
 		
 ENDSELECT
 ;────────────────────────────────────
-;죠교목적処理(조수/個別)
+;죠교목적처리(조수/개별)
 ;────────────────────────────────────
 @OBJ_A
 [SKIPEND]
 
 ;==================================================
 ;
-;조교중목적処理
+;조교중목적처리
 ;
 ;==================================================
 [SKIPSTART]
-;체력・기력관리
+;체력·기력관리
 @OBJM_T_VIT(ARGS)
 #LOCALSIZE 1
-#DIMS 同一죠교判定
+#DIMS 동일죠교판정
 #DIM L체력
 #DIM L기력
-#DIM 체력消費速度
-#DIM 기력消費速度
-#DIM 信頼度
-#DIM ターン
-#DIM 予測체력消費速度
-#DIM 予測기력消費速度
-#DIM 予測信頼度
+#DIM 체력소비 속도
+#DIM 기력소비 속도
+#DIM 신뢰도
+#DIM 턴
+#DIM 예측체력소비 속도
+#DIM 예측기력소비 속도
+#DIM 예측 신뢰도
 #DIM 휴식
-;同一죠교判定
+;동일죠교판정
 LOCALS = %SAME_TURN("죠교")%
-;同一죠교でなければ
-IF 同一죠교判定 != LOCALS
-	;変数初期化
-	同一죠교判定 = %LOCALS%
-	체력消費速度 = 0
-	기력消費速度 = 0
-	信頼度 = 0
-;휴식を挟んでいなければ
+;동일죠교가 아니면
+IF 동일죠교판정 != LOCALS
+	;변수 초기화
+	동일죠교판정 = %LOCALS%
+	체력소비 속도 = 0
+	기력소비 속도 = 0
+	신뢰도 = 0
+;휴식를 사이에 두지 않으면
 ELSEIF (DATABASE_I_AM("휴식") - 휴식) == 0
-	;체력・기력消費量기록
+	;체력·기력소비량기록
 	IF L체력 != 0 && BASE:MASTER:체력 != 0
-		LOCAL = (L체력 - BASE:MASTER:체력) / (TFLAG:죠교시간 - ターン)
-		체력消費速度 = 信頼度 == 0 ? LOCAL # (체력消費速度 + LOCAL) / 2
+		LOCAL = (L체력 - BASE:MASTER:체력) / (TFLAG:죠교시간 - 턴)
+		체력소비 속도 =신뢰도 == 0? LOCAL # (체력소비 속도 + LOCAL) / 2
 	ENDIF
 	IF L기력 != 0 && BASE:MASTER:기력 != 0
-		LOCAL = (L기력 - BASE:MASTER:기력) / (TFLAG:죠교시간 - ターン)
-		기력消費速度 = 信頼度 == 0 ? LOCAL # (기력消費速度 + LOCAL) / 2
+		LOCAL = (L기력 - BASE:MASTER:기력) / (TFLAG:죠교시간 - 턴)
+		기력소비 속도 =신뢰도 == 0? LOCAL # (기력소비 속도 + LOCAL) / 2
 	ENDIF
-	信頼度 += TFLAG:죠교시간 - ターン
+	신뢰도 += TFLAG:죠교시간 - 턴
 ENDIF
 L체력 = BASE:MASTER:체력
 L기력 = BASE:MASTER:기력
-ターン = TFLAG:죠교시간
+턴 = TFLAG:죠교시간
 휴식 = DATABASE_I_AM("휴식")
 
 NOSKIP
-;OriginalString : 체력消費速度
+;OriginalString : 체력소비 속도
 PRINTVL 체력 소비 속도
-;OriginalString : 기력消費速度
+;OriginalString : 기력소비 속도
 PRINTVL 기력 소비 속도
 ;OriginalString : L체력
 PRINTVL L체력
@@ -138,67 +138,67 @@ ENDNOSKIP
 
 ;==================================================
 ;
-;죠교小목적処理
+;죠교소목적처리
 ;
 ;==================================================
-;죠교자共通
+;죠교자공통
 @OBJS_T(ARGS)
-;現状確認
+;현상 확인
 
-;마력回収
+;마력회수
 @OBJS_T_MAG(ARGS)
 
 ;==================================================
 ;
-;基幹判断処理
+;기간 판단 처리
 ;
 ;==================================================
 @ESTIMATE_T(ARGS)
 
 [SKIPSTART]
 
-;初期化
-CALLF EST_TO_ACTM("初期化")
-CALLF EST_TO_ACT("初期化")
+;초기화
+CALLF EST_TO_ACTM("초기화")
+CALLF EST_TO_ACT("초기화")
 
-;기력・체력回復判断
+;기력·체력회복 판단
 CALL EST_T_REC_VIT()
 [SKIPEND]
 
 ;────────────────────────────────────
-;죠교継続判断
+;죠교계속 판단
 ;────────────────────────────────────
 @EST_T_TRA_END()
 
-;基幹処理呼び出し
+;기간 처리 호출
 CALL ESTIMATE_T("TRA_END")
 
 LOCAL = 0
 
-;SANDBOX限定処理
-;체력が減少すると조교중断했다がる
+;SANDBOX 한정 처리
+;체력가 감소하면조교중단했다
 SIF FLAG:모드 == 1
-	LOCAL += LINE_CALC(BASE:MASTER:체력 * 100 / MAXBASE:MASTER:체력, "100→0,0→25,LIMIT/0～25")
+	LOCAL += LINE_CALC(BASE:MASTER:체력 * 100 / MAXBASE:MASTER:체력, "100→0, 0→25, LIMIT/0～25")
 
 RETURN LOCAL
 
 
 ;==================================================
 ;
-;直接判断処理
+;직접 판단 처리
 ;
 ;==================================================
-;기력・체력回復
+;기력·체력회복
 @EST_T_REC_VIT()
-;체력が1/5以下되었다ら
+;체력가 1/5이하되었다등
 IF BASE:MASTER:체력 < MAXBASE:MASTER:체력 / 5
-	;回復に向けて행동する
-	CALLF EST_TO_ACTM("加算", "휴식", 10)
+	;회복에 향하여행동 한다
+	CALLF EST_TO_ACTM("가산", "휴식", 10)
 ENDIF
 
 ;==================================================
 ;
-;判断反映処理
+;판단 반영 처리
 ;
 ;==================================================
 @EST_TO_ACTM(ARGS, ARGS:1, ARG)
@@ -206,14 +206,14 @@ ENDIF
 #LOCALSIZE 20
 #DIM LTEMP
 [SKIPSTART]
-IF ARGS == "初期化"
+IF ARGS == "초기화"
 	VARSET LOCAL
 	RETURNF 0
 ENDIF
 LTEMP = GET_ACTNUM(ARGS:1)
 SIF LTEMP < 0
 	RETURNF 0
-IF ARGS == "加算"
+IF ARGS == "가산"
 	LOCAL:GET_ACTNUM(ARGS:1) = ARG
 ELSEIF ARGS == "취득"
 	RETURNF LOCAL:GET_ACTNUM(ARGS:1)
@@ -225,14 +225,14 @@ ENDIF
 #LOCALSIZE 200
 #DIM LTEMP
 [SKIPSTART]
-IF ARGS == "初期化"
+IF ARGS == "초기화"
 	VARSET LOCAL
 	RETURNF 0
 ENDIF
 LTEMP = MENUNUM(ARGS:1)
 SIF LTEMP < 0
 	RETURNF 0
-IF ARGS == "加算"
+IF ARGS == "가산"
 	LOCAL:MENUNUM(ARGS:1) = ARG
 ELSEIF ARGS == "취득"
 	RETURNF LOCAL:MENUNUM(ARGS:1)
@@ -243,7 +243,7 @@ ENDIF
 
 
 ;────────────────────────────────────
-;죠교목적文字列変数処理
+;죠교목적캐릭터 라인 변수 처리
 ;────────────────────────────────────
 @OBJECTIVE_V(ARG, ARGS)
 

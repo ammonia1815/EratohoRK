@@ -1,79 +1,79 @@
 ﻿;────────────────────────────────────
-;030,고통을 참는다（고통、구속、반항、공포）
+;030, 고통을 참는다（고통, 구속, 반항, 공포）
 ;────────────────────────────────────
 @COM30
-;고통、구속SOURCE減少
+;고통, 구속SOURCE 감소
 TIMES SOURCE:MASTER:고통 , 0.85
 TIMES SOURCE:MASTER:구속 , 0.95
-;반항SOURCE増加
+;반항SOURCE 증가
 SOURCE:MASTER:반항 += 10 + SOURCE:MASTER:고통 * (MARK:반항각인 + 1) / 20 - SOURCE:MASTER:구속
 SIF SOURCE:MASTER:반항 < 0
 	SOURCE:MASTER:반항 = 0
-;공포SOURCE増加
+;공포SOURCE 증가
 SOURCE:MASTER:공포 += SOURCE:MASTER:고통 * (MARK:MASTER:트라우마 + 10) * (11 - MARK:MASTER:고통각인) * (11 - MARK:반항각인) / 1000
-;COM分類
+;COM 분류
 CALL SET_COMGRO("소극적으로 한다")
-;COM印象
-CALL SET_COMIMP("好印象小")
+;COM 인상
+CALL SET_COMIMP("약간좋은인상")
 
-;REACTION_MESSAGEでは快SOURCEで分岐しており、COM側の修正漏れと思われたのでとりあえず@/L
-;COMIMP/COMGROはそのままで良さそうな気も했다ので保留
+;REACTION_MESSAGE에서는 쾌SOURCE로 분기 하고 있어, COM측의 수정 누락이라고 생각되었으므로 우선@/L
+;COMIMP/COMGRO는 그대로 좋은 것 같은 기분도했다의 것으로 보류
 IF SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ > 10
-	;派生：痛いけど기분 좋다!
+	;파생:아프지만기분 좋다!
 	TFLAG:REACT파생 = 1
 ELSE
-	;派生：고통を참다
+	;파생:고통를참다
 	TFLAG:REACT파생 = 0
 ENDIF
 RETURN 1
 
 
 ;────────────────────────────────────
-;031,비명지른다（굴종、달성、공포）
+;031, 비명지른다（굴종, 달성, 공포）
 ;────────────────────────────────────
 @COM31
-;굴종、달성、공포SOURCE増加
+;굴종, 달성, 공포SOURCE 증가
 SOURCE:MASTER:굴종 += 200 + SOURCE:MASTER:고통 * (CFLAG:MASTER:죠교레벨 + 1) * (MARK:굴복각인 + 10) / 100
 SOURCE:MASTER:달성 += (SOURCE:MASTER:고통 / 3 + SOURCE:MASTER:굴종 / 2) * (3 + TALENT:새드 + TALENT:심술궂음 - TALENT:마음씨착한) / 5
 SOURCE:MASTER:공포 += 200 + SOURCE:MASTER:고통 * (200 - GET_ABL(MASTER, "마조끼")) * (MARK:MASTER:트라우마 + 10) / 2000
-;COM分類
+;COM 분류
 CALL SET_COMGRO("소극적으로 한다")
-;COM印象
-CALL SET_COMIMP("0から遠ざかる")
+;COM 인상
+CALL SET_COMIMP("0에서멀어짐")
 IF SOURCE:MASTER:고통 > 500 || SOURCE:MASTER:고통 > PALAM:MASTER:공포 * 2
-	;派生：고통による悲鳴
+	;파생:고통에 의한 비명
 	TFLAG:REACT파생 = 0
 ELSE
-	;派生：공포による悲鳴
+	;파생:공포에 의한 비명
 	TFLAG:REACT파생 = 1
 ENDIF
 RETURN 1
 
 
 ;────────────────────────────────────
-;032,날뛴다（고통、구속、달성逆、반항、공포、날뛴다、징계・포인트）
+;032, 날뛴다（고통, 구속, 달성역, 반항, 공포, 날뛴다, 징계·포인트）
 ;────────────────────────────────────
 @COM32
-;밧줄구속中は痛い
+;밧줄구속중은 아프다
 IF TEQUIP:밧줄 && !IS_NOWACTNAME("밧줄")
 	SOURCE:MASTER:고통 += (TEQUIP:밧줄 + 1) * 200
 	TIMES SOURCE:MASTER:구속 , 1.50
 ENDIF
-;반항SOURCE増加
+;반항SOURCE 증가
 SOURCE:MASTER:반항 += 250 + (13 + MARK:반항각인 * 2 - MARK:굴복각인 + TALENT:MASTER:반항적 * 5 - TALENT:MASTER:얌전한 * 3) * 20
-;달성SOURCE減少
+;달성SOURCE 감소
 SOURCE:MASTER:달성 -= SOURCE:MASTER:반항 / 2
-;暴れ成功の判定
+;날뛰고 성공의 판정
 LOCAL = CFLAG:MASTER:반항강도 * 2 + BASE:MASTER:체력 / 200 + BASE:MASTER:기력 / 100 + MARK:반항각인 + PALAM:MASTER:반항 / 1000 - MARK:MASTER:트라우마 - GET_ABL(MASTER, "순종") / 10 + TALENT:MASTER:반항적 * 5 - TALENT:MASTER:솔직 * 5 + TALENT:MASTER:장신 * 5 - TALENT:MASTER:작은체형 * 5
 LOCAL:1 = BASE:체력 / 250 + BASE:기력 / 150 + GET_TRAINLV(TARGET) + TALENT:장신 * 5 - TALENT:작은체형 * 5 + PALAM:MASTER:고통 / 1500 - RAND:5
 SIF !IS_NOWACTNAME("밧줄")
 	LOCAL:1 += (TEQUIP:밧줄) * 5
-;조수の人数と体格
+;조수의 인원수와 체격
 SIF ASSI:1 > 0
 	LOCAL:1 += 6 + TALENT:(ASSI:1):장신 * 3 - TALENT:(ASSI:1):작은체형 * 3
 SIF ASSI:2 > 0
 	LOCAL:1 += 6 + TALENT:(ASSI:2):장신 * 3 - TALENT:(ASSI:2):작은체형 * 3
-;ACT보정値
+;ACT보정치
 IF IS_NOWACTNAME("입으로 애무")
 	LOCAL:2 = 2
 ELSEIF IS_NOWACTNAME("키스")
@@ -130,13 +130,13 @@ SIF ASSI > 0
 ;ＳＰ행동
 SIF TFLAG:ＳＰ행동 > 199
 	LOCAL:2 += 10
-;暴れ成否判定		역강간は抵抗できなくてよいらしいので、暴れが通らないように変更@/L
+;날뛰고 성공 여부 판정		역강간는 저항 할 수 없어 좋은 것 같으니까, 날뛰고가 통하지 않게 변경@/L
 IF LOCAL > LOCAL:1 + LOCAL:2 && TEQUIP:삼각목마 == 0 && !IS_NOWACTNAME("역강간")
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("날뛴다")
-	;반항SOURCE増加
+	;반항SOURCE 증가
 	TIMES SOURCE:MASTER:반항 , 2.50
-	;도구장착失敗
+	;도구장착실패
 	SIF IS_NOWACTNAME("바이브")
 		TEQUIP:바이브 = 0
 	SIF IS_NOWACTNAME("항문바이브")
@@ -155,66 +155,66 @@ IF LOCAL > LOCAL:1 + LOCAL:2 && TEQUIP:삼각목마 == 0 && !IS_NOWACTNAME("역�
 		TEQUIP:눈가리개 = 0
 	SIF IS_NOWACTNAME("볼개그")
 		TEQUIP:볼개그 = 0
-	;체력、기력減少
+	;체력, 기력감소
 	DOWNBASE:체력 += 15 * (6 + MARK:반항각인 + TALENT:MASTER:장신 * 5 - TALENT:MASTER:작은체형 * 5)
 	DOWNBASE:기력 += 20 * (8 + CFLAG:MASTER:반항강도 + TALENT:MASTER:반항적 * 3 + TALENT:MASTER:건방짐 * 3 - TALENT:MASTER:솔직 * 3 - TALENT:MASTER:얌전한 * 3)
-	;派生：暴れ成功
+	;파생:날뛰고 성공
 	TFLAG:REACT파생 = 0
 ELSE
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("소극적으로 한다")
-	;반항SOURCE減少
+	;반항SOURCE 감소
 	TIMES SOURCE:MASTER:반항 , 0.10
 	IF TEQUIP:밧줄 && !IS_NOWACTNAME("밧줄")
-		;派生：밧줄구속による暴れ失敗
+		;파생:밧줄구속에 의한 날뛰고 실패
 		TFLAG:REACT파생 = 1
 	ELSE
-		;派生：制止による暴れ失敗
+		;파생:제지에 의한 날뛰고 실패
 		TFLAG:REACT파생 = 2
-		;체력、기력減少
+		;체력, 기력감소
 		DOWNBASE:체력 += 10 * (6 + MARK:반항각인 + TALENT:MASTER:장신 * 5 - TALENT:MASTER:작은체형 * 5)
 		DOWNBASE:기력 += 15 * (8 + CFLAG:MASTER:반항강도 + TALENT:MASTER:반항적 * 3 + TALENT:MASTER:건방짐 * 3 - TALENT:MASTER:솔직 * 3 - TALENT:MASTER:얌전한 * 3)
 	ENDIF
 ENDIF
-;COM印象
+;COM 인상
 CALL SET_COMIMP("악인상대")
-;징계・포인트加算
-TFLAG:징계・포인트 += IS_COMGRONAME("날뛴다")? 8 # 2 + BASE:흥미 / 200 + BASE:초조함 / 150 + RAND:5
+;징계·포인트가산
+TFLAG:징계·포인트 += IS_COMGRONAME("날뛴다")? 8 # 2 + BASE:흥미 / 200 + BASE:초조함 / 150 + RAND:5
 RETURN 1
 
 
 ;────────────────────────────────────
-;033,무서워한다（굴종、공포、애원、징계・포인트）
+;033, 무서워한다（굴종, 공포, 애원, 징계·포인트）
 ;────────────────────────────────────
 @COM33
-;굴종、공포SOURCE増加
+;굴종, 공포SOURCE 증가
 SOURCE:MASTER:굴종 += 200 + MARK:굴복각인 * MARK:MASTER:트라우마 * 10
 SOURCE:MASTER:공포 += SOURCE:MASTER:고통 / 3 + SOURCE:MASTER:구속 / 5 + SOURCE:MASTER:이탈 / 4 + SOURCE:MASTER:트라우마 / 3
-;意見を出すなんていい度가슴だね！とか言いながら징계・になります
+;의견을 내다니 좋은 번가슴구나! 라든지 말하면서징계·이 됩니다
 LOCAL = BASE:초조함 / 80 - BASE:이성 / 100 - CFLAG:아라이멘도 / 10 + PALAM:MASTER:반항 / 1000 + TALENT:새드 * 5 + TALENT:심술궂음 * 5 - TALENT:마음씨착한 * 5 - MARK:MASTER:트라우마 / 2
-SIF IS_POLICY("今", "이상")
+SIF IS_POLICY("지금", "이상")
 	LOCAL += RAND:7
-;結局返答がないので、自分が納得できる形に弄ります@/L
+;결국 대답이 없기 때문에, 자신이 납득할 수 있는 형태에 만지작거립니다@/L
 IF LOCAL > 0 && !IS_NOWACTNAME("공중육변기플레이")
-	;징계・포인트加算
-	TFLAG:징계・포인트 += LOCAL
-	;派生：怯えに対する초조함
+	;징계·포인트가산
+	TFLAG:징계·포인트 += LOCAL
+	;파생:두려움에 대한초조함
 	TFLAG:REACT파생 = 1
-	;COM印象
-	CALL SET_COMIMP("0から遠ざかる")
+	;COM 인상
+	CALL SET_COMIMP("0에서멀어짐")
 ELSE
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("용서를 빌다")
-	;派生：「ふーん」
+	;파생:「흐음」
 	TFLAG:REACT파생 = 0
-	;COM印象
-	CALL SET_COMIMP("0に近づく")
+	;COM 인상
+	CALL SET_COMIMP("0에가까워짐")
 ENDIF
 RETURN 1
 
 
 ;────────────────────────────────────
-;各행동の반항難易度、現在未使用
+;각행동의반항난이도, 현재미사용
 ;────────────────────────────────────
 ;@COUNTER_CHECK
 [SKIPSTART]
@@ -239,10 +239,10 @@ SIF TEQUIP:성교봉사중 == 3
 	LOCAL:2 += 1
 SIF TEQUIP:성교봉사중 && TEQUIP:성교봉사중 != 3
 	LOCAL:2 += 5
-SIF TFLAG:ACT분류 == 6 && !IS_NOWACTNAME("이라마치오/매도/관장세트")
+SIF TFLAG:ACT분류 == 6 && ! IS_NOWACTNAME("이라마치오/매도/관장세트")
 	LOCAL:2 += 5
 SIF IS_NOWACTNAME("이라마치오")
 	LOCAL:2 += 4
-SIF IS_POLICY("今", "이상")
+SIF IS_POLICY("지금", "이상")
 	LOCAL:2 += 1
 [SKIPEND]

@@ -1,7 +1,7 @@
 ﻿;────────────────────────────────────
-;ステータス表示
+;스테이터스 표시
 ;────────────────────────────────────
-;ちょっと整理@revkoishi(14/05/22)
+;조금 정리@revkoishi(14/05/22)
 @PRINT_STATUS(ARG:0)
 LOCAL:1 = RESULT
 DO
@@ -14,7 +14,7 @@ DO
 	IF ARG:0 == MASTER
 		CALL PRINT_BASEL("이성", ARG:0, GETNUM(BASE, "이성"), 32, 1)
 		SIF PENIS(ARG:0)
-			CALL PRINT_BASEL("精力", ARG:0, GETNUM(BASE, "사정"), 32, 1)
+			CALL PRINT_BASEL("정력", ARG:0, GETNUM(BASE, "사정"), 32, 1)
 	ELSE
 		CALL PRINT_TENSION(ARG:0)
 	ENDIF
@@ -29,7 +29,7 @@ DO
 			LOCAL:0 = (RESULTS != KEY_B && RESULTS != KEY_X)
 			IF LOCAL:0
 				CLEARLINE 1
-				REUSELASTLINE 入力値が範囲外です
+				REUSELASTLINE 입력치가 범위외입니다
 			ENDIF
 		LOOP LOCAL:0
 		RESULT = RESULTS == KEY_B ? 100 # 102
@@ -40,7 +40,7 @@ DO
 			LOCAL:0 = (RESULT != 100 && RESULT != 102)
 			IF LOCAL:0
 				CLEARLINE 1
-				REUSELASTLINE 入力値が範囲外です
+				REUSELASTLINE 입력치가 범위외입니다
 			ENDIF
 		LOOP LOCAL:0
 	ENDIF
@@ -50,8 +50,8 @@ LOOP RESULT != 100
 RETURN LOCAL:1
 
 
-;未취득の각인も含めカラー表示化。改行位置自動判定に変更。変更後ポイント計算が出来ていなかったのを修正。
-;決断的に新仕様へ大工事＋微調整@revkoishi(14/05/28)
+;미취득의각인도 포함 칼라 표시화. 개행 위치 자동 판정으로 변경. 변경 후 포인트 계산이 되어 있지 않았던 것을 수정.
+;결단적으로 신사양에 목수사＋미조정@revkoishi(14/05/28)
 @PRINT_STATUS2(ARG:0)
 #DIM SURRENDER_LIST, 6, 30
 #DIM SURRENDER_SIZE, 6
@@ -66,30 +66,30 @@ IF ARG:0 == MASTER
 		PRINTFORML \@ MARK:MASTER:트라우마 ? %MARKNAME:4%Lv{MARK:MASTER:트라우마,2} # \@
 	ENDIF
 	SIF MARK:MASTER:트라우마
-		PRINTFORML %CALLNAME:MASTER%의 트라우마가 되는 원인은：[%GET_ACTNAME(CFLAG:MASTER:트라우마)%]
+		PRINTFORML %CALLNAME:MASTER%의 트라우마가 되는 원인은:[%GET_ACTNAME(CFLAG:MASTER:트라우마)%]
 	PRINTFORML                      %MARKNAME:2%        %MARKNAME:3%
 	FOR LOCAL:0, 0, CHARANUM
-		IF LOCAL:0 == MASTER !| CFLAG:(LOCAL:0):일시퇴피	;일시퇴피中のキャラは表示しない
+		IF LOCAL:0 == MASTER !| CFLAG:(LOCAL:0):일시퇴피	;일시퇴피중의 캐릭터는 표시하지 않는다
 			PRINTPLAINFORM [{LOCAL:0, 3}] - %CALLNAME:(LOCAL:0), 16, LEFT% 
 			PRINTFORML Lv{MARK:(LOCAL:0):굴복각인, 2}            Lv{MARK:(LOCAL:0):반항각인, 2}
 		ENDIF
 	NEXT
 ELSE
-	VARSET LOCAL	;0.カウンタ/1.Lv/2.桁位置/3.文字列長/4.각인数/5.処理中の実績번호/6.虹色
+	VARSET LOCAL	;0. 카운터/1. Lv/2. 자리수 위치/3. 캐릭터 라인장/4. 각인수/5. 처리중의 실적번호/6. 무지개색
 	VARSET SURRENDER_LIST
 	VARSET SURRENDER_SIZE
 	PRINTFORML -- □ 조교 이력 □ %"-" * (LINE_WIDTH - 18)%
 	FOR LOCAL:0, 0, 128
-		SIF GET_SURRENDER_LV(LOCAL:0, ARG:0) && IS_SURRENDER_ENABLE(LOCAL:0, ARG:0)	;関数名変更@revkoishi(14/06/01)
+		SIF GET_SURRENDER_LV(LOCAL:0, ARG:0) && IS_SURRENDER_ENABLE(LOCAL:0, ARG:0)	;함수명 변경@revkoishi(14/06/01)
 			SURRENDER_LIST:GET_SURRENDER_LV(LOCAL:0, ARG:0):(SURRENDER_SIZE:GET_SURRENDER_LV(LOCAL:0, ARG:0)++) = LOCAL:0
 	NEXT
 	FOR LOCAL:1, 1, 6
 		PRINTFORM Lv{LOCAL:1}
-		LOCAL:2 = 3	;桁位置リセット
-		LOCAL:4 = 0	;각인数リセット
-		LOCAL:6 = GET_RAINBOW(6 + LOCAL:1)	;虹色
+		LOCAL:2 = 3	;자리수 위치 리셋트
+		LOCAL:4 = 0	;각인수리셋트
+		LOCAL:6 = GET_RAINBOW(6 + LOCAL:1)	;무지개색
 		FOR LOCAL:0, 0, SURRENDER_SIZE:(LOCAL:1)
-			LOCAL:5 = SURRENDER_LIST:(LOCAL:1):(LOCAL:0)	;処理中の実績번호更新
+			LOCAL:5 = SURRENDER_LIST:(LOCAL:1):(LOCAL:0)	;처리중의 실적번호갱신
 			LOCALS:0 = 【%GET_SURRENDER_STR_T(LOCAL:5, ARG:0)%】
 			LOCAL:3 = STRLENS(LOCALS:0)
 			LOCAL:2 += LOCAL:3
@@ -97,19 +97,19 @@ ELSE
 				PRINTFORM \n   
 				LOCAL:2 = 3 + LOCAL:3
 			ENDIF
-			;カテゴリ分け用色セット関数作ろうかと思ったけど、当面はこれで十分な予感…
-			IF LOCAL:5 > 63 ? GETBIT(CFLAG:(ARG:0):각인2, LOCAL:5 - 64) # GETBIT(CFLAG:(ARG:0):각인, LOCAL:5)	;所持각인
-				++LOCAL:4							;각인数加算
-				IF INRANGE(LOCAL:1, 1, 4)			;Lv4以下は単色
+			;카테고리 나누기용색세트 함수 만들까하고 생각했지만, 당면은 이것으로 충분한 예감…
+			IF LOCAL:5 > 63 ? GETBIT(CFLAG:(ARG:0):각인2, LOCAL:5 - 64) # GETBIT(CFLAG:(ARG:0):각인, LOCAL:5)	;소지각인
+				++LOCAL:4							;각인수가산
+				IF INRANGE(LOCAL:1, 1, 4)			;Lv4 이하는 단색
 					CALL FPRINT(LOCALS:0, LOCAL:6)
-				ELSE								;Lv5以上は虹色
+				ELSE								;Lv5 이상은 무지개색
 					CALL PRINT_RAINBOW(LOCALS:0, , , RAND:12)
 				ENDIF
-			ELSE									;未所持각인
-				CALL FPRINT(LOCALS:0, 0x606060)		;灰色
+			ELSE									;미소지각인
+				CALL FPRINT(LOCALS:0, 0x606060)		;회색
 			ENDIF
 		NEXT
-		PRINTFORML \n    {SURRENDER_LV2POINT(LOCAL:1), 2}P×{LOCAL:4, 2}＝{LOCAL:4 * SURRENDER_LV2POINT(LOCAL:1), 2}P
+		PRINTFORML \n    {SURRENDER_LV2POINT(LOCAL:1), 2}P×{LOCAL:4, 2}={LOCAL:4 * SURRENDER_LV2POINT(LOCAL:1), 2}P
 		PRINTSL "-" * LINE_WIDTH
 	NEXT
 	PRINTFORML 합계:{CFLAG:(ARG:0):굴복P1}P 굴복 각인:LV{MARK:(ARG:0):굴복각인}
@@ -122,7 +122,7 @@ IF FLAG:죠교UI패드화 && FLAG:조교중
 		LOCAL:0 = (RESULTS != KEY_B && RESULTS != KEY_X)
 		IF LOCAL:0
 			CLEARLINE 1
-			REUSELASTLINE 不正な入力値です
+			REUSELASTLINE 부정한 입력치입니다
 		ENDIF
 	LOOP LOCAL:0
 	RESULT = RESULTS == KEY_B ? 100 # 101
@@ -133,46 +133,46 @@ ENDIF
 RETURN RESULT
 
 
-;一部参照がずれていたので修正＆５列に変更＆表示の調整＆色設定@revkoishi(14/05/26)
+;일부 참조가 어긋나 있었으므로 수정＆5열로 변경＆표시의 조정＆색설정@revkoishi(14/05/26)
 @NEW_PRINT_EXP(ARG:0)
 #DIM NODISP, 10
 #DIM LINE_WIDTH
 LINE_WIDTH = WIDTH()
-LOCAL:1 = 0				;表示カウンタ
-;表示順は性別によってありえないものを抜くだけにしま했다。以下抜かれるもの
+LOCAL:1 = 0				;표시 카운터
+;표시순서는 성별에 의해 있을 수 없는 것을 뽑는 만큼 섬했다. 이하 뽑아지는 것
 VARSET NODISP, -1
 IF TALENT:(ARG:0):후타나리
-	NODISP = 14, 41				;후타나리：14,시오후키경험/41,ＢＬ경험
+	NODISP = 14, 41				;후타나리:14, 시오후키경험/41, ＢＬ경험
 ELSEIF TALENT:(ARG:0):남자
-	NODISP =  1,  6, 14, 40, 52	;　남자：1,Ｖ경험/6,분유경험/14,시오후키경험/40,레즈경험/52,Ｖ확장경험
+	NODISP =  1,  6, 14, 40, 52	;  남자:1, Ｖ경험/6, 분유경험/14, 시오후키경험/40, 레즈경험/52, Ｖ확장경험
 ELSE
-	NODISP =  5, 41				;　여자：5,사정경험/41,ＢＬ경험
+	NODISP =  5, 41				;  여자:5, 사정경험/41, ＢＬ경험
 ENDIF
 PRINTFORML -- □ 경험 □ %"-" * (LINE_WIDTH - 14)%
 FOR LOCAL:0, 0, 70
 	SIF STRLENSU(EXPNAME:(LOCAL:0)) && !MATCH(NODISP, LOCAL:0)
 {
-		CALL FPRINT(@"\@ EXP:(ARG:0):(LOCAL:0) ? %EXPNAME:(LOCAL:0), 12% # ？？？？？？ \@:{EXP:(ARG:0):(LOCAL:0), 5}" + 
+		CALL FPRINT(@"\@ EXP:(ARG:0):(LOCAL:0) ? %EXPNAME:(LOCAL:0), 12% # ??????  \@:{EXP:(ARG:0):(LOCAL:0), 5}" + 
                     @"\@ ++LOCAL:1 % 5 ? 　 # \n \@", EXP:(ARG:0):(LOCAL:0) ? GET_RAINBOW(9 + EXP_TYPE(LOCAL:0)) # 0x606060)
 }
 NEXT
 PRINTFORM \@ LINEISEMPTY() ? # \n \@
 
 
-;８列に変更＆表示の調整＆色設定@revkoishi(14/05/26)
+;8열로 변경＆표시의 조정＆색설정@revkoishi(14/05/26)
 @NEW_PRINT_ABL(ARG:0)
 #DIM NODISP, 10
 #DIM LINE_WIDTH
 LINE_WIDTH = WIDTH()
-LOCAL:1 = 0				;表示カウンタ
-;表示順は性別によってありえないものを抜くだけにしま했다。以下抜かれるもの
+LOCAL:1 = 0				;표시 카운터
+;표시순서는 성별에 의해 있을 수 없는 것을 뽑는 만큼 섬했다. 이하 뽑아지는 것
 VARSET NODISP, -1
 IF TALENT:(ARG:0):후타나리
-	NODISP = 10			;후타나리：10,ＢＬ끼
+	NODISP = 10			;후타나리:10, ＢＬ끼
 ELSEIF TALENT:(ARG:0):남자
-	NODISP =  4,  9, 14	;　남자：4,Ｖ감각/9,레즈끼/14,레즈중독
+	NODISP =  4,  9, 14	;  남자:4, Ｖ감각/9, 레즈끼/14, 레즈중독
 ELSE
-	NODISP = 10			;　여자：10,ＢＬ끼/
+	NODISP = 10			;  여자:10, ＢＬ끼/
 ENDIF
 PRINTFORML -- □ 능력 □ %"-" * (LINE_WIDTH - 14)%
 FOR LOCAL:0, 0, 30
@@ -185,60 +185,60 @@ NEXT
 PRINTFORM \@ LINEISEMPTY() ? # \n \@
 
 
-;画面幅の有効活用＆LOCAL地獄でとても読みにくい処理だったので整理(했다つもり)。微調整@revkoishi(14/05/26)
+;화면폭의 유효 활용＆LOCAL 지옥에서 매우 읽기 어려운 처리였으므로 정리(했다생각). 미조정@revkoishi(14/05/26)
 @NEW_PRINT_TALENT(ARG:0)
 #DIM LINE_WIDTH
 #DIM TALENT_LIST, 8, 50
 #DIM TALENT_SIZE, 8
 
-;変数初期化
+;변수 초기화
 VARSET LOCAL
 VARSET TALENT_LIST
 VARSET TALENT_SIZE
-LINE_WIDTH = WIDTH()	;とりあえず基準となる幅を他所から勝손に拝借。27*4+0=108桁
+LINE_WIDTH = WIDTH()	;우선 기준이 되는 폭을 다른 장소에서 승손에 배차. 27*4+0=108자리수
 
 PRINTFORML -- □ 소질 □ %"-" * (LINE_WIDTH - 14)%
-IF FLAG:소질표시방법	;素質分類表示
-	FOR LOCAL:0, 0, 150	;分類ループ
+IF FLAG:소질표시방법	;소질 분류표시
+	FOR LOCAL:0, 0, 150	;분류 루프
 		SIF TALENT:(ARG:0):(LOCAL:0)
 			TALENT_LIST:TALENT_TYPE(LOCAL:0):(TALENT_SIZE:TALENT_TYPE(LOCAL:0)++) = LOCAL:0
 	NEXT
-	;性別は特殊なので別処理とし、ここで表示する
-	PRINTFORM %TALENT_TYPENAME(1), 8, RIGHT%：
+	;성별은 특수한 것으로 별처리로 해, 여기서 표시한다
+	PRINTFORM %TALENT_TYPENAME(1), 8, RIGHT%:
 {
 	CALL FPRINTL(@"[%GET_SEX(ARG:0)%] " + \@ TALENT:(ARG:0):처녀 ? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "처녀"))%]%" "% # \@ + 
                 \@ TALENT:(ARG:0):동정 ? [%GET_TALENTNAME(ARG:0, GETNUM(TALENT, "동정"))%]%" "% # \@, GET_RAINBOW(1))
 }
-	FOR LOCAL:0, 2, 8	;表示ループ。非表示と、表示済みの性別は飛ばす
-		IF TALENT_SIZE:(LOCAL:0)	;その分類の素質が無ければ飛ばす
-			;素質分類名を表示
-			PRINTFORM %TALENT_TYPENAME(LOCAL:0), 8, RIGHT%：
-			LOCAL:2 = 10						;桁位置(↑表示後の位置)
-			LOCAL:4 = GET_RAINBOW(LOCAL:0)		;虹色
-			FOR LOCAL:1, 0, TALENT_SIZE:(LOCAL:0)	;その分類の所持素質数分ループ
-				;素質名を취득([素質名] )
+	FOR LOCAL:0, 2, 8	;표시 루프. 비표시라고 표시 끝난 성별은 날린다
+		IF TALENT_SIZE:(LOCAL:0)	;그 만큼류의 소질이 없으면 날린다
+			;소질 분류명을 표시
+			PRINTFORM %TALENT_TYPENAME(LOCAL:0), 8, RIGHT%:
+			LOCAL:2 = 10						;자리수 위치(↑표시 후의 위치)
+			LOCAL:4 = GET_RAINBOW(LOCAL:0)		;무지개색
+			FOR LOCAL:1, 0, TALENT_SIZE:(LOCAL:0)	;그 만큼류의 소지 소질 몇분 루프
+				;소질명을취득([소질명] )
 				LOCALS:0 = [%GET_TALENTNAME(ARG:0, TALENT_LIST:(LOCAL:0):(LOCAL:1))%]%" "%
-				LOCAL:3 = STRLENS(LOCALS:0)	;↑の文字数(素質名+[]+スペース)
-				LOCAL:2 += LOCAL:3			;桁位置加算
-				IF LOCAL:2 > LINE_WIDTH		;このまま表示すると途中改行されそうな場合は改行処理を行う
-					;改行処理(折り返し、行頭インデント、桁位置再計算)
+				LOCAL:3 = STRLENS(LOCALS:0)	;↑의 문자수(소질명+[]+스페이스)
+				LOCAL:2 += LOCAL:3			;자리수 위치 가산
+				IF LOCAL:2 > LINE_WIDTH		;이대로 표시하면 도중 개행될 것 같은 경우는 개행 처리를 실시한다
+					;개행 처리(되풀이해, 줄머리 인덴트, 자리수 위치 재계산)
 					PRINTFORM \n%"          "%
 					LOCAL:2 = 10 + LOCAL:3
 				ENDIF
-				;素質名を表示
+				;소질명을 표시
 				CALL FPRINT(LOCALS:0, LOCAL:4)
 			NEXT
 			PRINTL 
 		ENDIF
 	NEXT
-ELSE					;素質번호順表示
-	LOCAL:2 = 0	;桁位置
-	FOR LOCAL:0, 0, 150	;表示ループ。非表示は飛ばす
+ELSE					;소질번호 순서 표시
+	LOCAL:2 = 0	;자리수 위치
+	FOR LOCAL:0, 0, 150	;표시 루프. 비표시는 퍼붓는다
 		IF TALENT:(ARG:0):(LOCAL:0) && TALENT_TYPE(LOCAL:0)
 			LOCALS:0 = [%GET_TALENTNAME(ARG:0, LOCAL:0)%]%" "%
 			LOCAL:3 = STRLENS(LOCALS:0)
 			LOCAL:2 += LOCAL:3
-			IF LOCAL:2 > LINE_WIDTH	;改行処理。行頭インデント無し
+			IF LOCAL:2 > LINE_WIDTH	;개행 처리. 줄머리 인덴트 없음
 				PRINTL 
 				LOCAL:2 = LOCAL:3
 			ENDIF
@@ -251,9 +251,9 @@ RETURN RESULT
 
 
 ;────────────────────────────────────
-;죠교자のテンション表示
+;죠교자의 텐션 표시
 ;────────────────────────────────────
-;バーの色が少しキツイ感が했다ので微調整。無駄にボタン化するのを回避@revkoishi(14/05/22)
+;바의 색이 조금 힘든 감이했다의 것으로 미조정. 쓸데없게 버튼화하는 것을 회피@revkoishi(14/05/22)
 @PRINT_TENSION(ARG:0)
 LOCAL:1 = RESULT
 SELECTCASE TALENT:MASTER:독심능력

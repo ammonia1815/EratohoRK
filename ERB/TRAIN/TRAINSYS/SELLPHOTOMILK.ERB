@@ -1,117 +1,117 @@
 ﻿;────────────────────────────────────
-;사진の価値を計算
+;사진의 가치를 계산
 ;────────────────────────────────────
 @SELL_PHOTO
 
-;得点を以下の条件で加算していく
+;득점을 이하의 조건으로 가산해 나간다
 VARSET LOCAL
 
-;快Ｘ * 5
+;쾌Ｘ * 5
 LOCAL += (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ) * 5
 ;Ｘ절정 * 1500
 LOCAL += (NOWEX:MASTER:Ｃ절정 + NOWEX:MASTER:Ｖ절정 + NOWEX:MASTER:Ａ절정 + NOWEX:MASTER:Ｂ절정) * 1500
-;분유+사정 * 1000、방뇨 * 450
+;분유+사정 * 1000, 방뇨 * 450
 LOCAL += (NOWEX:MASTER:분유 + NOWEX:MASTER:사정) * 1000 + NOWEX:MASTER:방뇨 * 450
-;윤활 / 10
+;윤활/10
 LOCAL += CUP:MASTER:윤활 / 10
 ;욕정
-;自制心+4、충동적-3、쾌감을부정+3、쾌감에솔직-2
-;最大で-5されるので正に保つために+6
+;자제심+4, 충동적-3, 쾌감을부정+3, 쾌감에솔직-2
+;최대로-5되므로 정말로 유지하기 위해서(때문에)+6
 LOCAL += CUP:MASTER:욕정 * (6 + TALENT:MASTER:자제심 * 4 - TALENT:MASTER:충동적 * 3 + TALENT:MASTER:쾌감을부정 * 3 - TALENT:MASTER:쾌감에솔직 * 2)
 ;굴복
-;굳셈+3、반항적+2、겁쟁이-2、솔직-1、프라이드높음+3、프라이드낮음-2
-;最大で-3されるので正に保つために+4
+;굳셈+3, 반항적+2, 겁쟁이-2, 솔직-1, 프라이드높음+3, 프라이드낮음-2
+;최대로-3되므로 정말로 유지하기 위해서(때문에)+4
 LOCAL += CUP:MASTER:굴복 * (4 + TALENT:MASTER:굳셈 * 3 + TALENT:MASTER:반항적 * 2 - TALENT:MASTER:겁쟁이 * 2 - TALENT:MASTER:솔직 + TALENT:MASTER:프라이드높음 * 3 - TALENT:MASTER:프라이드낮음 * 2)
 ;공포
-;감정결여-1、정서적+2
-;最大で-1だけど、全体보정は+5
+;감정결여-1, 정서적+2
+;최대로-1이지만, 전체보정는+5
 LOCAL += CUP:MASTER:공포 * (5 - TALENT:MASTER:감정결여 + TALENT:MASTER:정서적 * 2)
 ;공순
-;반항적+2、솔직-1、건방짐+3、얌전한-1
-;最大で-2だけど、全体보정は+5
+;반항적+2, 솔직-1, 건방짐+3, 얌전한-1
+;최대로-2이지만, 전체보정는+5
 LOCAL += CUP:MASTER:공순 * (5 + TALENT:MASTER:반항적 * 2 - TALENT:MASTER:솔직 + TALENT:MASTER:건방짐 * 3 - TALENT:MASTER:얌전한)
 ;반항
-;3 + 반항각인 / 3
+;3 + 반항각인/3
 LOCAL += CUP:MASTER:반항 * (3 + MARK:반항각인 / 3)
 ;고통
-;죠교자が새드いと二倍
+;죠교자가새드실 2배
 LOCAL += CUP:MASTER:고통 * (1 + TALENT:새드)
 ;치정
-;수줍음+5、수치없음-5
-;最大で-5されるので正に保つために+6
+;수줍음+5, 수치없음-5
+;최대로-5되므로 정말로 유지하기 위해서(때문에)+6
 LOCAL += CUP:MASTER:치정 * (6 + TALENT:MASTER:수줍음 * 5 - TALENT:MASTER:수치없음 * 5)
 ;불쾌 * 3
 LOCAL += CUP:MASTER:불쾌 * 3
 ;억울 * 3
 LOCAL += CUP:MASTER:억울 * 2
 
-;以後보정処理
+;이후보정처리
 
-;(조수기교+1) * (조수성교技能+죠교레벨+1) * (100+죠교대상피사계경험) をかけて 10000 で割る
+;(조수기교+1) * (조수성교기능+죠교레벨+1) * (100+죠교대상피사계경험)를 걸쳐 10000으로 나눈다
 LOCAL *= (ABL:ASSI:기교 + 1) * (ABL:ASSI:성교 + CFLAG:ASSI:죠교레벨 + 1) * (100 + EXP:MASTER:피사계경험) / 10000
 
-;조수が사진を新聞の記事に했다場合
-;노출,이탈SOURCEを발し、조수기교+7をかけて6で割る
+;조수가사진를 신문의 기사에했다경우
+;노출, 이탈SOURCE를발 해, 조수기교+7을 걸쳐 6으로 나눈다
 SIF TFLAG:조수SPACT == 100
 	LOCAL = (LOCAL + SOURCE:MASTER:노출 + SOURCE:MASTER:이탈) * (7 + ABL:ASSI:기교) / 6
 
 ;OriginalString : 今回の撮影の得点：
-PRINT 이번 촬영의 득점：
+PRINT 이번 촬영의 득점:
 ;OriginalString : LOCAL
 PRINTVL LOCAL
-;全く得点を獲得できなかった場合
+;전혀 득점을 획득 할 수 없었던 경우
 IF LOCAL == 0
 	PRINTL 이번 촬영은 완전하게 실패에 끝났다…
 	PRINTFORML %CALLNAME:ASSI%(이)가 너무나 조교에 서툴렀을지도 모른다
-;CFLAG:MASTER:합의 = 撮影基準値
-;撮影基準値未満では마력は得られない
+;CFLAG:MASTER:합의 =촬영 기준치
+;촬영 기준치 미만에서는마력는 얻을 수 없다
 ELSEIF LOCAL < CFLAG:MASTER:합의
 	PRINTL 이번 촬영은 전회정도의 할 수 있고라고는 할 수 없는 것 같다
-;撮影基準値を満たすと
+;촬영 기준치를 채우면
 ELSE
-	;400 + 基準値の1/5 + 죠교레벨の二乗(+α)*20 を基準値に加算
+	;400 + 기준치의 1/5 + 죠교레벨의 제곱(+α)*20을 기준치에 가산
 	CFLAG:MASTER:합의 += 400 + CFLAG:MASTER:합의 / 5 + (CFLAG:MASTER:죠교레벨 + 1) * (CFLAG:MASTER:죠교레벨 + 2) * 20
 	PRINTL 이번 촬영은 좋은 결과와 같다. 마력마저 배여 오고 있다…
-	;今回得点の1/4の마력を得る
+	;이번 득점의 것 1/4의마력를 얻는다
 	PRINTFORMW %CALLNAME%(은)는 {LOCAL / 4}의 마력을 얻었다
 	CFLAG:마력 += LOCAL / 4
 	PRINTL 
 ENDIF
 
 ;────────────────────────────────────
-;ミルクの価値を計算
+;밀크의 가치를 계산
 ;────────────────────────────────────
 @SELL_MILK
-;죠교시간、Ｂ절정、분유*3、헌신적*2、매혹*5、죠교레벨の総計を마력として得る
+;죠교시간, Ｂ절정, 분유*3, 헌신적*2, 매혹*5, 죠교레벨의 총계를마력로서 얻는다
 LOCAL = TFLAG:죠교시간 + EX:MASTER:Ｂ절정 + EX:MASTER:분유 * 3 + TALENT:MASTER:헌신적 * 2 + TALENT:MASTER:매혹 * 5 + CFLAG:MASTER:죠교레벨
 CFLAG:마력 += LOCAL
 PRINTFORML %CALLNAME:MASTER%(으)로부터 짠 밀크는{LOCAL}의 마력으로서 %CALLNAME%에 흡수되었다
 
-;죠교시간リセット
+;죠교시간리셋트
 TFLAG:죠교시간 = 0
 
 ;────────────────────────────────────
-;모유체질취득のチェック
+;모유체질취득의 체크
 ;────────────────────────────────────
 @MILK_CHECK
 
-;基準値を生成
+;기준치를 생성
 VARSET LOCAL
-;쾌Ｂ/100の平方根を加算(0-5)
+;쾌Ｂ/100의 평방근을 가산(0-5)
 LOCAL:1 = SQRT(CUP:MASTER:쾌Ｂ / 100)
 LOCAL += LIMIT(LOCAL:1, 0, 5)
-;죠교대상Ｂ경험/4の平方根を加算(0-5)
+;죠교대상Ｂ경험/4의 평방근을 가산(0-5)
 LOCAL:1 = SQRT(EXP:MASTER:Ｂ경험 / 4)
 LOCAL += LIMIT(LOCAL:1, 0, 5)
 
-;(基準値+죠교시간)が(12+(0-4)-죠교대상헌신적-유치*2)を上回れば
+;(기준치+죠교시간)가(12+(0-4)-죠교대상헌신적-유치*2)를 웃돌면
 IF LOCAL + TFLAG:죠교시간 > 12 + RAND:5 - TALENT:MASTER:헌신적 - TALENT:유치 * 2
 	;모유체질취득
 	TALENT:MASTER:모유체질 = 1
 	PRINTFORMW %CALLNAME:MASTER%(은)는 모유가 나오게 되었다
-	;모유ゲージを新設(MAX10000)
+	;모유게이지를 신설(MAX10000)
 	MAXBASE:MASTER:모유 = 10000
-	;죠교시간リセット
+	;죠교시간리셋트
 	TFLAG:죠교시간 = 0
 ELSE
 	;죠교시간경과

@@ -1,13 +1,13 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-;	히나구상　죠교開始이벤트구상ファイル
+;	히나구상  죠교개시이벤트구상파일
 
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 
-;EV11, 죠교開始구상
-;##################
-@KOJO_MALE_EVENT_K39_11(ARG) ;引数内訳…ARG=(0, 통상/1, 죠교자の疲労による中止/2, 죠교대상の疲労による中止)
+;EV11, 죠교개시구상
+;         
+@KOJO_MALE_EVENT_K39_11(ARG) ;인수 내역…ARG=(0, 통상/1, 죠교자의 피로에 의한 중지/2, 죠교대상의 피로에 의한 중지)
 #LOCALSIZE  10
 #LOCALSSIZE 10
 VARSET LOCAL
@@ -20,30 +20,30 @@ LOCALS:0 '= RAND:3
 }
 
 [SKIPSTART]
-	一部の이벤트はOPを経由してKFLAG:(FLAG:주인님):50に代入が行われた場合にのみ表示
-	基本的に노멀모드以外でのEDを含む이벤트は殺す방침
-	CFLAG:죠교횟수はCFLAG:죠교횟수に置換
+	일부의이벤트는 OP를 경유해 KFLAG:(FLAG:주인님):50에 대입을 했을 경우에게만 표시
+	기본적으로노멀모드 이외에서의 ED를 포함한이벤트는 죽이는방침
+	CFLAG:죠교횟수는 CFLAG:죠교횟수에 치환
 
-	今見直すと全体的にもう少し書いてもよさそうな気もする
-	ただ個人的には이벤트書くのは精神的に소모するのであまり気は進まない
+	이마미고치면 전체적으로 좀 더 써도 좋은 것 같은 생각도 든다
+	다만 개인적으로는이벤트 쓰는 것은 정신적으로소모 하는 것으로 그다지 마음은 내키지 않는다
 
-	厄神とは神としても女としても穢れた存在という独自の解釈が基盤となっている
-	一連の이벤트で히나の穢れてはいるけどあくまで純粋で、健気で、人間思いな部分を描きたかった
-	果たして上손くいったかどうか？
+	액신과는 신이라고 해도 여자로서도 더러워진 존재라고 하는 독자적인 해석이 기반이 되고 있다
+	일련의이벤트로히나가 더러워지고는 있지만 어디까지나 순수해, 기특해, 인간 생각인 부분을 그리고 싶었다
+	과연 상손구 했는가 어떤가?
 [SKIPEND]
 
 
-;죠교初回
+;죠교첫회
 ;========
 IF CFLAG:죠교횟수 == 1
-	;GameBase判定処理
+	;GameBase 판정 처리
 	;================
 	CALL CHK_GAMEBASE_K39
 
-	;히나が主人でありOPを経由している場合
+	;히나가 주인이며 OP를 경유하고 있는 경우
 	;==================================
 	IF !FLAG:모드 && TALENT:TARGET:주인님 && KFLAG:(FLAG:주인님):50 == 1
-		;デフォルトカラーで表示する
+		;디폴트 칼라로 표시한다
 ;OriginalString : 一입に厄を祓うと言っても幾つか方法がある
 		PRINTFORMDL 한마디로 액을 쫓아낸다고 해도 몇 가지 방법이 있다.
 ;OriginalString : その中でも一番即効性があるのが,いわゆる性的な접촉――
@@ -116,7 +116,7 @@ IF CFLAG:죠교횟수 == 1
 		PRINTFORMDW 그저 그 뿐인 일, 새삼스레 고민할 필요도 없다――
 ;OriginalString : 
 		PRINTW
-		;引数はフェード速度(ms),最初の文字色,次の文字色(背景色),表示する文字列の順
+		;인수는 페이드 속도, 최초의 문자색, 다음의 문자색(키 경치), 표시하는 캐릭터 라인의 순서
 		{
 		CALL FADE_TO_CLEARLINE2(
 		30, 
@@ -125,54 +125,54 @@ IF CFLAG:죠교횟수 == 1
 		"그렇게, 생각하고 있었다…… 그 때까지는……")
 		}
 		CALL TWAIT3_K39
-		;これは設定했다文字色で出力する
+		;이것은 설정했다문자색으로 출력한다
 ;OriginalString : 「これから行う事は、全て%CNAME(MASTER, TARGET)%の厄を祓う為」
 		PRINTFORML 「지금부터 하는 일은, 전부 %CNAME(MASTER, TARGET)%의 액을 쫓아내기 위함.」
 ;OriginalString : 「何も心配せず,私に任せてくださいね」
 		PRINTFORMW 「아무런 걱정말고, 제게 맡겨 주세요.」
 ;OriginalString : 
 		PRINTL
-		;開幕지금 기분을 묻다にしてFIRSTACTを消化시킨다
+		;개막지금 기분을 묻다로 해 FIRSTACT를 소화시킨다
 		TCVAR:행동예약 = 0
 		RETURN 1
 	ENDIF
 
-	;히나が主人でない場合もしくは노멀모드でない場合 //初回にCNAME代入のみ行う
+	;히나가 주인이 아닌 경우 혹은노멀모드가 아닌 경우//첫회에 CNAME 대입만 실시한다
 	;==================================================
 	IF FLAG:모드 != 0 || !TALENT:TARGET:주인님
-		;플레이ヤーが名前を入力済みである場合
+		;플레이야가 이름을 입력이 끝난 상태인 경우
 		IF NO:MASTER == 0 && CALLNAME:MASTER != "당신"
 			IF 0
-			ELSEIF TALENT:MASTER:남자    ;//名前入力済みかつ남자
-				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴方/%CSTR:(TARGET):호칭목록%
-			ELSEIF TALENT:MASTER:후타나리  ;//名前入力済みかつ후타나리
-				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
-			ELSE                           ;//名前入力済みかつそれ以外（女）
-				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_貴女/%CSTR:(TARGET):호칭목록%
+			ELSEIF TALENT:MASTER:남자    ;//이름 입력이 끝난 상태 또한남자
+				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_당신/%CSTR:(TARGET):호칭목록%
+			ELSEIF TALENT:MASTER:후타나리  ;//이름 입력이 끝난 상태 또한후타나리
+				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_당신/%CSTR:(TARGET):호칭목록%
+			ELSE                           ;//이름 입력이 끝난 상태 또한 그 이외（녀）
+				CSTR:(TARGET):호칭목록 = %NAME:MASTER%_당신/%CSTR:(TARGET):호칭목록%
 			ENDIF
-		;죠교대상이남자の場合
+		;죠교대상이남자의 경우
 		ELSEIF TALENT:MASTER:남자
-			CSTR:(TARGET):호칭목록 = 당신_貴方/%CSTR:(TARGET):호칭목록%
-		;죠교대상が후타나리の場合
+			CSTR:(TARGET):호칭목록 = 당신_당신/%CSTR:(TARGET):호칭목록%
+		;죠교대상가후타나리의 경우
 		ELSEIF TALENT:MASTER:후타나리
-			CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
-		;それ以外（女）
+			CSTR:(TARGET):호칭목록 = 당신_당신/%CSTR:(TARGET):호칭목록%
+		;그 이외（녀）
 		ELSE
-			CSTR:(TARGET):호칭목록 = 당신_貴女/%CSTR:(TARGET):호칭목록%
+			CSTR:(TARGET):호칭목록 = 당신_당신/%CSTR:(TARGET):호칭목록%
 		ENDIF
-		;RESULT値は0
+		;RESULT치는 0
 		RETURN 0
 	ENDIF
 ENDIF
 
 
-;죠교１０回目記念
+;죠교 10회째 기념
 ;================
-;조교중止の場合(ARGが0でない場合)は弾く
+;조교중지의 경우(ARG가 0이 아닌 경우)는 연주한다
 IF CFLAG:TARGET:죠교횟수 == 10 && KFLAG:(FLAG:주인님):50 == 1 && !ARG
-	;히나が主人の時のみ表示
+	;히나가 주인때만 표시
 	IF TALENT:TARGET:주인님
-		;↓良く考えると順調でない可能性もあるな
+		;↓좋게 생각하면 순조롭지 않을 가능성도 있구나
 ;OriginalString : 此れまでの所、全ては順調であるように思われた
 		PRINTFORMDL 지금까지는, 모든 게 순조롭다고 생각했다.
 ;OriginalString : この人物の厄は徐々にではあるが,確実に減少하면서ある
@@ -262,16 +262,16 @@ IF CFLAG:TARGET:죠교횟수 == 10 && KFLAG:(FLAG:주인님):50 == 1 && !ARG
 ENDIF
 
 
-;조교중止 ARG:1 ARG:2
+;조교중지 ARG:1 ARG:2
 ;====================
-;CFLAG:소모 > 5もしくはCFLAG:MASTER:소모 > 5を条件として呼び出される箇所
-;この条件から漏れた場合は통상の죠교開始구상が呼ばれる
+;CFLAG:소모 > 5혹은 CFLAG:MASTER:소모 > 5를 조건으로서 불려 가는 개소
+;이 조건으로부터 빠졌을 경우는통상의죠교개시구상가 불린다
 IF INRANGE(ARG, 1, 2)
-	;疲れているのは히나
+	;피곤한 것은히나
 	IF ARG == 1
 ;OriginalString : %CALLNAME:TARGET%は体調が優れない為、今回は中止にする事に했다ようだ…
 		PRINTFORMDW %CALLNAME:TARGET%의 컨디션이 좋지 않기 때문에, 이번은 그만 두기로 한 것 같다…
-	;疲れているのは죠교대상
+	;피곤한 것은죠교대상
 	ELSE
 		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
 ;OriginalString : 「疲れてるのに無理する事なんてないのよ?」
@@ -289,14 +289,14 @@ IF INRANGE(ARG, 1, 2)
 ENDIF
 
 ;//////////////////////////////////
-;//以下、죠교の進展度合いによる派生
+;//이하, 죠교의 진전 정도에 의한 파생
 ;//////////////////////////////////
 
-;상사상애(호의、호감도3000以上)
+;상사상애(호의, 호감도 3000 이상)
 ;==============================
 ;FIRSTEVENT(0)(1) RANDEVENT(0)(1)
 IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
-	;처음//히나が主人でありOPを経由している場合
+	;처음//히나가 주인이며 OP를 경유하고 있는 경우
 	;========================================
 	IF KFLAG:(FLAG:주인님):50 == 1 && FIRSTEVENT(0)
 ;OriginalString : どれだけ想っても許されない
@@ -341,16 +341,16 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 ;OriginalString : 
 		PRINTL
 
-		;中央で表示
+		;중앙에서 표시
 		ALIGNMENT CENTER
 		LOCAL:0 = CURRENTREDRAW()
 		REDRAW 0
-		;強制表示x1
+		;강제 표시 x1
 		CALLF ANIME_CONFIG("TIMES", 1)
-		;全画面カットイン2
+		;전화면 컷 인 2
 		CALL FULLCUTIN2(0, 17, "하지만……")
 		REDRAW LOCAL:0
-		;左寄せに戻す
+		;왼쪽 맞춤에 되돌린다
 		ALIGNMENT LEFT
 
 ;OriginalString : 
@@ -379,13 +379,13 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 		PRINTFORMW 「이제부터는, %CALLNAME:TARGET%라고 불러 줘. 알겠지? 약속이야♪」
 ;OriginalString : 
 		PRINTL
-		CALL BGM_CUTIN("神々の祈り", 1)
+		CALL BGM_CUTIN("신들의 기원", 1)
 ;OriginalString : その時私は幸せだった。今こそ枷から解き放たれ,前を向いていける気が했다
 		PRINTFORMDW 그 때의 나는 행복했다. 지금이야말로 족쇄에서 풀려나, 앞으로 나아갈 수 있을 것 같은 느낌이 들었다.
 ;OriginalString : 
 		PRINTL
 		CALL FADE_TO_CLEARLINE(30, "그렇게, 순진하게 생각하고 있었다――")
-		;상사상애判定
+		;상사상애판정
 		KFLAG:(FLAG:주인님):100 = 1
 		CALL TWAIT3_K39
 		RETURN 1
@@ -394,7 +394,7 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 
 	;EVENT_001
 	;=========
-	IF GET_KFLAG_K39("상사상애") && FLAG:오토모드표시설정 < 1 && FIRSTEVENT(10) ;//간략표시なら弾く
+	IF GET_KFLAG_K39("상사상애") && FLAG:오토모드표시설정 < 1 && FIRSTEVENT(10) ;//간략표시라면 연주한다
 ;OriginalString : 「ねぇ、ちょっと%CNAME(MASTER, TARGET)%に聞きたいんだけど…」
 		PRINTFORMW 「저기, %CNAME(MASTER, TARGET)%에게 조금 묻고 싶은 게…」
 ;OriginalString : %CALLNAME:TARGET%は言い辛そうに切り出했다
@@ -411,22 +411,22 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 		PRINTFORMDW 그것을 본 %CALLNAME:MASTER%은…
 ;OriginalString : 
 		PRINTL
-		;ツールチップ楽しい
+		;툴 팁 즐겁다
 		CALL HTMLPRINTDL(@"%HTMLBUTTON("[0]", "0", "루트Ａ")% 원래있던 세계에 미련이 남았다…")
 		CALL HTMLPRINTDL(@"%HTMLBUTTON("[1]", "1", "루트Ｂ")% 가능하다면, 이 땅에서 함께…")
 
 		;@INPUTINTD
 		;==========
-		;구상内に於けるINPUTINTは入力했다数値が구상色で表示されてしまうが、INPUTINTDはデフォルトカラーで出力する
-		;Revの場合、구상が呼び出される段階で구상指定色でSETCOLORされているので、デフォ色での出力を望む場合はやりくりが필요
-		;些細な問題だけど、気になる人は状況に応じて使い分けてくれたら、とかいうアレ
+		;구상내에 있어서 INPUTINT는 입력했다수치가구상색으로 표시되어 버리지만, INPUTINTD는 디폴트 칼라로 출력한다
+		;Rev의 경우, 구상가 불려 갈 단계에서구상지정색으로 SETCOLOR 되고 있으므로, 데포색에서의 출력을 바라는 경우는 변통이필요
+		;사소한 문제이지만, 신경이 쓰이는 사람은 상황에 따라 구분하여 사용해 주면, 라든가 하는 저것
 		CALL INPUTINTD(0, 1)
 
-		;오토모드ならここで止める。主に디버그時の都合
+		;오토모드라면 여기서 멈춘다. 주로디버그시의 형편
 		SIF FLAG:오토모드 > 0
 			FORCEWAIT
 		SELECTCASE RESULT
-			;선택肢0 ルートＡ
+			;선택지 0 루트Ａ
 			CASE 0
 ;OriginalString : 「…わかったわ。なんとかしてみる」
 				PRINTFORMW 「…알았어. 어떻게든 해 볼게.」
@@ -434,9 +434,9 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 				PRINTFORMDW %CALLNAME:TARGET%는 결의를 다진 표정으로 말했다.
 ;OriginalString : 「今すぐには無理だけど,いつか必ず。%CNAME(MASTER, TARGET)%の為にも…」
 				PRINTFORMW 「당장은 무리겠지만, 언젠가는 반드시. %CNAME(MASTER, TARGET)%을 위해서라도…」
-				;エンディング用플래그に代入
+				;엔딩용플래그에 대입
 				KFLAG:(FLAG:주인님):0 = 1
-			;선택肢1 루트Ｂ
+			;선택지 1 루트Ｂ
 			CASE 1
 ;OriginalString : 「えっ,本当に? %CNAME(MASTER, TARGET)%はそれでいいの?」
 				PRINTFORMW 「어, 정말로? %CNAME(MASTER, TARGET)%은 그래도 괜찮은 거야?」
@@ -446,7 +446,7 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 				PRINTFORMW 「그건 확실히……나는 기쁘지만. 그래도 역시 좋지 않아.」
 ;OriginalString : 「元の世界に帰るべきだと思うの…%CNAME(MASTER, TARGET)%の為にも…」
 				PRINTFORMW 「원래있던 세계로 돌아가야 한다고 생각해…%CNAME(MASTER, TARGET)%을 위해서라도…」
-				;エンディング用플래그に代入
+				;엔딩용플래그에 대입
 				KFLAG:(FLAG:주인님):1 = 1
 		ENDSELECT
 ;OriginalString : 
@@ -472,27 +472,27 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 	ENDIF
 
 	[SKIPSTART]
-	工事中
+	공사중
 	;EVENT_002
 	;---------
 	IF DAY < 30 && (KFLAG:(FLAG:주인님):0 == 1 || KFLAG:(FLAG:주인님):1 == 1) && FIRSTEVENT(12)
-		IF KFLAG:(FLAG:주인님)1 == 1
-;OriginalString : 最初から判っていた。判っているはずだった
+		IF KFLAG:(FLAG:주인님) 1 == 1
+;OriginalString : 최초부터 알고 있었다. 알고 있을 것이었다
 			PRINTFORMDW 최초부터 알고 있었다. 알고 있을 것이었다
-;OriginalString : いずれやってくる別れの日の事を
+;OriginalString : 머지않아 오는 이별의 날의 일을
 			PRINTFORMDW 머지않아 오는 이별의 날의 일을
 ;OriginalString : 
 			PRINTL
-;OriginalString : それは決して避けて通る事のできない定め
+;OriginalString : 그것은 결코 피해 통과하는 일을 할 수 없는 규정
 			PRINTFORMDW 그것은 결코 피해 통과하는 일을 할 수 없는 규정
-;OriginalString : 回りに不幸を振りまいてしまうこの呪わしい厄神には人並の幸せなど許されなぬ
+;OriginalString : 회전에 불행을 뿌려 버리는 이 저주스러운 액신에는 남들 수준의 행복 따위 허락해지고
 			PRINTFORMDW 회전에 불행을 뿌려 버리는 이 주나 있고 액신에는 사람보통의 행복등 허락해지고
 		ENDIF
 		RETURN 1
 	ENDIF
 	[SKIPEND]
 
-	;特定の이벤트以外を処理
+	;특정의이벤트 이외를 처리
 	;========================
 	IF GET_KFLAG_K39("상사상애")
 		SELECTCASE RANDEVENT(2, 0)
@@ -506,7 +506,7 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 				CALL HTMLPRINTW(@"「괜찮아, 나도 같은 기분이니까.%LOCALS:0%」")
 		ENDSELECT
 	ENDIF
-	;エンディングを경과했다ら弾く
+	;엔딩을경과했다등 연주한다
 	SIF KFLAG:(FLAG:주인님):150 != 1
 		{
 ;OriginalString : %CALLNAME%は\@ 
@@ -519,11 +519,11 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 ENDIF
 
 
-;익애(호감도2000以上) FIRSTEVENT(20)
+;익애(호감도 2000 이상) FIRSTEVENT(20)
 ;==================================
-;心の변화に戸惑う厄神様
+;심의변화에 당황하는 액신님
 IF AFFECTION("익애")
-	;처음（히나が主人の時のみ表示）
+	;처음（히나가 주인때만 표시）
 	;===========================
 	IF TALENT:TARGET:주인님 && KFLAG:(FLAG:주인님):50 == 1 && FIRSTEVENT(20)
 ;OriginalString : 厄神と云う存在は、要するに厄を収める為の器に過ぎない
@@ -601,7 +601,7 @@ IF AFFECTION("익애")
 		PRINTFORMDW 나는 모든 사람들을 위한 존재로서 있어야 한다――
 ;OriginalString : 
 		PRINTW
-		;OPを回収
+		;OP를 회수
 		{
 		CALL FADEOUT(
 		40, 
@@ -615,7 +615,7 @@ IF AFFECTION("익애")
 		RETURN 1
 	ENDIF
 
-	;条件無し
+	;조건 없음
 	SELECTCASE RANDEVENT(2, 20)
 		CASE 0
 ;OriginalString : 「では始めましょう」
@@ -636,10 +636,10 @@ IF AFFECTION("익애")
 	RETURN 1
 ENDIF
 
-;序盤（条件なし）히나が主人の時のみ表示
+;초반（조건 없음）히나가 주인때만 표시
 ;====================================
 IF TALENT:TARGET:주인님
-	;처음//죠교初回ではない。죠교初回は最上層で消化済み
+	;처음//죠교첫회는 아니다. 죠교첫회는 최상층에서 소화가 끝난 상태
 	;====
 	IF KFLAG:(FLAG:주인님):50 == 1 && FIRSTEVENT(90)
 ;OriginalString : 恐らく事態を飲み込めていないのだろう
@@ -685,7 +685,7 @@ IF TALENT:TARGET:주인님
 		RETURN 1
 	ENDIF
 
-	;汎用処理
+	;범용 처리
 	;========
 	{
 ;OriginalString : 「%RAND_SPLIT(

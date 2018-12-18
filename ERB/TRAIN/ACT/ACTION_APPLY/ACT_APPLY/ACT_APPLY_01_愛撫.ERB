@@ -1,53 +1,53 @@
 ﻿;────────────────────────────────────
-;010,애무/수음する
+;010, 애무/수음 한다
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ/Ｈ）（쾌Ｃ、쾌Ｂ、접촉、애정、성행위、불결）
+;리액션전（Ｓ/Ｎ/Ｈ）（쾌Ｃ, 쾌Ｂ, 접촉, 애정, 성행위, 불결）
 @ACTION_APPLY_10
-;애무보정値、손가락기술素質に応じて、쾌ＣSOURCE増加
+;애무보정치, 손가락기술소질에 응해, 쾌ＣSOURCE 증가
 SOURCE:MASTER:쾌Ｃ = 75 + ACT_FROM(TARGET, 1) * (2 + TALENT:손가락기술) / 2
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合
+	;억압/수줍음/착의플레이선호소질이 없는 경우
 	IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
-		;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+		;해방소질, 죠교자욕망, 죠교레벨에 응해 성공율 상승
 		IF TALENT:해방 * 4 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 3 + RAND:3
-			;전라まで강제탈의
+			;전라까지강제탈의
 			TFLAG:강제탈의 = 8
-			;2/3の確率で악세서리－まで강제탈의に軽減
+			;2/3의 확률로악세서리－까지강제탈의에 경감
 			SIF RAND:3
 				TFLAG:강제탈의 = 7
-		;1/3の確率で上＋下겉옷강제탈의
+		;1/3의 확률로 상＋하겉옷강제탈의
 		ELSEIF !RAND:3
 			TFLAG:강제탈의 = 3
 		ENDIF
 	ENDIF
 ENDIF
-;죠교자악세서리存在時、1/3の確率
-;または수음時페니스に何らかの汚れが付いている(2は페니스汚れなのでカウントしない)
-;または애무時바기나に愛液、페니스以外の汚れが付いている(濡れてたり삽입があったりはカウントしない)
-;場合、악세서리ー자주탈의
-;※장갑などを脱いで素손으로 애무するため악세서리ー자주탈의が発生
+;죠교자악세서리존재시,1/3의 확률
+;또는수음시페니스에 어떠한 더러움이 붙어 있다(2는페니스더러움인 것으로 카운트 하지 않는다)
+;또는애무시바기나에 애액, 페니스 이외의 더러움이 붙어 있다(젖기도 하고삽입가 있거나는 카운트 하지 않는다)
+;경우, 악세서리─자주탈의
+;※장갑등을 벗어 소손으로 애무 하기 위해(때문)악세서리─자주탈의가 발생
 SIF TEQUIP:악세서리 && (!RAND:3 || (TFLAG:ACT파생 == 1 && STAIN:MASTER:페니스 > 2) || (TFLAG:ACT파생 == 0 && STAIN:MASTER:바기나 > 3))
 	TFLAG:자주탈의 = 6
-;필요ならば미약を使用
+;필요라면미약를 사용
 CALL LOVEPOTION_USE
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 100 + GET_TRAINLV(TARGET) * 5
-;쾌ＣSOURCEに応じて성행위SOURCE増加
+;쾌ＣSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 50 + SOURCE:MASTER:쾌Ｃ / 10
-;접촉SOURCE、죠교자봉사정신に応じて애정SOURCE増加
+;접촉SOURCE, 죠교자봉사정신에 응해애정SOURCE 증가
 SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
-;죠교자の손に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의손에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:손 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 50
-;죠교자の손に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의손에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:손 & (4 + 8)
 	SOURCE:MASTER:불결 += 100
-;죠교자の손に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의손에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:손 & (32 + 64)
 	SOURCE:MASTER:불결 += 300
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 IF TFLAG:ACT파생 >= 1
 	STAIN:MASTER:페니스 |= STAIN:손
 	STAIN:손 |= STAIN:MASTER:페니스
@@ -55,207 +55,207 @@ ELSE
 	STAIN:MASTER:바기나 |= STAIN:손
 	STAIN:손 |= STAIN:MASTER:바기나
 ENDIF
-;죠교대상자위を中断
+;죠교대상자위를 중단
 TEQUIP:자위중 &= ~1
-;죠교자기교、애무、손가락기술素質に応じて발기도上昇
+;죠교자기교, 애무, 손가락기술소질에 응해발기도상승
 TCVAR:MASTER:금회발기 += 100 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") + TALENT:손가락기술 * 50)
 TFLAG:경과시간 += 2
 
-;リアクション後（Ｓ/Ｎ/Ｈ）（쾌Ｃ、쾌Ｂ、접촉、애정、성행위、불결）
+;리액션 후（Ｓ/Ｎ/Ｈ）（쾌Ｃ, 쾌Ｂ, 접촉, 애정, 성행위, 불결）
 @ACTION_APPLY2_10
 
 ;────────────────────────────────────
-;011,가슴애무/乳首吸い/乳の揉み合い
+;011, 가슴애무/유두 들이마셔/젖의 몸싸움
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ/Ｈ）（쾌Ｂ、접촉、애정、성행위、고통、불결）
+;리액션전（Ｓ/Ｎ/Ｈ）（쾌Ｂ, 접촉, 애정, 성행위, 고통, 불결）
 @ACTION_APPLY_11
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合
+	;억압/수줍음/착의플레이선호소질이 없는 경우
 	IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
-		;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+		;해방소질, 죠교자욕망, 죠교레벨에 응해 성공율 상승
 		IF TALENT:해방 * 2 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 1 + RAND:3
-			;上＋下겉옷강제탈의
+			;상＋하겉옷강제탈의
 			TFLAG:강제탈의 = 4
-		;1/3の確率で상반신겉옷강제탈의
+		;1/3의 확률로상반신겉옷강제탈의
 		ELSEIF !RAND:3
 			TFLAG:강제탈의 = 1
 		ENDIF
 	ENDIF
 ENDIF
-;죠교자악세서리存在時、乳首吸い派生ではなく、
-;1/3の確率か죠교대상の가슴が愛液/페니스汚れ以外の汚れを持つ
-;場合、악세서리ー자주탈의
-;※장갑などを脱いで素손으로 애무するため악세서리ー자주탈의が発生
+;죠교자악세서리존재시, 유두 들이마셔 파생은 아니고,
+;1/3의 확률이나죠교대상의가슴가 애액/페니스 더러워지고 이외의 더러움을 가진다
+;경우, 악세서리─자주탈의
+;※장갑등을 벗어 소손으로 애무 하기 위해(때문)악세서리─자주탈의가 발생
 SIF TEQUIP:악세서리 && TFLAG:ACT파생 != 1 && (!RAND:3 || STAIN:MASTER:가슴 > 3)
 	TFLAG:자주탈의 = 6
-;통상の가슴애무時
+;통상의가슴애무시
 IF TFLAG:ACT파생 == 0
-	;애무보정値、손가락기술素質に応じて쾌ＢSOURCE上昇
+	;애무보정치, 손가락기술소질에 응해쾌ＢSOURCE 상승
 	SOURCE:MASTER:쾌Ｂ = 75 + ACT_FROM(TARGET, 4) * (2 + TALENT:손가락기술) / 3
-	;필요ならば미약を使用
+	;필요라면미약를 사용
 	CALL LOVEPOTION_USE
-	;죠교레벨に応じて접촉SOURCE増加
+	;죠교레벨에 응해접촉SOURCE 증가
 	SOURCE:MASTER:접촉 = 100 + GET_TRAINLV(TARGET) * 5
-	;접촉SOURCE、죠교자봉사정신に応じて애정SOURCE増加
+	;접촉SOURCE, 죠교자봉사정신에 응해애정SOURCE 증가
 	SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
-	;쾌ＢSOURCEに応じて성행위SOURCE増加
+	;쾌ＢSOURCE에 응해성행위SOURCE 증가
 	SOURCE:MASTER:성행위 = 100 + SOURCE:MASTER:쾌Ｂ / 10
-	;죠교자の손に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+	;죠교자의손에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 	SIF STAIN:손 & (1 + 2 + 16)
 		SOURCE:MASTER:불결 += 80
-	;죠교자の손に정액/항문汚れが存在すると불결SOURCE中増加
+	;죠교자의손에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 	SIF STAIN:손 & (4 + 8)
 		SOURCE:MASTER:불결 += 160
-	;죠교자の손に血/粘液汚れが存在すると불결SOURCE大増加
+	;죠교자의손에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 	SIF STAIN:손 & (32 + 64)
 		SOURCE:MASTER:불결 += 500
-	;汚れが相互に移る
+	;더러움이 서로 옮긴다
 	STAIN:MASTER:가슴 |= STAIN:손
 	STAIN:손 |= STAIN:MASTER:가슴
-	;죠교자기교、애무、손가락기술素質に応じて발기도上昇
+	;죠교자기교, 애무, 손가락기술소질에 응해발기도상승
 	TCVAR:MASTER:금회발기 += 80 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") + TALENT:손가락기술 * 50) / 3
-;乳首吸い時
+;유두 들이마셔 때
 ELSEIF TFLAG:ACT파생 == 1
-	;애무보정値、혀기술素質に応じて쾌ＢSOURCE上昇
+	;애무보정치, 혀기술소질에 응해쾌ＢSOURCE 상승
 	SOURCE:MASTER:쾌Ｂ = 150 + ACT_FROM(TARGET, 4) * (3 + TALENT:혀기술) / 3
-	;필요ならば미약を使用
+	;필요라면미약를 사용
 	CALL LOVEPOTION_USE
-	;거친혀素質時쾌ＢSOURCE上昇
+	;거친혀소질시쾌ＢSOURCE 상승
 	SIF TALENT:거친혀
 		SOURCE:MASTER:쾌Ｂ *= 12 / 10
-	;죠교레벨に応じて접촉SOURCE増加
+	;죠교레벨에 응해접촉SOURCE 증가
 	SOURCE:MASTER:접촉 = 75 + GET_TRAINLV(TARGET) * 10
-	;접촉SOURCE、죠교자봉사정신に応じて애정SOURCE増加
+	;접촉SOURCE, 죠교자봉사정신에 응해애정SOURCE 증가
 	SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
-	;쾌ＢSOURCEに応じて성행위SOURCE増加
+	;쾌ＢSOURCE에 응해성행위SOURCE 증가
 	SOURCE:MASTER:성행위 = 50 + SOURCE:MASTER:쾌Ｂ / 10
-	;죠교자の입に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+	;죠교자의입에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 	SIF STAIN:입 & (1 + 2 + 16)
 		SOURCE:MASTER:불결 += 100
-	;죠교자の입に정액/항문汚れが存在すると불결SOURCE中増加
+	;죠교자의입에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 	SIF STAIN:입 & (4 + 8)
 		SOURCE:MASTER:불결 += 200
-	;죠교자の입に血/粘液汚れが存在すると불결SOURCE大増加
+	;죠교자의입에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 	SIF STAIN:입 & (32 + 64)
 		SOURCE:MASTER:불결 += 600
-	;汚れが相互に移る
+	;더러움이 서로 옮긴다
 	STAIN:MASTER:가슴 |= STAIN:입
 	STAIN:입 |= STAIN:MASTER:가슴
-	;죠교자기교、애무、혀기술、거친혀素質に応じて발기도上昇
+	;죠교자기교, 애무, 혀기술, 거친혀소질에 응해발기도상승
 	TCVAR:MASTER:금회발기 += 80 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") + TALENT:혀기술 * 50 + TALENT:거친혀 * 50) / 3
-;その他時
+;그 외시
 ELSE
-	;죠교대상の反応によって要求に応じない可能性がありますから
-	;ここは죠교자が죠교대상の가슴を揉むまで処理し、죠교대상の動きはCOMの方で処理します。
-	;この類の행동は全部このように処理します。
+	;죠교대상의 반응에 의해 요구에 응하지 않을 가능성이 있을테니까
+	;여기는죠교자가죠교대상의가슴를 비빌 때까지 처리해, 죠교대상의 움직임은 COM의 (분)편으로 처리합니다.
+	;이 종류의행동는 전부 이와 같이 처리합니다.
 	
-	;상반신全部자주탈의
+	;상반신전부자주탈의
 	TFLAG:자주탈의 = 4
-	;애무보정値、손가락기술素質に応じて쾌ＢSOURCE上昇
+	;애무보정치, 손가락기술소질에 응해쾌ＢSOURCE 상승
 	SOURCE:MASTER:쾌Ｂ = ACT_FROM(TARGET, 4) * (2 + TALENT:손가락기술) / 2
-	;죠교자、죠교대상죠교레벨に応じて접촉SOURCE増加
+	;죠교자, 죠교대상죠교레벨에 응해접촉SOURCE 증가
 	SOURCE:MASTER:접촉 = 50 + GET_TRAINLV(TARGET) * 5 + CFLAG:MASTER:죠교레벨 * 5
-	;필요ならば미약を使用
+	;필요라면미약를 사용
 	CALL LOVEPOTION_USE
-	;죠교대상호의、죠교자봉사정신に応じて애정SOURCE増加
+	;죠교대상호의, 죠교자봉사정신에 응해애정SOURCE 증가
 	SOURCE:MASTER:애정 = 50 + CFLAG:M호의 / 50 + GET_ABL(TARGET, "봉사정신") * 5
-	;쾌ＢSOURCEに応じて성행위SOURCE増加
+	;쾌ＢSOURCE에 응해성행위SOURCE 증가
 	SOURCE:MASTER:성행위 = 50 + SOURCE:MASTER:쾌Ｂ / 8
-	;죠교자の손に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+	;죠교자의손에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 	SIF STAIN:손 & (1 + 2 + 16)
 		SOURCE:MASTER:불결 += 85
-	;죠교자の손に정액/항문汚れが存在すると불결SOURCE中増加
+	;죠교자의손에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 	SIF STAIN:손 & (4 + 8)
 		SOURCE:MASTER:불결 += 180
-	;죠교자の손に血/粘液汚れが存在すると불결SOURCE大増加
+	;죠교자의손에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 	SIF STAIN:손 & (32 + 64)
 		SOURCE:MASTER:불결 += 550
-	;汚れが相互に移る
+	;더러움이 서로 옮긴다
 	STAIN:MASTER:가슴 |= STAIN:손
 	STAIN:손 |= STAIN:MASTER:가슴
-	;죠교자、죠교대상자위を中断
+	;죠교자, 죠교대상자위를 중단
 	TEQUIP:자위중 = 0
-	;죠교자기교、애무、손가락기술素質に応じて발기도上昇
+	;죠교자기교, 애무, 손가락기술소질에 응해발기도상승
 	TCVAR:MASTER:금회발기 += 80 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") + TALENT:손가락기술 * 50) / 3
 ENDIF
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
 TFLAG:경과시간 += 2
 
-;リアクション後（접촉、애정、성행위、달성、쾌Ｂ）
+;리액션 후（접촉, 애정, 성행위, 달성, 쾌Ｂ）
 @ACTION_APPLY2_11
-;乳の揉み合い派生時
+;젖의 몸싸움 파생시
 IF TFLAG:ACT파생 == 2
-	;実行했다
-	IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる")
-		;죠교대상죠교레벨に応じて접촉SOURCE増加
+	;실행했다
+	IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/받아들인다")
+		;죠교대상죠교레벨에 응해접촉SOURCE 증가
 		SOURCE:MASTER:접촉 += 70 + CFLAG:MASTER:죠교레벨 * 3
-		;죠교대상호의、봉사정신に応じて애정SOURCE増加
+		;죠교대상호의, 봉사정신에 응해애정SOURCE 증가
 		SOURCE:MASTER:애정 += 20 + CFLAG:M호의 / 40 + GET_ABL(MASTER, "봉사정신") * 5
-		;애무보정、죠교대상손가락기술素質に応じて보정値上昇
+		;애무보정, 죠교대상손가락기술소질에 응해보정가격인상승
 		LOCAL = 35 + ACT_TO(TARGET, 4) * (3 + TALENT:MASTER:손가락기술) / 5
-		;보정値に応じて성행위、달성、쾌ＢSOURCE増加
+		;보정치에 응해성행위, 달성, 쾌ＢSOURCE 증가
 		SOURCE:MASTER:성행위 += 50 + LOCAL / 8
 		SOURCE:MASTER:달성 += LOCAL / 4
 		SOURCE:쾌Ｂ += LOCAL
-		;汚れが相互に移る
+		;더러움이 서로 옮긴다
 		STAIN:MASTER:손 |= STAIN:가슴
 		STAIN:가슴 |= STAIN:MASTER:손
-	;その他の場合
+	;그 외의 경우
 	ELSE
-		;반항先行時、REACT분류に要求に応じないをセット
+		;반항선행시, REACT분류에 요구에 응하지 않는 것을 세트
 		SIF PALAM:MASTER:치정 <= PALAM:MASTER:반항
 			CALL SET_COMGRO("거부")
 	ENDIF
 ENDIF
 
 ;────────────────────────────────────
-;012,クンニ/펠라する
+;012, 쿤닐링구스/펠라 한다
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ/Ｈ）（쾌Ｃ、접촉、애정、성행위、고통、불결）
+;리액션전（Ｓ/Ｎ/Ｈ）（쾌Ｃ, 접촉, 애정, 성행위, 고통, 불결）
 @ACTION_APPLY_12
-;애무보정値、혀기술に応じて쾌ＣSOURCE上昇
+;애무보정치, 혀기술에 응해쾌ＣSOURCE 상승
 SOURCE:MASTER:쾌Ｃ = 200 + ACT_FROM(TARGET, 1) * (3 + TALENT:혀기술) / 3
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合
+	;억압/수줍음/착의플레이선호소질이 없는 경우
 	IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
-		;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+		;해방소질, 죠교자욕망, 죠교레벨에 응해 성공율 상승
 		IF TALENT:해방 * 2 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 1 + RAND:3
-			;하반신全部강제탈의
+			;하반신전부강제탈의
 			TFLAG:강제탈의 = 5
-		;1/3の確率で하반신겉옷강제탈의
+		;1/3의 확률로하반신겉옷강제탈의
 		ELSEIF !RAND:3
 			TFLAG:강제탈의 = 2
 		ENDIF
 	ENDIF
 ENDIF
-;필요ならば미약を使用
+;필요라면미약를 사용
 CALL LOVEPOTION_USE
-;윤활上昇(펠라で増加보정、Ｗ펠라で보정倍増)
+;윤활상승(펠라로 증가보정, Ｗ펠라로보정배증)
 PALAM:MASTER:윤활 += 20 + TFLAG:ACT파생 * 20
-;거친혀素質時쾌ＣSOURCE上昇
+;거친혀소질시쾌ＣSOURCE 상승
 SIF TALENT:거친혀
 	SOURCE:MASTER:쾌Ｃ *= 12 / 10
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 150 + GET_TRAINLV(TARGET) * 5
-;접촉SOURCE、죠교자봉사정신に応じて애정SOURCE増加
+;접촉SOURCE, 죠교자봉사정신에 응해애정SOURCE 증가
 SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
-;쾌ＣSOURCEに応じて성행위SOURCE増加
+;쾌ＣSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 80 + SOURCE:MASTER:쾌Ｃ / 10
-;죠교자の입に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의입에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:입 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 60
-;죠교자の입に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의입에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:입 & (4 + 8)
 	SOURCE:MASTER:불결 += 120
-;죠교자の입に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의입에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:입 & (32 + 64)
 	SOURCE:MASTER:불결 += 360
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 IF TFLAG:ACT파생 >= 1
 	STAIN:MASTER:페니스 |= STAIN:입
 	STAIN:입 |= STAIN:MASTER:페니스
@@ -263,54 +263,54 @@ ELSE
 	STAIN:MASTER:바기나 |= STAIN:입
 	STAIN:입 |= STAIN:MASTER:바기나
 ENDIF
-;죠교대상자위を中断
+;죠교대상자위를 중단
 TEQUIP:자위중 &= ~1
-;죠교자기교、애무、혀기술、거친혀素質に応じて발기도上昇
+;죠교자기교, 애무, 혀기술, 거친혀소질에 응해발기도상승
 TCVAR:MASTER:금회발기 += 150 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") + TALENT:혀기술 * 50 + TALENT:거친혀 * 50)
 TFLAG:경과시간 += 2
 
-;リアクション後（Ｓ/Ｎ/Ｈ）（쾌Ｃ、접촉、애정、성행위、고통、불결）
+;리액션 후（Ｓ/Ｎ/Ｈ）（쾌Ｃ, 접촉, 애정, 성행위, 고통, 불결）
 @ACTION_APPLY2_12
 
 ;────────────────────────────────────
-;013,항문애무
+;013, 항문애무
 ;────────────────────────────────────
-;リアクション前（Ｎ/Ｈ）[罰]（쾌Ａ、접촉、성행위、고통、불결、이탈）
+;리액션전（Ｎ/Ｈ）[벌]（쾌Ａ, 접촉, 성행위, 고통, 불결, 이탈）
 @ACTION_APPLY_13
-;애무보정値、손가락기술素質に応じて、쾌ＡSOURCE増加
+;애무보정치, 손가락기술소질에 응해, 쾌ＡSOURCE 증가
 SOURCE:MASTER:쾌Ａ = 60 + ACT_FROM(TARGET, 3) * (2 + TALENT:손가락기술) / 2
-;前立腺責めに派生していれば쾌Ａ増加
+;전립선 고문에 파생하고 있으면쾌Ａ증가
 SIF TFLAG:ACT파생 == 1
 	TIMES SOURCE:MASTER:쾌Ａ, 2.50
-;항문바이브出し入れに派生していれば도구強化、애무보정値、도구능숙素質に応じて쾌ＡSOURCE増加
+;항문바이브출납에 파생하고 있으면도구강화, 애무보정치, 도구능숙소질에 응해쾌ＡSOURCE 증가
 SIF TFLAG:ACT파생 == 2
 	SOURCE:MASTER:쾌Ａ += 40 + ITEM:9 * 100 + ACT_FROM(TARGET, 12) * (TALENT:도구능숙 + 3) / 3
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合
+	;억압/수줍음/착의플레이선호소질이 없는 경우
 	IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
-		;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+		;해방소질, 죠교자욕망, 죠교레벨에 응해 성공율 상승
 		IF TALENT:해방 * 2 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 1 + RAND:3
-			;하반신全部강제탈의
+			;하반신전부강제탈의
 			TFLAG:강제탈의 = 5
 		ELSE
-			;最低でも하반신겉옷강제탈의まで試行
+			;최악이어도하반신겉옷강제탈의까지 시행
 			TFLAG:강제탈의 = 2
 		ENDIF
 	ENDIF
 ENDIF
-;죠교자악세서리存在時、2/3の確率か죠교대상の가슴が항문汚れ以外の汚れを持つ
-;場合、악세서리ー자주탈의
-;※장갑などを脱いで素손으로 애무するため악세서리ー자주탈의が発生
+;죠교자악세서리존재시,2/3의 확률이나죠교대상의가슴가항문 더러워지고 이외의 더러움을 가진다
+;경우, 악세서리─자주탈의
+;※장갑등을 벗어 소손으로 애무 하기 위해(때문)악세서리─자주탈의가 발생
 SIF TEQUIP:악세서리 && (RAND:3 || STAIN:MASTER:항문 > 8)
 	TFLAG:자주탈의 = 6
-;필요ならば로션、미약を使用
+;필요라면로션, 미약를 사용
 CALL LOTION_USE
 CALL LOVEPOTION_USE
-;윤활不발時、쾌ＡSOURCEに減少보정、고통SOURCE増加
-CALL SHORTAGE_LUBRICATION("500/M쾌Ａ,T,50/M고통,A,500")
-;Ａ경험不발時、쾌ＡSOURCEに減少보정、고통、이탈SOURCE増加
+;윤활불발시, 쾌ＡSOURCE에 감소보정, 고통SOURCE 증가
+CALL SHORTAGE_LUBRICATION("500/M쾌Ａ, T, 50/M고통, A, 500")
+;Ａ경험불발시, 쾌ＡSOURCE에 감소보정, 고통, 이탈SOURCE 증가
 IF EXP:MASTER:Ａ경험 < 1
 	TIMES SOURCE:MASTER:쾌Ａ , 0.60
 	SOURCE:MASTER:고통 += 600
@@ -326,65 +326,65 @@ ELSEIF EXP:MASTER:Ａ경험 < 11
 ELSEIF EXP:MASTER:Ａ경험 < 21
 	SOURCE:MASTER:이탈 += 5
 ENDIF
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 80 + GET_TRAINLV(TARGET) * 5
-;쾌ＡSOURCEに応じて성행위SOURCE増加
+;쾌ＡSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 80 + SOURCE:MASTER:쾌Ａ / 10
-;죠교자の손に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의손에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:손 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 10
-;죠교자の손に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의손에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:손 & (4 + 8)
 	SOURCE:MASTER:불결 += 30
-;죠교자の손に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의손에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:손 & (32 + 64)
 	SOURCE:MASTER:불결 += 100
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 STAIN:MASTER:항문 |= STAIN:손
 STAIN:손 |= STAIN:MASTER:항문
-;남자はＡで전립선자극
+;남자는Ａ로전립선자극
 SIF TALENT:MASTER:남자
 	TCVAR:MASTER:전립선자극 += 1
-;前立腺責めに派生していればさらに전립선자극がつく
+;전립선 고문에 파생하고 있으면 한층 더전립선자극가 붙는다
 SIF TFLAG:ACT파생 == 1
 	TCVAR:MASTER:전립선자극 += 1
-;죠교대상Ａ감각、마조끼、죠교자기교に応じて발기도上昇
+;죠교대상Ａ감각, 마조끼, 죠교자기교에 응해발기도상승
 TCVAR:MASTER:금회발기 += 100 + (GET_ABL(MASTER, "Ａ감각") + GET_ABL(MASTER, "마조끼") * GET_ABL(TARGET, "기교") / 50)
 TFLAG:경과시간 += 2
 
-;リアクション後（Ｎ/Ｈ）[罰]（쾌Ａ、접촉、성행위、고통、불결、이탈）
+;리액션 후（Ｎ/Ｈ）[벌]（쾌Ａ, 접촉, 성행위, 고통, 불결, 이탈）
 @ACTION_APPLY2_13
 
 ;────────────────────────────────────
-;014,항문펠라
+;014, 항문펠라
 ;────────────────────────────────────
-;リアクション前（Ｎ/Ｈ）[罰]（쾌Ａ、접촉、성행위、고통、불결、이탈）
+;리액션전（Ｎ/Ｈ）[벌]（쾌Ａ, 접촉, 성행위, 고통, 불결, 이탈）
 @ACTION_APPLY_14
-;애무보정値、혀기술素質に応じて、쾌ＡSOURCE増加
+;애무보정치, 혀기술소질에 응해, 쾌ＡSOURCE 증가
 SOURCE:MASTER:쾌Ａ = 60 + ACT_FROM(TARGET, 3) * (3 + TALENT:혀기술) / 3
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合
+	;억압/수줍음/착의플레이선호소질이 없는 경우
 	IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
-		;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+		;해방소질, 죠교자욕망, 죠교레벨에 응해 성공율 상승
 		IF TALENT:해방 * 2 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 1 + RAND:3
-			;하반신全部강제탈의
+			;하반신전부강제탈의
 			TFLAG:강제탈의 = 5
 		ELSE
-			;最低でも하반신겉옷강제탈의まで試行
+			;최악이어도하반신겉옷강제탈의까지 시행
 			TFLAG:강제탈의 = 2
 		ENDIF
 	ENDIF
 ENDIF
-;필요ならば미약を使用
+;필요라면미약를 사용
 CALL LOVEPOTION_USE
-;윤활上昇
+;윤활상승
 PALAM:MASTER:윤활 += 20
-;거친혀素質時쾌ＡSOURCE上昇
+;거친혀소질시쾌ＡSOURCE 상승
 SIF TALENT:거친혀
 	SOURCE:MASTER:쾌Ａ *= 12 / 10
-;Ａ경험不발時、쾌ＡSOURCEに減少보정、이탈SOURCE増加
+;Ａ경험불발시, 쾌ＡSOURCE에 감소보정, 이탈SOURCE 증가
 IF EXP:MASTER:Ａ경험 < 1
 	TIMES SOURCE:MASTER:쾌Ａ , 0.80
 	SOURCE:MASTER:이탈 += 1000
@@ -397,116 +397,116 @@ ELSEIF EXP:MASTER:Ａ경험 < 11
 ELSEIF EXP:MASTER:Ａ경험 < 21
 	SOURCE:MASTER:이탈 += 10
 ENDIF
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 120 + GET_TRAINLV(TARGET) * 5
-;쾌ＡSOURCEに応じて성행위SOURCE増加
+;쾌ＡSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 80 + SOURCE:MASTER:쾌Ａ / 10
-;죠교자の입に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의입에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:입 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 10
-;죠교자の입に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의입에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:입 & (4 + 8)
 	SOURCE:MASTER:불결 += 30
-;죠교자の입に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의입에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:입 & (32 + 64)
 	SOURCE:MASTER:불결 += 100
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 STAIN:MASTER:항문 |= STAIN:입
 STAIN:입 |= STAIN:MASTER:항문
-;죠교대상Ａ감각に応じて발기도上昇
+;죠교대상Ａ감각에 응해발기도상승
 TCVAR:MASTER:금회발기 += 80 + GET_ABL(MASTER, "Ａ감각")
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
 TFLAG:경과시간 += 2
 
-;リアクション後（Ｎ/Ｈ）[罰]（쾌Ａ、접촉、성행위、고통、불결、이탈）
+;리액션 후（Ｎ/Ｈ）[벌]（쾌Ａ, 접촉, 성행위, 고통, 불결, 이탈）
 @ACTION_APPLY2_14
-;現在処理なし
+;현재 처리 없음
 
 ;────────────────────────────────────
-;015,키스
+;015, 키스
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ）（접촉、애정、성행위、고통、불결）
+;리액션전（Ｓ/Ｎ）（접촉, 애정, 성행위, 고통, 불결）
 @ACTION_APPLY_15
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 150 + GET_TRAINLV(TARGET) * 5
-;죠교대상호의、죠교자애무、기교、혀기술素質、봉사정신に応じて애정SOURCE増加
+;죠교대상호의, 죠교자애무, 기교, 혀기술소질, 봉사정신에 응해애정SOURCE 증가
 SOURCE:MASTER:애정 = 100 + CFLAG:M호의 / 50 + GET_ABL(TARGET, "애무") * (GET_ABL(TARGET, "기교") / 10 + TALENT:혀기술 * 2) + GET_ABL(TARGET, "봉사정신") * 5
-;1/3の確率で악세서리ー강제탈의
+;1/3의 확률로악세서리─강제탈의
 SIF !RAND:3
 	TFLAG:강제탈의 = 6
-;필요ならば미약を使用
+;필요라면미약를 사용
 CALL LOVEPOTION_USE
-;애정SOURCEに応じて성행위SOURCE増加
+;애정SOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 50 + SOURCE:MASTER:애정 / 15
-;죠교자の입に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의입에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:입 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 180
-;죠교자の입に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의입에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:입 & (4 + 8)
 	SOURCE:MASTER:불결 += 350
-;죠교자の입に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의입에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:입 & (32 + 64)
 	SOURCE:MASTER:불결 += 700
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 STAIN:MASTER:입 |= STAIN:입
 STAIN:입 |= STAIN:MASTER:입
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
-;죠교자기교、애무、혀기술、거친혀素質に応じて발기도上昇
+;죠교자기교, 애무, 혀기술, 거친혀소질에 응해발기도상승
 TCVAR:MASTER:금회발기 += 50 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") + TALENT:혀기술 * 50 + TALENT:거친혀 * 50) / 2
 TFLAG:경과시간 += 1
 
-;リアクション後（Ｓ/Ｎ）（접촉、애정、성행위、고통、불결）
+;리액션 후（Ｓ/Ｎ）（접촉, 애정, 성행위, 고통, 불결）
 @ACTION_APPLY2_15
-;現在処理なし
+;현재 처리 없음
 
 ;────────────────────────────────────
-;016,貝あわせ/스마타する
+;016, 조개 우려라/스마타 한다
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ）（쾌Ｃ、접촉、애정、성행위、불결、쾌Ｃ）
+;리액션전（Ｓ/Ｎ）（쾌Ｃ, 접촉, 애정, 성행위, 불결, 쾌Ｃ）
 @ACTION_APPLY_16
-;애무보정値に応じて、쾌Ｃ/쾌ＣSOURCE増加、さらに젖기쉬움、젖기어려움素質により増減
+;애무보정치에 응해, 쾌Ｃ/쾌ＣSOURCE 증가, 한층 더젖기쉬움, 젖기어려움소질에 의해 증감
 SOURCE:MASTER:쾌Ｃ = 80 + ACT_FROM(TARGET, 1) * (3 + TALENT:젖기쉬움 - TALENT:젖기어려움) * (2*TALENT:허리기술 + 1) / 3
 SOURCE:쾌Ｃ = 30 + ACT_TO(TARGET, 1) * (3 + TALENT:젖기쉬움 - TALENT:젖기어려움) * (2*TALENT:MASTER:허리기술 + 1) / 3
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合
+	;억압/수줍음/착의플레이선호소질이 없는 경우
 	IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
-		;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+		;해방소질, 죠교자욕망, 죠교레벨에 응해 성공율 상승
 		IF TALENT:해방 * 2 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 1 + RAND:3
-			;하반신全部강제탈의
+			;하반신전부강제탈의
 			TFLAG:강제탈의 = 5
 		ELSE
-			;最低でも하반신겉옷강제탈의まで試行
+			;최악이어도하반신겉옷강제탈의까지 시행
 			TFLAG:강제탈의 = 2
 		ENDIF
 	ENDIF
 ENDIF
-;하반신全部자주탈의
+;하반신전부자주탈의
 TFLAG:자주탈의 = 5
-;필요ならば로션、미약を使用
+;필요라면로션, 미약를 사용
 CALL LOTION_USE
 CALL LOVEPOTION_USE
-;윤활不발時、쾌Ｃ/쾌ＣSOURCEに減少보정
-CALL SHORTAGE_LUBRICATION("500/M쾌Ｃ,T,75/T쾌Ｃ,T,75")
-;죠교레벨に応じて접촉SOURCE増加、스마타派生時減少
+;윤활불발시, 쾌Ｃ/쾌ＣSOURCE에 감소보정
+CALL SHORTAGE_LUBRICATION("500/M쾌Ｃ, T, 75/T쾌Ｃ, T, 75")
+;죠교레벨에 응해접촉SOURCE 증가, 스마타파생시 감소
 SOURCE:MASTER:접촉 = 200 + GET_TRAINLV(TARGET) * 5 - TFLAG:ACT파생 * 50
-;접촉SOURCE、죠교대상봉사정신に応じて애정SOURCE増加
+;접촉SOURCE, 죠교대상봉사정신에 응해애정SOURCE 증가
 SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
-;쾌ＣSOURCEに応じて성행위SOURCE増加
+;쾌ＣSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 80 + SOURCE:MASTER:쾌Ｃ / 10
-;죠교자の바기나に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의바기나에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:바기나 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 50
-;죠교자の바기나に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의바기나에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:바기나 & (4 + 8)
 	SOURCE:MASTER:불결 += 100
-;죠교자の바기나に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의바기나에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:바기나 & (32 + 64)
 	SOURCE:MASTER:불결 += 300
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 IF TFLAG:ACT파생 == 1
 	STAIN:MASTER:페니스 |= STAIN:바기나
 	STAIN:바기나 |= STAIN:MASTER:페니스
@@ -514,197 +514,197 @@ ELSE
 	STAIN:MASTER:바기나 |= STAIN:바기나
 	STAIN:바기나 |= STAIN:MASTER:바기나
 ENDIF
-;죠교자、죠교대상자위を中断
+;죠교자, 죠교대상자위를 중단
 TEQUIP:자위중 = 0
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
-;죠교자기교、애무に応じて발기도上昇
+;죠교자기교, 애무에 응해발기도상승
 TCVAR:MASTER:금회발기 += 150 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") )
 TFLAG:경과시간 += 3
 
-;リアクション後（Ｓ/Ｎ）（쾌Ｃ、접촉、애정、성행위、불결、쾌Ｃ）
+;리액션 후（Ｓ/Ｎ）（쾌Ｃ, 접촉, 애정, 성행위, 불결, 쾌Ｃ）
 @ACTION_APPLY2_16
-;現在処理なし
+;현재 처리 없음
 
 ;────────────────────────────────────
-;017,파이즈리한다
+;017, 파이즈리한다
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ）（쾌Ｃ、접촉、애정、고통、성행위、불결、쾌Ｂ）
+;리액션전（Ｓ/Ｎ）（쾌Ｃ, 접촉, 애정, 고통, 성행위, 불결, 쾌Ｂ）
 @ACTION_APPLY_17
-;애무보정値に応じて쾌ＣSOURCE増加、さらに거유、빈유素質により増減
+;애무보정치에 응해쾌ＣSOURCE 증가, 한층 더거유, 빈유소질에 의해 증감
 SOURCE:MASTER:쾌Ｃ = 70 + ACT_FROM(TARGET, 1) * (4 + TALENT:거유 - TALENT:빈유) / 4
-;애무보정値に応じて쾌ＢSOURCE増加
+;애무보정치에 응해쾌ＢSOURCE 증가
 SOURCE:쾌Ｂ = 20 + ACT_TO(TARGET, 4) * (TALENT:MASTER:허리기술 + 1) / 2
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合
+	;억압/수줍음/착의플레이선호소질이 없는 경우
 	IF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
-		;해방素質、죠교자욕망、죠교레벨に応じて成功率上昇
+		;해방소질, 죠교자욕망, 죠교레벨에 응해 성공율 상승
 		IF TALENT:해방 * 2 + GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) / 5 > 1 + RAND:3
-			;하반신全部강제탈의
+			;하반신전부강제탈의
 			TFLAG:강제탈의 = 5
-			;죠교자욕망、죠교레벨に応じて成功率上昇
-			;악세서리－まで강제탈의に発展
+			;죠교자욕망, 죠교레벨에 응해 성공율 상승
+			;악세서리－까지강제탈의에 발전
 			SIF GET_ABL(TARGET, "욕망") / 10 + GET_TRAINLV(TARGET) > 4 + RAND:5
 				TFLAG:강제탈의 = 7
 		ELSE
-			;最低でも하반신겉옷강제탈의まで試行
+			;최악이어도하반신겉옷강제탈의까지 시행
 			TFLAG:강제탈의 = 2
 		ENDIF
 	ENDIF
 ENDIF
-;상반신全部자주탈의
+;상반신전부자주탈의
 TFLAG:자주탈의 = 4
-;필요ならば로션、미약を使用
+;필요라면로션, 미약를 사용
 CALL LOVEPOTION_USE
 CALL LOTION_USE
-;윤활不발時、쾌ＣSOURCEに減少보정
-CALL SHORTAGE_LUBRICATION("500/M쾌Ｃ,T,75")
-;빈유素質時、쾌ＣSOURCEに減少보정
+;윤활불발시, 쾌ＣSOURCE에 감소보정
+CALL SHORTAGE_LUBRICATION("500/M쾌Ｃ, T, 75")
+;빈유소질시, 쾌ＣSOURCE에 감소보정
 SIF TALENT:빈유
 	TIMES SOURCE:MASTER:쾌Ｃ , 0.80
-;거친혀素質時쾌ＣSOURCE上昇
+;거친혀소질시쾌ＣSOURCE 상승
 SIF TALENT:거친혀
 	SOURCE:MASTER:쾌Ｃ *= 11 / 10
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 250 + GET_TRAINLV(TARGET) * 5
-;접촉SOURCE、죠교대상봉사정신に応じて애정SOURCE増加
+;접촉SOURCE, 죠교대상봉사정신에 응해애정SOURCE 증가
 SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
-;쾌ＣSOURCEに応じて성행위SOURCE増加
+;쾌ＣSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 40 + SOURCE:MASTER:쾌Ｃ / 10
-;죠교자の입に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의입에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:입 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 20
-;죠교자の입に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의입에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:입 & (4 + 8)
 	SOURCE:MASTER:불결 += 50
-;죠교자の입に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의입에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:입 & (32 + 64)
 	SOURCE:MASTER:불결 += 150
-;죠교자の가슴に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의가슴에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:가슴 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 50
-;죠교자の가슴に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의가슴에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:가슴 & (4 + 8)
 	SOURCE:MASTER:불결 += 100
-;죠교자の가슴に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의가슴에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:가슴 & (32 + 64)
 	SOURCE:MASTER:불결 += 300
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 STAIN:MASTER:페니스 |= STAIN:입
 STAIN:MASTER:페니스 |= STAIN:가슴
 STAIN:입 |= STAIN:MASTER:페니스
 STAIN:가슴 |= STAIN:MASTER:페니스
-;죠교자、죠교대상자위を中断
+;죠교자, 죠교대상자위를 중단
 TEQUIP:자위중 = 0
-;죠교자기교、애무に応じて발기도上昇、거유、빈유、음유素質によって増減
+;죠교자기교, 애무에 응해발기도상승, 거유, 빈유, 음유소질에 의해 증감
 TCVAR:MASTER:금회발기 += 150 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무") + TALENT:거유 * 50 - TALENT:빈유 * 50 + TALENT:음유 * 50)
 TFLAG:경과시간 += 3
 
-;リアクション後（Ｓ/Ｎ）（쾌Ｃ、접촉、애정、고통、성행위、불결、쾌Ｂ）
+;리액션 후（Ｓ/Ｎ）（쾌Ｃ, 접촉, 애정, 고통, 성행위, 불결, 쾌Ｂ）
 @ACTION_APPLY2_17
 
 ;────────────────────────────────────
-;018,풋잡하기
+;018, 풋잡하기
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ/Ｈ）[罰]（쾌Ｃ、접촉、애정、성행위、불결、이탈）
+;리액션전（Ｓ/Ｎ/Ｈ）[벌]（쾌Ｃ, 접촉, 애정, 성행위, 불결, 이탈）
 @ACTION_APPLY_18
-;애무보정値、각선미素質に応じて쾌ＣSOURCE増加
+;애무보정치, 각선미소질에 응해쾌ＣSOURCE 증가
 SOURCE:MASTER:쾌Ｃ = 40 + ACT_FROM(TARGET, 1) * (3 + TALENT:각선미) / 3
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 60 + GET_TRAINLV(TARGET) * 10
-;접촉SOURCE、죠교대상봉사정신に応じて애정SOURCE増加
+;접촉SOURCE, 죠교대상봉사정신에 응해애정SOURCE 증가
 SOURCE:MASTER:애정 = SOURCE:MASTER:접촉 / 2 + GET_ABL(TARGET, "봉사정신") * 5
-;쾌ＣSOURCEに応じて성행위SOURCE増加
+;쾌ＣSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = SOURCE:MASTER:쾌Ｃ / 10
-;새드素質が存在すると、쾌ＣSOURCEに応じて고통SOURCE増加
+;새드소질이 존재하면, 쾌ＣSOURCE에 응해고통SOURCE 증가
 SIF TALENT:새드
 	SOURCE:MASTER:고통 = SOURCE:MASTER:쾌Ｃ / 4
-;이탈SOURCE増加、죠교레벨に応じて軽減
+;이탈SOURCE 증가, 죠교레벨에 응해 경감
 SOURCE:MASTER:이탈 = 200 - GET_TRAINLV(TARGET) * 10
-;이탈SOURCEが負の値をとらないよう調整
+;이탈SOURCE가 부의 값을 받지 않게 조정
 SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;억압/수줍음/착의플레이선호素質がない場合、하반신겉옷강제탈의
+	;억압/수줍음/착의플레이선호소질이 없는 경우, 하반신겉옷강제탈의
 	SIF !TALENT:억압 && !TALENT:수줍음 && !TALENT:착의플레이선호
 		TFLAG:강제탈의 = 2
 ENDIF
-;죠교자신발안着用中、죠교대상페니스に페니스汚れ以外の汚れが存在すると、
-;악세서리ー자주탈의
+;죠교자신발안착용중, 죠교대상페니스에페니스 더러워지고 이외의 더러움이 존재하면,
+;악세서리─자주탈의
 SIF TEQUIP:신발안 && STAIN:MASTER:페니스 > 2
 	TFLAG:자주탈의 = 6
-;죠교자の발に愛液/페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의발에 애액/페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:발 & (1 + 2 + 16)
 	SOURCE:MASTER:불결 += 35
-;죠교자の발に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의발에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:발 & (4 + 8)
 	SOURCE:MASTER:불결 += 80
-;죠교자の발に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의발에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:발 & (32 + 64)
 	SOURCE:MASTER:불결 += 200
-;윤활不발時、쾌ＣSOURCEに減少보정
-CALL SHORTAGE_LUBRICATION("500/M쾌Ｃ,T,75")
-;汚れが相互に移る
+;윤활불발시, 쾌ＣSOURCE에 감소보정
+CALL SHORTAGE_LUBRICATION("500/M쾌Ｃ, T, 75")
+;더러움이 서로 옮긴다
 STAIN:MASTER:페니스 |= STAIN:발
 STAIN:발 |= STAIN:MASTER:페니스
-;안면승마は안면승마항문へ移行
+;안면승마는안면승마항문에 이행
 IF TEQUIP:안면승마
 	CALL FACESITTING_SET(2)
 ENDIF
-;죠교자、죠교대상자위を中断
+;죠교자, 죠교대상자위를 중단
 TEQUIP:자위중 = 0
-;죠교자기교、애무に応じて발기도上昇
+;죠교자기교, 애무에 응해발기도상승
 TCVAR:MASTER:금회발기 += 100 + (GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "애무"))
 TFLAG:경과시간 += 2
 
-;リアクション後（Ｓ/Ｎ/Ｈ）[罰]（쾌Ｃ、접촉、애정、성행위、불결、이탈）
+;리액션 후（Ｓ/Ｎ/Ｈ）[벌]（쾌Ｃ, 접촉, 애정, 성행위, 불결, 이탈）
 @ACTION_APPLY2_18
-;現在処理なし
+;현재 처리 없음
 
 ;────────────────────────────────────
-;019,손가락삽입한다
+;019, 손가락삽입한다
 ;────────────────────────────────────
-;リアクション前（Ｎ/Ｈ）[罰]（쾌Ｖ、접촉、성행위、고통、애정、불결）
+;리액션전（Ｎ/Ｈ）[벌]（쾌Ｖ, 접촉, 성행위, 고통, 애정, 불결）
 @ACTION_APPLY_19
-;애무보정値、손가락기술素質に応じて、쾌ＶSOURCE増加
+;애무보정치, 손가락기술소질에 응해, 쾌ＶSOURCE 증가
 SOURCE:MASTER:쾌Ｖ = 90 + ACT_FROM(TARGET, 3) * (2 + TALENT:손가락기술) / 2
-;Ｇスポット責めに派生していれば쾌Ｖ増加
+;Ｇ스팟 고문에 파생하고 있으면쾌Ｖ증가
 SIF TFLAG:ACT파생 == 1
 	TIMES SOURCE:MASTER:쾌Ｖ, 2.50
-;바이브出し入れに派生していれば도구強化、애무보정値、도구능숙素質に応じて쾌ＶSOURCE増加
+;바이브출납에 파생하고 있으면도구강화, 애무보정치, 도구능숙소질에 응해쾌ＶSOURCE 증가
 SIF TFLAG:ACT파생 == 2
 	SOURCE:MASTER:쾌Ｖ += 50 + ITEM:9 * 100 + ACT_FROM(TARGET, 12) * (TALENT:도구능숙 + 3) / 3
-;탈의の処理
-;벽통과があると3/4で無視する
+;탈의의 처리
+;벽통과가 있으면 3/4로 무시한다
 IF !TALENT:벽통과 || !RAND:4
-	;착의플레이선호素質がある場合
+	;착의플레이선호소질이 있는 경우
 	IF TALENT:착의플레이선호
-		;죠교레벨、해방素質に応じて成功率上昇し、속옷だけ강제탈의
+		;죠교레벨, 해방소질에 응해 성공율 상승해, 속옷만강제탈의
 		SIF GET_TRAINLV(TARGET) + TALENT:해방 * 3 > 2 + RAND:3
 			TFLAG:강제탈의 = 9
-	;억압/수줍음素質がない場合
+	;억압/수줍음소질이 없는 경우
 	ELSEIF !TALENT:억압 && !TALENT:수줍음
-		;하반신全部강제탈의
+		;하반신전부강제탈의
 		TFLAG:강제탈의 = 5
 	ENDIF
-	;죠교대상하반신겉옷が스커트でなく、하반신全部강제탈의でない場合、하반신겉옷강제탈의
+	;죠교대상하반신겉옷가스커트가 아니고, 하반신전부강제탈의가 아닌 경우, 하반신겉옷강제탈의
 	SIF TEQUIP:MASTER:하반신겉옷 > 1 && TFLAG:강제탈의 != 5
 		TFLAG:강제탈의 = 2
 ENDIF
-;죠교자악세서리存在時、2/3の確率か죠교대상のＶが愛液汚れ以外の汚れを持つ
-;場合、악세서리ー자주탈의
-;※장갑などを脱いで素손으로 애무するため악세서리ー자주탈의が発生
+;죠교자악세서리존재시,2/3의 확률이나죠교대상의Ｖ가 애액 더러워지고 이외의 더러움을 가진다
+;경우, 악세서리─자주탈의
+;※장갑등을 벗어 소손으로 애무 하기 위해(때문)악세서리─자주탈의가 발생
 SIF TEQUIP:악세서리 && (RAND:3 || STAIN:MASTER:바기나-1)
 	TFLAG:자주탈의 = 6
-;필요ならば로션、미약を使用
+;필요라면로션, 미약를 사용
 CALL LOTION_USE
 CALL LOVEPOTION_USE
-;윤활不발時、쾌ＶSOURCEに減少보정、고통SOURCE増加
-CALL SHORTAGE_LUBRICATION("500/M쾌Ｖ,T,50/M고통,A,500")
-;Ｖ경험不발時、쾌ＶSOURCEに減少보정、고통、이탈SOURCE増加
+;윤활불발시, 쾌ＶSOURCE에 감소보정, 고통SOURCE 증가
+CALL SHORTAGE_LUBRICATION("500/M쾌Ｖ, T, 50/M고통, A, 500")
+;Ｖ경험불발시, 쾌ＶSOURCE에 감소보정, 고통, 이탈SOURCE 증가
 IF EXP:MASTER:Ｖ경험 < 1
 	TIMES SOURCE:MASTER:쾌Ｖ , 0.60
 	SOURCE:MASTER:고통 += 600
@@ -720,59 +720,59 @@ ELSEIF EXP:MASTER:Ｖ경험 < 11
 ELSEIF EXP:MASTER:Ｖ경험 < 21
 	SOURCE:MASTER:이탈 += 5
 ENDIF
-;처녀時、さらに쾌Ｖに減少보정
+;처녀시, 한층 더쾌Ｖ에 감소보정
 SIF TALENT:MASTER:처녀
 	TIMES SOURCE:MASTER:쾌Ｖ , 0.80
 
-;죠교레벨に応じて접촉SOURCE増加
+;죠교레벨에 응해접촉SOURCE 증가
 SOURCE:MASTER:접촉 = 80 + GET_TRAINLV(TARGET) * 5
-;쾌ＶSOURCEに応じて성행위SOURCE増加
+;쾌ＶSOURCE에 응해성행위SOURCE 증가
 SOURCE:MASTER:성행위 = 80 + SOURCE:MASTER:쾌Ｖ / 10
-;죠교자の손に페니스/모유汚れが存在すると불결SOURCE小増加
+;죠교자의손에페니스/모유더러움이 존재하면불결SOURCE소증가
 SIF STAIN:손 & (2 + 16)
 	SOURCE:MASTER:불결 += 10
-;죠교자の손に정액/항문汚れが存在すると불결SOURCE中増加
+;죠교자의손에정액/항문더러움이 존재하면불결SOURCE 나카마시가
 SIF STAIN:손 & (4 + 8)
 	SOURCE:MASTER:불결 += 30
-;죠교자の손に血/粘液汚れが存在すると불결SOURCE大増加
+;죠교자의손에 피/점액 더러움이 존재하면불결SOURCE 오마스가
 SIF STAIN:손 & (32 + 64)
 	SOURCE:MASTER:불결 += 100
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 STAIN:MASTER:바기나 |= STAIN:손
 STAIN:손 |= STAIN:MASTER:바기나
 TCVAR:MASTER:전립선자극 += 1
-;Ｇスポット責めに派生していればさらに전립선자극がつく
+;Ｇ스팟 고문에 파생하고 있으면 한층 더전립선자극가 붙는다
 SIF TFLAG:ACT파생 == 1
 	TCVAR:MASTER:전립선자극 += 1
-;죠교대상Ｖ감각、죠교자기교に応じて발기도上昇
+;죠교대상Ｖ감각, 죠교자기교에 응해발기도상승
 TCVAR:MASTER:금회발기 += 100 + (GET_ABL(MASTER, "Ｖ감각") * GET_ABL(TARGET, "기교") / 20)
 TFLAG:경과시간 += 2
 
-;リアクション後（Ｎ/Ｈ）[罰]（쾌Ａ、접촉、성행위、고통、불결、이탈）
+;리액션 후（Ｎ/Ｈ）[벌]（쾌Ａ, 접촉, 성행위, 고통, 불결, 이탈）
 @ACTION_APPLY2_19
 
 ;────────────────────────────────────
-;027,밀어 넘어트린다
+;027, 밀어 넘어트린다
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ）（쾌Ｂ、중독충족）
+;리액션전（Ｓ/Ｎ）（쾌Ｂ, 중독충족）
 @ACTION_APPLY_27
 ;밀어 넘어트린다
 IF TEQUIP:밀어넘어지는중 == 0
 	TFLAG:밀어넘어짐경과 = TFLAG:경과시간
 	TEQUIP:밀어넘어지는중 = 1
-;밀어넘어짐終了
+;밀어넘어짐종료
 ELSE
 	TFLAG:밀어넘어짐경과 = TFLAG:경과시간
 	TEQUIP:밀어넘어지는중 = 0
 ENDIF
-;죠교자、죠교대상자위を中断
+;죠교자, 죠교대상자위를 중단
 TEQUIP:자위중 = 0
-;죠교대상욕망に応じて발기도上昇
+;죠교대상욕망에 응해발기도상승
 TCVAR:MASTER:금회발기 += 100 + GET_ABL(MASTER, "욕망") * 3
 TFLAG:경과시간 += 1
 
-;リアクション後（Ｓ/Ｎ）（쾌Ｂ、중독충족）
+;리액션 후（Ｓ/Ｎ）（쾌Ｂ, 중독충족）
 @ACTION_APPLY2_27
-;現在処理なし
+;현재 처리 없음
 
 

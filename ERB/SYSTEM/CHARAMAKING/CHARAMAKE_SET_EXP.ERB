@@ -1,152 +1,152 @@
-﻿;EXP生成
+﻿;EXP 생성
 
 ;Ｃ경험
 @CM_SET_EXP_0
-;まず경험自体の有無を判定
-;基本判定値50　よっぽど潔癖じゃなければＣ경험はある
+;우선경험자체의 유무를 판정
+;기본 판정치 50  상당히 결벽하지 않으면Ｃ경험는 있다
 LOCAL = 50
-;素質判定値を利用
-LOCAL += CM_TALENT_MAKE("プライド逆", "被虐", "衝動", "수치逆", "モラル逆", "潔癖逆", "倒錯逆", "Ｃ好き", "Ｃ好き", "호기심", "호기심")
-;ちんこあると判定値+50
+;소질 판정치를 이용
+LOCAL += CM_TALENT_MAKE("프라이드역", "피학", "충동", "수치역", "모랄역", "결벽역", "도착역", "Ｃ를 좋아하는 사람", "Ｃ를 좋아하는 사람", "호기심", "호기심")
+;고추 있다고 판정치+50
 SIF PENIS(MASTER)
 	LOCAL += 50
-;작은체형だと判定値-40
+;작은체형라면 판정치-40
 SIF TALENT:MASTER:작은체형
 	LOCAL -= 40
-;경험があると했다場合、量の処理
+;경험가 있으면했다경우, 양의 처리
 IF PERCENT(LOCAL)
-	;基本値は判定値（負にはなりえない）の1/4にRAND:判定値を발す
+	;기본치는 판정치（부가 될 수 없다）의 것 1/4에 RAND:판정치를발
 	EXP:MASTER:Ｃ경험 = LOCAL/4+RAND:LOCAL
-	;작은체형だと0.75倍
+	;작은체형라면 0.75배
 	SIF TALENT:MASTER:작은체형
 		TIMES EXP:MASTER:Ｃ경험, 0.75
-	;Ｃ민감だと1.5倍
+	;Ｃ민감라면 1.5배
 	SIF TALENT:MASTER:Ｃ민감
 		TIMES EXP:MASTER:Ｃ경험, 1.50
-	;페니스があって동정でない場合、허리기술だと1.5倍
+	;페니스가 있어동정가 아닌 경우, 허리기술라면 1.5배
 	SIF PENIS(MASTER) && !TALENT:MASTER:동정 && TALENT:MASTER:허리기술
 		TIMES EXP:MASTER:Ｃ경험, 1.50
-	;Ｃ둔감だと0.75倍
+	;Ｃ둔감라면 0.75배
 	SIF TALENT:MASTER:Ｃ둔감
 		TIMES EXP:MASTER:Ｃ경험, 0.75
-	;자위하기쉬움だと2倍
+	;자위하기쉬움라면 2배
 	SIF TALENT:MASTER:자위하기쉬움
 		TIMES EXP:MASTER:Ｃ경험, 2.00
 ENDIF
 
-;ちんこある非동정の場合、もし0以下になっていれば、1+RAND:3で差し替える
+;고추 있는 비동정의 경우, 만약 0 이하가 되어 있으면, 1+RAND:3으로 갈아넣는다
 SIF PENIS(MASTER) && !TALENT:MASTER:동정 && EXP:MASTER:Ｃ경험 <= 0
 	EXP:MASTER:Ｃ경험 = 1+RAND:3
 
 
 ;Ｖ경험
 @CM_SET_EXP_1
-;남자お断り
+;남자거절
 SIF TALENT:MASTER:남자
 	RETURN 0
-;처녀お断り
+;처녀거절
 SIF TALENT:MASTER:처녀
 	RETURN 0
-;基本判定値30　처녀ではないので必ず경험あり
+;기본 판정치 30  처녀는 아니기 때문에 반드시경험 있어
 LOCAL = 30
-;素質判定値を利用
-LOCAL += CM_TALENT_MAKE("プライド逆", "知性逆", "솔직さ", "수치逆", "モラル逆", "潔癖逆", "潔癖逆", "Ｖ好き", "Ｖ好き", "호기심", "호기심")
-;ちんこあると判定値-30
+;소질 판정치를 이용
+LOCAL += CM_TALENT_MAKE("프라이드역", "지성역", "솔직야", "수치역", "모랄역", "결벽역", "결벽역", "Ｖ를 좋아하는 사람", "Ｖ를 좋아하는 사람", "호기심", "호기심")
+;고추 있다고 판정치-30
 SIF PENIS(MASTER)
 	LOCAL -= 30
-;작은체형だと判定値-20
+;작은체형라면 판정치-20
 SIF TALENT:MASTER:작은체형
 	LOCAL -= 20
 
-;判定値が10以下なら、1+RAND:20で差し替える
+;판정치가 10 이하라면, 1+RAND:20으로 갈아넣는다
 SIF LOCAL <= 10
 	LOCAL = 1+RAND:20
 
-;↑を基本値として量の処理
-;基本値は判定値（負にはなりえない）の1/4にRAND:判定値を발す
+;↑를 기본치로서 양의 처리
+;기본치는 판정치（부가 될 수 없다）의 것 1/4에 RAND:판정치를발
 EXP:MASTER:Ｖ경험 = LOCAL/4+RAND:LOCAL
-;작은체형だと0.75倍
+;작은체형라면 0.75배
 SIF TALENT:MASTER:작은체형
 	TIMES EXP:MASTER:Ｖ경험, 0.75
-;Ｖ민감だと1.5倍
+;Ｖ민감라면 1.5배
 SIF TALENT:MASTER:Ｖ민감
 	TIMES EXP:MASTER:Ｖ경험, 1.50;
-;허리기술だと1.5倍
+;허리기술라면 1.5배
 SIF TALENT:MASTER:허리기술
 	TIMES EXP:MASTER:Ｖ경험, 1.50
-;Ｖ둔감だと0.75倍
+;Ｖ둔감라면 0.75배
 SIF TALENT:MASTER:Ｖ둔감
 	TIMES EXP:MASTER:Ｖ경험, 0.75
-;자위하기쉬움だと1.2倍
+;자위하기쉬움라면 1.2배
 SIF TALENT:MASTER:자위하기쉬움
 	TIMES EXP:MASTER:Ｖ경험, 1.20
-;最後に3で割る
+;마지막에 3으로 나눈다
 EXP:MASTER:Ｖ경험 /= 3
 
-;もし0以下になっていれば、1+RAND:3で差し替える
+;만약 0 이하가 되어 있으면, 1+RAND:3으로 갈아넣는다
 SIF EXP:MASTER:Ｖ경험 <= 0
 	EXP:MASTER:Ｖ경험 = 1+RAND:3
 
 ;Ａ경험
 @CM_SET_EXP_2
-;まず경험自体の有無を判定
-;基本判定値0　よっぽどじゃないとＡ경험は持ってない
+;우선경험자체의 유무를 판정
+;기본 판정치 0  상당히가 아니면Ａ경험는 가지고 있지 않다
 LOCAL = 0
-;素質判定値を利用
-LOCAL += CM_TALENT_MAKE("プライド逆", "被虐", "知性", "수치逆", "倒錯", "潔癖逆", "潔癖逆", "Ａ好き", "Ａ好き", "호기심", "호기심")
-;작은체형だと判定値-60
+;소질 판정치를 이용
+LOCAL += CM_TALENT_MAKE("프라이드역", "피학", "지성", "수치역", "도착", "결벽역", "결벽역", "Ａ를 좋아하는 사람", "Ａ를 좋아하는 사람", "호기심", "호기심")
+;작은체형라면 판정치-60
 SIF TALENT:MASTER:작은체형
 	LOCAL -= 60
-;경험があると했다場合、量の処理
+;경험가 있으면했다경우, 양의 처리
 IF PERCENT(LOCAL)
-	;基本値は判定値（負にはなりえない）の1/4にRAND:判定値を발す
+	;기본치는 판정치（부가 될 수 없다）의 것 1/4에 RAND:판정치를발
 	EXP:MASTER:Ａ경험 = LOCAL/4+RAND:LOCAL
-	;작은체형だと0.75倍
+	;작은체형라면 0.75배
 	SIF TALENT:MASTER:작은체형
 		TIMES EXP:MASTER:Ａ경험, 0.75
-	;민감だと1.5倍
+	;민감라면 1.5배
 	SIF TALENT:MASTER:Ａ민감
 		TIMES EXP:MASTER:Ａ경험, 1.50
-	;둔감だと0.75倍
+	;둔감라면 0.75배
 	SIF TALENT:MASTER:Ａ둔감
 		TIMES EXP:MASTER:Ａ경험, 0.75
-	;자위하기쉬움だと2倍
+	;자위하기쉬움라면 2배
 	SIF TALENT:MASTER:자위하기쉬움
 		TIMES EXP:MASTER:Ａ경험, 2.00
-	;最後に4で割る
+	;마지막에 4로 나눈다
 	EXP:MASTER:Ａ경험 /= 4
 ENDIF
 
 ;Ｂ경험
 @CM_SET_EXP_3
-;まず경험自体の有無を判定
-;基本判定値50　わりとＢ경험はある
+;우선경험자체의 유무를 판정
+;기본 판정치 50  비교적Ｂ경험는 있다
 LOCAL = 50
-;素質判定値を利用
-LOCAL += CM_TALENT_MAKE("プライド逆", "被虐", "솔직さ", "수치逆", "モラル逆", "潔癖逆", "潔癖逆", "Ｂ好き", "Ｂ好き", "호기심", "호기심")
-;작은체형だと判定値-30
+;소질 판정치를 이용
+LOCAL += CM_TALENT_MAKE("프라이드역", "피학", "솔직야", "수치역", "모랄역", "결벽역", "결벽역", "Ｂ를 좋아하는 사람", "Ｂ를 좋아하는 사람", "호기심", "호기심")
+;작은체형라면 판정치-30
 SIF TALENT:MASTER:작은체형
 	LOCAL -= 30
-;남자だと判定値-30
+;남자라면 판정치-30
 SIF TALENT:MASTER:남자
 	LOCAL -= 30
-;경험があると했다場合、量の処理
+;경험가 있으면했다경우, 양의 처리
 IF PERCENT(LOCAL)
-	;基本値は判定値（負にはなりえない）の1/4にRAND:判定値を발す
+	;기본치는 판정치（부가 될 수 없다）의 것 1/4에 RAND:판정치를발
 	EXP:MASTER:Ｂ경험 = LOCAL/4+RAND:LOCAL
-	;작은체형だと0.75倍
+	;작은체형라면 0.75배
 	SIF TALENT:MASTER:작은체형
 		TIMES EXP:MASTER:Ｂ경험, 0.75
-	;민감だと1.5倍
+	;민감라면 1.5배
 	SIF TALENT:MASTER:Ｂ민감
 		TIMES EXP:MASTER:Ｂ경험, 1.50
-	;둔감だと0.75倍
+	;둔감라면 0.75배
 	SIF TALENT:MASTER:Ｂ둔감
 		TIMES EXP:MASTER:Ｂ경험, 0.75
-	;자위하기쉬움だと2倍
+	;자위하기쉬움라면 2배
 	SIF TALENT:MASTER:자위하기쉬움
 		TIMES EXP:MASTER:Ｂ경험, 2.00
-	;最後に남자なら6、そうでなければ2で割る
+	;마지막에남자라면 6, 그렇지 않으면 2로 나눈다
 	EXP:MASTER:Ｂ경험 /= 2+(TALENT:MASTER:남자*4)
 ENDIF
 
@@ -154,143 +154,143 @@ ENDIF
 @CM_SET_EXP_4
 ;남자
 IF TALENT:MASTER:남자
-	;部位경험の和を70～100倍にし、100で割るが、Ｃ경험を超えない
+	;부위경험의 화를 70～100배로 해, 100으로 나누지만, Ｃ경험를 넘지 않는다
 	EXP:MASTER:절정경험 = MIN(SUMARRAY(EXP:MASTER:0, 0, 4)*(70+RAND:31)/100, EXP:MASTER:Ｃ경험)
 ;후타나리
 ELSEIF TALENT:MASTER:남자
-	;部位경험の和を70～100倍にし、100で割る
+	;부위경험의 화를 70～100배로 해, 100으로 나눈다
 	EXP:MASTER:절정경험 = SUMARRAY(EXP:MASTER:0, 0, 4)*(70+RAND:31)/100
 ;여자
 ELSE
-	;部位경험の和を40～80倍にし、100で割る
+	;부위경험의 화를 40～80배로 해, 100으로 나눈다
 	EXP:MASTER:절정경험 = SUMARRAY(EXP:MASTER:0, 0, 4)*(40+RAND:41)/100
 ENDIF
 
 ;사정경험
 @CM_SET_EXP_5
-;페니스가없으면0、페니스があれば절정경험とＣ경험のうち少ないほうと同じ
+;페니스가없으면 0, 페니스가 있으면절정경험와Ｃ경험의 쳐 적은 편과 같음
 EXP:MASTER:사정경험 = PENIS(MASTER) ? MIN(EXP:MASTER:절정경험, EXP:MASTER:Ｃ경험) # 0
-;ただし非처녀で후타나리の場合、경험の差に応じて절정数より사정数が少なくなったり
+;다만 비처녀로후타나리의 경우, 경험의 차이에 응해절정수부터사정수가 적게 되거나
 SIF TALENT:MASTER:후타나리 && !TALENT:MASTER:처녀
 	EXP:MASTER:사정경험 = EXP:MASTER:사정경험*(EXP:MASTER:Ｃ경험)/(EXP:MASTER:Ｃ경험+EXP:MASTER:Ｖ경험)
 
 ;분유경험
 @CM_SET_EXP_6
-;生成されない
+;생성되지 않는다
 
 ;성교경험
 @CM_SET_EXP_7
-;남자・후타나리처녀
+;남자·후타나리처녀
 IF TALENT:MASTER:남자 || (TALENT:MASTER:후타나리 && TALENT:MASTER:처녀)
-	;동정お断りなんで^^;
+	;동정거절이니까^^;
 	IF !TALENT:MASTER:동정
-		;Ｃ경험を0～100倍にし、200で割るが、사정경험を超えない
+		;Ｃ경험를 0～100배로 해, 200으로 나누지만, 사정경험를 넘지 않는다
 		EXP:MASTER:성교경험 = MIN(EXP:MASTER:Ｃ경험*(RAND:100)/200, EXP:MASTER:사정경험)
-		;もし0以下になっていれば、1+RAND:2で差し替える
+		;만약 0 이하가 되어 있으면, 1+RAND:2로 갈아넣는다
 		SIF EXP:MASTER:성교경험 <= 0
 			EXP:MASTER:성교경험 = 1+RAND:2
 	ENDIF
-;여자・후타나리동정
+;여자·후타나리동정
 ELSEIF !TALENT:MASTER:남자 || (TALENT:MASTER:후타나리 && TALENT:MASTER:동정)
-	;처녀とかめんどくさいだけでしょ
+	;처녀라든지 귀찮은 것뿐이겠지
 	IF !TALENT:MASTER:처녀
-		;Ｖ경험を80～100倍にし、100で割る
+		;Ｖ경험를 80～100배로 해, 100으로 나눈다
 		EXP:MASTER:성교경험 = EXP:MASTER:Ｖ경험*(80+RAND:21)/100
-		;もし0以下になっていれば、1+RAND:2で差し替える
+		;만약 0 이하가 되어 있으면, 1+RAND:2로 갈아넣는다
 		SIF EXP:MASTER:성교경험 <= 0
 			EXP:MASTER:성교경험 = 1+RAND:2
 	ENDIF
-;両方使用済み후타나리
+;양쪽 모두 사용이 끝난후타나리
 ELSE
-	;Ｃ경험を10～100倍、Ｖ경험を80～100倍にし、200で割る
+	;Ｃ경험를 10～100배, Ｖ경험를 80～100배로 해, 200으로 나눈다
 	EXP:MASTER:성교경험 = ((EXP:MASTER:Ｃ경험*(10+RAND:91))+(EXP:MASTER:Ｖ경험*(80+RAND:21)))/200
-	;もし0以下になっていれば、2+RAND:3で差し替える
+	;만약 0 이하가 되어 있으면, 2+RAND:3으로 갈아넣는다
 	SIF EXP:MASTER:성교경험 <= 0
 		EXP:MASTER:성교경험 = 2+RAND:3
 ENDIF
-;자위하기쉬움だと1/3になる
+;자위하기쉬움라고 1/3가 된다
 SIF TALENT:MASTER:자위하기쉬움
 	EXP:MASTER:성교경험 /= 3
 
 
 ;성지식
 @CM_SET_EXP_8
-;部位경험の和に성교경험の３倍を加え、10で割る
+;부위경험의 화에성교경험의 3배를 더해, 10으로 나눈다
 EXP:MASTER:성지식 = (SUMARRAY(EXP:MASTER:0, 0, 4)+(EXP:MASTER:성교경험*3))/10
 
 ;자위경험
 @CM_SET_EXP_10
-;남자・후타나리처녀
+;남자·후타나리처녀
 IF TALENT:MASTER:남자 || (TALENT:MASTER:후타나리 && TALENT:MASTER:처녀)
-	;部位경험の和と사정경험のうち、少ない方から성교경험を引いたもの
+	;부위경험의 화와사정경험 가운데, 적은 (분)편으로부터성교경험를 당긴 것
 	EXP:MASTER:자위경험 = MIN(SUMARRAY(EXP:MASTER:0, 0, 4), EXP:MASTER:사정경험)-EXP:MASTER:성교경험
 ELSE
-	;部位경험の和から성교경험を引いたもの
+	;부위경험의 화로부터성교경험를 당긴 것
 	EXP:MASTER:자위경험 = SUMARRAY(EXP:MASTER:0, 0, 4)-EXP:MASTER:성교경험
 ENDIF
 
 
 ;죠교자위경험
 @CM_SET_EXP_11
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;방뇨경험
 @CM_SET_EXP_12
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;피사계경험
 @CM_SET_EXP_13
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;정액경험
 @CM_SET_EXP_20
-;처녀でも남자でもない場合
+;처녀에서도남자도 아닌 경우
 IF !TALENT:MASTER:남자 && !TALENT:MASTER:처녀
-	;성교경험を100～200倍にし、100で割る。
+	;성교경험를 100～200배로 해, 100으로 나눈다.
 	EXP:MASTER:정액경험 = EXP:MASTER:성교경험*(100+RAND:101)/100
-	;혀기술だと1.2倍
+	;혀기술라면 1.2배
 	SIF TALENT:MASTER:혀기술
 		TIMES EXP:MASTER:정액경험, 1.20
-	;손가락기술だと1.2倍
+	;손가락기술라면 1.2배
 	SIF TALENT:MASTER:손가락기술
 		TIMES EXP:MASTER:정액경험, 1.20
-	;헌신적だと1.2倍
+	;헌신적라면 1.2배
 	SIF TALENT:MASTER:헌신적
 		TIMES EXP:MASTER:정액경험, 1.20
-	;非동정후타나리の場合半分にする
+	;비동정후타나리의 경우 반으로 한다
 	EXP:MASTER:정액경험 = TALENT:MASTER:후타나리 && !TALENT:MASTER:동정 ? EXP:MASTER:정액경험/2 # EXP:MASTER:정액경험
-;남자ではない＝처녀の場合
+;남자는 아니다=처녀의 경우
 ELSEIF !TALENT:MASTER:남자
-	;まず경험自体の有無を判定
-	;基本判定値-20　처녀봉사はあまり発生しない
+	;우선경험자체의 유무를 판정
+	;기본 판정치-20  처녀봉사는 그다지 발생하지 않는다
 	LOCAL = -20
-	;素質判定値を利用
-	LOCAL += CM_TALENT_MAKE("プライド逆", "被虐逆", "솔직さ", "수치逆", "攻撃逆", "潔癖逆", "潔癖逆", "倒錯", "倒錯", "호기심", "호기심")
-	;작은체형だと判定値-60
+	;소질 판정치를 이용
+	LOCAL += CM_TALENT_MAKE("프라이드역", "피학역", "솔직야", "수치역", "공격역", "결벽역", "결벽역", "도착", "도착", "호기심", "호기심")
+	;작은체형라면 판정치-60
 	SIF TALENT:MASTER:작은체형
 		LOCAL -= 60
-	;경험があると했다場合、量の処理
+	;경험가 있으면했다경우, 양의 처리
 	IF PERCENT(LOCAL)
-		;基本値は判定値（負にはなりえない）の1/4にRAND:判定値を발す
+		;기본치는 판정치（부가 될 수 없다）의 것 1/4에 RAND:판정치를발
 		EXP:MASTER:정액경험 = LOCAL/4+RAND:LOCAL
-		;혀기술だと1.5倍
+		;혀기술라면 1.5배
 		SIF TALENT:MASTER:혀기술
 			TIMES EXP:MASTER:정액경험, 1.50
-		;손가락기술だと1.5倍
+		;손가락기술라면 1.5배
 		SIF TALENT:MASTER:손가락기술
 			TIMES EXP:MASTER:정액경험, 1.50
-		;헌신적だと1.5倍
+		;헌신적라면 1.5배
 		SIF TALENT:MASTER:헌신적
 			TIMES EXP:MASTER:정액경험, 1.50
-		;수동적だと0.75倍
+		;수동적라면 0.75배
 		SIF TALENT:MASTER:수동적
 			TIMES EXP:MASTER:정액경험, 0.75
-		;냄새민감だと0.75倍
+		;냄새민감라면 0.75배
 		SIF TALENT:MASTER:냄새민감
 			TIMES EXP:MASTER:정액경험, 0.75
-		;最後に20で割る
+		;마지막에 20으로 나눈다
 		EXP:MASTER:정액경험 /= 20
-		;もし0以下になっていれば、1+RAND:2で差し替える
+		;만약 0 이하가 되어 있으면, 1+RAND:2로 갈아넣는다
 		SIF EXP:MASTER:정액경험 <= 0
 			EXP:MASTER:정액경험 = 1+RAND:2
 	ENDIF
@@ -298,41 +298,41 @@ ENDIF
 
 ;봉사쾌락경험
 @CM_SET_EXP_21
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;구음경험
 @CM_SET_EXP_22
-;정액경험から성교경험を引いたものを0～200倍にし、150+손가락기술*50-혀기술*50で割る
+;정액경험로부터성교경험를 당긴 것을 0～200배로 해,150+손가락기술*50-혀기술*50으로 나눈다
 EXP:MASTER:구음경험 = (EXP:MASTER:정액경험 - EXP:MASTER:성교경험)*RAND:201/(150+(TALENT:MASTER:손가락기술*50)-(TALENT:MASTER:혀기술*50))
-;もし0以下になっていれば、0で差し替える
+;만약 0 이하가 되어 있으면, 0으로 갈아넣는다
 SIF EXP:MASTER:구음경험 <= 0
 	EXP:MASTER:구음경험 = 0
 
 ;수음경험
 @CM_SET_EXP_23
-;정액경험から성교경험と구음경험の8割を引いたものを100～150倍にし、100で割る
+;정액경험로부터성교경험와구음경험의 8할을 당긴 것을 100～150배로 해, 100으로 나눈다
 EXP:MASTER:수음경험 = (EXP:MASTER:정액경험 - EXP:MASTER:성교경험 - (EXP:MASTER:구음경험*8/10))*(100+RAND:51)/100
-;もし0以下になっていれば、0で差し替える
+;만약 0 이하가 되어 있으면, 0으로 갈아넣는다
 SIF EXP:MASTER:수음경험 <= 0
 	EXP:MASTER:수음경험 = 0
 
 ;도구사용경험
 @CM_SET_EXP_24
-;生成率は一律20％。ただし도구능숙を持っている場合は100％
+;생성율은 일률 20％. 다만도구능숙를 가지고 있는 경우는 100％
 IF !RAND:5 || TALENT:MASTER:도구능숙
-	;生成量は성교경험+수음경험+구음경험の和を、남자は２倍、여자は半分にし、その1/10（도구능숙は1/4）
+	;생성량은성교경험+수음경험+구음경험의 화를, 남자는 2배, 여자는 반으로 해, 그 1/10（도구능숙는 1/4）
 	EXP:MASTER:도구사용경험 = (EXP:MASTER:성교경험+EXP:MASTER:구음경험+EXP:MASTER:수음경험*(TALENT:MASTER:남자+1))/(!PENIS(MASTER)+1)/(10-(TALENT:MASTER:도구능숙*6))
 ENDIF
 
 ;키스경험
 @CM_SET_EXP_25
-;성교경험がある
+;성교경험가 있다
 IF EXP:MASTER:성교경험
-	;성교경험*2と10のうち大きい方まででランダム
+	;성교경험*2로 10의 쳐 큰 (분)편까지로 랜덤
 	EXP:MASTER:키스경험 = RAND:(MAX(EXP:MASTER:성교경험*2, 10))
-;성교경험がない
+;성교경험가 없다
 ELSE
-	;基礎確率50％、작은체형なら20％
+	;기초 확률 50％, 작은체형라면 20％
 	LOCAL = TALENT:MASTER:작은체형 ? 20 # 50
 	LOCAL += TALENT:MASTER:친절함-TALENT:MASTER:까다로움*30
 	SIF PERCENT(LOCAL)
@@ -341,116 +341,116 @@ ENDIF
 
 ;회화경험
 @CM_SET_EXP_26
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;고통쾌락경험
 @CM_SET_EXP_30
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;치욕쾌락경험
 @CM_SET_EXP_31
-;죠교要素なので生成されない
-;たまに生成されても面白いけど
+;죠교요소인 것으로 생성되지 않는다
+;이따금 생성되어도 재미있지만
 
 ;애정경험
 @CM_SET_EXP_32
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;레즈경험
 @CM_SET_EXP_40
-;후타나리の場合
+;후타나리의 경우
 IF TALENT:MASTER:후타나리
-	;성교경험から정액경험を引いたものか、사정경험から자위경험を引いたもののうち、多い方
+	;성교경험로부터정액경험를 당긴 것인가, 사정경험로부터자위경험를 당긴 것 가운데, 많은 (분)편
 	EXP:MASTER:레즈경험 = MAX(EXP:MASTER:성교경험-EXP:MASTER:정액경험, EXP:MASTER:사정경험-EXP:MASTER:자위경험, 0)
-;여자で、남성혐오がある場合
+;여자로, 남성혐오가 있는 경우
 ELSEIF TALENT:MASTER:남성혐오 && !TALENT:MASTER:남자
-	;성교경험と정액경험を레즈경험に移動する
+	;성교경험와정액경험를레즈경험로 이동한다
 	EXP:MASTER:레즈경험 = (EXP:MASTER:성교경험+EXP:MASTER:정액경험)/2
-	;처녀ならともに0に。처녀でないならRAND:3で補う
+	;처녀라면 함께 0에. 처녀가 아니면 RAND:3으로 보충한다
 	EXP:MASTER:성교경험 = TALENT:MASTER:처녀 ? 0 # RAND:3
 	EXP:MASTER:정액경험 = EXP:MASTER:성교경험
-;여자で、바이がある場合
+;여자로, 바이가 있는 경우
 ELSEIF TALENT:MASTER:바이 && !TALENT:MASTER:남자
 	LOCAL = -20
-	;素質判定値を利用
-	LOCAL += CM_TALENT_MAKE("同性愛", "同性愛", "Ｂ好き", "倒錯", "호기심", "潔癖逆")
+	;소질 판정치를 이용
+	LOCAL += CM_TALENT_MAKE("동성애", "동성애", "Ｂ를 좋아하는 사람", "도착", "호기심", "결벽역")
 	SIF PERCENT(LOCAL)
 		EXP:MASTER:레즈경험 = (RAND:LOCAL)/5
 ENDIF
 
 ;ＢＬ경험
 @CM_SET_EXP_41
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;이상경험
 @CM_SET_EXP_50
-;完全にランダム（2％）で１ついてくる
+;완전하게 랜덤（2％）로 1개있어 온다
 SIF !RAND:50
 	EXP:MASTER:이상경험 = 1
 
 ;긴박경험
 @CM_SET_EXP_51
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;Ｖ확장경험
 @CM_SET_EXP_52
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;Ａ확장경험
 @CM_SET_EXP_53
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;촉수경험
 @CM_SET_EXP_55
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;굴복경험
 @CM_SET_EXP_60
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;공포경험
 @CM_SET_EXP_61
-;죠교要素なので生成されない
+;죠교요소인 것으로 생성되지 않는다
 
 ;노출경험
 @CM_SET_EXP_62
-;基本値は자위경험を半分にして50を引いたもの
+;기본치는자위경험를 반으로 해 50을 뺀 것
 LOCAL = EXP:MASTER:자위경험/2-50
-;素質判定地は半分にして使う
-LOCAL += CM_TALENT_MAKE("プライド逆", "被虐", "수치", "수치", "倒錯", "倒錯", "潔癖逆", "衝動", "호기심")/2
-;작은체형だと判定値-30
+;소질 판정지는 반으로 해 사용한다
+LOCAL += CM_TALENT_MAKE("프라이드역", "피학", "수치", "수치", "도착", "도착", "결벽역", "충동", "호기심")/2
+;작은체형라면 판정치-30
 SIF TALENT:MASTER:작은체형
 	LOCAL -= 30
-;남자だと判定値-30
+;남자라면 판정치-30
 SIF TALENT:MASTER:남자
 	LOCAL -= 30
-;변태적だと判定値+50
+;변태적라면 판정치+50
 SIF TALENT:MASTER:변태적
 	LOCAL += 30
-;자제심だと判定値-50
+;자제심라면 판정치-50
 SIF TALENT:MASTER:자제심
 	LOCAL -= 30
-;경험があると했다場合、量の処理
+;경험가 있으면했다경우, 양의 처리
 IF PERCENT(LOCAL)
-	;基本値は判定値（負にはなりえない）の1/4にRAND:判定値を발す
+	;기본치는 판정치（부가 될 수 없다）의 것 1/4에 RAND:판정치를발
 	EXP:MASTER:노출경험 = LOCAL/4+RAND:LOCAL
-	;신중함だと0.5倍
+	;신중함라면 0.5배
 	SIF TALENT:MASTER:신중함
 		TIMES EXP:MASTER:노출경험, 0.50
-	;변태적だと1.5倍
+	;변태적라면 1.5배
 	SIF TALENT:MASTER:변태적
 		TIMES EXP:MASTER:노출경험, 1.50
-	;수줍음だと0.75倍
+	;수줍음라면 0.75배
 	SIF TALENT:MASTER:수줍음
 		TIMES EXP:MASTER:노출경험, 0.75
-	;수치없음だと1.5倍
+	;수치없음라면 1.5배
 	SIF TALENT:MASTER:수치없음
 		TIMES EXP:MASTER:노출경험, 1.50
-	;最後に남자なら10、そうでなければ4で割る
+	;마지막에남자라면 10, 그렇지 않으면 4로 나눈다
 	EXP:MASTER:노출경험 /= 4+(TALENT:MASTER:남자*6)
 ENDIF
 
 ;절정시킨경험
 @CM_SET_EXP_63
-;設定が面倒すぎたので죠교要素と考えて生成しない
+;설정이 너무 귀찮았으므로죠교요소라고 생각해 생성하지 않는다
 

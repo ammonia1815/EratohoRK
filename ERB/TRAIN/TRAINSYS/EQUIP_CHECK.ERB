@@ -1,10 +1,10 @@
 ﻿;────────────────────────────────────
-;바이브など付けっぱなしアイテムのチェック
-;ここではCOM선택前の加算処理を行う
+;바이브등 붙이고 있을 뿐 아이템의 체크
+;여기에서는 COM선택전의 가산 처리를 실시한다
 ;────────────────────────────────────
 @EQUIP_CHECK
-;インフレ仕様
-;ABLとGET_ABL()との対応、だいたい元値の10倍程度、100を超えない値
+;인플레 사양
+;ABL와 GET_ABL()와의 대응, 대체로 원가의 10배 정도, 100을 넘지 않는 값
 ;	ABL	A
 ;	0	0
 ;	1	16.67
@@ -19,7 +19,7 @@
 ;	10	66.67
 
 ;────────────────────────────────────
-;로션（윤활追加）
+;로션（윤활추가）
 ;────────────────────────────────────
 IF TEQUIP:로션
 	IF PALAM:MASTER:윤활 < 500
@@ -34,7 +34,7 @@ IF TEQUIP:로션
 ENDIF
 
 ;────────────────────────────────────
-;미약（욕정追加、이성）
+;미약（욕정추가, 이성）
 ;────────────────────────────────────
 IF TEQUIP:미약
 	IF PALAM:MASTER:욕정 < 1000
@@ -53,7 +53,7 @@ IF TEQUIP:미약
 ENDIF
 
 ;────────────────────────────────────
-;바이브장착中（쾌Ｖ、중독충족、트라우마）
+;바이브장착중（쾌Ｖ, 중독충족, 트라우마）
 ;────────────────────────────────────
 IF TEQUIP:바이브 && !IS_NOWACTNAME("바이브")
 	A = 100 * (2 + ITEM:9 + TALENT:도구능숙) / 2
@@ -64,18 +64,18 @@ IF TEQUIP:바이브 && !IS_NOWACTNAME("바이브")
 		SOURCE:MASTER:트라우마 += 20 + GET_ABL(TARGET, "도구") + ITEM:9 * 100 + (TALENT:도구능숙 + 1) * GET_ABL(TARGET, "기교") * GET_ABL(TARGET, "도구") / 20
 	TCVAR:MASTER:전립선자극 += 1
 	
-	;装備時に破れるんだから念のためだけど。
-	;MASTERが처녀なら、처녀상실が起こる
+	;장비시에 깨지기 때문에 만약을 위해이지만.
+	;MASTER가처녀라면, 처녀상실가 일어난다
 	TCVAR:MASTER:처녀상실 = TALENT:MASTER:처녀
 ENDIF
 
 ;────────────────────────────────────
-;항문바이브장착中（쾌Ａ、이탈、중독충족）
+;항문바이브장착중（쾌Ａ, 이탈, 중독충족）
 ;────────────────────────────────────
 IF TEQUIP:항문바이브 && !IS_NOWACTNAME("항문바이브")
 	A = 100 * (2 + ITEM:9 + TALENT:도구능숙) / 2
 	SOURCE:MASTER:쾌Ａ += A
-	;경험不발
+	;경험불발
 	IF EXP:MASTER:Ａ경험 < 1
 		SOURCE:MASTER:이탈 += 1500
 	ELSEIF EXP:MASTER:Ａ경험 < 6
@@ -92,12 +92,12 @@ IF TEQUIP:항문바이브 && !IS_NOWACTNAME("항문바이브")
 ENDIF
 
 ;────────────────────────────────────
-;항문비즈장착中（쾌Ａ、이탈、중독충족）
+;항문비즈장착중（쾌Ａ, 이탈, 중독충족）
 ;────────────────────────────────────
 IF TEQUIP:항문비즈 && !IS_NOWACTNAME("항문비즈")
 	A = 30 * (2 + ITEM:9 + TALENT:도구능숙 + TEQUIP:항문비즈) / 3
 	SOURCE:MASTER:쾌Ａ += A
-	;경험不발
+	;경험불발
 	IF EXP:MASTER:Ａ경험 < 1
 		SOURCE:MASTER:이탈 += 500
 	ELSEIF EXP:MASTER:Ａ경험 < 6
@@ -112,7 +112,7 @@ IF TEQUIP:항문비즈 && !IS_NOWACTNAME("항문비즈")
 ENDIF
 
 ;────────────────────────────────────
-;관장＋항문プラグ장착中
+;관장＋항문플러그장착중
 ;────────────────────────────────────
 IF TEQUIP:관장그릇＋플러그 && !IS_NOWACTNAME("관장세트")
 	A = 20 * (CFLAG:MASTER:죠교레벨 + 1) + (GET_ABL(MASTER, "기교") - 30) * GET_ABL(MASTER, "마조끼") * (TALENT:도구능숙 + TALENT:MASTER:도Ｍ + TEQUIP:관장그릇＋플러그) * 30 / 100
@@ -133,14 +133,14 @@ ENDIF
 
 
 
-;클리캡・오나홀非電動化の為コメントアウト
+;클리캡·오나홀비전동화이기 때문에 comment out
 
 [SKIPSTART]
 
 ;────────────────────────────────────
-;클리캡장착中（쾌Ｃ、중독충족）
+;클리캡장착중（쾌Ｃ, 중독충족）
 ;────────────────────────────────────
-IF TEQUIP:클리캡 && !IS_NOWACTNAME("Ｃ애무도구")
+IF TEQUIP:클리캡 && ! IS_NOWACTNAME("Ｃ애무도구")
 	A = 100 * (2 + ITEM:9 + TALENT:도구능숙) / 2
 	SOURCE:MASTER:쾌Ｃ += A
 	SIF ABL:MASTER:Ｃ감각 > 1
@@ -148,9 +148,9 @@ IF TEQUIP:클리캡 && !IS_NOWACTNAME("Ｃ애무도구")
 ENDIF
 
 ;────────────────────────────────────
-;오나홀장착中（쾌Ｃ、중독충족）
+;오나홀장착중（쾌Ｃ, 중독충족）
 ;────────────────────────────────────
-IF TEQUIP:오나홀 && !IS_NOWACTNAME("Ｃ애무도구")
+IF TEQUIP:오나홀 && ! IS_NOWACTNAME("Ｃ애무도구")
 	A = 150 * (2 + ITEM:9 + TALENT:도구능숙) / 2
 	SOURCE:MASTER:쾌Ｃ += A
 	SIF ABL:MASTER:Ｃ감각 > 1
@@ -163,7 +163,7 @@ ENDIF
 
 
 ;────────────────────────────────────
-;유두캡장착中（쾌Ｂ、중독충족）
+;유두캡장착중（쾌Ｂ, 중독충족）
 ;────────────────────────────────────
 IF TEQUIP:유두캡 && !IS_NOWACTNAME("유두캡")
 	A = 100 * (2 + ITEM:9 + TALENT:도구능숙) / 2
@@ -174,7 +174,7 @@ IF TEQUIP:유두캡 && !IS_NOWACTNAME("유두캡")
 ENDIF
 
 ;────────────────────────────────────
-;밧줄で긴박中（구속、중독충족）
+;밧줄로긴박중（구속, 중독충족）
 ;────────────────────────────────────
 IF TEQUIP:밧줄
 	A = 200 + (GET_ABL(MASTER, "Ｃ감각") / 10 + GET_TRAINLV(TARGET)) * (GET_ABL(TARGET, "기교") + 10) * (TALENT:긴박능숙 * 3 + 2) / 2
@@ -184,7 +184,7 @@ IF TEQUIP:밧줄
 ENDIF
 
 ;────────────────────────────────────
-;눈가리개장착中（구속、중독충족、트라우마）
+;눈가리개장착중（구속, 중독충족, 트라우마）
 ;────────────────────────────────────
 IF TEQUIP:눈가리개 && !IS_NOWACTNAME("눈가리개")
 	A = 100 + (GET_ABL(TARGET, "가학") / 10 + GET_TRAINLV(TARGET)) * (GET_ABL(TARGET, "기교") + 10) * (TALENT:긴박능숙 + 2) / 2
@@ -202,7 +202,7 @@ IF TEQUIP:눈가리개 && !IS_NOWACTNAME("눈가리개")
 ENDIF
 
 ;────────────────────────────────────
-;볼개그장착中（구속、중독충족、트라우마）
+;볼개그장착중（구속, 중독충족, 트라우마）
 ;────────────────────────────────────
 IF TEQUIP:볼개그 && !IS_NOWACTNAME("볼개그")
 	A = 350 + (GET_ABL(TARGET, "가학") / 10 + GET_TRAINLV(TARGET)) * 10 * (TALENT:긴박능숙 + 1)
@@ -220,7 +220,7 @@ IF TEQUIP:볼개그 && !IS_NOWACTNAME("볼개그")
 ENDIF
 
 ;────────────────────────────────────
-;삼각목마乗馬中（쾌Ｖ、애정逆、고통、구속、이탈、중독충족、트라우마）
+;삼각목마승마중（쾌Ｖ, 애정역, 고통, 구속, 이탈, 중독충족, 트라우마）
 ;────────────────────────────────────
 IF TEQUIP:삼각목마
 	A = 0
@@ -249,26 +249,26 @@ IF TEQUIP:삼각목마
 	SIF G < 0
 		SOURCE:MASTER:애정 += G
 	TCVAR:MASTER:금회발기 += (GET_ABL(MASTER, "마조끼") - 20) * 5
-	;装備時に破れるんだから念のためだけど。
-	;MASTERが처녀なら、처녀상실が起こる
+	;장비시에 깨지기 때문에 만약을 위해이지만.
+	;MASTER가처녀라면, 처녀상실가 일어난다
 	TCVAR:MASTER:처녀상실 = TALENT:MASTER:처녀
 ENDIF
 ;────────────────────────────────────
-;안면승마中（쾌Ｃ、중독충족）
+;안면승마중（쾌Ｃ, 중독충족）
 ;────────────────────────────────────
 IF TEQUIP:안면승마
 	SOURCE:MASTER:불결 += 100
 	SOURCE:쾌Ｃ += 150 +ACT_TO(TARGET, 1) * GET_ABL(MASTER, "순종") * ( 3 + TALENT:MASTER:혀기술 + TALENT:MASTER:거친혀) / 500
 ENDIF
 ;────────────────────────────────────
-;안면승마항문（쾌Ｃ、중독충족）
+;안면승마항문（쾌Ｃ, 중독충족）
 ;────────────────────────────────────
 IF TEQUIP:안면승마항문
 	SOURCE:MASTER:불결 += 300
 	SOURCE:쾌Ａ += 150 +ACT_TO(TARGET, 3) * GET_ABL(MASTER, "순종") * ( 3 + TALENT:MASTER:혀기술 + TALENT:MASTER:거친혀) / 500
 ENDIF
 ;────────────────────────────────────
-;야외플레이中（구속、노출、이탈、트라우마）
+;야외플레이중（구속, 노출, 이탈, 트라우마）
 ;────────────────────────────────────
 IF TEQUIP:야외플레이 && !IS_NOWACTNAME("야외플레이")
 	SOURCE:MASTER:구속 += 50 + MARK:반항각인 * 15
@@ -289,7 +289,7 @@ IF TEQUIP:야외플레이 && !IS_NOWACTNAME("야외플레이")
 ENDIF
 
 ;────────────────────────────────────
-;수치플레이中（노출）
+;수치플레이중（노출）
 ;────────────────────────────────────
 IF TEQUIP:거울 && !IS_NOWACTNAME("수치플레이")
 	SOURCE:MASTER:노출 += 200
@@ -299,21 +299,21 @@ IF TEQUIP:거울 && !IS_NOWACTNAME("수치플레이")
 ENDIF
 
 ;────────────────────────────────────
-;죠교대상が자위중（쾌Ｃ、쾌Ｖ、쾌Ａ、쾌Ｂ、성행위、노출、이탈、중독충족）
+;죠교대상가자위중（쾌Ｃ, 쾌Ｖ, 쾌Ａ, 쾌Ｂ, 성행위, 노출, 이탈, 중독충족）
 ;────────────────────────────────────
-;このターンで자위の命令を出했다場合は거부される可能性があるので処理を後回しします
+;이 턴으로자위의 명령을 출했다경우는거부 될 가능성이 있으므로 처리를 뒷전 합니다
 IF (TEQUIP:자위중 == 1 || TEQUIP:자위중 == 3) && !IS_NOWACTNAME("자위")
 	A = 20 + GET_ABL(MASTER, "욕망") * (GET_ABL(MASTER, "기교") + 10) * CFLAG:MASTER:죠교레벨 / 50 + GET_ABL(MASTER, "기교") * 25 * (TALENT:MASTER:손가락기술 + 1) / 10
 	B = 0
 	C = 0
 	D = 0
 	E = A
-	;바이브使用
+	;바이브사용
 	IF TEQUIP:바이브
 		B = 50 + GET_ABL(MASTER, "욕망") * (CFLAG:MASTER:죠교레벨 + 1) / 2 + (TALENT:MASTER:도구능숙 + 1) * GET_ABL(MASTER, "기교") * (ITEM:9 + 1) * 3
 		SOURCE:MASTER:쾌Ｖ += B
 		TIMES A , 0.80
-		;후타나리はＶ刺激で강제발기
+		;후타나리는Ｖ자극으로강부디기
 		IF TALENT:MASTER:후타나리
 			IF !TCVAR:MASTER:요강제발기
 				TCVAR:MASTER:금회발기 += 300
@@ -322,12 +322,12 @@ IF (TEQUIP:자위중 == 1 || TEQUIP:자위중 == 3) && !IS_NOWACTNAME("자위")
 			ENDIF
 		ENDIF
 	ENDIF
-	;항문바이브使用
+	;항문바이브사용
 	IF TEQUIP:항문바이브 && ABL:MASTER:Ａ감각 > 1
 		C = (GET_ABL(MASTER, "욕망") + 10) * (CFLAG:MASTER:죠교레벨 + 1) * 6 / 10 + (TALENT:MASTER:도구능숙 + 1) * GET_ABL(MASTER, "기교") * (ITEM:9 + 1) * 25 / 10
 		SOURCE:MASTER:쾌Ａ += C
 		TIMES E , 0.60
-		;남자はＡ刺激で강제발기
+		;남자는Ａ자극으로강부디기
 		IF TALENT:MASTER:남자
 			IF !TCVAR:MASTER:요강제발기
 				TCVAR:MASTER:금회발기 += 300
@@ -348,13 +348,13 @@ IF (TEQUIP:자위중 == 1 || TEQUIP:자위중 == 3) && !IS_NOWACTNAME("자위")
 ENDIF
 
 ;────────────────────────────────────
-;죠교자が자위중（이탈、욕정追加、쾌Ｃ、쾌Ｖ、쾌Ｂ）
+;죠교자가자위중（이탈, 욕정추가, 쾌Ｃ, 쾌Ｖ, 쾌Ｂ）
 ;────────────────────────────────────
 IF TEQUIP:자위중 > 1 && !IS_NOWACTNAME("자위과시")
 	A = 50 + GET_ABL(TARGET, "욕망") * GET_ABL(TARGET, "기교") * GET_TRAINLV(TARGET) / 50 + GET_ABL(MASTER, "기교") * 25 * (TALENT:MASTER:손가락기술 + 1) / 10
 	B = A
 	C = 0
-	;바이브使用
+	;바이브사용
 	IF ITEM:로터 && TALENT:처녀 == 0 && TALENT:남자 == 0
 		C = 50 + GET_ABL(TARGET, "욕망") * (GET_TRAINLV(TARGET) + 1) / 2 + (TALENT:도구능숙 + 1) * GET_ABL(TARGET, "기교") * (ITEM:9 + 1) * 3
 		TIMES A , 0.80
@@ -364,7 +364,7 @@ IF TEQUIP:자위중 > 1 && !IS_NOWACTNAME("자위과시")
 	SOURCE:쾌Ｖ += C
 	SIF TALENT:남자 == 0
 		SOURCE:쾌Ｂ += B
-	;죠교레벨と욕망を見る
+	;죠교레벨와욕망를 본다
 	IF CFLAG:MASTER:죠교레벨 < 1 || ABL:MASTER:욕망 < 1
 		TIMES D , 0.10
 	ELSEIF CFLAG:MASTER:죠교레벨 < 3 || ABL:MASTER:욕망 < 2
@@ -377,7 +377,7 @@ IF TEQUIP:자위중 > 1 && !IS_NOWACTNAME("자위과시")
 		TIMES D , 0.85
 	ENDIF
 	CUP:MASTER:욕정 += D / 5
-	;이탈の計算、죠교のプログレスに応じて軽減
+	;이탈의 계산, 죠교의 진행에 응해 경감
 	D -= GET_ABL(MASTER, "노출증") * 15 / 10 - CFLAG:MASTER:죠교레벨 * 5
 	SIF D > 0
 		SOURCE:MASTER:이탈 += D
@@ -385,9 +385,9 @@ IF TEQUIP:자위중 > 1 && !IS_NOWACTNAME("자위과시")
 ENDIF
 
 ;────────────────────────────────────
-;죠교자삽입중（쾌Ｃ、쾌Ｖ、쾌Ａ、접촉、애정、성행위、고통、노출、이탈、중독충족、트라우마、쾌Ｃ、쾌Ｖ）
+;죠교자삽입중（쾌Ｃ, 쾌Ｖ, 쾌Ａ, 접촉, 애정, 성행위, 고통, 노출, 이탈, 중독충족, 트라우마, 쾌Ｃ, 쾌Ｖ）
 ;────────────────────────────────────
-;このターンの행동も성교ならACT_APPLY.ERBで処理します。회화や가슴애무など삽입하면서行う행동だけここを見ます
+;이 턴의행동도성교라면 ACT_APPLY.ERB로 처리합니다. 회화나가슴애무 등삽입하면서 실시하는행동만 여기를 봅니다
 IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 	A = 0
 	B = 0
@@ -395,7 +395,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 	IF TEQUIP:성교중 == 1
 		A = (300 +ACT_FROM(TARGET, 5) * 3 / 2) / 2
 		B = (200 +ACT_TO(TARGET, 5) * 3 / 2) / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.60
 			TIMES B , 0.80
@@ -409,7 +409,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 			TIMES B , 0.95
 			C += 100
 		ENDIF
-		;경험不발
+		;경험불발
 		IF EXP:MASTER:Ｖ경험 < 2
 			TIMES A , 0.30
 			C += 1000
@@ -439,7 +439,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 	ELSEIF TEQUIP:성교중 == 2
 		A = (300 +ACT_FROM(TARGET, 5) * 3 / 2) / 2
 		B = (300 +ACT_TO(TARGET, 5)) / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.50
 			TIMES B , 0.60
@@ -453,7 +453,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 			TIMES B , 0.95
 			C += 150
 		ENDIF
-		;경험不발
+		;경험불발
 		IF EXP:MASTER:Ｖ경험 < 2
 			TIMES A , 0.30
 			C += 1200
@@ -483,7 +483,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 	ELSEIF TEQUIP:성교중 == 3
 		A = (100 +ACT_FROM(TARGET, 5) * 2) / 2
 		B = (100 +ACT_TO(TARGET, 5) * 2) / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.60
 			TIMES B , 0.65
@@ -497,7 +497,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 			TIMES B , 0.90
 			C += 50
 		ENDIF
-		;경험不발
+		;경험불발
 		IF EXP:MASTER:Ｖ경험 < 2
 			TIMES A , 0.35
 			C += 700
@@ -527,7 +527,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 	ELSEIF TEQUIP:성교중 == 4
 		A = (100 +ACT_FROM(TARGET, 5)) / 2
 		B = (100 +ACT_TO(TARGET, 5) * 2 / 3) / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.60
 			TIMES B , 0.60
@@ -541,7 +541,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 			TIMES B , 0.90
 			C += 100
 		ENDIF
-		;경험不발
+		;경험불발
 		IF EXP:MASTER:Ｖ경험 < 2
 			TIMES A , 0.30
 			C += 1200
@@ -571,7 +571,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 	ELSEIF TEQUIP:성교중 == 5
 		A = (50 +ACT_FROM(TARGET, 5)) / 2
 		B = (150 +ACT_TO(TARGET, 5) / 2) / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.50
 			TIMES B , 0.55
@@ -585,7 +585,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 			TIMES B , 0.90
 			C += 150
 		ENDIF
-		;경험不발
+		;경험불발
 		IF EXP:MASTER:Ｖ경험 < 2
 			TIMES A , 0.30
 			C += 1250
@@ -604,7 +604,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 		SOURCE:MASTER:접촉 += 500 + GET_TRAINLV(TARGET) * 10
 		SOURCE:MASTER:성행위 += 150 + GET_TRAINLV(TARGET) * 2
 		SOURCE:MASTER:고통 += C
-		;乱れ牡丹の処理
+		;혼란 모란의 처리
 		SIF TEQUIP:거울
 			SOURCE:MASTER:노출 += 200 + A / 5
 		IF CFLAG:MASTER:트라우마 == 34
@@ -618,7 +618,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 	ELSEIF TEQUIP:성교중 == 6
 		A = (300 +ACT_FROM(TARGET, 6) * 2) / 2
 		B = (500 +ACT_TO(TARGET, 6) * 2) / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.40
 			TIMES B , 0.30
@@ -632,7 +632,7 @@ IF TEQUIP:성교중 && TFLAG:ACT분류 != 3
 			TIMES B , 0.75
 			C += 250
 		ENDIF
-		;경험不발
+		;경험불발
 		IF EXP:MASTER:Ａ경험 < 2
 			TIMES A , 0.40
 			C += 1500
@@ -671,9 +671,9 @@ TFLAG:Ｖ사용중 = 2
 
 ENDIF
 ;────────────────────────────────────
-;죠교대상삽입중（쾌Ｃ、쾌Ｖ、쾌Ａ、접촉、애정、성행위、고통、노출、이탈、중독충족、트라우마、쾌Ｃ、쾌Ｖ）
+;죠교대상삽입중（쾌Ｃ, 쾌Ｖ, 쾌Ａ, 접촉, 애정, 성행위, 고통, 노출, 이탈, 중독충족, 트라우마, 쾌Ｃ, 쾌Ｖ）
 ;────────────────────────────────────
-;このターンの행동も성교ならACT_APPLY.ERBで処理します。회화や가슴애무など삽입하면서行う행동だけここを見ます
+;이 턴의행동도성교라면 ACT_APPLY.ERB로 처리합니다. 회화나가슴애무 등삽입하면서 실시하는행동만 여기를 봅니다
 IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 	A = 0
 	B = 0
@@ -681,7 +681,7 @@ IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 	IF TEQUIP:성교봉사중 == 1
 		A = 100 +ACT_FROM(TARGET, 7) * 3 / 2
 		B = 300 +ACT_TO(TARGET, 7) * 3 / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.60
 			TIMES B , 0.80
@@ -706,7 +706,7 @@ IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 	ELSEIF TEQUIP:성교봉사중 == 2
 		A = 300 +ACT_FROM(TARGET, 7)
 		B = 300 +ACT_TO(TARGET, 7) * 3 / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.60
 			TIMES B , 0.80
@@ -731,7 +731,7 @@ IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 	ELSEIF TEQUIP:성교봉사중 == 3
 		A = 300 + 2 *ACT_FROM(TARGET, 7)
 		B = 100 +ACT_TO(TARGET, 7) * 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.70
 			TIMES B , 0.80
@@ -756,7 +756,7 @@ IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 	ELSEIF TEQUIP:성교봉사중 == 4
 		A = 300 +ACT_FROM(TARGET, 7)
 		B = 50 +ACT_TO(TARGET, 4) / 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.60
 			TIMES B , 0.65
@@ -781,7 +781,7 @@ IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 	ELSEIF TEQUIP:성교봉사중 == 5
 		A = 100 +ACT_FROM(TARGET, 7)
 		B = 50 +ACT_TO(TARGET, 1)
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.50
 			TIMES B , 0.55
@@ -799,7 +799,7 @@ IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 		SOURCE:쾌Ｖ += A
 		SOURCE:MASTER:접촉 += 200 + GET_TRAINLV(TARGET) * 10
 		SOURCE:MASTER:성행위 += 40 + GET_TRAINLV(TARGET) * 2
-		;乱れ牡丹の処理
+		;혼란 모란의 처리
 		SIF TEQUIP:거울
 			SOURCE:MASTER:노출 += 200 + A / 5
 		SOURCE:MASTER:애정 += B / 7 - SOURCE:MASTER:트라우마 - C
@@ -809,7 +809,7 @@ IF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
 	ELSEIF TEQUIP:성교봉사중 == 6
 		A = 500 +ACT_FROM(TARGET, 8) * 2
 		B = 300 +ACT_TO(TARGET, 8) * 2
-		;윤활不발
+		;윤활불발
 		IF PALAM:MASTER:윤활 < 100 && TEQUIP:로션 < 3
 			TIMES A , 0.30
 			TIMES B , 0.40
@@ -847,7 +847,7 @@ SIF TEQUIP:성교중 || TEQUIP:성교봉사중
 ;────────────────────────────────────
 
 ;────────────────────────────────────
-;C애무中（暫定）
+;C애무중（잠정）
 ;────────────────────────────────────
 IF TEQUIP:죠교대상Ｃ사용
 	SOURCE:MASTER:쾌Ｃ += 40 +ACT_FROM(TARGET, 1) * (2 + TALENT:손가락기술) / 10
@@ -859,8 +859,8 @@ ENDIF
 
 
 ;────────────────────────────────────
-;바이브など付けっぱなしアイテムのチェック２
-;快SOURCE計算直前に呼ぶので乗算の処理はこちらで
+;바이브등 붙이고 있을 뿐 아이템의 체크 2
+;쾌SOURCE 계산 직전에 부르므로 곱셈의 처리는 이쪽에서
 ;────────────────────────────────────
 @EQUIP_CHECK2
 
@@ -881,10 +881,10 @@ IF TEQUIP:미약
 	ENDIF
 ENDIF
 
-;클리캡・오나홀装備中は쾌Ｃがアップする
-;ただし애무者の기교・애무スキルが上がるほど差は小さくなる（도구スキルで相殺する）
+;클리캡·오나홀장비중은쾌Ｃ가 올라간다
+;다만애무자의기교·애무스킬이 오를수록 차이는 작아진다（도구스킬로 상쇄한다）
 IF TEQUIP:클리캡 || TEQUIP:오나홀
-	;애무者を代入
+	;애무자를 대입
 	SELECTCASE MC_PLAYER()
 		CASE 1
 			LOCAL = MASTER
@@ -907,8 +907,8 @@ IF TEQUIP:클리캡 || TEQUIP:오나홀
 	SOURCE:MASTER:쾌Ｃ /= 100
 ENDIF
 
-;페니스밴드装備中は쾌Ｃが쾌Ｖに変換
-;変換率…쾌Ｃを20％にし、残りの値にＶ감각+1/Ｃ감각+1を掛けて２で割って쾌Ｖに加算する
+;페니스밴드장비중은쾌Ｃ가쾌Ｖ에 변환
+;변환율… 쾌Ｃ를 20％로 해, 나머지의 값에Ｖ감각+1/Ｃ감각+1을 걸어 2로 나누어쾌Ｖ에 가산한다
 IF TEQUIP:페니스밴드
 	SOURCE:MASTER:쾌Ｖ += (SOURCE:MASTER:쾌Ｃ*8*(((ABL:MASTER:Ｖ감각+1)*100)/(ABL:MASTER:Ｃ감각+1)))/2000
 	TIMES SOURCE:MASTER:쾌Ｃ, 0.20

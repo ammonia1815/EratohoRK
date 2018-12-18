@@ -1,30 +1,30 @@
 ﻿;────────────────────────────────────
-;010,부끄러워한다（노출逆、굴종、반항、소극적으로 한다、징계・포인트）
+;010, 부끄러워한다（노출역, 굴종, 반항, 소극적으로 한다, 징계·포인트）
 ;────────────────────────────────────
 @COM10
 LOCAL = 200 + MARK:반항각인 * 10 - CFLAG:MASTER:죠교레벨 * 15
-;노출SOURCE減少
+;노출SOURCE 감소
 SOURCE:MASTER:노출 -= LOCAL
-;노출SOURCEは負にならない
+;노출SOURCE는 부가 되지 않는다
 IF SOURCE:MASTER:노출 < 0
 	SOURCE:MASTER:노출 = 0
 	LOCAL = 0
 ENDIF
-;굴종、반항SOURCE増加
+;굴종, 반항SOURCE 증가
 SOURCE:MASTER:굴종 += 200 - LOCAL / 2
 SOURCE:MASTER:반항 += LOCAL / 10
-;징계・포인트加算
+;징계·포인트가산
 SIF LOCAL > 0 && BASE:초조함 / 100 + RAND:5 > BASE:만족 / 100 + MARK:굴복각인 + ABL:MASTER:순종 + CFLAG:아라이멘도 / 10
-	TFLAG:징계・포인트 += 1 + RAND:3
-;快感により派生
+	TFLAG:징계·포인트 += 1 + RAND:3
+;쾌감에 의해 파생
 IF SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ > 10
-	;派生：快感に부끄러워한다
+	;파생:쾌감에부끄러워한다
 	TFLAG:REACT파생 = 1
 ELSE
-	;派生：状況に부끄러워한다
+	;파생:상황에부끄러워한다
 	TFLAG:REACT파생 = 0
 ENDIF
-;COM分類
+;COM 분류
 CALL SET_COMGRO("소극적으로 한다")
 ;의존도변화
 CALL ADD_DEPEND(+1, 0)
@@ -32,24 +32,24 @@ RETURN 1
 
 
 ;────────────────────────────────────
-;011,싫어한다（트라우마、반항、날뛴다、징계・포인트）
+;011, 싫어한다（트라우마, 반항, 날뛴다, 징계·포인트）
 ;────────────────────────────────────
 @COM11
-;트라우마化加速
+;트라우마화 가속
 TIMES SOURCE:MASTER:트라우마 , 1.20
-;반항SOURCE増加
+;반항SOURCE 증가
 LOCAL = 200 + SOURCE:MASTER:트라우마 / 3 - MARK:굴복각인 * 20 - GET_ABL(MASTER, "순종") * 5 + MARK:반항각인 * 20
 LOCAL = LIMIT(LOCAL, 0, 1000)
 SOURCE:MASTER:반항 += LOCAL
-;COM32の날뛴다より判定が弱い
+;COM32의날뛴다보다 판정이 약함
 LOCAL:1 = MARK:반항각인 + BASE:MASTER:체력 / 150 + BASE:MASTER:기력 / 100 - TALENT:MASTER:작은체형 * 5 + TALENT:MASTER:장신 * 5 + PALAM:MASTER:반항 / 1000 - (TEQUIP:밧줄) * 3 - TEQUIP:눈가리개 * 4 - TEQUIP:볼개그
 LOCAL:3 = BASE:체력 / 120 + BASE:기력 / 80 - TALENT:작은체형 * 5 + TALENT:장신 * 5 + GET_TRAINLV(TARGET) * 2
-;조수の人数と体格
+;조수의 인원수와 체격
 SIF ASSI:1 > 0
 	LOCAL:3 += 6 + TALENT:(ASSI:1):장신 * 3 - TALENT:(ASSI:1):작은체형 * 3
 SIF ASSI:2 > 0
 	LOCAL:3 += 6 + TALENT:(ASSI:2):장신 * 3 - TALENT:(ASSI:2):작은체형 * 3
-;ACT보정値
+;ACT보정치
 IF IS_NOWACTNAME("입으로 애무")
 	LOCAL:2 = 2
 ELSEIF IS_NOWACTNAME("키스")
@@ -101,35 +101,35 @@ ELSEIF IS_NOWACTNAME("항문섹스시킨다") || TEQUIP:성교봉사중 == 6
 ELSE
 	LOCAL:2 = 10
 ENDIF
-;조수存在時보정
+;조수존재시보정
 SIF ASSI > 0
 	LOCAL:2 += GET_TRAINLV(ASSI) / 2 + 3
 ;ＳＰ행동
 SIF TFLAG:ＳＰ행동 > 199
 	LOCAL:2 += 10
-;보정値を만족すれば		역강간抵抗できなくてよいらしいので、날뛴다扱いにならないように変更@/L
+;보정치를만족 하면		역강간저항 할 수 없어 좋은 것 같으니까, 날뛴다취급이 되지 않게 변경@/L
 IF LOCAL:1 > LOCAL:2 + LOCAL:3 && TEQUIP:삼각목마 == 0 && !IS_NOWACTNAME("역강간")
-	;징계・포인트加算
-	TFLAG:징계・포인트 += (LOCAL:1 - LOCAL:3) / 2 + 3
-	;COM分類
+	;징계·포인트가산
+	TFLAG:징계·포인트 += (LOCAL:1 - LOCAL:3) / 2 + 3
+	;COM 분류
 	CALL SET_COMGRO("날뛴다")
 ELSE
-	;징계・포인트加算
-	TFLAG:징계・포인트 += LOCAL:1 / 5 + 2
+	;징계·포인트가산
+	TFLAG:징계·포인트 += LOCAL:1 / 5 + 2
 ENDIF
 IF !IS_COMGRONAME("날뛴다") || IS_NOWACTNAME("역강간")
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("소극적으로 한다")
-	;COM印象
-	CALL SET_COMIMP("悪印象小")
-	;派生：싫어한다がACTは妨害せず
+	;COM 인상
+	CALL SET_COMIMP("나쁜인상")
+	;파생:싫어한다가 ACT는 방해하지 않고
 	TFLAG:REACT파생 = 0
 ELSE
 	DOWNBASE:체력 += 5 * (4 + MARK:반항각인 + TALENT:MASTER:장신 * 2 - TALENT:MASTER:작은체형 * 2)
 	DOWNBASE:기력 += 8 * (7 + CFLAG:MASTER:반항강도 + TALENT:MASTER:반항적 * 3 + TALENT:MASTER:건방짐 * 3 - TALENT:MASTER:솔직 * 3 - TALENT:MASTER:얌전한 * 3)
-	;COM印象
+	;COM 인상
 	CALL SET_COMIMP("악인상대")
-	;派生：嫌がってACT妨害
+	;파생:싫어해 ACT 방해
 	TFLAG:REACT파생 = 1
 ENDIF
 ;의존도변화
@@ -138,7 +138,7 @@ RETURN 1
 
 
 ;────────────────────────────────────
-;012,서투르다고 모욕한다（달성逆、반항、징계・포인트）
+;012, 서투르다고 모욕한다（달성역, 반항, 징계·포인트）
 ;────────────────────────────────────
 @COM12
 LOCAL = 20 + TALENT:MASTER:프라이드높음 * 5 + TALENT:MASTER:굳셈 * 5 + MARK:반항각인 + PALAM:MASTER:반항 / 500 - GET_ABL(MASTER, "순종") * 3 / 10 - CFLAG:MASTER:죠교레벨
@@ -146,25 +146,25 @@ LOCAL:1 = SOURCE:MASTER:쾌Ｃ * (1 + TALENT:MASTER:Ｃ민감) + SOURCE:MASTER:�
 LOCAL -= LOCAL:1 / (500 - TALENT:쾌감에솔직 * 100 + TALENT:쾌감을부정 * 50)
 SIF LOCAL < 0
 	LOCAL = 0
-;달성SOURCE減少
+;달성SOURCE 감소
 SOURCE:MASTER:달성 -= LOCAL * 50
-;반항SOURCE増加
+;반항SOURCE 증가
 SOURCE:MASTER:반항 += 200 + LOCAL * 30
-;징계・포인트加算
-TFLAG:징계・포인트 += LOCAL / 4 + 5
+;징계·포인트가산
+TFLAG:징계·포인트 += LOCAL / 4 + 5
 IF LOCAL > 0
-	;COM印象
+	;COM 인상
 	CALL SET_COMIMP("악인상대")
-	;派生：こきおろす
+	;파생:새겨 내린다
 	TFLAG:REACT파생 = 0
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("태연하게 한다")
 ELSE
-	;COM印象
-	CALL SET_COMIMP("悪印象小")
-	;派生：強がる
+	;COM 인상
+	CALL SET_COMIMP("나쁜인상")
+	;파생:강한척 한다
 	TFLAG:REACT파생 = 1
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("소극적으로 한다")
 ENDIF
 ;의존도변화
@@ -173,59 +173,59 @@ RETURN 1
 
 
 ;────────────────────────────────────
-;013,겁없이 웃는다（트라우마逆、반항、소극적으로 한다、징계・포인트）
+;013, 겁없이 웃는다（트라우마역, 반항, 소극적으로 한다, 징계·포인트）
 ;────────────────────────────────────
 @COM13
-;트라우마化減速
+;트라우마화 감속
 TIMES SOURCE:MASTER:트라우마 , 0.80
-;반항SOURCE増加
+;반항SOURCE 증가
 SOURCE:MASTER:반항 += 500 - SOURCE:MASTER:쾌Ｃ / 50 * (1 + TALENT:MASTER:Ｃ민감) + SOURCE:MASTER:쾌Ｖ / 50 * (1 + TALENT:MASTER:Ｖ민감) + SOURCE:MASTER:쾌Ａ / 50 * (1 + TALENT:MASTER:Ａ민감) + SOURCE:MASTER:쾌Ｂ / 50 * (1 + TALENT:MASTER:Ｂ민감)
 SIF SOURCE:MASTER:반항 < 0
 	SOURCE:MASTER:반항 = 0
-;징계・포인트加算
-TFLAG:징계・포인트 += BASE:초조함 / 80 - BASE:흥미 / 150 + 1 + RAND:3
-;COM分類
+;징계·포인트가산
+TFLAG:징계·포인트 += BASE:초조함 / 80 - BASE:흥미 / 150 + 1 + RAND:3
+;COM 분류
 CALL SET_COMGRO("태연하게 한다")
-;COM印象
-CALL SET_COMIMP("悪印象小")
+;COM 인상
+CALL SET_COMIMP("나쁜인상")
 ;의존도변화
 CALL ADD_DEPEND(0, -1)
 RETURN 1
 
 
 ;────────────────────────────────────
-;014,쾌감을 참는다（쾌ＣＶＡＢ보정、불쾌追加、달성、열락、반항、애원、징계・포인트）
+;014, 쾌감을 참는다（쾌ＣＶＡＢ보정, 불쾌추가, 달성, 열락, 반항, 애원, 징계·포인트）
 ;────────────────────────────────────
 @COM14
-;快ＸSOURCE減少
+;쾌ＸSOURCE 감소
 TIMES SOURCE:MASTER:쾌Ｃ , 0.80
 TIMES SOURCE:MASTER:쾌Ｖ , 0.80
 TIMES SOURCE:MASTER:쾌Ａ , 0.80
 TIMES SOURCE:MASTER:쾌Ｂ , 0.80
-;불쾌PALAM加算
+;불쾌PALAM 가산
 CUP:MASTER:불쾌 += SOURCE:MASTER:쾌Ｃ / 25 + SOURCE:MASTER:쾌Ｖ / 25 + SOURCE:MASTER:쾌Ａ / 25 + SOURCE:MASTER:쾌Ｂ / 25
-;달성、열락SOURCE増加
+;달성, 열락SOURCE 증가
 SOURCE:MASTER:달성 += 100 + SOURCE:MASTER:쾌Ｃ / 50 + SOURCE:MASTER:쾌Ｖ / 50 + SOURCE:MASTER:쾌Ａ / 50 + SOURCE:MASTER:쾌Ｂ / 50
 SOURCE:MASTER:열락 += 100 + SOURCE:MASTER:쾌Ｃ / 50 + SOURCE:MASTER:쾌Ｖ / 50 + SOURCE:MASTER:쾌Ａ / 50 + SOURCE:MASTER:쾌Ｂ / 50
 LOCAL = (MARK:반항각인 + 1) * (100 + SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) / 500
 SIF LOCAL > 500
 	LOCAL = 500
-;반항SOURCE増加
+;반항SOURCE 증가
 SOURCE:MASTER:반항 += LOCAL
 ;참다플래그
 TCVAR:MASTER:참다 = 3
-;애원成立の判定
+;애원성립의 판정
 IF SOURCE:MASTER:반항 < 500 && (TALENT:마음씨착한 * 5 - TALENT:심술궂음 * 5 - BASE:초조함 / 100 + BASE:만족 / 100 > 0 + CFLAG:아라이멘도 / 10) && TEQUIP:볼개그 == 0
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("용서를 빌다")
-	;COM印象
-	CALL SET_COMIMP("0に近づく")
-	;派生：애원
+	;COM 인상
+	CALL SET_COMIMP("0에가까워짐")
+	;파생:애원
 	TFLAG:REACT파생 = 1
 ELSE
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("소극적으로 한다")
-	;派生：耐久
+	;파생:내구
 	TFLAG:REACT파생 = 0
 ENDIF
 ;의존도변화
@@ -234,23 +234,23 @@ RETURN 1
 
 
 ;────────────────────────────────────
-;015,쾌감을 받아들인다（쾌ＣＶＡＢ보정、굴종、달성、열락、受け入れる）
-;ほとんど기분 좋다!と同じですが、自分が依存しやすい
+;015, 쾌감을 받아들인다（쾌ＣＶＡＢ보정, 굴종, 달성, 열락, 받아들인다）
+;거의기분 좋다! (와)과 같습니다만, 자신이 의존하기 쉽다
 ;────────────────────────────────────
 @COM15
-;이탈SOURCE減少
+;이탈SOURCE 감소
 TIMES SOURCE:MASTER:이탈 , 0.70
-;트라우마化減速
+;트라우마화 감속
 TIMES SOURCE:MASTER:트라우마 , 0.80
-;굴종、달성、열락SOURCE増加
+;굴종, 달성, 열락SOURCE 증가
 SOURCE:MASTER:굴종 += 50 + (MARK:MASTER:쾌락각인 + 1) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) * CFLAG:MASTER:죠교레벨 / 200
 SOURCE:MASTER:달성 += 100 + (CFLAG:MASTER:죠교레벨 + 5) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) / 100
 SOURCE:MASTER:열락 += 100 + SOURCE:MASTER:쾌Ｃ / 25 + SOURCE:MASTER:쾌Ｖ / 25 + SOURCE:MASTER:쾌Ａ / 25 + SOURCE:MASTER:쾌Ｂ / 25
-;COM分類
-CALL SET_COMGRO("受け入れる")
-;COM印象
-CALL SET_COMIMP("好印象大")
-;참다플래그解消
+;COM 분류
+CALL SET_COMGRO("받아들인다")
+;COM 인상
+CALL SET_COMIMP("좋은인상")
+;참다플래그해소
 TCVAR:MASTER:참다 = 0
 ;의존도변화
 CALL ADD_DEPEND(+1, +5)
@@ -258,23 +258,23 @@ RETURN 1
 
 
 ;────────────────────────────────────
-;016,기분 좋다!（쾌ＣＶＡＢ보정、굴종、달성、열락、受け入れる）
-;ほとんど쾌감을 받아들인다と同じですが、주인님側の依存を誘いやすい
+;016, 기분 좋다! （쾌ＣＶＡＢ보정, 굴종, 달성, 열락, 받아들인다）
+;거의쾌감을 받아들인다와 같습니다만, 주인님측의 의존을 권하기 쉽다
 ;────────────────────────────────────
 @COM16
-;이탈SOURCE減少
+;이탈SOURCE 감소
 TIMES SOURCE:MASTER:이탈 , 0.70
-;트라우마化減速
+;트라우마화 감속
 TIMES SOURCE:MASTER:트라우마 , 0.80
-;굴종、달성、열락SOURCE増加
+;굴종, 달성, 열락SOURCE 증가
 SOURCE:MASTER:굴종 += 50 + (MARK:MASTER:쾌락각인 + 1) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) * CFLAG:MASTER:죠교레벨 / 200
 SOURCE:MASTER:달성 += 100 + (CFLAG:MASTER:죠교레벨 + 5) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) / 100
 SOURCE:MASTER:열락 += 100 + SOURCE:MASTER:쾌Ｃ / 25 + SOURCE:MASTER:쾌Ｖ / 25 + SOURCE:MASTER:쾌Ａ / 25 + SOURCE:MASTER:쾌Ｂ / 25
-;COM分類
-CALL SET_COMGRO("受け入れる")
-;COM印象
-CALL SET_COMIMP("好印象大")
-;참다플래그解消
+;COM 분류
+CALL SET_COMGRO("받아들인다")
+;COM 인상
+CALL SET_COMIMP("좋은인상")
+;참다플래그해소
 TCVAR:MASTER:참다 = 0
 ;의존도변화
 CALL ADD_DEPEND(+4, +1)

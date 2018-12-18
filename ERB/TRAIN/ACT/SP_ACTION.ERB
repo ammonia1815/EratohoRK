@@ -1,35 +1,35 @@
-﻿;特殊能力행동の試作案です。はっきり言えばかなり손抜きですが、このやり方は죠교자思考ルーチンへの負担が一番少ないです
+﻿;특수 능력행동의 시작안입니다. 분명히 말하면 꽤손빼고가, 이 방식은죠교자사고 루틴에의 부담이 제일 적습니다
 ;────────────────────────────────────
-;죠교자の特殊能力のチェック。特定の죠교자と행동の組み合わせによって特殊能力행동に변화します
+;죠교자의 특수 능력의 체크. 특정의죠교자와행동의 편성에 의해 특수 능력행동에변화 합니다
 ;────────────────────────────────────
 @SP_CHECK
 IF NO:TARGET == 1
-	;바늘＝＞패스 웨이 존 니들
+	;바늘=＞패스 웨이 존 니들
 	IF IS_NOWACTNAME("바늘") && CFLAG:죠교레벨 > 0
 		TFLAG:ＳＰ행동 = 200
-	;밧줄で긴박＝＞팔방귀박진
+	;밧줄로긴박=＞팔방귀박진
 	ELSEIF IS_NOWACTNAME("밧줄") && ABL:기교 > 2
 		TFLAG:ＳＰ행동 = 201
 	ENDIF
 ELSEIF NO:TARGET == 28
-	;不気味な微笑み＝＞광기의 눈동자
+	;기분 나쁜 미소=＞광기의 눈동자
 	IF IS_NOWACTNAME("기분나쁘게 웃다") && ABL:이상 > 1
 		TFLAG:ＳＰ행동 = 202
-	;このキャラクターの新しい特殊能力を作りたい時はこのように拡張してください
+	;이 캐릭터의 새로운 특수 능력을 만들고 싶을 때는 이와 같이 확장해 주세요
 	;ELSEIF TFLAG:ACT == XX && CFLAG:죠교레벨 > X && ABL:X > X && ...
 	;	TFLAG:ＳＰ행동 = 2XX
 	ENDIF
-;新しいキャラクターの特殊能力を作りたい時はこちらから拡張してください
+;새로운 캐릭터의 특수 능력을 만들고 싶을 때는 이쪽으로부터 확장해 주세요
 ;ELSEIF NO:TARGET == XX
 ENDIF
 
 
 ;────────────────────────────────────
-;죠교자の特殊能力행동の実行。（）の中にベースとなる죠교指令からの変更点を説明
+;죠교자의 특수 능력행동의 실행（）안에 베이스가 되는죠교지령으로부터의 변경점을 설명
 ;────────────────────────────────────
 @SP_ACTION
 ;────────────────────────────────────
-;패스 웨이 존 니들（고통보정、죠교시간短縮）
+;패스 웨이 존 니들（고통보정, 죠교시간단축）
 ;────────────────────────────────────
 IF TFLAG:ＳＰ행동 == 200
 	SOURCE:MASTER:고통 = 320 * (TALENT:새드 + 2) + (ABL:기교 + 1) * (ABL:가학 + 2) * (2 + TALENT:바느질 * 3) + (ABL:기교 * 2 + CFLAG:죠교레벨) * (TALENT:새드 + TALENT:바느질 * 2 + 1) * (12 + TALENT:새드)
@@ -46,7 +46,7 @@ IF TFLAG:ＳＰ행동 == 200
 		SOURCE:MASTER:트라우마 = 0
 	SIF CFLAG:MASTER:트라우마 == 62
 		TIMES SOURCE:MASTER:트라우마 , 1.50
-	;出血
+	;출혈
 	IF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
 		STAIN:MASTER:페니스 |= 32
 	ELSE
@@ -59,13 +59,13 @@ IF TFLAG:ＳＰ행동 == 200
 		TEQUIP:성교중 = 0
 	TFLAG:경과시간 += 1
 ;────────────────────────────────────
-;팔방귀박진（구속보정、죠교시간短縮）
+;팔방귀박진（구속보정, 죠교시간단축）
 ;────────────────────────────────────
 ELSEIF TFLAG:ＳＰ행동 == 201
 	IF TEQUIP:밧줄 == 0
 		SOURCE:MASTER:구속 = 120 + (MARK:반항각인 + CFLAG:죠교레벨 * 2 + 1) * (ABL:기교 * 2 + 1) * 5 * (TALENT:긴박능숙 * 3 + 2)
 		SOURCE:MASTER:중독충족 = ABL:MASTER:마조끼 * (ABL:MASTER:구속중독 - 1) * (ABL:MASTER:구속중독 + 1) * SOURCE:MASTER:구속 / 100
-		;装備번호は変わらないが、INFO.ERBとUSERCOM.ERBで表示するメッセージを設定できます
+		;장비번호는 변함없지만, INFO.ERB와 USERCOM.ERB로 표시하는 메세지를 설정할 수 있습니다
 		TEQUIP:밧줄 = 1 + SOURCE:MASTER:구속 / 500
 	ELSE
 		TEQUIP:밧줄 = 0
@@ -76,7 +76,7 @@ ELSEIF TFLAG:ＳＰ행동 == 201
 		TEQUIP:성교중 = 0
 	TFLAG:경과시간 += 1
 ;────────────────────────────────────
-;광기의 눈동자（ランダムパラメータ上昇、이탈に보정）
+;광기의 눈동자（랜덤 파라미터 상승, 이탈에보정）
 ;────────────────────────────────────
 ELSEIF TFLAG:ＳＰ행동 == 202
 	SIF RAND:6 > 2
@@ -120,7 +120,7 @@ IF TFLAG:ＳＰ행동 == 200
 	ENDIF
 ;팔방귀박진
 ELSEIF TFLAG:ＳＰ행동 == 201
-	;解除
+	;해제
 	IF TFLAG:ACT파생 == 1
 ;OriginalString : %CALLNAME:TARGET%의 不思議な力によって、
 		PRINTFORML %CALLNAME:TARGET%의 이상한 힘에 의해,
@@ -134,8 +134,8 @@ ELSEIF TFLAG:ＳＰ행동 == 201
 		PRINTFORML 기력을 넣어 %CALLNAME:MASTER%의 신체의 자유를 빼앗았다…
 	ENDIF
 ELSEIF TFLAG:ＳＰ행동 == 202
-	;PRINTL ＜シックスナイン＞
-	IF TSTR:前죠교指令 == "シックスナイン"
+	;PRINTL ＜식스나인＞
+	IF TSTR:전죠교지령 == "식스나인"
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 顔にまたがっ하며 
 		PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 얼굴에 걸친 채로
 ;OriginalString : 페니스를咥えて離さない…

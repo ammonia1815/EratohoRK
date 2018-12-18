@@ -1,43 +1,43 @@
-﻿;의상関連の処理
+﻿;의상관련의 처리
 ;────────────────────────────────────
-;죠교자の의상初期化。勝손に拝借했다ものなので作者さんに最高の敬意を
+;죠교자의의상초기화. 승손에 배차했다의 것으로 작자씨에게 최고의 경의를
 
-;とはいうけどこれcsvにすべきよね。つーわけでcsvにしま했다
+;라고는 말하지만 이것 csv에 해야 해요. 라는 (뜻)이유로 csv에 섬했다
 ;────────────────────────────────────
 @CLOTHES_SETUP(ARG)
-;의상未設定（デフォ전라）の場合のみここで設定します
+;의상미설정（데포전라）의 경우만 여기서 설정합니다
 IF !(EQUIP:ARG:악세서리+EQUIP:ARG:신발안+EQUIP:ARG:하반신속옷+EQUIP:ARG:상반신속옷+EQUIP:ARG:하반신겉옷+EQUIP:ARG:상반신겉옷+EQUIP:ARG:전신겉옷)
-	;脚があれば양말
+	;다리가 있으면양말
 	SIF !TALENT:ARG:다리없음
 		EQUIP:ARG:신발안 = 1
-	;남자の場合、트렁크・바지・Ｔ셔츠・겉옷
+	;남자의 경우, 트렁크·바지·Ｔ셔츠·겉옷
 	IF TALENT:ARG:남자
 		EQUIP:ARG:하반신속옷 = 3
 		EQUIP:ARG:상반신속옷 = 4
 		EQUIP:ARG:하반신겉옷 = 3
 		EQUIP:ARG:상반신겉옷 = 1
-	;빈유の場合、팬티・キャミソール・원피스
+	;빈유의 경우, 팬티·캐미숄·원피스
 	ELSEIF TALENT:ARG:빈유
 		EQUIP:ARG:하반신속옷 = 2
 		EQUIP:ARG:상반신속옷 = 2
 		EQUIP:ARG:전신겉옷 = 3
-	;それ以外の場合、팬티・브래지어・스커트・겉옷
+	;그 이외의 경우, 팬티·브래지어·스커트·겉옷
 	ELSE
 		EQUIP:ARG:하반신속옷 = 2
 		EQUIP:ARG:상반신속옷 = 1
 		EQUIP:ARG:하반신겉옷 = 1
 		EQUIP:ARG:상반신겉옷 = 1
 	ENDIF
-	;후타나리の場合드로와즈に（팬티に入らない気がするので）
+	;후타나리의 경우드로와즈에（팬티에 들어가지 않는 생각이 들므로）
 	SIF TALENT:ARG:후타나리
 		EQUIP:ARG:하반신속옷 = 1
 ENDIF
 
 ;────────────────────────────────────
-;ショップメニューでの服装セッティング
+;숍 메뉴에서의 복장 세팅
 ;────────────────────────────────────
 @CLOTHES_SETTING
-PRINTFORM %CALLNAME:MASTER%의 의상：
+PRINTFORM %CALLNAME:MASTER%의 의상:
 SIF CFLAG:MASTER:의상 == 0
 	PRINTFORM \@ EQUIP:MASTER:전신겉옷 ? [%DRESS(MASTER)%] # \@\@ EQUIP:MASTER:상반신겉옷 ? [%OUTER_T(MASTER)%] # \@\@ EQUIP:MASTER:하반신겉옷 ? [%OUTER_B(MASTER)%] # \@
 SELECTCASE CFLAG:MASTER:의상
@@ -52,7 +52,7 @@ ENDSELECT
 PRINTL 
 
 IF TARGET >= 0
-	PRINTFORM %CALLNAME:TARGET%의 의상：
+	PRINTFORM %CALLNAME:TARGET%의 의상:
 	SIF CFLAG:TARGET:의상 == 0
 		PRINTFORM \@ EQUIP:TARGET:전신겉옷 ? [%DRESS(TARGET)%] # \@\@ EQUIP:TARGET:상반신겉옷 ? [%OUTER_T(TARGET)%] # \@\@ EQUIP:TARGET:하반신겉옷 ? [%OUTER_B(TARGET)%] # \@
 	SELECTCASE CFLAG:TARGET:의상
@@ -84,97 +84,97 @@ IF RESULT == 0
 	RETURN 0
 ELSEIF RESULT == 1
 	IF CFLAG:MASTER:의상 == 0
-		PRINTFORMW %CALLNAME:MASTER%의 의상はすでに[통상]に設定されています
+		PRINTFORMW %CALLNAME:MASTER%의 의상는 벌써[통상]로 설정되어 있습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1000)
 		GOTO INPUT_LOOPC
 	ELSE
 		CFLAG:MASTER:의상 = 0
-		PRINTFORMW %CALLNAME:MASTER%의 의상を[통상]に設定しま했다
+		PRINTFORMW %CALLNAME:MASTER%의 의상를[통상]로 설정 섬했다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1001)
 	ENDIF
 	RESTART
 ELSEIF RESULT == 2
 	IF CFLAG:MASTER:의상 == 1
-		PRINTFORMW %CALLNAME:MASTER%의 의상はすでに[반라]に設定されています
+		PRINTFORMW %CALLNAME:MASTER%의 의상는 벌써[반라]로 설정되어 있습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1010)
 	ELSEIF TALENT:MASTER:억압 * 3 - TALENT:MASTER:해방 * 2 + TALENT:MASTER:수줍음 * 2 - TALENT:MASTER:수치없음 + 2 > CFLAG:MASTER:죠교레벨 / 2 + ABL:MASTER:욕망
-		PRINTFORMW %CALLNAME:MASTER%は恥ずかしくて[반라]にできません
+		PRINTFORMW %CALLNAME:MASTER%는 부끄러워서[반라]로 할 수 없습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1012)
 	ELSEIF TALENT:MASTER:반항적 * 3 - TALENT:MASTER:솔직 * 2 + MARK:반항각인 - MARK:굴복각인 + 2 > CFLAG:MASTER:죠교레벨 / 2 + ABL:MASTER:순종 + ABL:MASTER:욕망
-		PRINTFORMW %CALLNAME:MASTER%は嫌がって[반라]になりません
+		PRINTFORMW %CALLNAME:MASTER%는 싫어해[반라]가 되지 않습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1013)
 	ELSE
 		CFLAG:MASTER:의상 = 1
-		PRINTFORMW %CALLNAME:MASTER%의 의상を[반라]に設定しま했다
+		PRINTFORMW %CALLNAME:MASTER%의 의상를[반라]로 설정 섬했다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1011)
 	ENDIF
 	RESTART
 ELSEIF RESULT == 3
 	IF CFLAG:MASTER:의상 == 2
-		PRINTFORMW %CALLNAME:MASTER%의 의상はすでに[전라]に設定されています
+		PRINTFORMW %CALLNAME:MASTER%의 의상는 벌써[전라]로 설정되어 있습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1020)
 	ELSEIF TALENT:MASTER:억압 * 3 - TALENT:MASTER:해방 * 2 + TALENT:MASTER:수줍음 * 2 - TALENT:MASTER:수치없음 + 5 > CFLAG:MASTER:죠교레벨 / 2 + ABL:MASTER:욕망
-		PRINTFORMW %CALLNAME:MASTER%は恥ずかしくて[전라]にできません
+		PRINTFORMW %CALLNAME:MASTER%는 부끄러워서[전라]로 할 수 없습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1022)
 	ELSEIF TALENT:MASTER:반항적 * 3 - TALENT:MASTER:솔직 * 2 + MARK:반항각인 - MARK:굴복각인 + 4 > CFLAG:MASTER:죠교레벨 / 2 + ABL:MASTER:순종 + ABL:MASTER:욕망
-		PRINTFORMW %CALLNAME:MASTER%は嫌がって[전라]になりません
+		PRINTFORMW %CALLNAME:MASTER%는 싫어해[전라]가 되지 않습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1023)
 	ELSE
 		CFLAG:MASTER:의상 = 2
-		PRINTFORMW %CALLNAME:MASTER%의 의상を[전라]に設定しま했다
+		PRINTFORMW %CALLNAME:MASTER%의 의상를[전라]로 설정 섬했다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1021)
 	ENDIF
 	RESTART
 ELSEIF RESULT == 51
 	IF CFLAG:TARGET:의상 == 0
-		PRINTFORMW %CALLNAME:TARGET%의 의상はすでに[통상]に設定されています
+		PRINTFORMW %CALLNAME:TARGET%의 의상는 벌써[통상]로 설정되어 있습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 0)
 	ELSE
 		CFLAG:TARGET:의상 = 0
-		PRINTFORMW %CALLNAME:TARGET%의 의상を[통상]に設定しま했다
+		PRINTFORMW %CALLNAME:TARGET%의 의상를[통상]로 설정 섬했다
 		PRINTL 
 		CALL KOJO_EVENT(101, 1)
 	ENDIF
 	RESTART
 ELSEIF RESULT == 52
 	IF CFLAG:TARGET:의상 == 1
-		PRINTFORMW %CALLNAME:TARGET%의 의상はすでに[반라]に設定されています
+		PRINTFORMW %CALLNAME:TARGET%의 의상는 벌써[반라]로 설정되어 있습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 10)
 	ELSEIF TALENT:억압 * 3 - TALENT:해방 * 2 + TALENT:수줍음 * 2 - TALENT:수치없음 + 2 > CFLAG:죠교레벨 / 2 + ABL:욕망
-		PRINTFORMW %CALLNAME:TARGET%は恥ずかしくて[반라]にできません
+		PRINTFORMW %CALLNAME:TARGET%는 부끄러워서[반라]로 할 수 없습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 12)
 	ELSE
 		CFLAG:TARGET:의상 = 1
-		PRINTFORMW %CALLNAME:TARGET%의 의상を[반라]に設定しま했다
+		PRINTFORMW %CALLNAME:TARGET%의 의상를[반라]로 설정 섬했다
 		PRINTL 
 		CALL KOJO_EVENT(101, 11)
 	ENDIF
 	RESTART
 ELSEIF RESULT == 53
 	IF CFLAG:TARGET:의상 == 2
-		PRINTFORMW %CALLNAME:TARGET%의 의상はすでに[전라]に設定されています
+		PRINTFORMW %CALLNAME:TARGET%의 의상는 벌써[전라]로 설정되어 있습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 20)
 	ELSEIF TALENT:억압 * 3 - TALENT:해방 * 2 + TALENT:수줍음 * 2 - TALENT:수치없음 + 5 > CFLAG:죠교레벨 / 2 + ABL:욕망
-		PRINTFORMW %CALLNAME:TARGET%は恥ずかしくて[전라]にできません
+		PRINTFORMW %CALLNAME:TARGET%는 부끄러워서[전라]로 할 수 없습니다
 		PRINTL 
 		CALL KOJO_EVENT(101, 22)
 	ELSE
 		CFLAG:TARGET:의상 = 2
-		PRINTFORMW %CALLNAME:TARGET%의 의상を[전라]に設定しま했다
+		PRINTFORMW %CALLNAME:TARGET%의 의상를[전라]로 설정 섬했다
 		PRINTL 
 		CALL KOJO_EVENT(101, 21)
 	ENDIF

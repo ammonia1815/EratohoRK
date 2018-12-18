@@ -1,9 +1,9 @@
 ﻿;────────────────────────────────────
-;죠교終了の処理
+;죠교종료의 처리
 ;────────────────────────────────────
 @EVENTEND
 
-;ムラムラリセット
+;불끈불끈 리셋트
 SIF TARGET > 0
 	CFLAG:무라무라 = 0
 SIF ASSI:1 > 0
@@ -11,10 +11,10 @@ SIF ASSI:1 > 0
 SIF ASSI:2 > 0
 	CFLAG:(ASSI:2):무라무라 = 0
 
-;MASTER側のCFLAGに誰にどれだけ搾られたかを기록
-;一回で最大5000くらい？
+;MASTER측의 CFLAG에 누구에게 얼마나 짜졌는지를기록
+;1회로 최대 5000 정도?
 CFLAG:MASTER:(2200 + NO:TARGET) += TFLAG:취득마력 * (5 + CFLAG:랭크) / 5
-;ASSIはTARGETの1/5
+;ASSI는 TARGET의 1/5
 FOR LOCAL, 0, 9
 	IF ASSI:(LOCAL + 1) > 0
 		CFLAG:MASTER:(2200 + NO:(ASSI:(LOCAL + 1))) += TFLAG:취득마력 * (5 + CFLAG:(ASSI:(LOCAL + 1)):랭크) / 25
@@ -25,7 +25,7 @@ NEXT
 SIF TARGET > 0
 	CFLAG:누적마력 += TFLAG:취득마력
 
-;죠교終了
+;죠교종료
 FLAG:조교중 = 0
 ;OriginalString : 죠교は終わりま했다。
 PRINTW 조교는 끝났습니다.
@@ -33,33 +33,33 @@ PRINTW 조교는 끝났습니다.
 EXP:MASTER:성지식 += TFLAG:경과시간 / 10
 EXP:성지식 += TFLAG:경과시간 / 10
 
-;죠교시간をチェックして기록(최장・최단)
+;죠교시간를 체크해기록(최장·최단)
 SIF TFLAG:경과시간 > FLAG:최장죠교시간기록
 	FLAG:최장죠교시간기록 = TFLAG:경과시간
 SIF TFLAG:경과시간 > 0 && (TFLAG:경과시간 < FLAG:최단죠교시간기록 || FLAG:최단죠교시간기록 == 0)
 	FLAG:최단죠교시간기록 = TFLAG:경과시간
 
-;ACT長期보정値の一括算入
+;ACT 장기보정치의 일괄 산입
 CALL ACT_M_RESEARCH_L(1)
 
-;データベース記入
+;데이타베이스 기입
 CALL DATABASE_INPUT_T
 
 ;────────────────────────────────────
-;모유の価値の計算
+;모유의 가치의 계산
 ;────────────────────────────────────
 SIF TALENT:MASTER:모유체질 && TFLAG:죠교시간 > 0
 	CALL SELL_MILK
 
 ;────────────────────────────────────
-;レベルアップ。たくさん경험치ためても一回の죠교は一度だけレベルアップできる仕様です
+;레벨 업. 많이경험치 모아 두어도 1회의죠교는 한 번만 레벨 올라갈 수 있는 사양입니다
 ;────────────────────────────────────
 IF TFLAG:일회휴게 == 0
 	IF CFLAG:MASTER:죠교경험 > CFLAG:MASTER:필요경험치
 		CFLAG:MASTER:죠교레벨 += 1
 		CFLAG:MASTER:죠교경험 -= CFLAG:MASTER:필요경험치
 		CFLAG:MASTER:필요경험치 += 100 + CFLAG:MASTER:죠교레벨 * CFLAG:MASTER:죠교레벨 * 10
-		;レベル１０以降필요경험치は急に上がりますが、이상경험で軽減できます
+		;레벨 10이후필요경험치는 갑자기 오릅니다만, 이상경험로 경감할 수 있습니다
 		LOCAL = 250 + (CFLAG:MASTER:죠교레벨 - 5) * CFLAG:MASTER:필요경험치 / 3 - EXP:MASTER:이상경험 * 20
 		SIF LOCAL > 0 && CFLAG:MASTER:죠교레벨 > 10
 			CFLAG:MASTER:필요경험치 += LOCAL
@@ -87,7 +87,7 @@ IF TFLAG:일회휴게 == 0
 	[SKIPSTART]
 	IF CFLAG:호의 >= 500 && CFLAG:M연모 == 0
 		CFLAG:M연모 = 1
-		PRINTFORML %CALLNAME:TARGET%의 %CALLNAME:MASTER%(을)를 보는 눈이 이상하다…
+		PRINTFORML %CALLNAME:TARGET%의 %CALLNAME:MASTER%를 보는 눈이 이상하다…
 		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 호의를 대기 시작한 것 같다
 		IF CFLAG:호의 / 250 >= CFLAG:죠교레벨 - CFLAG:MASTER:죠교레벨
 			CFLAG:M연모 = 2
@@ -96,19 +96,19 @@ IF TFLAG:일회휴게 == 0
 	ENDIF
 	IF CFLAG:호의 / 250 >= CFLAG:죠교레벨 - CFLAG:MASTER:죠교레벨 && CFLAG:M연모 == 1
 		CFLAG:M연모 = 2
-		PRINTFORML %CALLNAME:TARGET%의 %CALLNAME:MASTER%(을)를 보는 눈이 이상하다…
+		PRINTFORML %CALLNAME:TARGET%의 %CALLNAME:MASTER%를 보는 눈이 이상하다…
 		PRINTFORMW %CALLNAME:TARGET%에 %CALLNAME:MASTER%에의 친애의 정이 싹튼 것 같다
 	ENDIF
 	[SKIPEND]
 ENDIF
 
 ;────────────────────────────────────
-;平時아라이멘도の変動
+;평시아라이멘도의 변동
 ;────────────────────────────────────
 LOCAL = 10 * CFLAG:아라이멘도 - CFLAG:평상시
 LOCAL:1 = (CFLAG:SM성격 + CFLAG:츤데레 + 200) / 2
-;성격で倍率が決まる。
-;最小値50(Mデレ)、最大値150(Sツン)、素質変動しない/させないキャラではB = 100
+;성격로 배율이 정해진다.
+;최소치 50(M데레), 최대치 150(S튼), 소질 변동하지 않는다/시키지 않는 캐릭터에서는 B = 100
 CFLAG:평상시 += LOCAL * (LOCAL >= 0 ? 200 - LOCAL:1 # LOCAL:1) / 500
 IF CFLAG:평상시 > 100 && MARK:5 == 0
 	MARK:5 = 1
@@ -142,7 +142,7 @@ ELSEIF CFLAG:평상시 > 950 && MARK:5 == 9
 	CFLAG:반발제거 = 1
 ENDIF
 ;────────────────────────────────────
-;드라이사정ボーナス
+;드라이사정보너스
 ;────────────────────────────────────
 IF TCVAR:MASTER:드라이사정수 > 0 
 	IF MAXBASE:MASTER:사정 < 7500 + CFLAG:MASTER:정력한계 * 500
@@ -155,11 +155,11 @@ IF TCVAR:MASTER:드라이사정수 > 0
 ENDIF
 
 ;────────────────────────────────────
-;リセット
+;리셋트
 ;────────────────────────────────────
-;소변ゲージを消す
+;소변게이지를 지운다
 MAXBASE:MASTER:소변 = TALENT:MASTER:오줌싸개 ? MAXBASE:MASTER:소변 # 0
-;죠교で蓄積했다피폐を일상に加算
+;죠교로 축적했다피폐를일상에 가산
 CFLAG:MASTER:소모 = MIN(CFLAG:MASTER:소모 + MAX(TFLAG:63, 0), 20)
 SIF TARGET >= 0
 	CFLAG:TARGET:소모 += MAX(TFLAG:62, 0)

@@ -1,41 +1,41 @@
 ﻿;────────────────────────────────────
-;データベース기록機能
+;데이타베이스기록기능
 ;────────────────────────────────────
-;기록初期化
+;기록초기화
 @DATABASE_INPUT_INIT
-;現在の마력を기록
+;현재의마력를기록
 CFLAG:6000 = CFLAG:마력
-;現在の누적마력を기록
+;현재의누적마력를기록
 CFLAG:6100 = CFLAG:누적마력
 
-;ターン毎기록
+;턴 마다기록
 @DATABASE_INPUT
-;今回の죠교방침/メニュー/행동を기록
+;이번죠교방침/메뉴/행동를기록
 FLAG:(1239 + TFLAG:턴방침) += TFLAG:턴방침 >= 0
 SIF TFLAG:ACT분류 >= 0
 	CALLF DATABASE_I_AM(MENU(TFLAG:ACT분류), 1)
 FLAG:(1000 + TFLAG:ACT) += TFLAG:ACT >= 0
 
-;同じ행동연속실행を기록
+;같은행동연속실행를기록
 SIF TFLAG:ACT == TFLAG:전ACT
 	FLAG:죠교자연속실행횟수++
-;사정量のレコード
+;사정량의 레코드
 SIF FLAG:사정률레코드 < DOWNBASE:MASTER:사정
 	FLAG:사정률레코드 = DOWNBASE:MASTER:사정
 
-;今回の선택できる反応の数を기록
+;이번선택 할 수 있는 반응의 수를기록
 FLAG:(1300 + TFLAG:가능한COM수)++
 
-;今回の죠교대상による영향を기록
+;이번죠교대상에 의한영향를기록
 FLAG:(1200 + TFLAG:REACT분류)++
 
-;パラメーターの最大上昇値を기록
-;※現在손を抜いたため죠교대상のみ
+;파라미터의 최대 상승치를기록
+;※현재손를 뽑았기 때문에죠교대상만
 FOR LOCAL, 0, 50
 	SIF CUP:MASTER:LOCAL - CDOWN:MASTER:LOCAL > FLAG:(1400 + LOCAL)
 		FLAG:(1400 + LOCAL) = CUP:MASTER:LOCAL - CDOWN:MASTER:LOCAL
 NEXT
-;絵本の執筆
+;그림책의 집필
 IF CFLAG:TARGET:(2000 + TFLAG:ACT) == 0
 	FLAG:(4000 + NO:TARGET) += CFLAG:MASTER:15 == 2 ? 25 # 20
 ELSE
@@ -44,20 +44,20 @@ ENDIF
 CFLAG:TARGET:(2000 + TFLAG:ACT) += TFLAG:ACT >= 0
 CFLAG:MASTER:(2000 + TFLAG:ACT) += TFLAG:ACT >= 0
 
-;흥미보정パッチによる、흥미の追加
+;흥미보정패치에 의한, 흥미의 추가
 CALL KYOMI_ADD
 
-;죠교毎기록
+;죠교 마다기록
 @DATABASE_INPUT_T
-;現在の마력を기록
+;현재의마력를기록
 ARRAYSHIFT CFLAG, 1, 0, 6000, 100
 CFLAG:6000 = CFLAG:마력
-;現在の누적마력を기록
+;현재의누적마력를기록
 ARRAYSHIFT CFLAG, 1, 0, 6100, 100
 CFLAG:6100 = CFLAG:누적마력
 
-;ACT분류実行횟수기록・読み出し関数
-;ARG = 0 読み出し, 1 加算
+;ACT분류실행횟수기록·읽기 함수
+;ARG = 0읽어내, 1 가산
 @DATABASE_I_AM(ARGS, ARG)
 #FUNCTION
 LOCAL = MENUNUM(ARGS)
@@ -66,7 +66,7 @@ SIF ARG
 RETURNF FLAG:(1250 + LOCAL)
 
 ;────────────────────────────────────
-;データベース閲覧機能
+;데이타베이스 열람 기능
 ;────────────────────────────────────
 @DATABASE_OUTPUT
 #DIM LCOUNT
@@ -95,7 +95,7 @@ WHILE 1
 		CASE 1
 			DRAWLINE
 ;OriginalString : 各죠교자행동の実行횟수：
-			PRINTL 각 조교자 행동의 실행 회수：
+			PRINTL 각 조교자 행동의 실행 회수:
 			FOR LOCAL, 0, 200
 				SIF FLAG:(1000 + LOCAL)
 ;OriginalString : 　%TOSTR(LOCAL,"000")%.%GET_ACTNAME(LOCAL),20,LEFT% [{FLAG:(1000 + LOCAL),4}]回
@@ -113,7 +113,7 @@ WHILE 1
 		CASE 2
 			DRAWLINE
 ;OriginalString : 各パラメーターの上昇量レコード：
-			PRINTL 각 파라미터(parameter)의 상승량 레코드：
+			PRINTL 각 파라미터의 상승량 레코드:
 			FOR LOCAL, 0, 50
 				SIF FLAG:(1400 + LOCAL)
 ;OriginalString : 　%TOSTR(LOCAL,"00")%.%PALAMNAME:LOCAL% [{FLAG:(1400 + LOCAL),5}]
@@ -122,22 +122,22 @@ WHILE 1
 		CASE 3
 			DRAWLINE
 ;OriginalString : 죠교방침：
-			PRINTL 조교 방침：
+			PRINTL 조교 방침:
 ;OriginalString : 　01.휴식 [{FLAG:1240,4}]回
 			PRINTFORML 　01.휴게 [{FLAG:1240,4}]회
 ;OriginalString : 　02. ｿﾌﾄ [{FLAG:1241,4}]回
-			PRINTFORML 　02. ｿﾌﾄ [{FLAG:1241,4}]회
+			PRINTFORML   02. 소프트 [{FLAG:1241,4}]회
 ;OriginalString : 　03.ﾉｰﾏﾙ [{FLAG:1242,4}]回
-			PRINTFORML 　03.ﾉｰﾏﾙ [{FLAG:1242,4}]회
+			PRINTFORML   03. 노멀 [{FLAG:1242,4}]회
 ;OriginalString : 　04.ﾊｰﾄﾞ [{FLAG:1243,4}]回
-			PRINTFORML 　04.ﾊｰﾄﾞ [{FLAG:1243,4}]회
+			PRINTFORML   04. 하드 [{FLAG:1243,4}]회
 ;OriginalString : 　05.이상 [{FLAG:1244,4}]回
 			PRINTFORML 　05.이상 [{FLAG:1244,4}]회
 ;OriginalString : 　06.ＳＭ [{FLAG:1245,4}]回
-			PRINTFORML 　06.ＳＭ [{FLAG:1245,4}]회
+			PRINTFORML   06ＳＭ [{FLAG:1245,4}]회
 			DRAWLINE
 ;OriginalString : 죠교メニュー：
-			PRINTL 조교 메뉴：
+			PRINTL 조교 메뉴:
 			FOR LCOUNT, 0, 11
 ;OriginalString : 　{LCOUNT, 2}.%MENU(LCOUNT)% [{DATABASE_I_AM(MENU(LCOUNT)), 4}]回
 				PRINTFORML 　{LCOUNT, 2}.%MENU(LCOUNT)% [{DATABASE_I_AM(MENU(LCOUNT)), 4}]회
@@ -145,7 +145,7 @@ WHILE 1
 		CASE 4
 			DRAWLINE
 ;OriginalString : その他の기록：
-			PRINTL 그 외의 기록：
+			PRINTL 그 외의 기록:
 ;OriginalString : 　죠교자が전회と同じ행동を했다횟수 [{FLAG:1210,4}]回
 			PRINTFORML 　조교자가 전회와 같은 행동을 한 회수 [{FLAG:1210,4}]회
 ;OriginalString : 　최장죠교시간レコード [{FLAG:최장죠교시간기록,2}]
@@ -156,7 +156,7 @@ WHILE 1
 			PRINTFORML 　사정량 레코드 [{FLAG:1213}]
 			DRAWLINE
 ;OriginalString : 죠교대상の反応の기록：
-			PRINTL 조교 대상의 반응의 기록：
+			PRINTL 조교 대상의 반응의 기록:
 ;OriginalString : 　0.죠교자행동に영향しなかった　 [{FLAG:1200,4}]回
 			PRINTFORML 　0.조교자 행동에 영향을 주지 않았다　 [{FLAG:1200,4}]회
 ;OriginalString : 　1.消極的従った　　　　　　　　 [{FLAG:1201,4}]回
@@ -170,17 +170,17 @@ WHILE 1
 ;OriginalString : 　5.거부했다　　　　　　　　　　 [{FLAG:1205,4}]回
 			PRINTFORML 　5.거부했다　　　　　　　　　　 [{FLAG:1205,4}]회
 ;OriginalString : 　6.逃げる／もがく　　　　　　　 [{FLAG:1206,4}]回
-			PRINTFORML 　6.도망친다／발버둥 친다　　　　　　　 [{FLAG:1206,4}]회
+			PRINTFORML   6. 도망친다／발버둥 친다　　　　　　　 [{FLAG:1206,4}]회
 			DRAWLINE
 ;OriginalString : 죠교대상が선택できる反応の数の기록：
-			PRINTL 조교 대상을 선택할 수 있는 반응의 수의 기록：
+			PRINTL 조교 대상을 선택할 수 있는 반응의 수의 기록:
 			FOR LOCAL, 0, 100
 				SIF FLAG:(1300 + LOCAL)
 ;OriginalString : 　{LOCAL,2}個 [{FLAG:(1300 + LOCAL),4}]回
 					PRINTFORML 　{LOCAL,2}개 [{FLAG:(1300 + LOCAL),4}]회
 			NEXT
 		CASE 5
-			;흥미보정のショップへ
+			;흥미보정의 숍에
 			CALL HOSEI_SHOP
 			
 		CASEELSE
@@ -208,7 +208,7 @@ WHILE 1
 	ELSE
 		DRAWLINE
 ;OriginalString : %CALLNAME:RESULT%の기록：
-		PRINTFORML %CALLNAME:RESULT%의 기록：
+		PRINTFORML %CALLNAME:RESULT%의 기록:
 		FOR LOCAL, 0, 100
 			SIF CFLAG:RESULT:(2000 + LOCAL)
 ;OriginalString : 　%TOSTR(LOCAL,"000")%.%GET_ACTNAME(LOCAL),20,LEFT% [{CFLAG:RESULT:(2000 + LOCAL),4}]回
