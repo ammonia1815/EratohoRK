@@ -1,120 +1,120 @@
 ﻿;────────────────────────────────────
-;죠교자の행동を선택
+;죠교자의행동를선택
 ;────────────────────────────────────
 @PLAYER_ACT
 #DIM LCOUNT, 1
 TFLAG:턴방침 = 0
 TFLAG:ACT분류 = 0
 
-;まずは今回の방침を決定
-;(죠교強度に対する방침)
+;우선은 이번방침를 결정
+;(죠교강도에 대한방침)
 CALL ACT_COURSE
-;죠교방침예약の処理
+;죠교방침예약의 처리
 IF TFLAG:방침예약
 	TFLAG:턴방침 = TFLAG:방침예약
 	TFLAG:방침예약 = 0
 	SIF FLAG:디버그
-		CALL PRINT_DIALOG(@"방침예약により방침を%POLICY("今")%に変更しま했다", 2, 2, 2)
+		CALL PRINT_DIALOG(@"방침예약에 의해방침를%POLICY("지금")%로 변경 섬했다", 2, 2, 2)
 ENDIF
 
-;ACT분류未決定を代入
+;ACT분류미결정을 대입
 TFLAG:ACT분류 = -1
 
-;휴식でなければ続いて今回の죠교類別を決定
+;휴식가 아니면 계속되어 이번죠교유별을 결정
 IF TFLAG:턴방침 != 1
-	;ACT個別보정値を調整
+	;ACT 개별보정치를 조정
 	CALL ACT_M_RESEARCH
-	;죠교種別を決定
+	;죠교종별을 결정
 	CALL ACT_MENU
 ELSE
 	TFLAG:ACT분류 = 9
 ENDIF
 
-;죠교メニュー別処理
-;ACT未決定を代入
+;죠교메뉴별 처리
+;ACT 미결정을 대입
 TFLAG:ACT = -1
 
-;죠교メニュー예약の処理
+;죠교메뉴예약의 처리
 IF TFLAG:ACT분류예약 >= 0
-	;예약を採用
+	;예약를 채용
 	TFLAG:ACT분류 = TFLAG:ACT분류예약
-	;実行可否判定
+	;실행 가부 판정
 	CALLFORM ACT_M{TFLAG:ACT분류}
 	IF FLAG:디버그
 		IF TFLAG:ACT == -1
-			CALL PRINT_DIALOG(@"メニュー예약によりメニューを%MENU(TFLAG:ACT분류예약)%に変更しようとしま했다が、実行不能で했다", 2, 2, 2)
+			CALL PRINT_DIALOG(@"메뉴예약에 의해 메뉴를%MENU(TFLAG:ACT분류예약)%로 변경하려고 섬했다가, 실행 불능으로했다", 2, 2, 2)
 		ELSE
-			CALL PRINT_DIALOG(@"メニュー예약によりメニューを%MENU(TFLAG:ACT분류예약)%に変更しま했다", 2, 2, 2)
+			CALL PRINT_DIALOG(@"메뉴예약에 의해 메뉴를%MENU(TFLAG:ACT분류예약)%로 변경 섬했다", 2, 2, 2)
 		ENDIF
 	ENDIF
-	;예약を解除
+	;예약를 해제
 	TFLAG:ACT분류예약 = -1
 ENDIF
 
-;ACT未決定なら
+;ACT 미결정이라면
 WHILE TFLAG:ACT == -1
-	;ACT분류を指定する(指定済みなら飛ばす) ;ACT 분류 지정 (지정되어 있다면 비행)
+	;ACT분류를 지정한다(지정이 끝난 상태라면 날린다) ;ACT 분류 지정 (지정되어 있다면 비행)
 	SIF TFLAG:ACT분류 == -1
 		CALL ACT_MENU_RESULT(1)
-	;それでも指定できなければ『지금 기분을 묻다』ACTに決定 ;그래도 지정할 수 없으면 "지금 기분을 묻다"ACT 결정
+	;그런데도 지정 할 수 없으면 『지금 기분을 묻다』ACT로 결정 ;그래도 지정할 수 없으면"지금 기분을 묻다"ACT 결정
 	IF TFLAG:ACT분류 == -1
 		TFLAG:ACT = 0
 		TFLAG:ACT분류 = 0
 		SIF FLAG:디버그
 			PRINTL (채용 가능ACT, ACT분류가 존재하지 않기 때문에, 「지금의 기분을 (듣)묻는다」ACT(을)를 채용했습니다)
-	;実行可否判定
+	;실행 가부 판정
 	ELSE
 		CALLFORM ACT_M{TFLAG:ACT분류}
 	ENDIF
 WEND
 
-;행동예약の処理
+;행동예약의 처리
 IF TCVAR:행동예약 >= 0
 	TFLAG:ACT = TCVAR:행동예약
 	TCVAR:행동예약 = -1
 	SIF FLAG:디버그
-		CALL PRINT_DIALOG(@"행동예약により행동を%STR:(TFLAG:ACT)%に変更しま했다", 2, 2, 2)
-	;変更後のACTと、ACT분류が違う場合
+		CALL PRINT_DIALOG(@"행동예약에 의해행동를%STR:(TFLAG:ACT)%로 변경 섬했다", 2, 2, 2)
+	;변경 후의 ACT와 ACT분류가 다른 경우
 	IF TFLAG:ACT분류 != GET_ACTM(TFLAG:ACT)
 		TFLAG:ACT분류 = GET_ACTM(TFLAG:ACT)
 		SIF FLAG:디버그
-			CALL PRINT_DIALOG(@"それに伴い、メニューを%MENU(TFLAG:ACT분류)%に変更しま했다", 2, 2, 2)
+			CALL PRINT_DIALOG(@"거기에 따라, 메뉴를%MENU(TFLAG:ACT분류)%로 변경 섬했다", 2, 2, 2)
 	ENDIF
 ENDIF
 
 ;────────────────────────────────────
-;ACT個別보정値調整 ;ACT 개별 보정 값 조정
+;ACT 개별보정치 조정 ;ACT 개별 보정 값 조정
 ;────────────────────────────────────
 @ACT_M_RESEARCH
 #DIM LCOUNT, 1
 
-;디버그表示をオフにしてACT_Mを行い、보정値を計算
+;디버그표시를 오프로 해 ACT_M를 실시해, 보정치를 계산
 FLAG:디버그표시끄기 = 1
 FOR LCOUNT, 0, 11
 	CALLFORM ACT_M{LCOUNT}(1)
 NEXT
-;디버그表示をオンに戻す
+;디버그표시를 온에 되돌린다
 FLAG:디버그표시끄기 = 0
-;디버그時、보정値表示
+;디버그시, 보정치 표시
 [SKIPSTART]
 IF FLAG:디버그
-	;LOCAL初期化
+	;LOCAL 초기화
 	LOCAL = 0
 	LOCAL:1 = GETCOLOR()
-	;全보정値に対し
+	;전보정치에 대해
 	FOR LCOUNT, 0, 200
-		;対応ACTが存在すれば
+		;대응 ACT가 존재하면
 		IF STR:LCOUNT != ""
-			;文字数カウント
+			;문자수카운트
 			LOCAL += 10
-			;一行を突破すると改行
+			;일행을 돌파하면 개행
 			IF LOCAL >= WIDTH()
 				PRINTL 
 				LOCAL = 0
 			ENDIF
-			;보정値취득
+			;보정치취득
 			LOCAL:2 = CFLAG:(400 + LCOUNT)
-			;보정値の表示上下限に収め、色を変える
+			;보정치의 표시 상하한으로 거두어, 색을 바꾼다
 			IF LOCAL:2 < -99
 				LOCAL:2 = -99
 				SETCOLOR 0xC07070
@@ -122,9 +122,9 @@ IF FLAG:디버그
 				LOCAL:2 = 999
 				SETCOLOR 0x66FFFF
 			ENDIF
-			;보정値表示
+			;보정치 표시
 			PRINTFORM %GET_ACTABBNAME(LCOUNT), 4%({LOCAL:2, 3}) 
-			;文字色リセット
+			;문자색리셋트
 			SETCOLOR LOCAL:1
 		ENDIF
 	NEXT
@@ -132,129 +132,129 @@ IF FLAG:디버그
 	PRINTW 
 ENDIF
 [SKIPEND]
-;RESULT保持
+;RESULT 보유
 RETURN RESULT
 
-;보정値加減算処理
+;보정치 가감(상태)산처리
 @ACT_M_RES_CALC(ARG, ARG:1)
-;現在値が0ならそのまま採用
+;현재가가 0이라면 그대로 채용
 IF CFLAG:(400 + ARG) == 0
 	CFLAG:(400 + ARG) = ARG:1
-;現在値と加減算値の正負が逆ならそのまま加減算
+;현재가와 가감(상태)산치의 정부가 역이라면 그대로 가감(상태)산
 ELSEIF (CFLAG:(400 + ARG) > 0) == (ARG:1 < 0)
 	CFLAG:(400 + ARG) += ARG:1
-;現在値と加減算値の正負が同じなら徐々に加減算量を0に近づける
+;현재가와 가감(상태)산치의 정부가 같으면 서서히 가감(상태)산량을 0에 접근한다
 ELSE
 	CFLAG:(400 + ARG) += (ARG:1 * LIMIT(ARG:1 * 100 / CFLAG:(400 + ARG), 0, 100)) / 100
 ENDIF
-;RESULT保持
+;RESULT 보유
 RETURN RESULT
 
-;系列別보정値취득関数
-;ARG、またはARGSに系列を指定
+;계열별보정치취득함수
+;ARG, 또는 ARGS에 계열을 지정
 @ACT_M_RES_MENU(ARG = -1, ARGS)
 #DIM LCOUNT
-;系列번호を취득
+;계열번호를취득
 IF ARG == -1
 	LOCAL = MENUNUM(ARGS)
 ELSE
 	LOCAL = ARG
 ENDIF
-;系列存在を確認
+;계열 존재를 확인
 SIF MENU(LOCAL) == ""
 	RETURN -999
-;所属ACT全てに対し個別보정値を計算して、最大の物을반환
+;소속 ACT 모두에 대해 개별보정치를 계산해, 최대의 물건을반환
 CALL ACT_M_RES_FETCH(ACTM_NUM(LOCAL, 0))
 LOCAL:1 = RESULT
 FOR LCOUNT, 1, ACTM_NUM(LOCAL, -1)
 	CALL ACT_M_RES_FETCH(ACTM_NUM(LOCAL, LCOUNT))
 	LOCAL:1 = MAX(LOCAL:1, RESULT)
 NEXT
-;보정値을반환
+;보정치을반환
 RETURN LOCAL:1
 
-;個別보정値취득関数
+;개별보정치취득함수
 @ACT_M_RES_FETCH(ARG = -1, ARGS)
-;系列번호を취득
+;계열번호를취득
 IF ARG == -1
 	LOCAL = GET_ACTNUM(ARGS)
 ELSE
 	LOCAL = ARG
 ENDIF
-;ACT存在を確認
+;ACT 존재를 확인
 SIF GET_ACTNAME(LOCAL) == "" || GET_ACTNAME(LOCAL) == "ＮＯＮＥ"
 	RETURN -999
-;実行不可時、보정値を-999固定
+;실행 불가시, 보정치를-999 고정
 CALLFORM ACT_ABLE{LOCAL}
 SIF !RESULT
 	RETURN -999
-;보정値を初期化
+;보정치를 초기화
 LOCAL:1 = 0
-;短期보정値취득・加算
+;단기보정치취득·가산
 LOCAL:1 += CFLAG:(400 + LOCAL)
-;長期보정値취득・加算
+;장기보정치취득·가산
 LOCAL:1 += ABCBSI(ARG * 60)
-;보정値을반환
+;보정치을반환
 RETURN LOCAL:1
 
 ;────────────────────────────────────
-;ACT長期보정値調整 ;ACT 장기 보정 값 조정
+;ACT 장기보정치 조정 ;ACT 장기 보정 값 조정
 ;────────────────────────────────────
-;ARG = 0:죠교前(初期化) 1:죠교後(算入)
+;ARG = 0:죠교 전(초기화) 1:죠교 후(산입)
 @ACT_M_RESEARCH_L(ARG)
 #LOCALSIZE 200
 #DIM LCOUNT
 #DIM LTEMP, 200
 
-;죠교前
+;죠교전
 IF ARG == 0
-	;ACT実行횟수を保存
+	;ACT 실행횟수를 보존
 	FOR LCOUNT, 0, 200
 		LOCAL:LCOUNT = FLAG:(1000 + LCOUNT)
 	NEXT
-;죠교後
+;죠교 후
 ELSE
 	FOR LCOUNT, 0, 200
-		;ACT実行횟수増分の平方根の正負を逆転し、ACT長期보정値変動値とする
+		;ACT 실행횟수증분의 평방근의 정부를 역전해, ACT 장기보정치 변동치로 한다
 		LTEMP:LCOUNT =  LOCAL:LCOUNT - FLAG:(1000 + LCOUNT)
-		;素質によって加算方向にボーナス
-		;(※長く行われなかったACTを有利にするため)
+		;소질에 의해 가산 방향으로 보너스
+		;(※길게 행해지지 않았던 ACT를 유리하게 하기 위해(때문))
 		LTEMP:LCOUNT += 4 + TALENT:호기심 - TALENT:무관심 + TALENT:민감 - TALENT:신중함
 	NEXT
-	;죠교대상反応による흥미보정を加算
+	;죠교대상반응에 의한흥미보정를 가산
 	CALL KYOMI_ADD(1)
 	FOR LCOUNT, 0, 200
 		LTEMP:LCOUNT += RESULT:LCOUNT
 	NEXT
-	;実際の加算処理(値が大きくなりすぎないよう調整)
+	;실제의 가산 처리(값이 너무 커지지 않게 조정)
 	FOR LCOUNT, 0, 200
-		;符号が違えば보정値が大きいほど変動が加速
+		;부호가 다르면보정치가 큰 만큼 변동이 가속
 		IF SIGN(CFLAG:(600 + LCOUNT)) != SIGN(LTEMP:LCOUNT)
 			CFLAG:(600 + LCOUNT) += LTEMP:LCOUNT * MAX(ABS(CFLAG:(600 + LCOUNT)), 50) / 50
-		;符号が同じなら보정値が大きいほど変動が減速(変動時+-1を保証)
+		;부호가 같으면보정치가 큰 만큼 변동이 감속(변동시+-1을 보증)
 		ELSEIF LTEMP:LCOUNT != 0
 			CFLAG:(600 + LCOUNT) += SIGN(LTEMP:LCOUNT) * MAX(ABS(LTEMP:LCOUNT) * 50 / MAX(ABS(CFLAG:(600 + LCOUNT)), 50), 1)
 		ENDIF
 	NEXT
-	;디버그時、보정値表示(ただし오토모드の簡易表意時は除く)
+	;디버그시, 보정치 표시(다만오토모드의 간이표의시는 제외함)
 	IF FLAG:디버그 && !(FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1)
-		;LOCAL初期化
+		;LOCAL 초기화
 		LOCAL = 0
 		LOCAL:1 = GETCOLOR()
-		;全보정値に対し
+		;전보정치에 대해
 		FOR LCOUNT, 0, 200
-			;対応ACTが存在すれば
+			;대응 ACT가 존재하면
 			IF STR:LCOUNT != ""
-				;文字数カウント
+				;문자수카운트
 				LOCAL += 10
-				;一行を突破すると改行
+				;일행을 돌파하면 개행
 				IF LOCAL >= WIDTH()
 					PRINTL 
 					LOCAL = 0
 				ENDIF
-				;보정値취득
+				;보정치취득
 				LOCAL:2 = CFLAG:(600 + LCOUNT)
-				;보정値の表示上下限に収め、色を変える
+				;보정치의 표시 상하한으로 거두어, 색을 바꾼다
 				IF LOCAL:2 < -99
 					LOCAL:2 = -99
 					SETCOLOR 0xC07070
@@ -262,9 +262,9 @@ ELSE
 					LOCAL:2 = 999
 					SETCOLOR 0x66FFFF
 				ENDIF
-				;보정値表示
+				;보정치 표시
 				PRINTFORM %GET_ACTABBNAME(LCOUNT), 4%({LOCAL:2, 3}) 
-				;文字色リセット
+				;문자색리셋트
 				SETCOLOR LOCAL:1
 			ENDIF
 		NEXT

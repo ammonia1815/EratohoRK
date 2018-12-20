@@ -1,53 +1,53 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 ;
-;	첸구상 죠교終了이벤트구상ファイル
+;	첸구상 죠교종료이벤트구상파일
 ;
-;	죠교終了이벤트구상をまとめたファイル
+;	죠교종료이벤트구상를 정리한 파일
 ;
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
 ;========================================================================
-;EV13, 죠교終了구상
+;EV13, 죠교종료구상
 ;========================================================================
-;・@EVENTCOMENDから呼び出される
-;・구상主が죠교終了する直前に表示
-;・ARG:1, ARG:2の場合は地の文表示後にPRINTLで空行。その後に구상を表示
-;・ARG:0の場合は固有の地の文なし。구상表示の前にPRINTLで空行が入る
-;・RESULT 0以上을반환と구상表示後にPRINTLで空行が入る
+;·@EVENTCOMEND로부터 불려 간다
+;·구상주가죠교종료하기 직전에 표시
+;·ARG:1, ARG:2의 경우는 지문 표시 후에 PRINTL로 공행. 그 뒤로구상를 표시
+;·ARG:0의 경우는 고유의 지문 없음. 구상표시전에 PRINTL로 공행이 들어간다
+;·RESULT 0이상을반환와구상표시 후에 PRINTL로 공행이 들어간다
 ;-------------------------------------------------
-;関連変数…
-;FLAG:일상제어	죠교終了時状況(1=통상/2=精力0/3=일회휴게/4=실신했다)
+;관련 변수…
+;FLAG:일상제어	죠교종료시 상황(1=통상/2=정력 0/3=일회휴게/4=실신했다)
 ;-------------------------------------------------
 @KOJO_EVENT_K13_13(ARG)
 ;-------------------------------------------------
-;引数内訳…
-;ARG=(0, 普通に終了、1, 죠교대상が疲れている、2, 죠교대상が실신했다)
+;인수 내역…
+;ARG=(0, 보통으로 종료, 1, 죠교대상가 피곤한, 2, 죠교대상가실신했다)
 ;-------------------------------------------------
 
-;전회의죠교が中止되었다플래그を解除(正常に죠교が行われた)
+;전회의죠교가 중지되었다플래그를 해제(정상적으로죠교를 했다)
 VAR_K13:7 = 0
 
 ;────────────────────────────────────
-;ARG:1, ARG:2, 疲労・실신による죠교終了 FIRSTEVENT(0)～
+;ARG:1, ARG:2, 피로·실신에 의한죠교종료 FIRSTEVENT(0)～
 ;────────────────────────────────────
-;・죠교대상소모도に応じて疲労/실신に分かれる
-;・呼び出しタイミングは地の文の表示→PRINTL→구상の表示
-;・EVENT201, 介抱(일상이벤트)の箇所を書く場合は、上손く連携できるようにすると良いでしょう
+;·죠교대상소모도에 응해 피로/실신로 나누어진다
+;·호출 타이밍은 지문의 표시→PRINTL→구상의 표시
+;·EVENT201, 간호(일상이벤트)의 개소를 쓰는 경우는, 상손구제휴할 수 있도록(듯이)하면 좋을 것입니다
 ;------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교자が성봉系で처녀상실
+;죠교자가성봉계로처녀상실
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && ARG != 2 && VAR_K13:9
+IF 구상기입체크() && ARG != 2 && VAR_K13:9
 	IF FAVOR(0, 100) || DAY <= 3
 		FORCEWAIT
 ;OriginalString : 「ふぅ……今回はこんなところかしらね？」
-		PRINTFORMW 「……이번은 이런 곳일까？」
+		PRINTFORMW 「…… 이번은 이런 곳일까?」
 ;OriginalString : %CALLNAME%の内股には、未だに破瓜の血の後が生々しく残っている……
 		PRINTFORMW %CALLNAME%의 허벅다리에는, 아직도 파과의 피의 뒤가 생생하게 남아 있다……
 ;OriginalString : 「あら？　どうか했다の？」
-		PRINTFORMW 「어머나？　어떻게든 했어？」
+		PRINTFORMW 「어머나?   어떻게든 했어?」
 ;OriginalString : 「……ああ、ひょっとして私の처녀のこと？」
-		PRINTFORMW 「……아, 혹시 나의 처녀？」
+		PRINTFORMW 「…… 아, 혹시 나의 처녀?」
 ;OriginalString : 「別に大했다ことじゃないわ。何となくムラッときたから、%FUNC_K13_CALLNAME()%のちんぽを使ってやっただけの話よ」
 		PRINTFORMW 「별로 굉장한 일이 아니어요. 웬지 모르게 무락이라고 했기 때문에,%FUNC_K13_CALLNAME()%후 를 사용해 주었을 뿐의 이야기야」
 ;OriginalString : 「言ってみれば、도구を使ってオナニー했다のと同じようなものね」
@@ -55,20 +55,20 @@ IF 구상記入チェック() && ARG != 2 && VAR_K13:9
 ;OriginalString : 「特別な感情なんて何もないから、%FUNC_K13_CALLNAME()%も、ペットの分際で変な勘違いはしないこと」
 		PRINTFORMW 「특별한 감정은 아무것도 없기 때문에,%FUNC_K13_CALLNAME()%도, 애완동물의 분수로 이상한 착각은 하지 않는 것」
 ;OriginalString : 「……いいわね？」
-		PRINTFORMW 「……좋네요？」
+		PRINTFORMW 「…… 좋네요?」
 		CALL FUNC_K13_EVENT_AFTER()
 		RETURN 1
 
 	ELSE
 		FORCEWAIT
 ;OriginalString : 「ふぅ……今回はこんなところかしらね？」
-		PRINTFORMW 「……이번은 이런 곳일까？」
+		PRINTFORMW 「…… 이번은 이런 곳일까?」
 ;OriginalString : %CALLNAME%の内股には、未だに破瓜の血の後が生々しく残っている……
 		PRINTFORMW %CALLNAME%의 허벅다리에는, 아직도 파과의 피의 뒤가 생생하게 남아 있다……
 ;OriginalString : 「あら？　どうか했다の？」
-		PRINTFORMW 「어머나？　어떻게든 했어？」
+		PRINTFORMW 「어머나?   어떻게든 했어?」
 ;OriginalString : 「……ああ、ひょっとして私の처녀のこと？」
-		PRINTFORMW 「……아, 혹시 나의 처녀？」
+		PRINTFORMW 「…… 아, 혹시 나의 처녀?」
 ;OriginalString : 「別にどうでもいいわよ。そもそも、ここまで生きてきて誰ともシなかったのが間違いだったの」
 		PRINTFORMW 「별로 아무래도 좋아요. 원래, 여기까지 살아 와 누구와도 시 없었던 것이 실수였던 것」
 ;OriginalString : 
@@ -83,9 +83,9 @@ IF 구상記入チェック() && ARG != 2 && VAR_K13:9
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교初回
+;죠교첫회
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && CFLAG:죠교횟수 == 1
+IF 구상기입체크() && CFLAG:죠교횟수 == 1
 ;OriginalString : 「まあ、最初だしこんなものね」
 	PRINTFORMW 「뭐, 최초이고 이런 것이군요」
 ;OriginalString : 
@@ -95,21 +95,21 @@ IF 구상記入チェック() && CFLAG:죠교횟수 == 1
 ;OriginalString : 「침대はまあいいとして……トイレはそこに置いてある壺を使って頂戴」
 	PRINTFORMW 「침대는 뭐 좋다고 해……화장실은 거기에 놓여져 있는 항아리를 사용해 주세요」
 ;OriginalString : 「狭い小屋だからちょっと臭うかもしれないけど、なるべく快適に過ごせるように、昼と夜の二回片付けるようにするからね？」
-	PRINTFORMW 「좁은 오두막이니까 조금 냄새날지도 모르지만, 가능한 한 쾌적하게 보낼 수 있도록(듯이), 낮과 밤의 2회정리하듯이 하니까요？」
+	PRINTFORMW 「좁은 오두막이니까 조금 냄새날지도 모르지만, 가능한 한 쾌적하게 보낼 수 있도록(듯이), 낮과 밤의 2회정리하듯이 하니까요?」
 ;OriginalString : 「それと、ご飯は朝昼晩、私が直接持って来てあげる♪　味の方は……まあ、出来る限り頑張るわ」
 	PRINTFORMW 「그것과 밥은 조주만, 내가 직접 가지고 와 준다♪　맛은……뭐, 할 수 있는 한 노력해요」
 ;OriginalString : 「他にも、不便なことがあったら、少しくらいは聞いてあげるわよ？」
-	PRINTFORMW 「그 밖에도, 불편한 일이 있으면, 조금 정도는 (들)물어 주어요？」
+	PRINTFORMW 「그 밖에도, 불편한 일이 있으면, 조금 정도는 (들)물어 주어요?」
 ;OriginalString : 「もちろん、あまり贅沢なものだとか、娯楽の類はダメだけどね」
 	PRINTFORMW 「물론, 너무 사치스러운 것이라고, 오락의 종류는 안되지만」
 ;OriginalString : 
 	PRINTL 
 ;OriginalString : 「……どう、ペットとしては、悪くない待遇でしょ？」
-	PRINTFORMW 「……어떻게, 애완동물로서는, 나쁘지 않은 대우겠지？」
+	PRINTFORMW 「…… 어떻게, 애완동물로서는, 나쁘지 않은 대우겠지?」
 ;OriginalString : 「私は無責任な飼い主じゃないからね。しっかり面倒見てあげるし、可愛がってあげる♪」
 	PRINTFORMW 「 나는 무책임한 주인이 아니니까. 확실히 돌보기라고 주고, 귀여워해 준다♪」
 ;OriginalString : 「だから%FUNC_K13_CALLNAME()%も、ちゃんと私のペットに相応しい子になるのよ？」
-	PRINTFORMW 「그러니까%FUNC_K13_CALLNAME()%도, 분명하게 나의 애완동물에게 적당한 아이가 되어？」
+	PRINTFORMW 「그러니까%FUNC_K13_CALLNAME()%도, 분명하게 나의 애완동물에게 적당한 아이가 되어?」
 ;OriginalString : 
 	PRINTL 
 ;OriginalString : 「후후……次からは、本格的に私のペットとして躾けてあげる」
@@ -121,9 +121,9 @@ IF 구상記入チェック() && CFLAG:죠교횟수 == 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;밤の죠교初回
+;밤의죠교첫회
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && VAR_K13:4 == 1 && TIME == 1
+IF 구상기입체크() && VAR_K13:4 == 1 && TIME == 1
 	VAR_K13:4 = 2
 ;OriginalString : 「とりあえず、今回はこのくらいにしておいてあげる」
 	PRINTFORMW 「우선, 이번은 이 정도로 해 두어 준다」
@@ -132,44 +132,44 @@ IF 구상記入チェック() && VAR_K13:4 == 1 && TIME == 1
 ;OriginalString : 「……ああ、そうそう」
 	PRINTFORMW 「……아, 그래그래」
 ;OriginalString : 「洋灯はさすがに置いておけないから、持って行かせてもらうわね？」
-	PRINTFORMW 「양등은 과연 놓아둘 수 없기 때문에, 가져 가게 해 주어요？」
+	PRINTFORMW 「양등은 과연 놓아둘 수 없기 때문에, 가져 가게 해 주어요?」
 ;OriginalString : 「何かの拍子で火事되었다ら困るし……それ以前に、一晩中付けておいたら油がもったいないからね」
 	PRINTFORMW 「무엇인가의 박자로 화재가 되면 곤란하고……그 이전에, 밤새 붙여 두면(자) 기름이 아까우니까」
 ;OriginalString : 「そんなわけで、暗くなっちゃうけど참다してちょうだいね？」
-	PRINTFORMW 「그래서, 어두워져버린다지만 참아 주세요？」
+	PRINTFORMW 「그래서, 어두워져버린다지만 참아 주세요?」
 ;OriginalString : %CALLNAME%は洋灯を손にすると、その場で灯を吹き消했다……
 	PRINTFORMW %CALLNAME%(은)는 양등을 손에 넣으면(자), 그 자리에서 등불을 불어 지웠다……
 ;OriginalString : 「別にすることもないだろうから、早めに寝てちゃんと休んでおくのよ？」
-	PRINTFORMW 「별로 할 것도 없을까들 , 빨리 자 분명하게 쉬어 두어？」
+	PRINTFORMW 「별로 할 것도 없을까들, 빨리 자 분명하게 쉬어 둬?」
 ;OriginalString : 「おやすみ」
 	PRINTFORMW 「휴업(휴가)」
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교대상が실신했다
+;죠교대상가실신했다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && ARG == 2
+IF 구상기입체크() && ARG == 2
 ;OriginalString : 「全く……途中で倒れちゃうなんて、出来の悪いペットね」
 	PRINTFORMW 「완전히……도중에 넘어져버린다는, 할 수 있고의 나쁜 애완동물」
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;眷属化이벤트発生時
+;권속화이벤트발생시
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && VAR_K13:14 == 1
+IF 구상기입체크() && VAR_K13:14 == 1
 	VAR_K13:14 = 2
 ;OriginalString : 気付けば%CALLNAME:MASTER%의 頭に生えていた猫耳は引っ込んでしまい、跡形もなくなっていた…
 	PRINTFORMW 깨닫으면%CALLNAME:MASTER%의 머리에 나 있던 묘이는 인붐비어 버려, 흔적도 없어져 있었다…
 ;OriginalString : 「う～ん……やっぱり今の妖力じゃ全然발りないみたいね」
-	PRINTFORMW 「～응……역시 지금의 요력은 전혀 부족한 것 같구나」
+	PRINTFORMW 「～응…… 역시 지금의 요력은 전혀 부족한 것 같구나」
 ;OriginalString : 
 	PRINTL 
 ;OriginalString : 「というわけでっ！」
-	PRINTFORMW 「이라고 한다！」
+	PRINTFORMW 「이라고 한다!」
 ;OriginalString : 「眷属になりたかったら、さらに死ぬ気で私に精をよこしなさいっ！」
-	PRINTFORMW 「친족이 되고 싶었으면, 한층 더 죽을 생각으로 나에게 정령을 보내세요！」
+	PRINTFORMW 「친족이 되고 싶었으면, 한층 더 죽을 생각으로 나에게 정령을 보내세요!」
 	IF TALENT:MASTER:남자
 ;OriginalString : 「さすがに今回はもう勘弁してあげるけど、次からはもっと気合い入れていくわよ♪」
 		PRINTFORMW 「과연 이번은 이제 용서 해 주지만, 다음으로부터는 좀 더 기합 넣어 가요♪」
@@ -177,7 +177,7 @@ IF 구상記入チェック() && VAR_K13:14 == 1
 		PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 옥대를 손가락으로 튼튼과 쿡쿡 찌르면서, 싱글벙글만면의 미소를 띄웠다…
 	ELSE
 ;OriginalString : 「さすがに今回はもう勘弁してあげるけど……次からはもっと気合い入れてイかないとね？」
-		PRINTFORMW 「과연 이번은 이제 용서 해 주는데……다음으로부터는 좀 더 기합 넣어 이일까 실이군요？」
+		PRINTFORMW 「과연 이번은 이제 용서 해 주는데…… 다음으로부터는 좀 더 기합 넣어 이일까 실이군요?」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 唇に指を当て、クスリと妖しく微笑んだ
 		PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 입술에 손가락을 대어 약과 요염하게 미소지었다
 	ENDIF
@@ -186,9 +186,9 @@ IF 구상記入チェック() && VAR_K13:14 == 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교대상が疲れている
+;죠교대상가 피곤함
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && ARG == 1
+IF 구상기입체크() && ARG == 1
 ;OriginalString : 「ふふ、금일はこんなところで勘弁してあげる」
 	PRINTFORMW 「후후, 오늘은 이런 곳에서 용서 해 준다」
 ;OriginalString : 「次の죠교に備えて、ちゃんと休んでおくのよ」
@@ -198,16 +198,16 @@ IF 구상記入チェック() && ARG == 1
 ENDIF
 
 ;────────────────────────────────────
-;ARG:0 普通に終了 FIRSTEVENT(10)～
+;ARG:0보통으로 종료 FIRSTEVENT(10)～
 ;────────────────────────────────────
-;・통상の죠교終了時の구상
-;・地の文なし。PRINTLによる空行の後に구상表示
-;・枠毎に이벤트번호を振ってありますが、任意に設定する事は可能です
+;·통상의죠교종료시의구상
+;·지문 없음. PRINTL에 의한 공행의 뒤로구상표시
+;·테두리마다이벤트번호를 털어 있습니다만, 임의로 설정하는 일은 가능합니다
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;이벤트制御
+;이벤트제어
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;関係構築이벤트が開始可能で、첸が非처녀
+;관계 구축이벤트가 개시 가능해, 첸가 비처녀
 IF VAR_K13:11 && !TALENT:처녀
 	VAR_K13:11 ++
 	IF VAR_K13:11 % 5 == 2
@@ -227,9 +227,9 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 「普段不便に感じてることとか、私にしてほしいこととか、そういうのがあれば聞くから、자유に言ってみて」
 			PRINTFORMW 「평상시 불편하게 느끼고 있는 일이라든지, 나로 하면 좋은 일이라든지, 그러한 것이 있으면 (듣)묻기 때문에, 자유롭게 말해 보며」
 ;OriginalString : 「……あ、『해방して』とか言ったらさすがに怒るわよ？　大丈夫だと思うけど、念のためね？」
-			PRINTFORMW 「……아, 「해방하며」라든가 말하면 과연 화내요？　괜찮다고 생각하지만, 만약을 위해？」
+			PRINTFORMW 「…… 아, 「해방하며」라든가 말하면 과연 화내요?   괜찮다고 생각하지만, 만약을 위해?」
 ;OriginalString : 「それで、どう？　何かあるかしら？」
-			PRINTFORMW 「그래서, 어때？　무엇인가 있는 것일까？」
+			PRINTFORMW 「그래서, 어때?   뭔가 있는 것일까?」
 ;OriginalString : 
 			PRINTL 
 		ELSE
@@ -240,60 +240,60 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 
 			PRINTL 
 ;OriginalString : 「せっかくだから、また何かご褒美をあげようかしら？」
-			PRINTFORMW 「모처럼이니까, 또 무엇인가 포상을 줄까？」
+			PRINTFORMW 「모처럼이니까, 또 뭔가 포상을 줄까?」
 ;OriginalString : 「普段不便に感じてることとか、私にしてほしいこととか……」
 			PRINTFORMW 「평상시 불편하게 느끼고 있는 일이라든지, 나로 하면 좋은 일이라든지……」
 ;OriginalString : 「もし何かあるなら聞いてあげるわよ？」
-			PRINTFORMW 「만약 무엇인가 있다면 (들)물어 주어요？」
+			PRINTFORMW 「만약 뭔가 있다면 (들)물어 주어요?」
 			IF VAR_K13:15 == 1
 ;OriginalString : 「ただし！」
-				PRINTFORMW 「다만！」
+				PRINTFORMW 「다만!」
 ;OriginalString : 「この前みたいなふざけたことを言ったら、ただじゃおかないわよ？」
-				PRINTFORMW 「일전에같은 장난친 것을 말하면, 다만은 두지 않아요？」
+				PRINTFORMW 「일전에같은 장난친 것을 말하면, 다만은 두지 않아요?」
 			ELSEIF VAR_K13:15 == 2
 ;OriginalString : 「……できれば、変態的なお願いは止めてちょうだいね？」
-				PRINTFORMW 「……할 수 있으면, 변태적인 부탁은 멈추어 주세요？」
+				PRINTFORMW 「…… 할 수 있으면, 변태적인 부탁은 멈추어 주세요?」
 			ENDIF
 		ENDIF
 
 		VARSET LOCALS, "", 0, 8
 		LOCAL:5 = 0
 
-		LOCALS:(LOCAL:5) = もっとなでなで당했다い
+		LOCALS:(LOCAL:5) = 좀 더 스윽스윽 당했다 있고
 		LOCAL:5 ++
-		LOCALS:(LOCAL:5) = 키스が했다い
+		LOCALS:(LOCAL:5) = 키스가했다 있고
 		LOCAL:5 ++
 		IF !VAR_K13:22
-			LOCALS:(LOCAL:5) = 窓が欲しい
+			LOCALS:(LOCAL:5) = 창을 갖고 싶다
 			LOCAL:5 ++
 		ENDIF
 		IF !VAR_K13:23
-			LOCALS:(LOCAL:5) = 良い布団が欲しい
+			LOCALS:(LOCAL:5) = 좋은 이불을 갖고 싶다
 			LOCAL:5 ++
 		ENDIF
 		IF !VAR_K13:24
-			LOCALS:(LOCAL:5) = %CALLNAME%の恋人になりたい
+			LOCALS:(LOCAL:5) = %CALLNAME%의 연인이 되고 싶다
 			LOCAL:5 ++
 		ENDIF
 		IF !VAR_K13:25
-			LOCALS:(LOCAL:5) = %CALLNAME%の眷属になりたい
+			LOCALS:(LOCAL:5) = %CALLNAME%의 권속이 되고 싶다
 			LOCAL:5 ++
 		ENDIF
 		IF !VAR_K13:26
-			LOCALS:(LOCAL:5) = 해방して欲しい
+			LOCALS:(LOCAL:5) = 해방해 주었으면 한다
 			LOCAL:5 ++
 		ELSE
-			LOCALS:(LOCAL:5) = 蹴られたい
+			LOCALS:(LOCAL:5) = 차지고 싶다
 			LOCAL:5 ++
 		ENDIF
-		LOCALS:(LOCAL:5) = 特にない
+		LOCALS:(LOCAL:5) = 특히 없다
 
 		CALL FUNC_K13_ASK(LOCALS:0, LOCALS:1, LOCALS:2, LOCALS:3, LOCALS:4, LOCALS:5, LOCALS:6, LOCALS:7)
 
 		SELECTCASE LOCALS:RESULT
-			CASE "もっとなでなで당했다い"
+			CASE "좀 더 스윽스윽 당했다 있고"
 ;OriginalString : 「あら？　可愛いお願いをするのね？」
-				PRINTFORMW 「어머나？　사랑스러운 부탁을 하군요？」
+				PRINTFORMW 「어머나?   사랑스러운 부탁을 하군요?」
 ;OriginalString : 「それじゃあ、もっとこっちに寄りなさい……♪」
 				PRINTFORMW 「그러면 아, 좀 더 여기에 들르세요……♪」
 				IF TALENT:빈유
@@ -307,7 +307,7 @@ IF VAR_K13:11 && !TALENT:처녀
 					PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%(을)를 껴안으면(자), 그 부드러운 가슴에 %CALLNAME:MASTER%의 얼굴을 묻게 했다
 				ENDIF
 ;OriginalString : 「うふふ～、いつも私に付き合ってくれてありがとうね、ペットちゃん♪　えらい、えらい♪」
-				PRINTFORMW 「후후～, 언제나 나에게 교제해 주어 고마워요, 애완동물♪　대단한, 대단하다♪」
+				PRINTFORMW 「후후～, 언제나 나에게 교제해 주어 고마워요, 애완동물♪  대단한, 대단하다♪」
 ;OriginalString : %CALLNAME%はその小さな손で%CALLNAME:MASTER%의 頭を優しく撫で回してくる
 				PRINTFORMW %CALLNAME%(은)는 그 작은 손으로 %CALLNAME:MASTER%의 머리를 상냥하게 어루만지고 돌려 온다
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%の香りと温もりを感じながら、しばらくの間撫でられ続けた……
@@ -315,16 +315,16 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : 「ふふ、만족했다？」
-				PRINTFORMW 「후후, 만족했다？」
+				PRINTFORMW 「후후, 만족했다?」
 ;OriginalString : 「あんまり褒めすぎて調子に乗られても困るんだけど……」
 				PRINTFORMW 「너무 너무 칭찬해 본궤도에 올라져도 곤란한데……」
 ;OriginalString : 「こんな感じで、たまになら甘やかしてあげる♪」
 				PRINTFORMW 「이런 식으로, 이따금이라면 응석부리게 해 준다♪」
 ;OriginalString : 「それじゃあ、今回は帰るわね？　良い子にしてるのよ？」
-				PRINTFORMW 「그러면 아, 이번은 돌아가요？　좋은 아이로 해？」
+				PRINTFORMW 「그러면 아, 이번은 돌아가요?   좋은 아이로 해?」
 ;OriginalString : %CALLNAME%は楽しそうに尻尾を揺ら하면서、小屋を出て行った……
 				PRINTFORMW %CALLNAME%(은)는 즐거운 듯이 꼬리를 흔들면서, 오두막을 나와 갔다……
-			CASE "키스が했다い"
+			CASE "키스가했다 있고"
 				IF VAR_K13:16 == 1
 ;OriginalString : 「んー……」
 					PRINTFORMW 「응―……」
@@ -340,11 +340,11 @@ IF VAR_K13:11 && !TALENT:처녀
 					PRINTFORMW %CALLNAME%(은)는 그렇게 말하면, %CALLNAME:MASTER%에 얼굴을 향할 것도 없고, 빨리 오두막을 나와 가 버렸다……
 				ELSE
 ;OriginalString : 「ふぅん、私と키스が했다いの？　건방짐なこと言うのね？」
-					PRINTFORMW 「응, 나와 키스를 하고 싶은거야？　건방진 일 말하군요？」
+					PRINTFORMW 「응, 나와 키스를 하고 싶은거야?   건방진 일 말하군요?」
 ;OriginalString : 「……ふふ、いいわよ。可愛いペットちゃんのお願いだもの、聞いてあげる♪」
 					PRINTFORMW 「……후후, 좋아요. 사랑스러운 애완동물 의 부탁인걸, (들)물어 준다♪」
 ;OriginalString : 「ほら、顔をこっちに向けて？」
-					PRINTFORMW 「이봐요, 얼굴을 여기를 향해？」
+					PRINTFORMW 「이봐요, 얼굴을 여기를 향해?」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 頬に손を添えると、至近距離から%CALLNAME:MASTER%의 顔を覗き込んだ
 					PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 뺨에 손을 더하면, 지근 거리로부터 %CALLNAME:MASTER%의 얼굴을 들여다 봐 붐비었다
 ;OriginalString : %CALLNAME%がゆっくりと顔を近付けてくる
@@ -369,9 +369,9 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 「…………」
 							PRINTFORMW 「…………」
 ;OriginalString : 「ねえ、もう一回키스していい？」
-							PRINTFORMW 「응, 다시 한번 키스 해도 좋다？」
+							PRINTFORMW 「응, 다시 한번 키스 해도 좋다?」
 ;OriginalString : 「……舌を入れる키스。……たぶん、痛いと思うけど、一回だけだから、ね？」
-							PRINTFORMW 「……혀를 넣는 키스.……아마, 아프다고 생각하지만, 1회만이니까, 군요？」
+							PRINTFORMW 「…… 혀를 넣는 키스. …… 아마, 아프다고 생각하지만, 1회만이니까, 군요?」
 ;OriginalString : %CALLNAME%は舌を出し、猫特有のザラザラと했다舌を%CALLNAME:MASTER%に見せつけた
 							PRINTFORMW %CALLNAME%(은)는 혀를 내밀어, 고양이 특유의 거슬거슬로 한 혀를 %CALLNAME:MASTER%에 과시했다
 ;OriginalString : 
@@ -381,7 +381,7 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : %CALLNAME%は再び唇を%CALLNAME:MASTER%に押し当て、%CALLNAME:MASTER%의 唇をこじ開けるようにして舌を潜りこませた
 							PRINTFORMW %CALLNAME%(은)는 다시 입술을 %CALLNAME:MASTER%에 꽉 눌러%CALLNAME:MASTER%의 입술을 비틀어 열도록(듯이) 해 혀를 기어들어 넣게 했다
 ;OriginalString : 「……ん、ふっ……んじゅ、じゅるっ、じゅるり、れろ、んじゅ、じゅるるっ！」
-							PRINTFORMW 「……응,……, , , , ,！」
+							PRINTFORMW 「…… 응,……, , , , ,!」
 ;OriginalString : 小さな舌で、熱に浮か당했다ように%CALLNAME:MASTER%의 입内を貪る%CALLNAME%
 							PRINTFORMW 작은 혀로, 열중한 것처럼%CALLNAME:MASTER%의 입안을 탐낸다%CALLNAME%
 ;OriginalString : 瞬く間に、%CALLNAME:MASTER%의 입内の皮膚は削り取られ、고통とともに血が滲み始めた
@@ -411,13 +411,13 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 
 							PRINTL 
 ;OriginalString : 「それじゃあ、今回はこれでおしまい！」
-							PRINTFORMW 「그러면 아, 이번은 이것으로 끝！」
+							PRINTFORMW 「그러면 아, 이번은 이것으로 끝!」
 ;OriginalString : 「입の中、だいぶ傷付けちゃったけど……금일のご飯、食べられそう？」
-							PRINTFORMW 「입속, 많이 손상시켜버렸지만……오늘의 밥, 먹을 수 있는 그렇게？」
+							PRINTFORMW 「입속, 많이 손상시켜버렸지만…… 오늘의 밥, 먹을 수 있는 그렇게?」
 ;OriginalString : 「一応私も、できるだけ刺激が少ないものを用意してみるわね」
 							PRINTFORMW 「일단 나도, 가능한 한 자극이 적은 것을 준비해 봐요」
 ;OriginalString : 「私は一旦帰るけど、ちゃんと良い子にしてるのよ？」
-							PRINTFORMW 「 나는 일단 돌아가지만, 분명하게 좋은 아이로 해？」
+							PRINTFORMW 「나는 일단 돌아가지만, 분명하게 좋은 아이로 해?」
 ;OriginalString : %CALLNAME%は明るく笑うと、%CALLNAME:MASTER%に背を向け、小屋を出て行った……
 							PRINTFORMW %CALLNAME%(은)는 밝게 웃으면(자), %CALLNAME:MASTER%에 등을 돌려 오두막을 나와 갔다……
 						ELSE
@@ -433,7 +433,7 @@ IF VAR_K13:11 && !TALENT:처녀
 							PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 뺨으로부터 손을 떼어 놓으면(자), 응과 그 자리에 들어앉았다
 ;OriginalString : %CALLNAME%は期待するような目で、じっと%CALLNAME:MASTER%を見つめている……
 							PRINTFORMW %CALLNAME%(은)는 기대하는 것 같은 눈으로, 가만히%CALLNAME:MASTER%(을)를 응시하고 있다……
-							CALL FUNC_K13_ASK("키스する", "애태움てみる")
+							CALL FUNC_K13_ASK("키스 한다", "애태움라고 본다")
 							IF RESULT == 0
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%の頭の後ろに손を回し、抱きしめるように하면서 %CALLNAME%と唇を触れ시켰다
 								PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%의 머리의 뒤로 손을 써, 꼭 껴안도록(듯이) 하면서 %CALLNAME%(와)과 입술을 닿게 했다
@@ -450,14 +450,14 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 頭を軽く撫でると、伸びをするように勢い良く立ち上がった
 								PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 머리를 가볍게 어루만지면(자), 기지개를 켜도록(듯이) 기세 좋게 일어섰다
 ;OriginalString : 「それじゃあ、今回はこれで帰るわね？　良い子にしてるのよ？」
-								PRINTFORMW 「그러면 아, 이번은 이것으로 돌아가요？　좋은 아이로 해？」
+								PRINTFORMW 「그러면 아, 이번은 이것으로 돌아가요?   좋은 아이로 해?」
 ;OriginalString : %CALLNAME%は機嫌良さそうに尻尾をゆらゆらと振れさせながら、小屋を出て行った……
 								PRINTFORMW %CALLNAME%(은)는 기분 좋을 것 같게 꼬리를 하늘하늘 흔들리게 하면서, 오두막을 나와 갔다……
 							ELSE
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%に唇を近づけた상태で、しばらく静止했다
 								PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%에 입술을 접근한 상태로, 당분간 정지했다
 ;OriginalString : 「……どう했다の？　ほら、早くして」
-								PRINTFORMW 「……왜？　이봐요, 빨리 하며」
+								PRINTFORMW 「…… 왜?   이봐요, 빨리 하며」
 ;OriginalString : 키스をせがむ%CALLNAME%に対して、%CALLNAME:MASTER%は、どうしようかなー、と심술궂음く言ってみた
 								PRINTFORMW 키스를 조르는 %CALLNAME%에 대해서, %CALLNAME:MASTER%(은)는, 어떻게 하지―, (이)라고 심술궂게 말해 보았다
 ;OriginalString : 
@@ -467,9 +467,9 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : %CALLNAME:MASTER%의 腹部に、%CALLNAME%の膝蹴りがめり込んだ
 								PRINTFORMW %CALLNAME:MASTER%의 복부에, %CALLNAME%의 무릎 차는 것붐비었다
 ;OriginalString : 「주인님が키스しろって言ったら、さっさと言われた通りに키스しなさいよ！　ホント使えないペットね！！」
-								PRINTFORMW 「남편님이 키스 해라고 하면, 빨리 말해진 대로 키스 해 주세요！　진짜 사용할 수 없는 애완동물！！」
+								PRINTFORMW 「남편님이 키스 해라고 하면, 빨리 말해진 대로 키스 해 주세요!   진짜 사용할 수 없는 애완동물!!」
 ;OriginalString : 「もう怒ったわ！　そのまま、そこで一人で悶えてなさいっ！！」
-								PRINTFORMW 「벌써 화냈어요！　그대로, 거기서 혼자서 번민이라고 없음 있고！！」
+								PRINTFORMW 「벌써 화냈어요!   그대로, 거기서 혼자서 번민이라고 하세요!!」
 ;OriginalString : %CALLNAME:MASTER%は腹への容赦ない一撃に、吐き気を伴う激痛で苦しみながら、
 								PRINTFORML %CALLNAME:MASTER%(은)는 배에의 용서 없는 일격에, 구토를 수반하는 격통으로 괴로워하면서,
 ;OriginalString : 小屋の扉が壊れそうなほど大きな音を立てて閉まるのを聞いた……
@@ -478,16 +478,16 @@ IF VAR_K13:11 && !TALENT:처녀
 						ENDIF
 					ELSE
 ;OriginalString : 「……んふっ♪　これで만족？」
-						PRINTFORMW 「……♪　이것으로 만족？」
+						PRINTFORMW 「……♪  이것으로 만족?」
 ;OriginalString : %CALLNAME%はどこか悪戯っぽい笑みを%CALLNAME:MASTER%に向けた
 						PRINTFORMW %CALLNAME%(은)는 어딘가 못된 장난 같은 미소를 %CALLNAME:MASTER%(을)를 향했다
 ;OriginalString : 「それじゃあ、今回は帰るわね？　良い子にしてるのよ？」
-						PRINTFORMW 「그러면 아, 이번은 돌아가요？　좋은 아이로 해？」
+						PRINTFORMW 「그러면 아, 이번은 돌아가요?   좋은 아이로 해?」
 ;OriginalString : %CALLNAME%は楽しそうに尻尾を揺ら하면서、小屋を出て行った……
 						PRINTFORMW %CALLNAME%(은)는 즐거운 듯이 꼬리를 흔들면서, 오두막을 나와 갔다……
 					ENDIF
 				ENDIF
-			CASE "窓が欲しい"
+			CASE "창을 갖고 싶다"
 ;OriginalString : 「そっか、この小屋、窓がなくて暗いものね」
 				PRINTFORMW 「그래, 이 오두막, 창이 없어 어두운 것」
 ;OriginalString : 「さすがに通り抜けられるくらい大きいものはダメだけど、小さな覗き窓くらいならいいわよ」
@@ -501,20 +501,20 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : 後日、小さな覗き窓が２つほど取り付けられた
-				PRINTFORMW 후일, 작은 틈구멍이２개 정도 장착되었다
+				PRINTFORMW 후일, 작은 틈구멍이 2개 정도 장착되었다
 ;OriginalString : 苦労の後が伺える不格好な窓だが、寒い時には塞ぐことが出来るように、簡素な蓋も取り付けられている
 				PRINTFORMW 노고의 뒤를 방문할 수 있는 꼴사나운 창이지만, 추울 때에는 막을 수가 있도록(듯이), 간소한 뚜껑도 장착되고 있다
 ;OriginalString : これからは多少なりとも外の景色が楽しめるようになりそうだ……
 				PRINTFORMW 지금부터는 다소나마 밖의 경치를 즐길 수 있게 될 것 같다……
-				;선택済み
+				;선택가 끝난 상태
 				VAR_K13:22 = 1
-			CASE "良い布団が欲しい"
+			CASE "좋은 이불을 갖고 싶다"
 ;OriginalString : 「良い布団かぁ……いいわね、私が欲しいくらい」
 				PRINTFORMW 「좋은 이불인가……좋네요, 나를 갖고 싶을 정도 」
 ;OriginalString : 「問題は、どうやって손に入れるかだけど……」
 				PRINTFORMW 「문제는, 어떻게 손에 넣을까이지만……」
 ;OriginalString : 「うん、何とかするから、私に任せなさいっ！」
-				PRINTFORMW 「응, 어떻게든 하기 때문에, 나에게 맡기세요！」
+				PRINTFORMW 「응, 어떻게든 하기 때문에, 나에게 맡기세요!」
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : …………
@@ -524,19 +524,19 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 後日、%CALLNAME:MASTER%의 小屋に良質な布団が届けられた
 				PRINTFORMW 후일, %CALLNAME:MASTER%의 오두막에 양질인 이불이 도착되었다
 ;OriginalString : 「ふふ、感謝してよね！　頑張ってぬすみ……貰えるように交渉했다んだからっ！」
-				PRINTFORMW 「후후, 감사해요！　노력해 훔쳐……받을 수 있도록(듯이) 교섭했으니까！」
+				PRINTFORMW 「후후, 감사해요!   노력해 훔쳐…… 받을 수 있도록(듯이) 교섭했으니까!」
 ;OriginalString : ……入손ルートについては詮索しないでおこう
 				PRINTFORMW ……입수 루트에 대해서는 잔소리하지 않고 두자
-				;선택済み
+				;선택가 끝난 상태
 				VAR_K13:23 = 1
-			CASE @"%CALLNAME%の恋人になりたい"
+			CASE @"%CALLNAME%의 연인이 되고 싶다"
 ;OriginalString : 「へ？」
-				PRINTFORMW 「에？」
+				PRINTFORMW 「에?」
 				IF TALENT:MASTER:남자
 ;OriginalString : 一瞬きょとんと했다表情を浮かべる%CALLNAME%
 					PRINTFORMW 일순간 멍청히 한 표정을 띄운다%CALLNAME%
 ;OriginalString : ゴスッ！
-					PRINTFORML 고슥！
+					PRINTFORML 고슥!
 ;OriginalString : 次の瞬間、%CALLNAME%の膝打ちが%CALLNAME:MASTER%의 顔面を直撃했다
 					PRINTFORMW 다음의 순간, %CALLNAME%의 무릎 치는 것이%CALLNAME:MASTER%의 안면을 직격했다
 ;OriginalString : 
@@ -548,9 +548,9 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 「…………」
 					PRINTFORMW 「…………」
 ;OriginalString : 「あ～……もう止め止め！　さっきの話は全部ナシっ！」
-					PRINTFORMW 「아～……이제 멈추고 그쳐라！　조금 전의 이야기는 전부 나시！」
+					PRINTFORMW 「아～…… 이제 멈추고 그쳐라!   조금 전의 이야기는 전부 나시!」
 ;OriginalString : 「私はもう帰るから、小屋の中で反省してなさいっ！　いいわねっ！」
-					PRINTFORMW 「 나는 이제 돌아가기 때문에, 오두막 중(안)에서 반성해 주세요！　좋네요！」
+					PRINTFORMW 「나는 이제 돌아가기 때문에, 오두막 중(안)에서 반성해 주세요!   좋네요!」
 ;OriginalString : %CALLNAME%は顔を背けると、さっさと小屋を出て行ってしまった……
 					PRINTFORMW %CALLNAME%(은)는 얼굴을 돌리면(자), 빨리 오두막을 나와 가 버렸다……
 				ELSE
@@ -559,7 +559,7 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 
 					PRINTL 
 ;OriginalString : 「いやいや、女同士で恋人も何もないでしょ！？」
-					PRINTFORMW 「아니아니, 여자끼리애인도 아무것도 없지요！？」
+					PRINTFORMW 「아니아니, 여자끼리애인도 아무것도 없지요!?」
 ;OriginalString : 「そりゃエッチなことは色々してるけど、躾のためにそうしてるだけだし」
 					PRINTFORMW 「그렇다면 음란한 (일)것은 여러가지 하고 있지만, 예의 범절을 위해서(때문에) 창시 비칠 뿐(만큼)이고」
 ;OriginalString : 「さすがの私も、そういうのは、なんというか……引くわ」
@@ -567,80 +567,80 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : %CALLNAME%は呆れと困惑の混じったような溜息をついた
 					PRINTFORMW %CALLNAME%(은)는 기가 막히고와 곤혹이 섞인 것 같은 한숨을 붙었다
 ;OriginalString : 「そもそも！」
-					PRINTFORMW 「원래！」
+					PRINTFORMW 「원래!」
 ;OriginalString : 「女同士だとかそういう問題は別にしても、%FUNC_K13_CALLNAME()%は私の『ペット』なの！」
-					PRINTFORMW 「여자끼리라고 그러한 문제는 제외하고,%FUNC_K13_CALLNAME()%(은)는 나의 「애완동물」이야！」
+					PRINTFORMW 「여자끼리라고 그러한 문제는 제외하고,%FUNC_K13_CALLNAME()%는 나의 「애완동물」이야!」
 ;OriginalString : 「そうそう『恋人』なんかに格上げしてあげるわけないでしょ？」
-					PRINTFORMW 「그렇게 자주 「애인」같은 것에(이) 격상 해 주는 것 없지요？」
+					PRINTFORMW 「그렇게 자주 「애인」같은 것에(이) 격상 해 주는 것 없지요?」
 ;OriginalString : 「大人しく、ペットとして可愛がられてるだけで만족しなさい！」
-					PRINTFORMW 「얌전하고, 애완동물로서 귀여워해지고 있을 뿐으로 만족해 주세요！」
+					PRINTFORMW 「얌전하고, 애완동물로서 귀여워해지고 있을 뿐으로 만족해 주세요!」
 ;OriginalString : 「調子に乗った罰として、今回のご褒美はナシよ。しばらく小屋の中で反省してなさいっ！」
-					PRINTFORMW 「본궤도에 오른 벌로서 이번 포상은 나시야. 당분간 오두막 중(안)에서 반성해 주세요！」
+					PRINTFORMW 「본궤도에 오른 벌로서 이번 포상은 나시야. 당분간 오두막 중(안)에서 반성해 주세요!」
 ;OriginalString : %CALLNAME%は機嫌悪そうに顔を背けると、さっさと小屋を出て行ってしまった……
 					PRINTFORMW %CALLNAME%(은)는 기분 나쁜 듯이  얼굴을 돌리면(자), 빨리 오두막을 나와 가 버렸다……
 				ENDIF
-				;선택済み(恋人이벤트進行)
+				;선택가 끝난 상태(연인이벤트진행)
 				VAR_K13:24 = 1
-			CASE @"%CALLNAME%の眷属になりたい"
+			CASE @"%CALLNAME%의 권속이 되고 싶다"
 ;OriginalString : 「え？　何？　……けんぞく？」
-				PRINTFORMW 「네？　하？　……친족？」
+				PRINTFORMW 「네?   하?   …… 친족?」
 ;OriginalString : 一瞬きょとんと했다表情を浮かべる%CALLNAME%
 				PRINTFORMW 일순간 멍청히 한 표정을 띄운다%CALLNAME%
 ;OriginalString : 「え～と……けんぞくって何だっけ？」
-				PRINTFORMW 「네～(와)과……친족은 무엇이던가？」
+				PRINTFORMW 「네～(와)과…… 친족은 무엇이던가?」
 ;OriginalString : 「要するに、私とお揃いの化け猫になって、しかも私の家来になりたいってこと？」
-				PRINTFORMW 「요컨데, 나와 갖춤의 변신하는 능력을 지닌 고양이가 되어, 게다가 나의 하인이 되고 싶다는 것？」
+				PRINTFORMW 「요컨데, 나와 갖춤의 변신하는 능력을 지닌 고양이가 되어, 게다가 나의 하인이 되고 싶다는 것?」
 ;OriginalString : 微妙に違う気もするが、大体そのようなものだと%CALLNAME:MASTER%は伝えた
 				PRINTFORMW 미묘하게 다를 생각도 들지만, 대개 그러한 것이라면%CALLNAME:MASTER%(은)는 전했다
 ;OriginalString : 「別にいいけれど……それって結構すごい妖怪じゃないと出来ないんじゃなかったかしら？」
-				PRINTFORMW 「별로 좋지만……그 거 상당히 대단한 요괴가 아니면 할 수 없지 않았는지 해들？」
-				;主人公が란または유카리
+				PRINTFORMW 「별로 좋지만…… 그 거 상당히 대단한 요괴가 아니면 할 수 없지 않았는지 해들?」
+				;주인공이란 또는유카리
 				IF GROUPMATCH(NO:MASTER, 21, 22)
 ;OriginalString : 「ま、いいや。後でやり方教えてよね？」
-					PRINTFORMW 「뭐, 좋아. 다음에 방식 가르쳐요？」
+					PRINTFORMW 「뭐, 좋아. 다음에 방식 가르쳐요?」
 				ELSE
 ;OriginalString : 「ま、いいや。後で란様にやり方を聞いてみよっと」
 					PRINTFORMW 「뭐, 좋아. 다음에 쪽님이 방식을 (들)물어 봐야지」
 				ENDIF
 ;OriginalString : 「もし出来そうなら、『けんぞく』って奴にしてあげる。期待しててね♪」
 				PRINTFORMW 「만약 할 수 있을 것 같으면, 「친족」은 놈으로 해 준다. 기대하고 있어♪」
-				;선택済み(眷属化이벤트進行)
+				;선택가 끝난 상태(권속화이벤트진행)
 				VAR_K13:25 = 1
-			CASE "해방して欲しい"
+			CASE "해방해 주었으면 한다"
 ;OriginalString : ゴッ！
-				PRINTFORML 곡！
+				PRINTFORML 곡!
 ;OriginalString : 鋭い蹴りが%CALLNAME:MASTER%의 顎を直撃했다
 				PRINTFORMW 날카로운 차는 것이%CALLNAME:MASTER%의 턱을 직격했다
 ;OriginalString : 「ダメだって言ったでしょ。冗談でもダメ」
 				PRINTFORMW 「안된다고 말했겠죠. 농담에서도 안 됨」
 ;OriginalString : 「可愛いペットに今更そんなこと言われたら、たとえ冗談でも結構傷ついちゃうじゃないの！」
-				PRINTFORMW 「사랑스러운 애완동물에게 이제 와서 그런 일 말해지면(자), 비록 농담이라도 상당히 다쳐버린다가 아닌거야！」
+				PRINTFORMW 「사랑스러운 애완동물에게 이제 와서 그런 일 말해지면, 비록 농담이라도 상당히 다쳐버린다가 아닌거야!」
 ;OriginalString : 「あ～……もう怒った！　さっきの話は全部ナシっ！」
-				PRINTFORMW 「아～……벌써 화냈다！　조금 전의 이야기는 전부 나시！」
+				PRINTFORMW 「아～…… 벌써 화냈다!   조금 전의 이야기는 전부 나시!」
 ;OriginalString : 「私はもう帰るから、小屋の中で大人しくしてなさいっ！　いいわねっ！」
-				PRINTFORMW 「 나는 이제 돌아가기 때문에, 오두막 중(안)에서 얌전하게 해 주세요！　좋네요！」
+				PRINTFORMW 「나는 이제 돌아가기 때문에, 오두막 중(안)에서 얌전하게 해 주세요!   좋네요!」
 ;OriginalString : %CALLNAME%は、すっかり不機嫌になって出て行ってしまった……
 				PRINTFORMW %CALLNAME%(은)는, 완전히 기분이 안좋게 되어 나와 가 버렸다……
-				;선택済み
+				;선택가 끝난 상태
 				VAR_K13:26 = 1
-				;전회선택判定
+				;전회선택판정
 				VAR_K13:15 = 1
-			CASE "蹴られたい"
+			CASE "차지고 싶다"
 				IF VAR_K13:26 == 2
 ;OriginalString : 「……%FUNC_K13_CALLNAME()%も懲りないわねえ」
 					PRINTFORMW 「……%FUNC_K13_CALLNAME()%도 질리지 않네요」
 ;OriginalString : 「そんなに言うなら、蹴ってあげるわ……よっ！」
-					PRINTFORMW 「그렇게 말한다면, 차 주어요……！」
+					PRINTFORMW 「그렇게 말한다면, 차 주어요……!」
 					SELECTCASE RAND:3
 					CASE 0
 ;OriginalString : ドスッ！！
-						PRINTFORML 드슥！！
+						PRINTFORML 드슥!!
 ;OriginalString : %CALLNAME%の鋭い蹴りが%CALLNAME:MASTER%의 腹にめり込んだ
 						PRINTFORMW %CALLNAME%의 날카로운 차는 것이%CALLNAME:MASTER%의 배붐비었다
 ;OriginalString : %CALLNAME:MASTER%はその場にうずくまり、胃液が逆流しそうな감각に嗚咽내질렀다
 						PRINTFORMW %CALLNAME:MASTER%(은)는 그 자리에 웅크려, 위액이 역류 할 것 같은 감각에 오열을 흘렸다
 ;OriginalString : 「ほら、お望み通り蹴ってあげたわよ。주인님へのお礼はどう했다の？」
-						PRINTFORMW 「이봐요, 소망 대로 차 주었어요. 남편님에게로의 답례는 왜？」
+						PRINTFORMW 「이봐요, 소망 대로 차 주었어요. 남편님에게로의 답례는 왜?」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 頭を발で짓밟아ると、体重を掛けてグリグリと額を床に擦りつけ시켰다
 						PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 머리를 다리로 짓밟으면(자), 체중을 걸어 그리그리와 액을 마루에 문지르게 했다
 ;OriginalString : ……%CALLNAME%も意外とノリノリな感じがするのは気のせいだろうか
@@ -648,12 +648,12 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 「まったく……変態なペットを持つと苦労するわね」
 						PRINTFORMW 「완전히……변태인 애완동물을 가지면(자) 고생해요」
 ;OriginalString : 「ほら、ちゃんと『ありがとうございます』って言えるまで続けるわよ？」
-						PRINTFORMW 「이봐요, 분명하게 「감사합니다」라고 말할 수 있을 때까지 계속해요？」
+						PRINTFORMW 「이봐요, 분명하게 「감사합니다」라고 말할 수 있을 때까지 계속해요?」
 ;OriginalString : ようやく%CALLNAME:MASTER%의 嗚咽が収まるころには、%CALLNAME:MASTER%의 額は酷く擦り切れて血が滲んでいた…
 						PRINTFORMW 간신히%CALLNAME:MASTER%의 오열이 들어가는 무렵에는, %CALLNAME:MASTER%의 액은 심하게 닳아 떨어져 피가 배이고 있었다…
 					CASE 1
 ;OriginalString : ドスッ！！
-						PRINTFORML 드슥！！
+						PRINTFORML 드슥!!
 ;OriginalString : %CALLNAME%の鋭い蹴りが%CALLNAME:MASTER%의 股間を直撃했다
 						PRINTFORMW %CALLNAME%의 날카로운 차는 것이%CALLNAME:MASTER%의 고간을 직격했다
 						IF TALENT:MASTER:남자
@@ -662,19 +662,19 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 瞬間、%CALLNAME:MASTER%의 전신からブワッと汗が噴き出했다
 							PRINTFORMW 순간, %CALLNAME:MASTER%의 전신으로부터 브왁과 땀이 분출했다
 ;OriginalString : 「ほら、お望み通り、思いっきり蹴ってあげたわよ。これで만족？」
-							PRINTFORMW 「이봐요, 소망 대로, 마음껏 차 주었어요. 이것으로 만족？」
+							PRINTFORMW 「이봐요, 소망 대로, 마음껏 차 주었어요. 이것으로 만족?」
 ;OriginalString : 「………………」
 							PRINTFORMW 「………………」
 ;OriginalString : 
 							PRINTL 
 ;OriginalString : 「ちょっと、いつまでも蹲ってないで、何とか言いなさいよ？」
-							PRINTFORMW 「조금, 언제까지나 웅크리고 앉지 말고, 어떻게든 말하세요？」
+							PRINTFORMW 「조금, 언제까지나 웅크리고 앉지 말고, 어떻게든 말하세요?」
 ;OriginalString : 「………………」
 							PRINTFORMW 「………………」
 ;OriginalString : 
 							PRINTL 
 ;OriginalString : 「ねえ、起きてるわよね？」
-							PRINTFORMW 「응, 일어나고 있는 원이군요？」
+							PRINTFORMW 「응, 일어나고 있는 원이군요?」
 ;OriginalString : 「………………」
 							PRINTFORMW 「………………」
 ;OriginalString : 「…………あー、ダメね。泡吹いちゃってる」
@@ -687,7 +687,7 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 恥骨への強烈な一撃に、%CALLNAME:MASTER%はあまりの고통に股間を押さえてのたうち回った
 							PRINTFORMW 치골에의 강렬한 일격에, %CALLNAME:MASTER%(은)는 너무나 아파서 고간을 누름이라고 몸부림쳐 돌았다
 ;OriginalString : 「お望み通り蹴ってあげたわけだけど……随分と楽しそうね？」
-							PRINTFORMW 「소망 대로 차 준 것이지만……상당히 즐거운 듯 하구나？」
+							PRINTFORMW 「소망 대로 차 준 것이지만…… 상당히 즐거운 듯 하구나?」
 ;OriginalString : 「………………」
 							PRINTFORMW 「………………」
 ;OriginalString : 何を思ったのか、%CALLNAME%は股間を押さえている%CALLNAME:MASTER%의 손を力づくで剥がすと、
@@ -703,7 +703,7 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 俗にいう電気按摩の体勢で%CALLNAME:MASTER%의 클리토리스を발で踏み付けるように強い力で擦った
 							PRINTFORMW 일반적으로 말하는 전기 안마의 몸의 자세로%CALLNAME:MASTER%의 클리토리스를 다리로 밟아 붙이도록(듯이) 강한 힘으로 켰다
 ;OriginalString : 「ほら、こういうのがいいんでしょ！　この変態っ！　変態女っ！！」
-							PRINTFORMW 「이봐요, 이런 것이 좋지요！　이 변태！　변태녀！！」
+							PRINTFORMW 「이봐요, 이런 것이 좋지요!   이 변태!   변태녀!!」
 ;OriginalString : %CALLNAME:MASTER%はあまりの激痛に、고통と快感の区別も付けられないまま、涙を流し髪を振り乱して泣き喚いた
 							PRINTFORMW %CALLNAME:MASTER%(은)는 지나친 격통에, 고통과 쾌감의 구별도 붙이지 않을 수 없는 채, 눈물을 흘려 머리카락을 흩뜨려 울며 아우성쳤다
 ;OriginalString : 不意に腰の감각がなくなったと思うと、次の瞬間、雷に打たれたような強烈な衝撃が%CALLNAME:MASTER%의 脳を焼いた
@@ -713,7 +713,7 @@ IF VAR_K13:11 && !TALENT:처녀
 ;OriginalString : 
 							PRINTL 
 ;OriginalString : 「あらら……泡吹いちゃってる。さすがにやり過ぎたかしら？」
-							PRINTFORMW 「어머……아와부키 있어 버린다. 너무 과연 했는지 해들？」
+							PRINTFORMW 「어머…… 아와부키 있어 버린다. 과연 너무 했는지 해들?」
 ;OriginalString : 「まあ、これで懲りてくれるなら問題ないんだけど……」
 							PRINTFORMW 「뭐, 이것으로 질려 준다면 문제 없지만……」
 ;OriginalString : 「ヘタすると、ますます変な方向に目覚めちゃいそうよね」
@@ -725,73 +725,73 @@ IF VAR_K13:11 && !TALENT:처녀
 						ENDIF
 					CASE 2
 ;OriginalString : ゴッ！！
-						PRINTFORML 곡！！
+						PRINTFORML 곡!!
 ;OriginalString : %CALLNAME%の鋭い蹴りが%CALLNAME:MASTER%의 顔面を直撃했다
 						PRINTFORMW %CALLNAME%의 날카로운 차는 것이%CALLNAME:MASTER%의 안면을 직격했다
 ;OriginalString : 衝撃で%CALLNAME:MASTER%의 体が後ろに転がり、%CALLNAME:MASTER%に付けられた개목걸이の鎖がジャラジャラと音を立てる
 						PRINTFORMW 충격으로 %CALLNAME:MASTER%의 몸이 뒤로 굴러, %CALLNAME:MASTER%에 붙일 수 있었던 목걸이의 쇠사슬이 쟈라쟈라와 소리를 낸다
 ;OriginalString : 「これで만족？　ホント、世話の焼けるペットね」
-						PRINTFORMW 「이것으로 만족？　진짜, 주선이 타는 애완동물」
+						PRINTFORMW 「이것으로 만족?   진짜, 주선이 타는 애완동물」
 ;OriginalString : 「……あら？　鼻血、出てるわよ？」
-						PRINTFORMW 「……어머나？　코피, 나오고 있는 원이야？」
+						PRINTFORMW 「…… 어머나?   코피, 나오고 있는 원이야?」
 ;OriginalString : %CALLNAME%の言う通り、起き上がった%CALLNAME:MASTER%의 鼻からはポタポタと血が流れ落ちていた
 						PRINTFORMW %CALLNAME%(이)가 말하는 대로, 일어났다%CALLNAME:MASTER%의 코로부터는 포타포타와 피가 흐르고 떨어지고 있었다
 ;OriginalString : 「ま、そのくらいなら鼻の骨は折れてないんじゃない？」
-						PRINTFORMW 「뭐, 그 정도라면 코의 뼈는 접히지 않지 않아？」
+						PRINTFORMW 「뭐, 그 정도라면 코의 뼈는 접히지 않잖아?」
 ;OriginalString : 「いっそのこと、鼻どころか頭蓋骨にヒビが入る勢いで蹴った方が、お互いのためだったかもね？」
-						PRINTFORMW 「차라리, 코는 커녕 두개골에 금이 들어갈 기세로 찬 (분)편이, 서로의 유익이었을 지도？」
+						PRINTFORMW 「차라리, 코는 커녕 두개골에 금이 들어갈 기세로 찬 (분)편이, 서로의 유익이었을 지도?」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%を蔑むように小さく笑うと、鼻血を流す%CALLNAME:MASTER%を방치して小屋をから出て行った…
 						PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%(을)를 업신여기도록(듯이) 작게 웃으면(자), 코피를 흘린다%CALLNAME:MASTER%(을)를 방치해 오두막을로부터 나와 갔다…
 					ENDSELECT
 				ELSE
 ;OriginalString : 「…………え？」
-					PRINTFORMW 「…………네？」
+					PRINTFORMW 「………… 네?」
 ;OriginalString : %CALLNAME%はパチクリさせて、固まった
 					PRINTFORMW %CALLNAME%(은)는 파치크리 시켜, 굳어졌다
 ;OriginalString : 「ええと……聞き間違いじゃないわよね？」
-					PRINTFORMW 「음……(들)물어 실수가 아니어요？」
+					PRINTFORMW 「음……(들)물어 실수가 아니에요?」
 ;OriginalString : 「蹴られたいって……さすがにそれは私も引いちゃうわよ？」
-					PRINTFORMW 「차지고 싶다고……과연 그것은 내도 끌어들이어버리는 원이야？」
+					PRINTFORMW 「차지고 싶다고…… 과연 그것은 내도 끌어들이어버리는 원이야?」
 ;OriginalString : %CALLNAME%は、まさに汚物を見るような嫌そうな目を%CALLNAME:MASTER%に向けている…
 					PRINTFORMW %CALLNAME%(은)는, 확실히 오물을 보는 것 같은 싫을 것 같은 눈을 %CALLNAME:MASTER%(을)를 향하고 있다…
 ;OriginalString : 「ひょっとして、この前ので変なものに目覚めちゃったのかしら？」
-					PRINTFORMW 「혹시, 일전에의 것으로 이상한 것에 눈을 떠 버렸어 까？」
+					PRINTFORMW 「혹시, 일전에의 것으로 이상한 것에 눈을 떠 버렸어 까?」
 ;OriginalString : 「まあ、お願いを聞くって言った손前だし、別にいいけどさぁ…」
 					PRINTFORMW 「뭐, 부탁을 (듣)묻는다 라고 한 앞이고, 별로 좋지만…」
 ;OriginalString : 「ほら、いくわよ？」
-					PRINTFORMW 「이봐요, 가요？」
+					PRINTFORMW 「이봐요, 가요?」
 ;OriginalString : 
 					PRINTL 
 ;OriginalString : ドスッ！！
-					PRINTFORML 드슥！！
+					PRINTFORML 드슥!!
 ;OriginalString : %CALLNAME%の鋭い蹴りが%CALLNAME:MASTER%의 가슴を直撃し、%CALLNAME:MASTER%は衝撃で床に打ち付けられた
 					PRINTFORMW %CALLNAME%의 날카로운 차는 것이%CALLNAME:MASTER%의 가슴을 직격해, %CALLNAME:MASTER%(은)는 충격으로 마루에 부딪힐 수 있었다
 ;OriginalString : %CALLNAME:MASTER%は肺への強烈なダメージで、息を吸い込むこともできず、あまりの苦しさに悶えた
 					PRINTFORMW %CALLNAME:MASTER%(은)는 폐에의 강렬한 데미지로, 숨을 들이 마실 수도 있지 않고, 너무나 괴로워서 번민
 ;OriginalString : 「今回はちょっと強めにしてあげたから、結構キクんじゃない？」
-					PRINTFORMW 「이번은 조금 강하게 해로 해 주었기 때문에, 상당히 국화  것이 아니다？」
+					PRINTFORMW 「이번은 조금 강하게 해로 해 주었기 때문에, 상당히 국화  것이 아니다?」
 ;OriginalString : 「これに懲りたら、もうこういう要求は止めてよね」
 					PRINTFORMW 「이것에 질리면(자), 이제 이런 요구는 멈추어요」
 ;OriginalString : 苦しむ%CALLNAME:MASTER%をその場に残して、%CALLNAME%はさっさと小屋の扉の方へ歩いて行った
 					PRINTFORMW 괴로워하는 %CALLNAME:MASTER%(을)를 그 자리에 남겨, %CALLNAME%(은)는 빨리 오두막의 문에 걸어 갔다
 ;OriginalString : 「はぁ……躾け方を間違ったかなぁ」
 					PRINTFORMW 「후~……예의범절을 가르치는 방법을 틀렸는지」
-					;선택済み
+					;선택가 끝난 상태
 					VAR_K13:26 = 2
 				ENDIF
-				;전회선택判定
+				;전회선택판정
 				VAR_K13:15 = 2
 
-			CASE "特にない"
+			CASE "특히 없다"
 ;OriginalString : 「あら？　そうなの？」
-				PRINTFORMW 「어머나？　그래？」
+				PRINTFORMW 「어머나?   그래?」
 ;OriginalString : 「まあ、%FUNC_K13_CALLNAME()%がいいなら、それでもいいけど」
 				PRINTFORMW 「뭐,%FUNC_K13_CALLNAME()%하지만 좋으면, 그런데도 좋은데」
 ;OriginalString : 「とりあえずは不満なしってことで、前向きに受け取っておくわね♪」
 				PRINTFORMW 「우선은 불만 없음은 것으로, 적극적으로 받아 두어요♪」
 		ENDSELECT
 
-		;키스要求時の이벤트制御
+		;키스요구시의이벤트제어
 		IF VAR_K13:16 == 1
 			VAR_K13:16 = 2
 		ENDIF
@@ -801,13 +801,13 @@ IF VAR_K13:11 && !TALENT:처녀
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;대만족보너스を得ている
+;대만족보너스를 얻고 있다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && TFLAG:금회대만족
+IF 구상기입체크(0) && TFLAG:금회대만족
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(10)
+	IF 구상기입체크(0) && FIRSTEVENT(10)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -815,9 +815,9 @@ IF 구상記入チェック(0) && TFLAG:금회대만족
 	ENDIF
 	
 	;=================================================
-	;죠교대상の精力0
+	;죠교대상의 정력 0
 	;=================================================
-	IF 구상記入チェック(0) && FLAG:일상제어 == 2
+	IF 구상기입체크(0) && FLAG:일상제어 == 2
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -825,9 +825,9 @@ IF 구상記入チェック(0) && TFLAG:금회대만족
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -836,20 +836,20 @@ IF 구상記入チェック(0) && TFLAG:금회대만족
 ENDIF
 
 ;*************************************************
-;以下、호감도による派生
+;이하, 호감도에 의한 파생
 ;*************************************************
 
-;EVENT11あたりで任意のKFLAGを立てて条件にしてやると話の辻褄は合わせやすいです
+;EVENT11 근처에서 임의의 KFLAG를 세워 조건으로 해 준다고 이야기의 이치는 맞추기 쉽습니다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;상사상애（호의3000以上・호감도3000以上）
+;상사상애（호의 3000 이상·호감도 3000 이상）
 ;-------------------------------------------------
-;・互いに好き合っている
+;·서로 서로 좋아하고 있다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && AFFECTION("상사상애")
+IF 구상기입체크() && AFFECTION("상사상애")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(20)
+	IF 구상기입체크(0) && FIRSTEVENT(20)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -857,9 +857,9 @@ IF 구상記入チェック() && AFFECTION("상사상애")
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -867,17 +867,17 @@ IF 구상記入チェック() && AFFECTION("상사상애")
 	ENDIF
 ENDIF
 
-;호감도の伸び的に익애の後になると思われます
+;호감도의 성장적에익애의 뒤가 된다고 생각됩니다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교完了（호의2000以上）
+;죠교완료（호의 2000 이상）
 ;-------------------------------------------------
-;・죠교대상が구상主にもうメロメロ
+;·죠교대상가구상 주로 이제(벌써) 헤롱헤롱
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("죠교完了")
+IF 구상기입체크(0) && AFFECTION("죠교완료")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(30)
+	IF 구상기입체크(0) && FIRSTEVENT(30)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -885,36 +885,9 @@ IF 구상記入チェック(0) && AFFECTION("죠교完了")
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
-;OriginalString : 
-		PRINTFORMW 
-		CALL FUNC_K13_EVENT_AFTER()
-		RETURN 1
-	ENDIF
-ENDIF
-
-;━━━━━━━━━━━━━━━━━━━━━━━━
-;익애（호감도2000以上）
-;-------------------------------------------------
-;・죠교자の方が죠교대상にはまってしまい、深かったり倒錯했다愛を注いでいる
-;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("익애")
-	;=================================================
-	;처음
-	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(40)
-;OriginalString : 
-		PRINTFORMW 
-		CALL FUNC_K13_EVENT_AFTER()
-		RETURN 1
-	ENDIF
-	
-	;=================================================
-	;기타・조건없음
-	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -923,15 +896,15 @@ IF 구상記入チェック(0) && AFFECTION("익애")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교済み（호의1000以上）
+;익애（호감도 2000 이상）
 ;-------------------------------------------------
-;・죠교대상が구상主に죠교されるのを幸せに感じている
+;·죠교자가죠교대상에 빠져 버려, 깊기도 하고 도착했다 사랑을 따르고 있다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("죠교済み")
+IF 구상기입체크(0) && AFFECTION("익애")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(50)
+	IF 구상기입체크(0) && FIRSTEVENT(40)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -939,9 +912,9 @@ IF 구상記入チェック(0) && AFFECTION("죠교済み")
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -950,15 +923,15 @@ IF 구상記入チェック(0) && AFFECTION("죠교済み")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;嫌悪（호의-100未満）
+;죠교가 끝난 상태（호의 1000 이상）
 ;-------------------------------------------------
-;・죠교자に対し嫌悪感を抱いている
+;·죠교대상가구상 주로죠교 되는 것을 행복하게 느끼고 있다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("嫌悪")
+IF 구상기입체크(0) && AFFECTION("죠교가 끝난 상태")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(60)
+	IF 구상기입체크(0) && FIRSTEVENT(50)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -966,38 +939,9 @@ IF 구상記入チェック(0) && AFFECTION("嫌悪")
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
-;OriginalString : 
-		PRINTFORMW 
-		CALL FUNC_K13_EVENT_AFTER()
-		RETURN 1
-	ENDIF
-ENDIF
-
-;-------------------------------------------------
-;・心に傷を作られ、주인님の姿を見るだけで怯えてしまう
-;・트라우마の種は「%ACTSTR(CFLAG:MASTER:8)%」で表示できる
-;　例）PRINTFORMW 「もう%ACTSTR(CFLAG:MASTER:8)%は嫌ですって？」
-;━━━━━━━━━━━━━━━━━━━━━━━━
-;공포（호의200未満・트라우마Lv3以上）
-;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("공포")
-	;=================================================
-	;처음
-	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(70)
-;OriginalString : 
-		PRINTFORMW 
-		CALL FUNC_K13_EVENT_AFTER()
-		RETURN 1
-	ENDIF
-	
-	;=================================================
-	;기타・조건없음
-	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -1006,15 +950,15 @@ IF 구상記入チェック(0) && AFFECTION("공포")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;반항（호의0以下・반항각인Lv1以上）
+;혐오（호의-100 미만）
 ;-------------------------------------------------
-;・心を開かない노예に苛つく주인님
+;·죠교자에 대해 혐오감을 안고 있다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("반항")
+IF 구상기입체크(0) && AFFECTION("혐오")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(80)
+	IF 구상기입체크(0) && FIRSTEVENT(60)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -1022,9 +966,38 @@ IF 구상記入チェック(0) && AFFECTION("반항")
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
+;OriginalString : 
+		PRINTFORMW 
+		CALL FUNC_K13_EVENT_AFTER()
+		RETURN 1
+	ENDIF
+ENDIF
+
+;-------------------------------------------------
+;·마음에 상처를 만들어져주인님의 모습을 보는 것만으로 무서워해 버린다
+;·트라우마의 종은 「%ACTSTR(CFLAG:MASTER:8)%」로 표시할 수 있다
+;  예）PRINTFORMW 「이제(벌써)%ACTSTR(CFLAG:MASTER:8)%는 싫습니다 라고?」
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;공포（호의 200 미만·트라우마Lv3 이상）
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상기입체크(0) && AFFECTION("공포")
+	;=================================================
+	;처음
+	;=================================================
+	IF 구상기입체크(0) && FIRSTEVENT(70)
+;OriginalString : 
+		PRINTFORMW 
+		CALL FUNC_K13_EVENT_AFTER()
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;기타·조건없음
+	;=================================================
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -1033,15 +1006,15 @@ IF 구상記入チェック(0) && AFFECTION("반항")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;目覚め（호의500以上）
+;반항（호의 0 이하·반항각인Lv1 이상）
 ;-------------------------------------------------
-;・죠교されるのもむしろ好きになってきたかも知れない…
+;·마음을 열지 않는노예에 초조해지는주인님
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("目覚め")
+IF 구상기입체크(0) && AFFECTION("반항")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(90)
+	IF 구상기입체크(0) && FIRSTEVENT(80)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -1049,9 +1022,9 @@ IF 구상記入チェック(0) && AFFECTION("目覚め")
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -1060,15 +1033,15 @@ IF 구상記入チェック(0) && AFFECTION("目覚め")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;順応（호의100以上・호감도100以上）
+;눈을 뜨고（호의 500 이상）
 ;-------------------------------------------------
-;・丁寧に죠교を進められて、思ったより嫌じゃないかも…
+;·죠교 되는 것도 오히려 좋아하게 되었는지도 모른다…
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("順応")
+IF 구상기입체크(0) && AFFECTION("눈을 뜸")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTEVENT(100)
+	IF 구상기입체크(0) && FIRSTEVENT(90)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -1076,9 +1049,9 @@ IF 구상記入チェック(0) && AFFECTION("順応")
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타·조건없음
 	;=================================================
-	IF 구상記入チェック(0)
+	IF 구상기입체크(0)
 ;OriginalString : 
 		PRINTFORMW 
 		CALL FUNC_K13_EVENT_AFTER()
@@ -1087,15 +1060,42 @@ IF 구상記入チェック(0) && AFFECTION("順応")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;序盤（条件なし）
+;순응（호의 100 이상·호감도 100 이상）
 ;-------------------------------------------------
-;・ここまでの条件にヒットしなかった場合
+;·정중하게죠교를 진행되어, 생각했던 것보다 싫지 않을지도…
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック()
+IF 구상기입체크(0) && AFFECTION("순응")
 	;=================================================
-	;기타・조건없음
+	;처음
 	;=================================================
-	IF 구상記入チェック()
+	IF 구상기입체크(0) && FIRSTEVENT(100)
+;OriginalString : 
+		PRINTFORMW 
+		CALL FUNC_K13_EVENT_AFTER()
+		RETURN 1
+	ENDIF
+	
+	;=================================================
+	;기타·조건없음
+	;=================================================
+	IF 구상기입체크(0)
+;OriginalString : 
+		PRINTFORMW 
+		CALL FUNC_K13_EVENT_AFTER()
+		RETURN 1
+	ENDIF
+ENDIF
+
+;━━━━━━━━━━━━━━━━━━━━━━━━
+;초반（조건 없음）
+;-------------------------------------------------
+;·여기까지의 조건에 히트 하지 않았던 경우
+;━━━━━━━━━━━━━━━━━━━━━━━━
+IF 구상기입체크()
+	;=================================================
+	;기타·조건없음
+	;=================================================
+	IF 구상기입체크()
 ;OriginalString : 「ふふ、금일はこんなところで勘弁してあげる」
 		PRINTFORMW 「후후, 오늘은 이런 곳에서 용서 해 준다」
 ;OriginalString : 「次の죠교に備えて、ちゃんと休んでおくのよ」
@@ -1107,15 +1107,15 @@ ENDIF
 
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교終了後の追加이벤트
+;죠교종료후의 추가이벤트
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 @FUNC_K13_EVENT_AFTER
 #DIM place_check
 #DIM event_check
 
-;体洗い이벤트
+;체 세탁이벤트
 IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
-	;強制ウェイト
+	;강제 웨이트
 	MESSKIP
 	IF RESULT
 		FORCEWAIT
@@ -1131,7 +1131,7 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 ;OriginalString : 죠교が終わった後しばらくして、%CALLNAME%が戻ってきた
 		PRINTFORMW 조교가 끝난 후 잠시 후, %CALLNAME%(은)는 돌아왔다
 ;OriginalString : 「少し用があるから、外に出なさい。ほら、もたもたしないの！」
-		PRINTFORMW 「조금 용무가 있기 때문에, 밖에 나오세요. 이봐요, 우물쭈물 하지 않는거야！」
+		PRINTFORMW 「조금 용무가 있기 때문에, 밖에 나오세요. 이봐요, 우물쭈물 하지 않는거야!」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 개목걸이を外すと、%CALLNAME:MASTER%의 腕を掴んで強引に小屋の外へと引っ張りだ했다
 		PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 목걸이를 벗으면(자), %CALLNAME:MASTER%의 팔을 잡아 억지로 오두막의 밖으로 끌기 시작했다
 ;OriginalString : ………………
@@ -1154,7 +1154,7 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 			PRINTFORMW 「정직, 나도 애완동물에게는 가능한 한 깨끗한 상태로 있기를 원하는 것」
 		ENDIF
 ;OriginalString : 「というわけで、さっさと服を脱いで、体を拭きなさい！」
-		PRINTFORMW 「이라고 하는 것으로, 빨리 옷을 벗어, 몸을 닦으세요！」
+		PRINTFORMW 「이라고 하는 것으로, 빨리 옷을 벗어, 몸을 닦으세요!」
 ;OriginalString : %CALLNAME%に促されるまま、%CALLNAME:MASTER%は水で濡ら했다布で自分の体を拭いていった……
 		PRINTFORMW %CALLNAME%에 촉구받는 대로, %CALLNAME:MASTER%(은)는 물로 적신 옷감으로 자신의 몸을 닦아라고 말했다……
 ;OriginalString : 
@@ -1164,7 +1164,7 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 ;OriginalString : 
 		PRINTL 
 ;OriginalString : 「……もう体を拭くのは十分かしら？」
-		PRINTFORMW 「……이제 몸을 닦는 것은 충분할까？」
+		PRINTFORMW 「…… 이제 몸을 닦는 것은 충분할까?」
 ;OriginalString : %CALLNAME:MASTER%がもう十分だと返答すると、%CALLNAME%は%CALLNAME:MASTER%의 使っていた桶を손に取った
 		PRINTFORMW %CALLNAME:MASTER%(은)는 이제 충분하다고 대답하면, %CALLNAME%(은)는 %CALLNAME:MASTER%(이)가 사용하고 있던 통을 손에 들었다
 ;OriginalString : 「それじゃあ、最後に残った水を掛けてあげるから、目を閉じてなさい」
@@ -1176,7 +1176,7 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 ;OriginalString : あまりの冷たさに、%CALLNAME:MASTER%はブルリと震える
 		PRINTFORMW 너무나 차가와서 , %CALLNAME:MASTER%(은)는 브르리와 떨린다
 ;OriginalString : 「あははっ♪　さすがに夜の水の冷たさは厳しかったかしら？」
-		PRINTFORMW 「아하하♪　과연 밤의 물의 차가움은 어려웠는지 해들？」
+		PRINTFORMW 「아하하♪  과연 밤의 물의 차가움은 어려웠는지 해들?」
 ;OriginalString : 「ほら、風邪を引かないうちに、これでさっさと拭きなさい」
 		PRINTFORMW 「이봐요, 감기에 걸리지 않는 동안에, 이것으로 빨리 닦으세요」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%に、先ほどとは別の乾いた布を投げ渡했다
@@ -1188,7 +1188,7 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 ;OriginalString : 
 		PRINTL 
 ;OriginalString : 「服もちゃんと着たわね？　……少しはスッキリ했다でしょ？」
-		PRINTFORMW 「옷도 분명하게 입은 원이군요？　……조금은 깨끗이 했겠죠？」
+		PRINTFORMW 「옷도 분명하게 입은 원이군요?   …… 조금은 깨끗이 했겠죠?」
 		IF TALENT:MASTER:남자
 ;OriginalString : 「これからも、時々こうやって体を洗わせてあげる」
 			PRINTFORMW 「앞으로도, 가끔 이렇게 몸을 씻게 해 준다」
@@ -1197,7 +1197,7 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 			PRINTFORMW 「앞으로도, 가능한 한 이렇게 몸을 씻게 해 준다」
 		ENDIF
 ;OriginalString : 「とりあえず、금일のところはさっさと돌아가기わよ？」
-		PRINTFORMW 「우선, 오늘은 빨리 돌아와요？」
+		PRINTFORMW 「우선, 오늘은 빨리 돌아와요?」
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%に腕を掴まれて、無理やり小屋の中へと引き戻당했다
 		PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%에 팔을 잡아져, 억지로 오두막가운데로 되돌려졌다
 ;OriginalString : %CALLNAME:MASTER%의 首に、再び개목걸이が嵌められた……
@@ -1205,12 +1205,12 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 ;OriginalString : 
 		PRINTL 
 ;OriginalString : 「금일のところは、これで帰るわね？」
-		PRINTFORMW 「오늘은, 이것으로 돌아가요？」
+		PRINTFORMW 「오늘은, 이것으로 돌아가요?」
 ;OriginalString : 「今夜は風邪を引かないように、ちゃんと暖かくして寝るのよ？」
-		PRINTFORMW 「오늘 밤은 감기에 걸리지 않게, 분명하게 따뜻하게 해 자？」
+		PRINTFORMW 「오늘 밤은 감기에 걸리지 않게, 분명하게 따뜻하게 해 자?」
 ;OriginalString : %CALLNAME%はそう言い残して小屋を出ると、扉を閉めた……
 		PRINTFORMW %CALLNAME%(은)는 그렇게 말하다가 남겨 오두막을 나오면(자), 문을 닫았다……
-	;二回目以降
+	;2회째 이후
 	ELSE
 ;OriginalString : 죠교が終わった後しばらくして、%CALLNAME%が戻ってきた
 		PRINTFORML 조교가 끝난 후 잠시 후, %CALLNAME%(은)는 돌아왔다
@@ -1224,21 +1224,21 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 			SELECTCASE RAND:7
 				CASE 0
 ;OriginalString : 「毎日体を洗いたいって？　それはダメよ」
-					PRINTFORML 「매일체를 씻고 싶다고？　그것은 안되어요」
+					PRINTFORML 「매일체를 씻고 싶다고?   그것은 안되어요」
 ;OriginalString : 「少しは雄の臭いがしてた方が、私の好みだもん♪」
 					PRINTFORMW 「조금은 수컷이 냄새가 나고 있었던 (분)편이, 나의 취향이야♪」
 ;OriginalString : ………………
 					PRINTFORMW ………………
 				CASE 1
 ;OriginalString : 「こら！　お尻の穴を洗ってるだけで逃げないの！」
-					PRINTFORML 「이거 참！　엉덩이의 구멍을 씻고 있을 뿐으로 도망치지 않는거야！」
+					PRINTFORML 「이거 참!   엉덩이의 구멍을 씻고 있을 뿐으로 도망치지 않는거야!」
 ;OriginalString : 「今は変なことはしないから、大人しくしなさいっ！」
-					PRINTFORMW 「지금은 이상한 (일)것은 하지 않기 때문에, 얌전하게 해 주세요！」
+					PRINTFORMW 「지금은 이상한 (일)것은 하지 않기 때문에, 얌전하게 해 주세요!」
 ;OriginalString : ………………
 					PRINTFORMW ………………
 				CASE 2
 ;OriginalString : 「言っとくけど、この隙に逃げようなんて考えないでね？　五体만족でいたければ、ね？」
-					PRINTFORMW 「말해 놓지만, 이 틈에 도망치자는 생각하지 말아줘？　오전한 육심으로 아프면, 이군요？」
+					PRINTFORMW 「말해 놓지만, 이 틈에 도망치자는 생각하지 말아줘?   오전한 육심으로 아프면, 이군요?」
 ;OriginalString : ………………
 					PRINTFORMW ………………
 			ENDSELECT
@@ -1246,17 +1246,17 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 			SELECTCASE RAND:7
 				CASE 0
 ;OriginalString : 「여자だもの、ちゃんと体は綺麗にしておかないとね？」
-					PRINTFORMW 「여자 아이인걸, 분명하게 몸은 깨끗이 해 두지 않으면？」
+					PRINTFORMW 「여자 아이인걸, 분명하게 몸은 깨끗이 해 두지 않으면?」
 ;OriginalString : ………………
 					PRINTFORMW ………………
 				CASE 1
 ;OriginalString : 「相変わらず、綺麗な肌してるのね？　ペットの癖に、ちょっと건방짐……」
-					PRINTFORMW 「변함 없이, 깨끗한 피부 해？　애완동물의 버릇에, 조금 거만함……」
+					PRINTFORMW 「변함 없이, 깨끗한 피부 해?   애완동물의 버릇에, 조금 거만함……」
 ;OriginalString : ………………
 					PRINTFORMW ………………
 				CASE 2
 ;OriginalString : 「言っとくけど、この隙に逃げようなんて考えないでね？　五体만족でいたければ、ね？」
-					PRINTFORMW 「말해 놓지만, 이 틈에 도망치자는 생각하지 말아줘？　오전한 육심으로 아프면, 이군요？」
+					PRINTFORMW 「말해 놓지만, 이 틈에 도망치자는 생각하지 말아줘?   오전한 육심으로 아프면, 이군요?」
 ;OriginalString : ………………
 					PRINTFORMW ………………
 			ENDSELECT
@@ -1266,14 +1266,14 @@ IF DAY >= 1 && TIME == 1 && (!TALENT:MASTER:남자 || DAY % 3 == 0)
 ;OriginalString : 「うん、こんなところね♪」
 		PRINTFORML 「응, 이런 곳이군요♪」
 ;OriginalString : 「それじゃ、금일も風邪を引かないように暖かくして寝るのよ？」
-		PRINTFORMW 「그러면, 오늘도 감기에 걸리지 않게 따뜻하게 해 자？」
+		PRINTFORMW 「그러면, 오늘도 감기에 걸리지 않게 따뜻하게 해 자?」
 	ENDIF
 	RETURN
 ENDIF
 
-;連れ出し이벤트
+;데리고 나가이벤트
 IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
-	;強制ウェイト
+	;강제 웨이트
 	MESSKIP
 	IF RESULT
 		FORCEWAIT
@@ -1290,13 +1290,13 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 개목걸이を外すと、%CALLNAME:MASTER%を引きずるようにして小屋の外へと連れ出했다
 		PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 목걸이를 벗으면(자), %CALLNAME:MASTER%(을)를 질질 끌도록(듯이) 해 오두막의 밖으로 데리고 나갔다
 ;OriginalString : 「금일は一緒に川に出掛けるわよ！　付き合いなさいっ！」
-		PRINTFORMW 「오늘은 함께 강에 나가요！　교제하세요！」
-		CALL FUNC_K13_ASK("快く承諾する", "疲れているので断る")
+		PRINTFORMW 「오늘은 함께 강에 나가요!   교제하세요!」
+		CALL FUNC_K13_ASK("기분 좋게 승낙한다", "피곤하므로 거절한다")
 		IF RESULT == 0
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%の突然の命令にも嫌な顔ひとつせずに従った……
 			PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%의 돌연의 명령에도 싫은 얼굴 하나 하지 않고에 따랐다……
 ;OriginalString : 「うんうん、良い子ね♪　さあ、行くわよ！」
-			PRINTFORMW 「응응, 좋은 아이♪　자, 가요！」
+			PRINTFORMW 「응응, 좋은 아이♪  자, 가요!」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 손を取り、小屋からあまり離れていない川辺へと連れて行った
 			PRINTFORMW %CALLNAME%(은)는 %CALLNAME:MASTER%의 수를 잡아, 오두막으로부터 그다지 멀어지지 않은 강변으로 데려 갔다
 ;OriginalString : ………………
@@ -1326,11 +1326,11 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 
 		PRINTL 
 ;OriginalString : 「ちょっと、まだ出来ないの？　さっさ作りなさいっ！」
-		PRINTFORMW 「조금, 아직 할 수 없는거야？　만드세요！」
+		PRINTFORMW 「조금, 아직 할 수 없는거야?   만드세요!」
 ;OriginalString : 川辺に連れてこられた%CALLNAME:MASTER%は、%CALLNAME%に命じられて釣り竿を作らされていた……
 		PRINTFORMW 강변에 데려 올 수 있던 %CALLNAME:MASTER%(은)는, %CALLNAME%에 명할 수 있어 낚싯대를 작등 되고 있었다……
 ;OriginalString : 「ほらほら、このままじゃ日が暮れちゃうわよ？　あんまり주인님を待たせるんじゃないのっ」
-		PRINTFORMW 「이봐요 이봐요, 이대로는 해가 져버리는 원이야？　너무 남편님을 기다리게 한다」
+		PRINTFORMW 「이봐요 이봐요, 이대로는 해가 져버리는 원이야?   너무 남편님을 기다리게 한다」
 ;OriginalString : 魚を心待ちにしている%CALLNAME%は、さっきからずっとこの調子だ
 		PRINTFORMW 물고기를 손꼽아 기다리고 있는 %CALLNAME%(은)는, 조금 전부터 쭉 이 상태다
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%に何度となく急かされながらも、ありあわせの材料で最低限釣りが行える竿を作り上げた
@@ -1356,7 +1356,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : ご機嫌상태で魚にむしゃぶりつく%CALLNAME%と共に、%CALLNAME:MASTER%は夕暮れの山道を歩いて小屋へと戻っていった……
 		PRINTFORMW 기분 상태로 물고기달라붙어서 놓지 않다%CALLNAME%(와)과 함께, %CALLNAME:MASTER%(은)는 황혼의 산길을 걸어 오두막으로 돌아와 갔다……
 
-	;二回目以降
+	;2회째 이후
 	ELSE
 ;OriginalString : 죠교が終わった後しばらくして、%CALLNAME%が戻ってきた
 		PRINTFORML 조교가 끝난 후 잠시 후, %CALLNAME%(은)는 돌아왔다
@@ -1367,7 +1367,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 
 		IF place_check == 0
 ;OriginalString : 「금일は一緒に川に出掛けるわよ！　ついてきなさいっ！」
-			PRINTFORML 「오늘은 함께 강에 나가요！　따라 오세요！」
+			PRINTFORML 「오늘은 함께 강에 나가요!   따라 오세요!」
 ;OriginalString : %CALLNAME:MASTER%は半ば%CALLNAME%に引きずられるように하면서、近くの川へと連れて行かれた
 			PRINTFORMW %CALLNAME:MASTER%(은)는 반%CALLNAME%에 끌려가도록(듯이) 품질, 가까이의 강으로 데리고 가졌다
 ;OriginalString : ………………
@@ -1389,7 +1389,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : 「あっ、今引いたわ！！　ほら、ボケッとしてないで釣り上げなさい！！　早くっ！」
-				PRINTFORMW 「아, 지금 당겼어요！！　이봐요, 보켁으로서 없고 낚아 올리세요！！　빨리！」
+				PRINTFORMW 「아, 지금 당겼어요!!   이봐요, 보켁으로서 없고 낚아 올리세요!!   빨리!」
 ;OriginalString : 終始テンションの高い%CALLNAME%に応援され、時には邪魔당했다り하면서、%CALLNAME:MASTER%は淡々と魚を釣り上げていった
 				PRINTFORMW 시종 텐션의 높다%CALLNAME%에 응원되어 때에는 방해받거나 품질, %CALLNAME:MASTER%(은)는 담담하게 물고기를 낚아 올려 갔다
 
@@ -1397,11 +1397,11 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 금일も%CALLNAME%に命じられ、%CALLNAME:MASTER%は釣りをすること되었다……
 				PRINTFORMW 오늘도%CALLNAME%에 명할 수 있어%CALLNAME:MASTER%(은)는 낚시를 하게 되었다……
 ;OriginalString : 「ほら、また引いてるわ！　さっさと釣り上げなさいっ！」
-				PRINTFORML 「이봐요, 또 당기고 있는 원！　빨리 낚아 올리세요！」
+				PRINTFORML 「이봐요, 또 당기고 있어요!   빨리 낚아 올리세요!」
 ;OriginalString : 금일はすこぶる引きが良く、釣り始めて早々、かなりの数の魚が桶に入っていた
 				PRINTFORMW 오늘은 대단히 인 나무가 좋고, 낚시해 시작해 조속히, 상당한 수의 물고기가 통에 들어가 있었다
 ;OriginalString : 「금일は大量ねえ♪　これだけ釣れてるなら、後で山の猫たちにも分けに行ってやろうかしら？」
-				PRINTFORMW 「오늘은 대량 응♪　이만큼 잡히고 있다면, 다음에 산의 고양이들에게도 나누러 가 줄까？」
+				PRINTFORMW 「오늘은 대량 응♪  이만큼 잡히고 있다면, 다음에 산의 고양이들에게도 나누러 가 줄까?」
 ;OriginalString : 「でもその前にまずは一匹……」
 				PRINTFORMW 「 그렇지만 그 전에 우선은 한마리……」
 ;OriginalString : 
@@ -1420,25 +1420,25 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 河童たちはこちらに気付くと、話を止めて%CALLNAME:MASTER%의 方に흥미深そうな視線を向けてくる
 				PRINTFORMW 갓빠들은 이쪽을 알아차리면(자), 이야기를 멈추어%CALLNAME:MASTER%(분)편에 흥미로운 것 같은 시선을 향하여 온다
 ;OriginalString : 「向こうも、こんなところで誰かに合うのは珍しいって思ってるのかもね？」
-				PRINTFORMW 「저 편도, 이런 곳에서 누군가에게 맞는 것은 드물다고 생각하고 있는지도？」
+				PRINTFORMW 「저 편도, 이런 곳에서 누군가에게 맞는 것은 드물다고 생각하고 있는지도?」
 ;OriginalString : 「せっかくだし、ちょっと顔見せしてきましょ？」
-				PRINTFORMW 「모처럼이고, 조금 얼굴 좀 보여주고 해 옵시다？」
+				PRINTFORMW 「모처럼이고, 조금 얼굴 좀 보여주고 해 옵시다?」
 ;OriginalString : ………………
 				PRINTFORMW ………………
 ;OriginalString : 
 				PRINTL 
 				SETCOLOR 0xFFFF40
 ;OriginalString : 『え！　君って、この子のペットやってるの！？　そりゃまた面白い話だね』
-				PRINTFORMW 「네！　너는, 이 아이의 애완동물 해！？　그렇다면 또 재미있는 이야기구나」
+				PRINTFORMW 「네!   너는, 이 아이의 애완동물 해!?   그렇다면 또 재미있는 이야기구나」
 				SETCOLOR 0xC0FF60
 ;OriginalString : 『そういう플레이ってわけじゃなくて？』
-				PRINTFORMW 「그러한 플레이는  것이 아니어서？」
+				PRINTFORMW 「그러한 플레이는  것이 아니어서?」
 				SETCOLOR 0xFFFF40
 ;OriginalString : 『……へえ～、本当に飼われてるんだ。しかも개목걸이まで付けられて……』
-				PRINTFORMW 「……에～, 정말로 길러지고 있어. 게다가 목걸이까지 붙일 수 있어……」
+				PRINTFORMW 「…… 에～, 정말로 길러지고 있어. 게다가 목걸이까지 붙일 수 있어……」
 				SETCOLOR 0xC0FF60
 ;OriginalString : 『うわー……ガチなんだ……。どんな経緯でそんなこと되었다の？』
-				PRINTFORMW 「위―……가치야……. 어떤 경위로 그런 것이 되었어？」
+				PRINTFORMW 「위─…… 가치야……. 어떤 경위로 그런 것이 되었어?」
 				CALL KOJO_COLOR_K13
 ;OriginalString : %CALLNAME:MASTER%は호기심旺盛な河童たちに、すっかり質問責めにされてしまっている……
 				PRINTFORMW %CALLNAME:MASTER%(은)는 호기심 왕성한 갓빠들에게, 완전히 질문 고문으로 되어 버리고 있다……
@@ -1450,9 +1450,9 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 				PRINTL 
 				SETCOLOR 0xFFFF40
 ;OriginalString : 『それで……ええと、チェンちゃんでよかったっけ？』
-				PRINTFORMW 「그래서……음, 첸 로 좋았던가？」
+				PRINTFORMW 「그래서…… 음, 첸로 좋았던가?」
 ;OriginalString : 『飼うっていっても、普段はどんなことしてるの？』
-				PRINTFORMW 「기른다 라고 해도, 평상시는 어떤 금년 비쳐？」
+				PRINTFORMW 「기른다 라고 해도, 평상시는 어떤 금년 비쳐?」
 				CALL KOJO_COLOR_K13
 ;OriginalString : 「そうねぇ、普通にご飯の世話とトイレの世話、たまに体を洗ってあげて……」
 				PRINTFORMW 「그렇구나 , 보통으로 밥의 주선과 화장실의 주선, 이따금 몸을 씻어 줘……」
@@ -1460,14 +1460,14 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 				PRINTFORMW 거기까지 말하면, 갑자기%CALLNAME%(은)는 %CALLNAME:MASTER%에 몸을 소매치기 대어 왔다
 ;OriginalString : 「あとは一緒に遊んであげてるわね。……こんな感じに❤」
 				PRINTFORMW 「나머지는 함께 놀아 주어.……이런 느낌에❤」
-				;죠교대상に페니스がある
+				;죠교대상에페니스가 있다
 				IF PENIS(MASTER)
 ;OriginalString : %CALLNAME%は突然%CALLNAME:MASTER%의 服の中から페니스를取り出すと、ゆっくりとシゴき始めた
 					PRINTFORMW %CALLNAME%(은)는 돌연%CALLNAME:MASTER%의 옷중에서 페니스를 꺼내면(자), 천천히 시고 오기 시작했다
 ;OriginalString : 河童たちは唐突な%CALLNAME%の行為に、ひゃっ、と小さな비명지른다
 					PRINTFORMW 갓빠들은 당돌한%CALLNAME%의 행위에, , 라고 작은 비명을 올린다
 ;OriginalString : 「抵抗しちゃ駄目だからね？　せっかく観客がいるんだから、ちゃんと楽しませるのよ？」
-					PRINTFORMW 「저항하면 안되니까？　모처럼 관객이 있기 때문에, 분명하게 즐겁게 해？」
+					PRINTFORMW 「저항하면 안되니까?   모처럼 관객이 있기 때문에, 분명하게 즐겁게 해?」
 ;OriginalString : %CALLNAME%に페니스를弄ばれながら、さらにざらつく舌で首筋를 핥아上げられると、%CALLNAME:MASTER%は堪らず快感の신음내질렀다
 					PRINTFORMW %CALLNAME%에 페니스를 희롱해지고면서, 한층 더 껄끔거리는 혀로 목덜미를 빨고 거론되면(자), %CALLNAME:MASTER%(은)는 감등않고 쾌감의 신음을 흘렸다
 ;OriginalString : 
@@ -1484,9 +1484,9 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 見ず知らずの河童たちにまじまじと페니스를見つめられ、%CALLNAME:MASTER%は수치に体が熱くなるのを感じた……
 					PRINTFORMW 보지 않고 모르는 갓빠들에게 물끄러미 페니스를 응시할 수 있어%CALLNAME:MASTER%(은)는 수치에 몸이 뜨거워지는 것을 느꼈다……
 ;OriginalString : 「ねえ……特別にこの子の精、このまま掛けてあげよっか？」
-					PRINTFORMW 「응……특별히 이 아이의 정령, 이대로 걸어 주어라 인가？」
+					PRINTFORMW 「응…… 특별히 이 아이의 정령, 이대로 걸어 주어라 인가?」
 ;OriginalString : 「この子の精気、とっても濃くって美味しいわよ？　私もお気に入りなんだから❤」
-					PRINTFORMW 「이 아이의 정기, 매우 진해서 맛있어요？　나도 마음에 드는 것이니까❤」
+					PRINTFORMW 「이 아이의 정기, 매우 진해서 맛있어요?   나도 마음에 드는 것이니까?」
 ;OriginalString : %CALLNAME%は、%CALLNAME:MASTER%의 페니스の先端を河童たちに向ける
 					PRINTFORMW %CALLNAME%(은)는, %CALLNAME:MASTER%의 페니스의 첨단을 갓빠들에게 향한다
 					SETCOLOR 0xFFFF40
@@ -1497,7 +1497,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 					PRINTFORMW 「원, 나도……수컷의 수상하고 어질 어질할 것 같다……❤」
 					CALL KOJO_COLOR_K13
 ;OriginalString : 「う후후……そういうことだから、濃い정액、いっぱい掛けてあげなさい？　주인님の命令よ」
-					PRINTFORMW 「후후……그런 것이니까, 진한 정액, 가득 걸어 주세요？　남편님의 명령이야」
+					PRINTFORMW 「후후…… 그런 것이니까, 진한 정액, 가득 걸어 주세요?   남편님의 명령이야」
 ;OriginalString : %CALLNAME%の指の動きが、それまでの焦らすようなゆっくりと했다動きから、사정시킨다素早いシゴき方へと변화했다
 					PRINTFORMW %CALLNAME%의 손가락의 움직임이, 지금까지의 초조하게 하는 것 같은 천천히 한 움직임으로부터, 사정시키는 민첩한 시고 오는 방법으로 변화했다
 ;OriginalString : 二匹の河童は、それぞれ%CALLNAME:MASTER%의 페니스に息がかかるほどに顔を寄せ、입を開き、페니스の臭いを嗅ぎながら대기している
@@ -1510,15 +1510,15 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 					PRINTL 
 					SETCOLOR 0xFFFF40
 ;OriginalString : 『きゃんっ！？　すごい……いっぱい出てるぅっ！』
-					PRINTFORMW 「말괄량이！？　대단해……가득 나오고 있는！」
+					PRINTFORMW 「말괄량이!?   대단해…… 가득 나오고 있는!」
 					SETCOLOR 0xC0FF60
 ;OriginalString : 『んぁぁ……！　本当に濃厚……感じちゃいそう❤』
-					PRINTFORMW 「응……！　정말로 농후……느껴버릴 그렇게❤」
+					PRINTFORMW 「응……!   정말로 농후…… 느껴버릴 그렇게?」
 					CALL KOJO_COLOR_K13
 ;OriginalString : 河童たちは%CALLNAME:MASTER%의 정액を、歓喜の表情で受け止める
 					PRINTFORMW 갓빠들은 %CALLNAME:MASTER%의 정액을, 환희의 표정으로 받아 들인다
 ;OriginalString : 「ほら、まだ残ってるでしょう？　ちゃんと最後まで出し切ってあげなさい？」
-					PRINTFORMW 「이봐요, 잔비치겠지요？　분명하게 끝까지 발휘해 주세요？」
+					PRINTFORMW 「이봐요, 잔비치겠지요?   분명하게 끝까지 발휘해 주세요?」
 ;OriginalString : %CALLNAME%は사정의勢いが衰え始めた페니스를さらに擦り上げて、最後の一滴まで搾り出していった
 					PRINTFORMW %CALLNAME%(은)는 사정의 기세가 쇠약해지기 시작한 페니스를 한층 더 켜 , 마지막 한 방울까지 튜브라고 말했다
 ;OriginalString : 
@@ -1532,14 +1532,14 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 二匹の河童は%CALLNAME%と%CALLNAME:MASTER%に感謝を述べると、泳いで上流の方へと向かっていった
 					PRINTFORMW 2마리의 갓빠는 %CALLNAME%(와)과 %CALLNAME:MASTER%에 감사를 말하면, 헤엄쳐 상류에와 향해 갔다
 
-				;죠교대상に페니스がない
+				;죠교대상에페니스가 없다
 				ELSE
 ;OriginalString : %CALLNAME%は突然%CALLNAME:MASTER%의 服の中に손を突っ込むと、股間をなぞるように指でさすり始めた
 					PRINTFORMW %CALLNAME%(은)는 돌연%CALLNAME:MASTER%의 옷안에 손을 돌진하면, 고간을 위를 덧쓰도록(듯이) 손가락으로 문지르기 시작했다
 ;OriginalString : 河童たちは唐突な%CALLNAME%の行為に、驚いたように固まっている
 					PRINTFORMW 갓빠들은 당돌한%CALLNAME%의 행위에, 놀란 것처럼 굳어지고 있다
 ;OriginalString : 「抵抗しちゃ駄目だからね？　せっかく観客がいるんだから、ちゃんと楽しませるのよ？」
-					PRINTFORMW 「저항하면 안되니까？　모처럼 관객이 있기 때문에, 분명하게 즐겁게 해？」
+					PRINTFORMW 「저항하면 안되니까?   모처럼 관객이 있기 때문에, 분명하게 즐겁게 해?」
 ;OriginalString : %CALLNAME%に股間を弄ばれながら、さらにざらつく舌で首筋를 핥아上げられると、%CALLNAME:MASTER%は堪らずビクリと体を震わせた
 					PRINTFORMW %CALLNAME%에 고간을 희롱해지고면서, 한층 더 껄끔거리는 혀로 목덜미를 빨고 거론되면(자), %CALLNAME:MASTER%(은)는 감등않고 비크리와 몸을 진동시켰다
 ;OriginalString : 
@@ -1551,12 +1551,12 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 					PRINTFORMW 「위……. 이 아이, 대단히 기분 좋음 그런 얼굴 하고 있잖아」
 					SETCOLOR 0xFFFF40
 ;OriginalString : 『チェンちゃん、すっごいエロい触り方するね……。ステージでやったらお金取れるんじゃない？』
-					PRINTFORMW 「첸 , 대단한 에로 있고 손대는 방법 하는군……. 스테이지에서 하면 돈 잡히지 않는다？」
+					PRINTFORMW 「첸, 대단한 에로 있고 손대는 방법 하는군……. 스테이지에서 하면 돈 잡히지 않는다?」
 					CALL KOJO_COLOR_K13
 ;OriginalString : 見ず知らずの河童たちに感じている姿を見つめられ、%CALLNAME:MASTER%は수치に体が熱くなるのを感じた……
 					PRINTFORMW 보지 않고 모르는 갓빠들에게 느끼고 있는 모습을 응시할 수 있어%CALLNAME:MASTER%(은)는 수치에 몸이 뜨거워지는 것을 느꼈다……
 ;OriginalString : 「ふふ、気に入ってくれた？　でも、この子の乱れ方は、まだまだこんなものじゃないのよ♪」
-					PRINTFORMW 「후후, 마음에 들어 주었다？　그렇지만, 이 아이의 흐트러지는 방법은, 아직도 이런 것은 아닌거예요♪」
+					PRINTFORMW 「후후, 마음에 들어 주었다?   그렇지만, 이 아이의 흐트러지는 방법은, 아직도 이런 것은 아닌거예요♪」
 ;OriginalString : %CALLNAME%は、気分を高めるようなゆっくり했다애무から、本格的に感じ시킨다애무へと指の動きを변화시켰다
 					PRINTFORMW %CALLNAME%(은)는, 기분을 높이는 것 같은 쉰 애무로부터, 본격적으로 느끼게 하는 애무로 손가락의 움직임을 변화시켰다
 ;OriginalString : 클리토리스を重点的に指で弄り回し、さらに空いている方の손で乱暴に%CALLNAME:MASTER%의 乳房を揉みしだいていく
@@ -1569,7 +1569,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 					PRINTFORMW 「대단하네……여기까지 이상한 기분이 되어 버릴 것 같다……❤」
 					CALL KOJO_COLOR_K13
 ;OriginalString : 「う후후……このままイクところまで、ちゃんと見せてあげなさい？　주인님の命令よ」
-					PRINTFORMW 「후후……이대로 이크곳까지, 분명하게 보이게 해 주세요？　남편님의 명령이야」
+					PRINTFORMW 「후후…… 이대로 이크곳까지, 분명하게 보이게 해 주세요?   남편님의 명령이야」
 ;OriginalString : 執拗に続けられる애무に、ついに%CALLNAME:MASTER%は限界まで高められた
 					PRINTFORMW 집요하게 계속되는 애무에, 마침내%CALLNAME:MASTER%(은)는 한계까지 높일 수 있었다
 ;OriginalString : 
@@ -1588,7 +1588,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 河童たちは%CALLNAME:MASTER%が절정する様子を、興奮했다様子で食い入る様に見つめている……
 					PRINTFORMW 갓빠들은 %CALLNAME:MASTER%(은)는 절정 하는 모습을, 흥분한 모습으로 먹어 들어가는 것처럼 응시하고 있다……
 ;OriginalString : 「うふふ、評判いいみたいよ？　……アンコール、いってみようか？」
-					PRINTFORMW 「후후, 평판 좋은 것 같아요？　……앵콜, 말해 볼까？」
+					PRINTFORMW 「후후, 평판 좋은 것 같아요?   …… 앵콜, 말해 볼까?」
 ;OriginalString : %CALLNAME%はイッた直後の민감な클리토리스をきゅぅ、と摘み上げ、クリクリと容赦なく弄んできた
 					PRINTFORMW %CALLNAME%(은)는 익직후의 민감한 클리토리스, 라고 타 구리 구리와 가차 없이 희롱해 왔다
 ;OriginalString : %CALLNAME:MASTER%의 수치で興奮しきった体は瞬く間に쾌락の波に飲みこまれ、
@@ -1614,8 +1614,8 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 「さて……と」
 				PRINTFORMW 「그런데……(와)과」
 ;OriginalString : 「どうだった？　見られながらするの、気持良かったかしら？」
-				PRINTFORMW 「어땠어요？　볼 수 있으면서 하는 것, 기분 좋았는지 해들？」
-				CALL FUNC_K13_ASK("気持ち良かった", "恥ずかしかった", "二人きりの方がいい")
+				PRINTFORMW 「어땠어요?   보여지면서 하는 것, 기분 좋았는지 해들?」
+				CALL FUNC_K13_ASK("기분 좋았다", "부끄러웠다", "단 둘이 좋다")
 				IF RESULT == 0
 ;OriginalString : %CALLNAME:MASTER%はいつもより気持ち良かったと答えた……
 					PRINTFORMW %CALLNAME:MASTER%(은)는 평소보다 기분 좋았다고 대답했다……
@@ -1628,27 +1628,27 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : %CALLNAME%はいかにも機嫌良さそうに笑った
 					PRINTFORMW %CALLNAME%(은)는 그야말로 기분 좋을 것 같게 웃었다
 ;OriginalString : 「それじゃあ、금일はこんなところにして帰りましょ？」
-					PRINTFORMW 「그러면 아, 오늘은 이런 곳으로 해 돌아갑시다？」
+					PRINTFORMW 「그러면 아, 오늘은 이런 곳으로 해 돌아갑시다?」
 				ELSEIF RESULT == 1
 ;OriginalString : %CALLNAME:MASTER%は恥ずかしくてそれどころじゃなかったと答えた……
 					PRINTFORMW %CALLNAME:MASTER%(은)는 부끄러워서 그것어디 가 아니었다고 대답했다……
 ;OriginalString : 
 					PRINTL 
 ;OriginalString : 「あら？　それじゃあ、ちゃんと興奮できるように躾けないとね？」
-					PRINTFORMW 「어머나？　그러면 아, 분명하게 흥분할 수 있도록(듯이) 예의범절을 가르치지 않으면？」
+					PRINTFORMW 「어머나?   그러면 아, 분명하게 흥분할 수 있도록(듯이) 예의범절을 가르치지 않으면?」
 ;OriginalString : 「……ふふ、また目標が一つできちゃったわ♪」
 					PRINTFORMW 「……후후, 또 목표가 1개 할 수 있어 버렸다 원♪」
 ;OriginalString : %CALLNAME%はニヤニヤと意地の悪い笑みを浮かべた
 					PRINTFORMW %CALLNAME%(은)는 능글능글고집이 나쁜 미소를 띄웠다
 ;OriginalString : 「それじゃあ、금일はこんなところにして帰りましょ？」
-					PRINTFORMW 「그러면 아, 오늘은 이런 곳으로 해 돌아갑시다？」
+					PRINTFORMW 「그러면 아, 오늘은 이런 곳으로 해 돌아갑시다?」
 				ELSE
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%と二人きりの方がいいと答えた
 					PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%(와)과 둘이서(분)편이 좋다고 대답했다
 ;OriginalString : 
 					PRINTL 
 ;OriginalString : バキッ！
-					PRINTFORML 바킥！
+					PRINTFORML 바킥!
 ;OriginalString : %CALLNAME%の強烈な右ストレートが%CALLNAME:MASTER%의 頬にめり込み、%CALLNAME:MASTER%は半回転하면서派손に倒れた
 					PRINTFORMW %CALLNAME%의 강렬한 오른쪽 스트레이트가 %CALLNAME:MASTER%의 뺨붐비어, %CALLNAME:MASTER%(은)는 반회전하면서 화려하게 넘어졌다
 ;OriginalString : 
@@ -1656,9 +1656,9 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 「……おっと、건방짐なことを言うから、つい손が出ちゃったわ」
 					PRINTFORMW 「……어, 건방진 말을 하기 때문에, 무심코 손이 나와 버렸다 원」
 ;OriginalString : 「まったく……せっかく야외죠교してあげたんだから、もっと솔직に楽しみなさいよねっ！」
-					PRINTFORMW 「완전히……모처럼 야외 조교 해 주었으니까, 좀 더 솔직하게 기다려진 차이군요！」
+					PRINTFORMW 「완전히…… 모처럼 야외 조교 해 주었으니까, 좀 더 솔직하게 기다려진 차이군요!」
 ;OriginalString : 「ほら、금일はこれで帰るわよ！　いつまでも倒れてないで、さっさと起きなさいっ！」
-					PRINTFORMW 「이봐요, 오늘은 이것으로 돌아가요！　언제까지나 넘어지지 말고, 빨리 일어나 주세요！」
+					PRINTFORMW 「이봐요, 오늘은 이것으로 돌아가요!   언제까지나 넘어지지 말고, 빨리 일어나 주세요!」
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 腕を掴むと、%CALLNAME:MASTER%から顔を背けて、
 					PRINTFORML %CALLNAME%(은)는 %CALLNAME:MASTER%의 팔을 잡으면, %CALLNAME:MASTER%(으)로부터 얼굴을 돌려,
 ;OriginalString : 未だ起き上がれない%CALLNAME:MASTER%を強引に引きずりながら小屋へ向かって歩き始めた…
@@ -1670,7 +1670,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 			IF !VAR_K13:19
 				VAR_K13:19 = 1
 ;OriginalString : 「금일は行きたいところがあるのよ。さあ、付いてきなさいっ！」
-				PRINTFORMW 「오늘은 가고 싶은 곳이 있어. 자, 붙어 오세요！」
+				PRINTFORMW 「오늘은 가고 싶은 곳이 있어. 자, 붙어 오세요!」
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%に引きずられるように하면서、外へと連れ出당했다
 				PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%에 끌려가도록(듯이) 품질, 밖으로 데리고 나가졌다
 ;OriginalString : 
@@ -1680,7 +1680,7 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : 「とうちゃーくっ♪　ここに%CALLNAME:MASTER%を連れて来てみたかったの！」
-				PRINTFORMW 「과 중 -구♪　여기에 %CALLNAME:MASTER%(을)를 데려 와 보고 싶었어！」
+				PRINTFORMW 「과 중 -구♪　여기에 %CALLNAME:MASTER%를 데려 와 보고 싶었어!」
 ;OriginalString : 森を抜けた先にある、少し開けた広場に、%CALLNAME:MASTER%は連れてこられた
 				PRINTFORMW 숲을 빠진 먼저 있다, 조금 연 광장에, %CALLNAME:MASTER%(은)는 데려 올 수 있었다
 ;OriginalString : 「ここは猫の里。その名の通り、猫がたくさん集まっている場所よ」
@@ -1690,23 +1690,23 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 「私はいつもここで猫に餌をやってるの」
 				PRINTFORMW 「 나는 언제나 여기서 고양이에 먹이를 주어」
 ;OriginalString : 「ゆくゆくは、この中から私のしもべを作る予定なのよ！」
-				PRINTFORMW 「장래는, 이 중에서 나의 머슴을 만들 예정이야！」
+				PRINTFORMW 「장래는, 이 중에서 나의 머슴을 만들 예정이야!」
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : 「というわけで……餌の시간よ～！　私のしもべ候補たちっ！」
-				PRINTFORMW 「이라고 하는 것으로……먹이의 시간이야～！　나의 머슴 후보들！」
+				PRINTFORMW 「이라고 하는 것으로…… 먹이의 시간이야～!   나의 머슴 후보들!」
 ;OriginalString : %CALLNAME%が呼び掛けると、周囲の猫達がぞろぞろと集まってきた
 				PRINTFORMW %CALLNAME%(은)는 부르면(자), 주위의 고양이들이 우르르모여 왔다
 ;OriginalString : 「うふふ、いい子たちね♪　ほ～ら、餌をあげるから、いっぱい食べなさい♪」
-				PRINTFORMW 「후후, 좋은 아이들♪　～들 , 먹이를 주기 때문에, 가득 먹으세요♪」
+				PRINTFORMW 「후후, 좋은 아이들♪  ～들, 먹이를 주기 때문에, 가득 먹으세요♪」
 ;OriginalString : 「私が将来の주인님だからねー？　ちゃーんと私に感謝するのよ？」
-				PRINTFORMW 「내가 장래의 남편 같으니까―？　(군)양과 나에게 감사해？」
+				PRINTFORMW 「내가 장래의 남편 같으니까─?   (군)양과 나에게 감사해?」
 ;OriginalString : %CALLNAME%が손で直接餌をあげていると、待ちきれなくなった横の猫が、
 				PRINTFORML %CALLNAME%(은)는 손으로 직접먹이를 주고 있으면, 기다릴 수 있지 않게 된 옆의 고양이가,
 ;OriginalString : %CALLNAME%の持つ餌袋に直接顔を突っ込んで中身を漁り始めた
 				PRINTFORMW %CALLNAME%(이)가 가지는 이대에 직접얼굴을 돌진해 내용을 찾아다니기 시작했다
 ;OriginalString : 「あ、こら！　勝손に食べるんじゃないの！　私が順番にあげるんだから、待ってなさいっ！」
-				PRINTFORMW 「아, 이거 참！　마음대로 먹지 않아！　내가 차례로 주기 때문에, 기다려 주세요！」
+				PRINTFORMW 「아, 이거 참!   마음대로 먹지 않아!   내가 차례로 주기 때문에, 기다려 주세요!」
 ;OriginalString : %CALLNAME%は餌袋に顔を入れた猫の首根っこを持ち、強引に引きずり出そうとしている
 				PRINTFORMW %CALLNAME%(은)는 이대에 얼굴을 넣은 고양이의 목덜미를 가져, 억지로 끌어내려 하고 있다
 ;OriginalString : 
@@ -1716,11 +1716,11 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : 「痛ぁっ！　何するのよっ！！　ただの猫の分際で건방짐ねっ！！」
-				PRINTFORMW 「통！　어떻게 한다！！　단순한 고양이의 분수로 건방지구나！！」
+				PRINTFORMW 「통!   어떻게 한다!!   단순한 고양이의 분수로 건방지구나!!」
 ;OriginalString : 「こらっ！　また顔突っ込んで！　あ、ちょっと！？　餌袋引っ張るんじゃないわよ！」
-				PRINTFORMW 「이거 참！　또 얼굴 돌진해！　아, 조금！？　이대 이끌지 않아요！」
+				PRINTFORMW 「이거 참!   또 얼굴 돌진해!   아, 조금!?   이대 이끌지 않아요!」
 ;OriginalString : 「ひゃっ！？　邪魔だから、乗っかってくるんじゃないの！　だから、袋引っ張るなぁあああっ！！」
-				PRINTFORMW 「！？　방해이니까, 승인가는 감싸면 않은거야！　그러니까, 봉투 이끈데아 아！！」
+				PRINTFORMW 「!?   방해이니까, 승인가는 감싸면 않은거야!   그러니까, 봉투 이끈데아 아!!」
 ;OriginalString : 猫に噛みつかれ引っ張られた餌袋は、ついにビリビリと無残に破れてしまった
 				PRINTFORMW 고양이를 물어 뜯어지고 끌려간 이대는, 마침내 찌르르끔찍하게 깨져 버렸다
 ;OriginalString : 破れて穴が空いた袋から餌がだだ漏れになり、見事に全て地面に散乱してしまった
@@ -1745,10 +1745,10 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 				PRINTFORMW 「조금 전 웃고 있었던이겠지」
 ;OriginalString : ドスッ　ドスッ
 				PRINTFORMW 드숫드슥
-				CALL FUNC_K13_ASK("ごめんなさい", "笑ってないです", "笑ってないアルよ")
+				CALL FUNC_K13_ASK("미안해요", "웃지 않습니다", "웃지 않은 알이야")
 				IF RESULT == 2
 ;OriginalString : ズゴッ！！
-					PRINTFORML 즈곡！！
+					PRINTFORML 즈곡!!
 ;OriginalString : %CALLNAME:MASTER%は背中に強烈な回し蹴りを受けて吹き飛び、綺麗なヘッドスライディングを決めた
 					PRINTFORMW %CALLNAME:MASTER%(은)는 등에 강렬한 권법의 하나를 받아 불어 날아, 깨끗한 헤드 슬라이딩을 결정했다
 ;OriginalString : ……さすがに背骨は折れていないようだが、肺の裏側への強烈な一撃で呼吸ができず、割とシャレにならない
@@ -1757,18 +1757,18 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 「…………」
 				PRINTFORMW 「…………」
 ;OriginalString : 「ふん！　まあいいわ、許してあげる」
-				PRINTFORMW 「응！　뭐 좋아요, 허락해 준다」
+				PRINTFORMW 「응!   뭐 좋아요, 허락해 준다」
 ;OriginalString : 「そもそも、ただの猫風情が言うことを聞かなくったって、どうでもいい話よっ！」
-				PRINTFORMW 「원래, 단순한 고양이 풍치가 말하는 것을 (듣)묻지 않고 끊어, 아무래도 좋은 이야기야！」
+				PRINTFORMW 「원래, 단순한 고양이 풍치가 말하는 것을 (듣)묻지 않고 끊어, 아무래도 좋은 이야기야!」
 ;OriginalString : 「私には他に、ちゃーんと言うことを聞いてくれる可愛いペットがいるんだからっ！」
-				PRINTFORMW 「 나에게는 그 밖에, (군)양이라고 하는 것을 (들)물어 주는 사랑스러운 애완동물이 있다！」
+				PRINTFORMW 「나에게는 그 밖에, (군)양이라고 하는 것을 (들)물어 주는 사랑스러운 애완동물이 있다!」
 ;OriginalString : 「……ね？」
-				PRINTFORMW 「……그런데？」
+				PRINTFORMW 「…… 그런데?」
 				IF RESULT == 2
 ;OriginalString : %CALLNAME%は倒れ伏している%CALLNAME:MASTER%의 横っ腹をゲシゲシと蹴りつけてきた
 					PRINTFORMW %CALLNAME%(은)는 넘어지고 부디 있는 %CALLNAME:MASTER%의 옆구리를 게시게시와 차대어 왔다
 ;OriginalString : 「さ、言うことを聞かないノラ猫どもは放っておいて、さっさと帰りましょ？」
-					PRINTFORMW 「, 말하는 것을 (듣)묻지 않는 노라고양이들은 그대로 두어, 빨리 돌아갑시다？」
+					PRINTFORMW 「, 말하는 것을 (듣)묻지 않는 노라고양이들은 그대로 둬, 빨리 돌아갑시다?」
 ;OriginalString : 「帰ったら、猫どものせいで溜まったストレス……」
 					PRINTFORMW 「돌아가면(자), 고양이들의 탓으로 모인 스트레스……」
 ;OriginalString : 「%FUNC_K13_CALLNAME()%の体でたっぷりと発散させてもらうから、覚悟しなさいよ♪」
@@ -1781,15 +1781,15 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : そして%CALLNAME:MASTER%의 顔を見て、ニコっと可愛らしく微笑んだ
 					PRINTFORMW 그리고 %CALLNAME:MASTER%의 얼굴을 봐, 니코와 사랑스럽게 미소지었다
 ;OriginalString : 「さ、言うことを聞かないノラ猫どもは放っておいて、さっさと帰りましょ？」
-					PRINTFORMW 「, 말하는 것을 (듣)묻지 않는 노라고양이들은 그대로 두어, 빨리 돌아갑시다？」
+					PRINTFORMW 「, 말하는 것을 (듣)묻지 않는 노라고양이들은 그대로 둬, 빨리 돌아갑시다?」
 ;OriginalString : 「帰ったら、猫どものせいで溜まったストレス……」
 					PRINTFORMW 「돌아가면(자), 고양이들의 탓으로 모인 스트레스……」
 ;OriginalString : 「%FUNC_K13_CALLNAME()%の体で発散させてもらうから、覚悟しなさいよ？」
-					PRINTFORMW 「%FUNC_K13_CALLNAME()%의 몸으로 발산시켜 주기 때문에, 각오 해 주세요？」
+					PRINTFORMW 「%FUNC_K13_CALLNAME()%의 몸으로 발산시켜 주기 때문에, 각오 해 주세요?」
 				ENDIF
 			ELSE
 ;OriginalString : 「금일は一緒に猫たちを見に行くわよ！　ついてきなさいっ！」
-				PRINTFORMW 「오늘은 함께 고양이들을 보러 가요！　따라 오세요！」
+				PRINTFORMW 「오늘은 함께 고양이들을 보러 가요!   따라 오세요!」
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%に引きずられるように하면서、猫の集まる広場へと連れて行かれた
 				PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%에 끌려가도록(듯이) 품질, 고양이가 모이는 광장으로 데리고 가졌다
 ;OriginalString : ………………
@@ -1797,20 +1797,20 @@ IF DAY >= 1 && TIME == 0 && FUNC_K13_ISLOVER() && DAY % 3 == 2
 ;OriginalString : 
 				PRINTL 
 ;OriginalString : 「はぁ……相変わらず餌だけ取って、言うことは聞かないんだから！　イライラするわっ！」
-				PRINTFORMW 「후~……변함 없이 먹이만 배달시켜, 말하는 것은 (듣)묻지 않기 때문에！　초조해한다！」
+				PRINTFORMW 「후~…… 변함 없이 먹이만 배달시켜, 말하는 것은 (듣)묻지 않기 때문에!   초조해한다!」
 ;OriginalString : %CALLNAME%は입では文句を言っているが、何だかんだで楽しそうだ……
 				PRINTFORMW %CALLNAME%(은)는 입에서는 불평하고 있지만, 무엇인가 응이다로 즐거운 듯 하다……
 ;OriginalString : 「あ！　今、絶対に笑ったでしょ！？　帰ったら覚えておきなさいよっ！」
-				PRINTFORMW 「아！　지금, 절대로 웃었겠죠！？　돌아가면(자) 기억해 두세요！」
+				PRINTFORMW 「아!   지금, 절대로 웃었겠죠!?   돌아가면 기억해 두세요!」
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%に頬をつねられながら、%CALLNAME%と並んで帰りの道を歩いていった
 				PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%에 뺨을 꼬집을 수 있는이면서, %CALLNAME%(와)과 함께 귀가의 길을 걸어갔다
 			ENDIF
 
 		ELSE
 ;OriginalString : 「特に行くあてはないんだけど、たまには適当に外をふらつきましょ？」
-			PRINTFORMW 「특별히 가는 앞은 없지만, 가끔 씩은 적당하게 밖을 휘청거립시다？」
+			PRINTFORMW 「특별히 가는 앞은 없지만, 가끔 씩은 적당하게 밖을 휘청거립시다?」
 ;OriginalString : 「%CALLNAME:MASTER%も、小屋に押し込められてるよりは、気分がいいんじゃない？」
-			PRINTFORMW 「%CALLNAME:MASTER%도, 오두막에 집어넣을 수 있고 있는보다는, 기분이 좋지 않아？」
+			PRINTFORMW 「%CALLNAME:MASTER%도, 오두막에 집어넣어지고 있는보다는, 기분이 좋지 않아?」
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%と共に、特に목적もなく山の中を散歩했다……
 			PRINTFORMW %CALLNAME:MASTER%(은)는 %CALLNAME%(와)과 함께, 특히 목적도 없게 산안을 산책했다……
 		ENDIF

@@ -1,70 +1,70 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 ;
-;	엘리스구상(대상限定) 이벤트구상ファイル
+;	엘리스구상(대상한정) 이벤트구상파일
 ;
-;		죠교終了구상をまとめたファイル
+;		죠교종료구상를 정리한 파일
 ;
-;	EXTRA모드でN09사쿠야をMASTERに선택했다場合のみ表示
+;	EXTRA모드로 N09사쿠야를 MASTER에선택했다경우만 표시
 ;
 ;Version		Reason
-;1.70			@구상記入チェック仕様に。その他細かな修正
-;1.61			一部処理を関数化。その他細かな修正
+;1. 70			@구상기입 체크 사양에. 그 외 섬세한 수정
+;1. 61			일부 처리를 함수화. 그 외 섬세한 수정
 ;
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
 ;-------------------------------------------------
-;関連変数…
+;관련 변수…
 ;FIRSTEVENT
-;처음EVENT判定関数　TFLAG:이벤트번호（TFLAG:10）を自動で参照し、
-;現在発生しているEVENTごとに번호が独立して保存される
+;처음EVENT 판정 함수  TFLAG:이벤트번호（TFLAG:10）를 자동으로 참조해,
+;현재 발생하고 있는 EVENT 마다번호가 독립해 보존된다
 ;-------------------------------------------------
 ;-------------------------------------------------
 ;EV13 FIRSTTIME(0) ～ (16), RANDEVENT(0) ～ (19)
-;	죠교대상が실신했다 FIRSTTIME(0)
-;	エンディング終了後 FIRSTTIME(1)(2)
-;	両想い（호의3000以上・호감도3000以上）
-;		ルートＢII　初回 FIRSTTIME(3)
-;		ルートＡII　初回 FIRSTTIME(4)
-;		ルートＢIII FIRSTTIME(5)
-;			ルートＢエンディング解除判定KFLAG:(FLAG:주인님):9
-;		ルートＡIII FIRSTTIME(6)
-;			ルートＡエンディング解除判定KFLAG:(FLAG:주인님):8
-;		ルートＢ, FIRSTTIME以外
+;	죠교대상가실신했다 FIRSTTIME(0)
+;	엔딩 종료후 FIRSTTIME(1)(2)
+;	서로 사모함（호의 3000 이상·호감도 3000 이상）
+;		루트ＢII  첫회 FIRSTTIME(3)
+;		루트ＡII  첫회 FIRSTTIME(4)
+;		루트ＢIII FIRSTTIME(5)
+;			루트Ｂ엔딩 해제 판정 KFLAG:(FLAG:주인님):9
+;		루트ＡIII FIRSTTIME(6)
+;			루트Ａ엔딩 해제 판정 KFLAG:(FLAG:주인님):8
+;		루트Ｂ, FIRSTTIME 이외
 ;			RANDEVENT(0)(1)
-;		ルートＡ, FIRSTTIME以外
+;		루트Ａ, FIRSTTIME 이외
 ;			RANDEVENT(2)(3)(4)(5)(6)(7)
-;			内部分岐用KFLAG:(FLAG:주인님):6
-;	대만족보너스を得ている FIRSTTIME(7)
-;	죠교完了（호의2000以上） FIRSTTIME(8)
-;	익애（호감도2000以上） FIRSTTIME(9)
-;	죠교済み（호의1000以上） FIRSTTIME(10)
-;	不倶戴天（호의-300未満） FIRSTTIME(11)
-;	공포（호의200未満・트라우마Lv5以上） FIRSTTIME(12)
-;	반항（호의0以下・반항각인Lv3以上） FIRSTTIME(13)
-;	目覚め（호의300以上） FIRSTTIME(14)
-;	順応（호의100以上・호감도100以上） FIRSTTIME(15)
-;	序盤（条件なし） FIRSTTIME(16)
+;			내부 분기용 KFLAG:(FLAG:주인님):6
+;	대만족보너스를 얻고 있는 FIRSTTIME(7)
+;	죠교완료（호의 2000 이상） FIRSTTIME(8)
+;	익애（호감도 2000 이상） FIRSTTIME(9)
+;	죠교가 끝난 상태（호의 1000 이상） FIRSTTIME(10)
+;	불구대천（호의-300 미만） FIRSTTIME(11)
+;	공포（호의 200 미만·트라우마Lv5 이상） FIRSTTIME(12)
+;	반항（호의 0 이하·반항각인Lv3 이상） FIRSTTIME(13)
+;	눈을 뜨고（호의 300 이상） FIRSTTIME(14)
+;	순응（호의 100 이상·호감도 100 이상） FIRSTTIME(15)
+;	초반（조건 없음） FIRSTTIME(16)
 ;-------------------------------------------------
 
 ;========================================================================
-;EV13, 죠교終了구상 FIRSTEVENT(0) ～ (16)
+;EV13, 죠교종료구상 FIRSTEVENT(0) ～ (16)
 ;========================================================================
-;・@EVENTCOMENDから呼び出される
-;・구상主が죠교終了する直前に表示
-;・ARG:1, ARG:2の場合は地の文表示後にPRINTLで空行。その後に구상を表示
-;・ARG:0の場合は固有の地の文なし。구상表示の前にPRINTLで空行が入る
-;・RESULT 0以上을반환と구상表示後にPRINTLで空行が入る
+;·@EVENTCOMEND로부터 불려 간다
+;·구상주가죠교종료하기 직전에 표시
+;·ARG:1, ARG:2의 경우는 지문 표시 후에 PRINTL로 공행. 그 뒤로구상를 표시
+;·ARG:0의 경우는 고유의 지문 없음. 구상표시전에 PRINTL로 공행이 들어간다
+;·RESULT 0이상을반환와구상표시 후에 PRINTL로 공행이 들어간다
 ;-------------------------------------------------
-;関連変数…
-;FLAG:일상제어	죠교終了時状況(1=통상/2=精力0/3=일회휴게/4=실신했다)
+;관련 변수…
+;FLAG:일상제어	죠교종료시 상황(1=통상/2=정력 0/3=일회휴게/4=실신했다)
 ;-------------------------------------------------
 @KOJO_NO9_MS_EVENT_K14_13(ARG)
 ;-------------------------------------------------
-;引数内訳…
-;ARG=(0, 普通に終了、1, 죠교대상が疲れている、2, 죠교대상が실신했다)
+;인수 내역…
+;ARG=(0, 보통으로 종료, 1, 죠교대상가 피곤한, 2, 죠교대상가실신했다)
 ;-------------------------------------------------
 
-;플래그初期化
+;플래그초기화
 IF 0
 ELSEIF FLAG:일상 != 0
 	FLAG:일상 = 0
@@ -73,75 +73,75 @@ ELSEIF FLAG:노예임신 != 0
 ELSE
 ENDIF
 
-;이벤트用플래그を初期化
+;이벤트용플래그를 초기화
 KFLAG:(FLAG:주인님):6 = 0
 
 ;────────────────────────────────────
-;ARG:1, ARG:2, 疲労・실신による죠교終了 FIRSTEVENT(0)～
+;ARG:1, ARG:2, 피로·실신에 의한죠교종료 FIRSTEVENT(0)～
 ;────────────────────────────────────
-;・죠교대상소모도に応じて疲労/실신に分かれる
-;・呼び出しタイミングは地の文の表示→PRINTL→구상の表示
+;·죠교대상소모도에 응해 피로/실신로 나누어진다
+;·호출 타이밍은 지문의 표시→PRINTL→구상의 표시
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교대상が疲れている
+;죠교대상가 피곤함
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && ARG == 1
+IF 구상기입체크(100) && ARG == 1
 	PRINTFORMW 「――아휴. 그 모습은 이제 무리같구나」
 	PRINTFORMW 「뭐 좋아요. 여기서 끝냅시다」
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교대상が실신했다 FIRSTEVENT(30)
+;죠교대상가실신했다 FIRSTEVENT(30)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && ARG == 2
+IF 구상기입체크(100) && ARG == 2
 	PRINTFORMW 「너무 해 버렸다 같구나…」
 	PRINTFORMW 「오늘은 끝냅시다」
 	RETURN 1
 ENDIF
 
 ;────────────────────────────────────
-;ARG:0 普通に終了 FIRSTEVENT(10)～
+;ARG:0보통으로 종료 FIRSTEVENT(10)～
 ;────────────────────────────────────
-;・통상の죠교終了時の구상
-;・地の文なし。PRINTLによる空行の後に구상表示
+;·통상의죠교종료시의구상
+;·지문 없음. PRINTL에 의한 공행의 뒤로구상표시
 ;-------------------------------------------------
 
 [SKIPSTART]
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;エンディング終了後
+;엔딩 종료후
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;枠は設けたけど、ここまでやるかどうか
+;테두리는 마련했지만, 여기까지 할지 어떨지
 ;-------------------------------------------------
-IF 구상記入チェック(0) && TRUECHECK(KFLAG:(FLAG:주인님):4 == 1, KFLAG:(FLAG:주인님):5 == 1) > 0
+IF 구상기입 체크(0) && TRUECHECK(KFLAG:(FLAG:주인님):4 == 1, KFLAG:(FLAG:주인님):5 == 1) > 0
 	;=================================================
-	;TRUE END後
+	;TRUE END 후
 	;=================================================
-	IF 구상記入チェック(0) && KFLAG:(FLAG:주인님):4 == 1
+	IF 구상기입 체크(0) && KFLAG:(FLAG:주인님):4 == 1
 	ENDIF
 	
 	;=================================================
-	;GOOD END後
+	;GOOD END 후
 	;=================================================
-	IF 구상記入チェック(0) && KFLAG:(FLAG:주인님):5 == 1
+	IF 구상기입 체크(0) && KFLAG:(FLAG:주인님):5 == 1
 	ENDIF
 ENDIF
 [SKIPEND]
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;両想い（호의3000以上・호감도3000以上） FIRSTEVENT(3)(4) RANDEVENT(0) ～ (7)
+;서로 사모함（호의 3000 이상·호감도 3000 이상） FIRSTEVENT(3)(4) RANDEVENT(0) ～ (7)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;・상사상애時に表示
-;・エンディングまでルート毎に完全に切り分ける
+;·상사상애시에 표시
+;·엔딩까지 루트마다 완전하게 분리한다
 ;-------------------------------------------------
-;ルートＡII/KFLAG:(FLAG:주인님):0(基本ルート用) ルートＡIII/KFLAG:(FLAG:주인님):2(이벤트解除用)
-;ルートＢII/KFLAG:(FLAG:주인님):1(基本ルート用) ルートＢIII/KFLAG:(FLAG:주인님):3(이벤트解除用)
+;루트ＡII/KFLAG:(FLAG:주인님):0(기본 루트용) 루트ＡIII/KFLAG:(FLAG:주인님):2(이벤트해제용)
+;루트ＢII/KFLAG:(FLAG:주인님):1(기본 루트용) 루트ＢIII/KFLAG:(FLAG:주인님):3(이벤트해제용)
 ;-------------------------------------------------
-IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주인님):11 == 1
+IF 구상기입체크(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주인님):11 == 1
 	;=================================================
-	;ルートＢII　初回 FIRSTEVENT(3)
+	;루트ＢII  첫회 FIRSTEVENT(3)
 	;=================================================
-	IF 구상記入チェック(100) && KFLAG:(FLAG:주인님):1 == 1 && FIRSTEVENT(3)
+	IF 구상기입체크(100) && KFLAG:(FLAG:주인님):1 == 1 && FIRSTEVENT(3)
 		PRINTFORMW 「응 사쿠야, 화내지 말고 들어주었으면 하지만…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「괜찮아よ、怒ったりしないわ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「괜찮아요, 화내거나 하지 않아요」")
@@ -159,23 +159,23 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇다면 화내는 이유 같은거 없어요. 나로서는 오히려 영광으로 생각해야 할까」")
 		PRINTFORMW 「후후, 뭐, 그런 곳이군요. 나의 중요한 기억. 그립고, 따뜻한 추억. 다만, 그런데……」
 		
-		;フェードイン
+		;페이드 인
 		CALL FADE(25, COLOR_K14("black"), COLOR2_K14("ALICE"), "「나, 알아. 이 기억은 진정한 기억이 아니라고」")
 		
 ;OriginalString : (COLOR_K14("사쿠야"), "「アリ、ス？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「개미, 스？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「개미, 스?」")
 		PRINTFORMW 「이것은 반드시, 나가 아닌 누군가의 기억. 나에게 파묻힌 기억」
 		PRINTFORMW 「이 기억은 나의 것이며, 나의 것이 아니다. 내가 아닌 누군가, 그렇게…본래 악마의 세계에서 앨리스로 불리고 있었던 존재의 기억」
-		PRINTFORMW 「진정한 나는 어디에도 좋은 있고！ 나는 만들어진 존재야！ 그러니까, 나는！！」
+		PRINTFORMW 「진정한 나는 어디에도 좋은 있고! 나는 만들어진 존재야! 그러니까, 나는!!」
 		PRINTL
 		PRINTFORMDW 사쿠야는 앨리스를 상냥하게 달래면서 말했다…
 ;OriginalString : (COLOR_K14("사쿠야"), "「もういいのよ、엘리스。もう何も心配しなくていいの」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이제 된 것,엘리스이제(벌써) 아무것도 걱정하지 않아도 괜찮은거야」")
-		PRINTFORMW 「이다, 래 사쿠야！ 나는 반드시 악마의 세계인입니다들 없어！？  아마 무엇인가를 집합대에 만들어 내진, 무서운 존재야！？」
+		PRINTFORMW 「이다, 래 사쿠야! 나는 반드시 악마의 세계인입니다들 없어!?   아마 뭔가를 집합대에 만들어 내진, 무서운 존재야!?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「そんなの関係ない！ 엘리스は엘리스よ！」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 것 관계없다！ 엘리스하엘리스！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 것 관계없다! 엘리스하엘리스!」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「今こうして私の目の前にいる、貴女こそが엘리스なのよ！」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「지금 이렇게 해 나의 눈앞에 있는, 당신이엘리스(이)야！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「지금 이렇게 해 나의 눈앞에 있는, 당신이엘리스(이)야!」")
 		PRINTFORMW 「, 어젯밤…나, 알지 않는다…자신이, 모르는거야……」
 		PRINTL
 		PRINTFORMDW 사쿠야는 앨리스를 꼭 껴안으면서 말했다…
@@ -191,7 +191,7 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		PRINTFORMW 「그런, 불만은……」
 ;OriginalString : (COLOR_K14("사쿠야"), "「じゃ、この話はおしまい。今は천천히眠りなさい、엘리스。でも一つだけ約束して」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러면, 이 이야기는 끝. 지금은 천천히 자세요,엘리스그렇지만 1개만 약속해」")
-		PRINTFORMW 「약속…？」
+		PRINTFORMW 「약속…?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「そう、約束。次に目覚めた時には、笑顔に돌아가기って約束して」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그래, 약속. 다음에 눈을 떴을 때에는, 웃는 얼굴에돌아가기라는 약속해」")
 		PRINTFORMW 「응, 알았다…」
@@ -207,41 +207,41 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 	ENDIF
 	
 	;=================================================
-	;ルートＡII　初回 FIRSTEVENT(4)
+	;루트ＡII  첫회 FIRSTEVENT(4)
 	;=================================================
-	IF 구상記入チェック(100) && KFLAG:(FLAG:주인님):0 == 1 && FIRSTEVENT(4)
-		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「私、思ったんだけど」")
+	IF 구상기입체크(100) && KFLAG:(FLAG:주인님):0 == 1 && FIRSTEVENT(4)
+		CALL PRINTCOLORL(COLOR_K14("사쿠야"), "「나, 생각했지만」")
 		PRINTFORMW 「응」
 ;OriginalString : (COLOR_K14("사쿠야"), "「엘리스の身体ってつめたいなって」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엘리스의 신체는 차다는」")
-		PRINTFORMW 「그렇구나…, 대사, 흡수의 구조가 사람과는 다른 것. 이봐요, 심장 뛰는 소리라도 조용하겠지요？」
+		PRINTFORMW 「그렇구나…, 대사, 흡수의 구조가 사람과는 다른 것. 이봐요, 심장 뛰는 소리라도 조용하겠지요?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「言われてみればそうね」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「말해져 보면 그렇구나」")
-		PRINTFORMW 「사쿠야는 전부역이군요？ 신체는 열을 띠고 있어, 심장 뛰는 소리도 나보다 훨씬 커요」
+		PRINTFORMW 「사쿠야는 전부역이군요? 신체는 열을 띠고 있어, 심장 뛰는 소리도 나보다 훨씬 커요」
 		PRINTFORMW 「전신이 살고 있다, 라고 주장하고 있다. 그것이 어떻게는 (뜻)이유가 아니지만…」
 		PRINTL
 ;OriginalString : (COLOR_K14("사쿠야"), "「こういうのは嫌いかしら？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 것은 싫을까？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이런 것은 싫을까?」")
 		PRINTFORMW 「그런 일……그렇지만 정직, 최초의 무렵은 조금 서툴렀어」
 ;OriginalString : (COLOR_K14("사쿠야"), "「えっ、そうなの？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엣, 그래？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엣, 그래?」")
 		PRINTFORMW 「후후, 이제 과거의 이야기야. 지금은 나쁘지 않다고 생각하고 있다. 아이것이 사쿠야야, 라는 느낌이 해」
 ;OriginalString : (COLOR_K14("사쿠야"), "「結構違うものね、私達」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「상당히 다른 거네, 우리들」")
 		PRINTFORMW 「…………」
 ;OriginalString : (COLOR_K14("사쿠야"), "「ん、どうか했다？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「응, 부디했다？」")
-		PRINTFORMW 「나…좋아？」
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「응, 부디했다?」")
+		PRINTFORMW 「나… 좋아?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「えぇ、好きよ…」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「에에, 좋아해요…」")
 		PRINTFORMDW 사쿠야는 앨리스의 손바닥에 입맞춤하면서 말했다…
 		
-		;フェードイン
+		;페이드 인
 		CALL FADE(20, COLOR2_K14("SAKUYA"), COLOR_K14("black"), "「사랑하고 있어요」")
 		
-		PRINTFORMW 「정말로？ 사쿠야는 그것으로 좋은거야？」
+		PRINTFORMW 「정말로? 사쿠야는 그것으로 좋은거야?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「言ったはずよ？ 貴女の시간を私に預けてって。それに…」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「말했을 거야？ 당신의시간를 나에게 맡겨는. 거기에…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「말했을 거야? 당신의시간를 나에게 맡겨는. 거기에…」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「私の시간も貴女に預けるわ、엘리스。だから、もう何も心配しなくていいの」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나의시간도 당신에게 맡겨요,엘리스그러니까, 이제(벌써) 아무것도 걱정하지 않아도 괜찮은거야」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「ずっと貴女の傍にいるわ」")
@@ -249,7 +249,7 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		PRINTFORMW 「응, 알았다. 고마워요, 사쿠야…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「…礼なんて。寧ろ私の方から言いたいくらいよ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…예라니. 오히려 내 쪽으로부터 말하고 싶을 정도」")
-		PRINTFORMW 「그래？」
+		PRINTFORMW 「그래?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「えぇ、そうよ。逃げてるばかりじゃ駄目って気付か당했다わ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「에에, 그래요. 도망치고 있는뿐이면 안된다는 것은 전교인가당했다와」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「それが大切なものなら尚更、ね」")
@@ -263,19 +263,19 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그방법은…뭐 정직, 조금 저것이었지만. 그렇지만, 이제 와서는 아무래도 좋은 일이야」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「終わり良ければ全て良し、ってね」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「끝나 좋다면 모두 좋다, 는」")
-		PRINTFORMW 「그것, 전에 내가 말하지 않았다？」
+		PRINTFORMW 「그것, 전에 내가 말하지 않았다?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「覚えてない」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「기억하지 않았다」")
-		PRINTFORMW 「모녹 하려면  조금 빠르지 않아？」
+		PRINTFORMW 「모녹 하려면  조금 빠르지 않아?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「貴女さえ居ればどうだっていいわよ…そんなの」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당신만 있으면 어떻든지 좋아요…그런 것」")
 		PRINTFORMW 「……말하잖아. 그렇지만, 아무튼…그래요」
 		
-		;フェードアウト
+		;페이드 아웃
 		CALL FADE(20, COLOR2_K14("SAKUYA"), COLOR_K14("black"), "「키득」")
 		CLEARLINE 1
 		
-		;フェードアウト
+		;페이드 아웃
 		CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), "「후훗」")
 		CLEARLINE 1
 		
@@ -286,12 +286,12 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 	ENDIF
 	
 	;=================================================
-	;ルートＢIII　KFLAG:(FLAG:주인님):5に代入が行われた場合 FIRSTEVENT(5)
+	;루트ＢIII  KFLAG:(FLAG:주인님):5에 대입을 했을 경우 FIRSTEVENT(5)
 	;=================================================
-	IF 구상記入チェック(100) && KFLAG:(FLAG:주인님):5 == 1 && FIRSTEVENT(5)
+	IF 구상기입체크(100) && KFLAG:(FLAG:주인님):5 == 1 && FIRSTEVENT(5)
 		PRINTFORMW 「응 사쿠야」
 ;OriginalString : (COLOR_K14("사쿠야"), "「ん？ なに？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「응？ 뭐？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「응? 뭐?」")
 		PRINTFORMW 「이제 돌아오는 것이 좋지 않을까. 결계는 벌써 사라졌고, 그…」
 		PRINTFORMW 「메이드장이 없어서 홍마관은 대단한 일이 되어있는 다」
 ;OriginalString : (COLOR_K14("사쿠야"), "「はぁ、そうだったわね。私が居ない間、どんな事になってるやら…」")
@@ -302,19 +302,19 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「생각하면 마음이 무겁네요…」")
 		PRINTFORMW 「미안해요 사쿠야, 나의 탓으로……」
 ;OriginalString : (COLOR_K14("사쿠야"), "「何の事かしら？ 私には判らないから、謝る필요なんてないのではなくて？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무슨 일일까？ 나에게는 알지 않기 때문에, 사과한다필요정말 없는 것이 아니어서？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무슨 일일까? 나에게는 알지 않기 때문에, 사과한다필요정말 없는 것이 아니어서?」")
 		PRINTFORMW 「응, 고마워요…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「謝ったり感謝してみたり、금일の엘리스は忙しいわね？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「사과하거나 감사해 보거나금일노엘리스는 바쁘네요？」")
-		PRINTFORMW 「 이제！ 조롱하지 말아！」
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「사과하거나 감사해 보거나금일노엘리스는 바쁘네요?」")
+		PRINTFORMW 「이제! 조롱하지 말아!」
 ;OriginalString : (COLOR_K14("사쿠야"), "「ふふっ…じゃ、そんな訳でそろそろ돌아가기わ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「후훗…그러면, 그런 (뜻)이유로 슬슬돌아가기와」")
-		PRINTFORMW 「응, 조심해…라고, 조금 사쿠야！？」
+		PRINTFORMW 「응, 조심해… 라고, 조금 사쿠야!?」
 		PRINTFORMDW 일어서 걸친 사쿠야는 격렬한 현기증에 습격당해 무심코 벽에 손을 붙었다…
 		PRINTL
 ;OriginalString : (COLOR_K14("사쿠야"), "「だ、괜찮아よ。多分、ただの立ち眩みだから…」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「괘, 괜찮아요. 아마, 단순한 일어섰을 때 느끼는 현기증이니까…」")
-		PRINTFORMW 「정말로？ 무엇이라면 좀 더 쉬고 나서 돌아가도…」
+		PRINTFORMW 「정말로? 무엇이라면 좀 더 쉬고 나서 돌아가도…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「本当に괜찮아だから。仕事の事を考えると、あまり천천히してられないしね」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「정말로 괜찮기 때문에. 일의 일을 생각하면, 너무 천천히 하고 있을 수 없기도 하고」")
 		PRINTFORMW 「그렇게…, 아무튼사쿠야가 거기까지 말한다면」
@@ -332,24 +332,24 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 	ENDIF
 	
 	;=================================================
-	;ルートＡIII　KFLAG:(FLAG:주인님):4に代入が行われた場合 FIRSTEVENT(6)
+	;루트ＡIII  KFLAG:(FLAG:주인님):4에 대입을 했을 경우 FIRSTEVENT(6)
 	;=================================================
-	IF 구상記入チェック(100) && KFLAG:(FLAG:주인님):4 == 1 && FIRSTEVENT(6)
+	IF 구상기입체크(100) && KFLAG:(FLAG:주인님):4 == 1 && FIRSTEVENT(6)
 		PRINTFORMW 「아무래도 간신히 결계가 풀린 것 같다」
 ;OriginalString : (COLOR_K14("사쿠야"), "「…やれやれ。それは何よりね」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…아휴. 그것은 무엇보다네」")
 		PRINTFORMW 「뭐, 그렇구나. 이것으로 간신히 일단락이라는 곳일까」
 ;OriginalString : (COLOR_K14("사쿠야"), "「張本人が人事みたいに言うわね？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「장본인이 인사같이 말해요？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「장본인이 인사같이 말해요?」")
 		PRINTFORMW 「그것을 말해지면(자) 유석에 아무것도 말대답할 수 없어요…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「責めてる訳じゃないのよ？ ただ、この位の빈정거린다権利はあるかと思ってね♪」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「꾸짖고 있는 것이 아니야？ 다만, 이 정도의빈정거린다권리는 있을까하고 생각해♪」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「꾸짖고 있는 것이 아니야? 다만, 이 정도의빈정거린다권리는 있을까하고 생각해♪」")
 		PRINTFORMW 「성질이 나쁘네요, 사쿠야…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「それはお互い様ね。まぁそれは兎も角…私は一旦戻ったほうがいいかしら」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그것은 피차일반이군요. 아무튼 그것은 차치하고…나는 일단 돌아오는 편이 좋을까」")
 		PRINTFORMW 「그렇구나, 지금 쯤사쿠야가 없는 것을 알아차려, 소동이 되고 있는 다…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「結局、今までは私の存在自体が無いものとなってた、って事でいいのかしら？」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「결국, 지금까지는 나의 존재 자체가 없는 것이 되고 있던, 이라는 일로 좋은 것일까？」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「결국, 지금까지는 나의 존재 자체가 없는 것이 되고 있던, 이라는 일로 좋은 것일까?」")
 		PRINTFORMW 「그럴 것이어요. 다만, 아무튼…사쿠야가 없는 홍마관이 어떻게 되고 있을까 라고 상상도 할 수 없는데」
 ;OriginalString : (COLOR_K14("사쿠야"), "「それは私も考えたくないわね……仕事が山積になってる予感がするわ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그것은 나도 생각하고 싶지 않네요……일이 산적이 되어있는 예감이 해요」")
@@ -364,19 +364,19 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		PRINTFORMW 「응, 알았다」
 ;OriginalString : (COLOR_K14("사쿠야"), "「それにまた何時でも会えるもの。시간の都合なんてどうにでもなるしね」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「거기에 또 언제라도 만날 수 있는 것.시간의 형편은 어떻게라도 되기도 하고」")
-		PRINTFORMW 「진짜…, 시간에 간섭할 수 있다 라는 반칙이군요？ 가끔 부럽다고 생각해요」
+		PRINTFORMW 「진짜…, 시간에 간섭할 수 있다 라는 반칙이군요? 가끔 부럽다고 생각해요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「あら、엘리스の人形操術こそ羨ましいわよ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아라,엘리스의 인형조술이야말로 부러워요」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「私にその能力があればもっと楽できるのに、って思うわ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나에게 그 능력이 있으면 좀 더 락 할 수 있는데, 라고 생각해요」")
-		PRINTFORMW 「메이드 요정은 일해 나쁘고？」
+		PRINTFORMW 「메이드 요정은 일해 나쁘고?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「そんなところね、ふふっ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그런 곳이군요, 후훗」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「じゃ、そろそろ돌아가기わ。取りあえず何があったかは伏せておくから」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러면, 슬슬돌아가기와. 우선 무엇이 있었는가는 덮어 두기 때문에」")
-		PRINTFORMW 「괜찮아？」
+		PRINTFORMW 「괜찮아?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「信用ないのね？ その位の事は任せて貰いたいものだわ」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「신용 없는거네？ 그 정도의 일은 맡겨 받고 싶은 것이예요」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「신용 없는거네? 그 정도의 일은 맡겨 받고 싶은 것이예요」")
 		PRINTFORMW 「안, 신용한다」
 ;OriginalString : (COLOR_K14("사쿠야"), "「솔직でよろしい♪ じゃ、またあとで」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「솔직그리고 좋다♪ 그러면, 또 나중에」")
@@ -388,11 +388,11 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		RETURN 1
 	ENDIF
 	
-	;FIRSTEVENT(3)(4)(5)(6)終了後はここで処理
+	;FIRSTEVENT(3)(4)(5)(6) 종료후는 여기서 처리
 	;=================================================
-	;ルートＢ FIRSTEVENT以外
+	;루트Ｂ FIRSTEVENT 이외
 	;=================================================
-	IF 구상記入チェック(100) && KFLAG:(FLAG:주인님):3 == 1
+	IF 구상기입체크(100) && KFLAG:(FLAG:주인님):3 == 1
 		IF TIME ;밤
 			PRINTFORMDL 창으로부터 찔러넣는 달빛이 뜨겁고 불 비친 두 명의 신체를 식혀 간다
 			PRINTFORMDW 밤은 조용하게, 천천히 깊어져 간다…
@@ -400,25 +400,25 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 			SELECTCASE RANDEVENT(2, 0)
 				CASE 0
 ;OriginalString : (COLOR_K14("사쿠야"), "「月が綺麗ね…（もう一回しない？）」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「달이 예쁘구나…（다시 한번 하지 않는다？）」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「달이 예쁘구나…（다시 한번 하지 않는다? ）」")
 					PRINTFORMW 「그렇구나…（적당히 해, 바보）」
 					PRINTL
 ;OriginalString : (COLOR_K14("사쿠야"), "「それはそれとして、月って魔法に関係が深いのよね？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그건 그걸로하고, 달은 마법으로 관계가 깊네요？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그건 그걸로하고, 달은 마법으로 관계가 깊네요?」")
 					PRINTFORMW 「…당돌한 바꾸고 죽어라. 뭐, 그렇구나…정확하게 말하면, 마술에 관련되는 것은 달에 한정되지 않아요」
 					PRINTFORMW 「모든 혹성은 영향력과 의미를 가지고 있어, 각각 마술에 깊게 관련되어」
 ;OriginalString : (COLOR_K14("사쿠야"), "「面白そうね。じゃ、月の場合ってどうなの？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「재미있을 것 같구나. 그러면, 달의 경우는 어때？」")
-					PRINTFORML 「후후, 그런 일 (듣)묻다니 드물네요？ 아무튼 좋아요. 달의 경우라면…」
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「재미있을 것 같구나. 그러면, 달의 경우는 어때?」")
+					PRINTFORML 「후후, 그런 일 (듣)묻다니 드무네요? 아무튼 좋아요. 달의 경우라면…」
 					PRINTFORMW 「사망자의 영혼의 부활. 사랑과 화해. 비젼의 발견. 투명하게 되는 것. 절도. 수. 그런 곳일까」
 ;OriginalString : (COLOR_K14("사쿠야"), "「他のは別として、愛と和解だなんて私達にぴったりね」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「다른 것은 별개로, 사랑과 화해이라니 우리들에게 딱 맞구나」")
-					PRINTFORMW 「그렇게 생각한다？」
+					PRINTFORMW 「그렇게 생각한다?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「ええ、これ以上ない位に、ね」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「에에, 더 이상 없는 위에 말야」")
-					PRINTFORMW 「사쿠야는 정말…그런 일 말해 버려서 조금 이상해요？」
+					PRINTFORMW 「사쿠야는 정말… 그런 일 말해 버려서 조금 이상해요?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「変な事なんて何も無いと思うけど。私はいたって普通よ？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이상한 일 같은거 아무것도 없다고 생각하지만. 나는 있어도 보통이야？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이상한 일 같은거 아무것도 없다고 생각하지만. 나는 있어도 보통이야?」")
 					PRINTFORMW 「 나 알고 있다. 이상한 사람은 모두 그렇게 말해」
 ;OriginalString : (COLOR_K14("사쿠야"), "「別に変だって構わないわ。こうして過ごせる日々が続くなら」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「별로 이상하다고도 상관없어요. 이렇게 하며 보낼 수 있는 나날이 계속된다면」")
@@ -432,15 +432,15 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그다지 오싹 하지 않는 이야기군요…」")
 					PRINTFORMW 「뭐, 그렇겠지요. 덧붙여서 구름이 걸리고 있는 때는 죽음과 파괴의 마법으로 적당한거야」
 ;OriginalString : (COLOR_K14("사쿠야"), "「”死”ねぇ。それって死者を生き返らせる事も出来るのかしら？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「”죽음”저기. 그 거 사망자를 소생하게 하는 일도 할 수 있을까？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「”죽음”저기. 그 거 사망자를 소생하게 하는 일도 할 수 있을까?」")
 					PRINTFORML 「”소생한다”의 정의하는 대로군요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「どういう事？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어떻게 말하는 일？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어떻게 말하는 일?」")
 					PRINTFORMW 「그렇구나…예를 들면의 이야기이지만, 단지 사망자를 일어나게 해 움직인다 라는 뿐만이라면 어려운 이야기가 아닌거야」
 					PRINTFORMW 「다만, 거기에는 생전의 본인의 의사도 영혼도 개재하지 않는다. 말해 보면 단순한 꼭둑각시군요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「なんか聞かなきゃよかったって思い始めたんだけど…」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭔가 (듣)묻지 않으면 좋았다라고 생각하기 시작한 것이지만…」")
-					PRINTFORMW 「이라면 그만둔다？」
+					PRINTFORMW 「이라면 그만둔다?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「괜찮아。折角だから続けて頂戴」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「괜찮아. 모처럼이니까 계속해 줘」")
 					PRINTL
@@ -451,14 +451,14 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「내가 살고 있는 동안 어떻게든 해 받지 않으면」")
 					PRINTFORMW 「무리이구나」
 ;OriginalString : (COLOR_K14("사쿠야"), "「そうなの？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그래？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그래?」")
 					PRINTFORMW 「죽음이나 영혼을 취급하는 것은 간단하지는 않다는 것」
 					PRINTFORMW 「방법자가 미숙하기도 하고, 이해가 부족하거나 할 때 와 비참한 결말이 된다」
 					PRINTFORMW 「마법사가 생애를 들여 어떻게든 습득할 수 있을지 어떨지, 라는 곳이 아닐까」
 					PRINTL
 ;OriginalString : (COLOR_K14("사쿠야"), "「なるほど。そんな都合よくはいかないって事ね」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「과연. 그런 때마침은 가지 않는다는 일이군요」")
-					PRINTFORMW 「아무튼이군요？ 인격을 가지지 않는 인형으로 한다면 어렵지 않지만」
+					PRINTFORMW 「아무튼이군요? 인격을 가지지 않는 인형으로 한다면 어렵지 않지만」
 ;OriginalString : (COLOR_K14("사쿠야"), "「笑えない冗談ね…」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「웃을 수 없는 농담이군요…」")
 					PRINTFORMW 「뭐야, 누그러지게 할 생각이었는데」
@@ -469,7 +469,7 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 					PRINTFORMW 「후후, 머지않아 익숙해져요. 저희들에게는 아직 시간이 가득 있기 때문에」
 ;OriginalString : (COLOR_K14("사쿠야"), "「だと、いいんだけどね…」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「라고, 좋지만 말야…」")
-					PRINTFORMW 「사쿠야…？」
+					PRINTFORMW 「사쿠야…?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「なんでもないわ。気にしないで」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아무것도 아니어요. 신경쓰지 마」")
 			ENDSELECT
@@ -481,14 +481,14 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「한 번 돌아오지 않으면 안 되는거야. 일이 남고 있지요」")
 					PRINTFORMW 「 나, 사쿠야는 그 모습 하고 있는 (분)편을 좋아해」
 ;OriginalString : (COLOR_K14("사쿠야"), "「なにそれ？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야 그것？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐야 그것?」")
 					PRINTFORMW 「은 말 응이겠지……보다 사쿠야인것 같다고 말하는 것일까」
 					PRINTFORMW 「입고 있는 때가 관심이 있다 라고 할까…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「なんとなく前にも言われた気がするけど…」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어딘지 모르게 전에게 들은 것 같지만…」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「솔직に喜ぶべきか微妙なところね」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「솔직에 기뻐해야할 것인가 미묘한 점」")
-					PRINTFORMW 「칭찬하고 있는 작정(생각)이야？ (이)래…」
+					PRINTFORMW 「칭찬하고 있는 생각이야? (이)래…」
 					PRINTFORMW 「이대로 돌아가고 싶지 않다고 생각할 정도로인데」
 ;OriginalString : (COLOR_K14("사쿠야"), "「괜찮아、すぐにまた会えるわ。ちゅっ…」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「괜찮아, 곧바로 또 만날 수 있어요. 츗…」")
@@ -500,15 +500,15 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 				CASE 1
 					PRINTFORMW 「응, 문득 생각했지만…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「なに？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐?」")
 					PRINTFORMW 「낮부터 이런 일 하고 있어 좋은 것인지는」
 ;OriginalString : (COLOR_K14("사쿠야"), "「別にいいんじゃない？ 誰かに迷惑掛けてる訳でもないし。それに…」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「별로 좋은 것이 아니다？ 누군가에게 폐 걸고 있는 것도 아니고. 거기에…」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「별로 좋은 것이 아니다? 누군가에게 폐 걸고 있는 것도 아니고. 거기에…」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「何よりも、お互いがそう望んでるんだから」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무엇보다도, 서로가 그렇게 바라고 있기 때문에」")
 					PRINTFORMW 「그렇게, 그래요…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「らしくないわね？ どう했다のよ」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「답지 않네요？ 어때했다의」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「답지 않네요? 어때했다의」")
 					PRINTFORMW 「별로 굉장한 일이 아닌거야. 단지 그, 라고 할까…」
 					PRINTFORMW 「…역시 그만둔다. 미안해요, 잊으며」
 ;OriginalString : (COLOR_K14("사쿠야"), "「気になるけど、そう言うなら仕方無いわね」")
@@ -518,7 +518,7 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「천만에요♪」")
 					PRINTFORMW 「…그러한 곳은 싫다」
 ;OriginalString : (COLOR_K14("사쿠야"), "「えっ！？ そう、なの…？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엣！？ 그, 래…？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「엣!? 그, 래…?」")
 					PRINTFORMW 「응…」
 			ENDSELECT
 		ENDIF
@@ -526,11 +526,11 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 		RETURN 1
 	ENDIF
 	
-	;FIRSTEVENT(3)(4)(5)(6)終了後はここで処理
+	;FIRSTEVENT(3)(4)(5)(6) 종료후는 여기서 처리
 	;=================================================
-	;ルートＡ FIRSTEVENT以外
+	;루트Ａ FIRSTEVENT 이외
 	;=================================================
-	IF 구상記入チェック(100) && KFLAG:(FLAG:주인님):2 == 1
+	IF 구상기입체크(100) && KFLAG:(FLAG:주인님):2 == 1
 		IF TIME ;밤
 			PRINTFORMDL 창으로부터 찔러넣는 달빛이 뜨겁고 불 비친 두 명의 신체를 식혀 간다
 			PRINTFORMDW 밤은 조용하게, 천천히 깊어져 간다…
@@ -538,31 +538,31 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 			SELECTCASE RANDEVENT(2, 2)
 				CASE 0
 					SELECTCASE FLAG:계절
-						CASE 0, 1 ;春/夏
-							PRINTFORMW 「응, 조금 떨어져 주지 않는다？ 유석에 숨막힐 듯이 덥지만」
+						CASE 0, 1 ;봄/여름
+							PRINTFORMW 「응, 조금 떨어져 주지 않는다? 유석에 숨막힐 듯이 덥지만」
 ;OriginalString : (COLOR_K14("사쿠야"), "「嫌…」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「싫어…」")
 							PRINTFORMW 「싫어 해…여기는 좋은 귀찮아요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「だって…엘리스の身体冷たくて気持ちいいんだもん！」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇지만…엘리스의 신체 차갑고 기분이 좋은걸！」")
-							PRINTFORMW 「귀부인, 그런 것 하는 사람이었는지 해들？」
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇지만… 엘리스의 신체 차갑고 기분이 좋은걸!」")
+							PRINTFORMW 「귀부인, 그런 것 하는 사람이었는지 해들?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「괜찮아、こんな事言うのは엘리스と居る時だけだから」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「괜찮아, 이런 일 말하는 것은엘리스(와)과 있는 때만이니까」")
-							PRINTFORMW 「…과연. 나로서는 영광으로 생각해야 하는 것인가 해들？」
+							PRINTFORMW 「… 과연. 나로서는 영광으로 생각해야 하는 것인가 해들?」
 							
-							CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「そういう事")
-							CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "　ね、だから…もっと……」")
+							CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「그런 일")
+							CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"), "  군요, 그러니까… 좀 더……」")
 							
 							PRINTFORMW 「…완전히. 사양이 없는 사람」
 ;OriginalString : (COLOR_K14("사쿠야"), "「ふふ、ホントは満更でもないんでしょう？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「후후, 사실은 그렇지만도 않겠지요？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「후후, 사실은 그렇지만도 않겠지요?」")
 							PRINTFORMW 「우르사이원이야. 바보사쿠야」
-						CASE 2, 3 ;秋/冬
+						CASE 2, 3 ;가을/겨울
 ;OriginalString : (COLOR_K14("사쿠야"), "「ねぇ엘리스…」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「저기엘리스…」")
-							PRINTFORMW 「응？ 뭐야」
+							PRINTFORMW 「응? 뭐야」
 ;OriginalString : (COLOR_K14("사쿠야"), "「この계절だと流石に冷たいわ。少し離れてくれない？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이계절라면 과연 차가와요. 조금 떨어져 주지 않는다？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이계절라면 과연 차가와요. 조금 떨어져 주지 않는다?」")
 							PRINTFORMW 「싫어요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「私が風邪でもひいたらどうするのよ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「내가 감기라도 걸리면 어떻게 하는거야」")
@@ -582,21 +582,21 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「괜찮아요. 지금은 좀 더 이대로 있게 해」")
 					PRINTFORMW 「그렇게, 마음대로 하면」
 					
-					CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「じゃ、そうする")
+					CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「그러면, 그렇게 한다")
 					CALL PRINT_HEARTCBW_K14(COLOR_K14("red"), , , COLOR2_K14("SAKUYA"))
 					
 					PRINTFORMDW 두 명은 창에 비치는 달을 올려보면서, 다만 조용하게 시간의 흐름에 몸을 맡겼다…
 					PRINTL
 					PRINTFORMW 「이대로 때가 멈추면 좋은데…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「私の出番かしら？」")
-					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나의 차례일까？」")
+					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나의 차례일까?」")
 					PRINTFORMW 「…완전히. 멋없는 일 말하지 말고 주세요. 그렇지만, 사쿠야라면 가능해버린다 것이군요. 후후」
 ;OriginalString : (COLOR_K14("사쿠야"), "「쿠쿡…」")
 					CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「킥킥…」")
 			ENDSELECT
 		ELSE ;낮
 			SELECTCASE FLAG:계절
-				CASE 0 ;春
+				CASE 0 ;봄
 					PRINTFORMDL 열고 발한 창으로부터 따뜻한 봄의 햇볕이 쏟아져
 					PRINTFORMDW 부드러운 바람이 두 명의 뺨을 살그머니 어루만졌다…
 					PRINTL
@@ -608,52 +608,52 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇구나…좋은 바람이예요」")
 							PRINTFORMW 「저희들, 이런 계절을 나머지 몇회 맞이할 수 있는 것일까…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「先の事ばかり考えるのはやめたんじゃなかった？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「앞의 일만 생각하는 것은 그만두었지 않았다？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「앞의 일만 생각하는 것은 그만두었지 않았다?」")
 							PRINTFORMW 「미안해요, 그랬어」
 ;OriginalString : (COLOR_K14("사쿠야"), "「別に気にしてないわ。私だって考える事はあるし」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「따로 신경쓰지 않아요. 나라도 생각하는 일은 있고」")
-							PRINTFORMW 「그래？」
+							PRINTFORMW 「그래?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「人並程度にはね。ま、そんな事より…」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「사람보통 정도에게는. 뭐, 그런 일보다…」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「新しいワインが손に入ったの。良かったらお裾分けを持ってくるけど」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「새로운 와인이손에 들어갔어. 괜찮다면 이익 분배를 가져오지만」")
 							PRINTL
-							PRINTFORMW 「어, 정말로？」
-							CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「ええ本当。")
+							PRINTFORMW 「어, 정말로?」
+							CALL PRINTCOLOR(COLOR_K14("사쿠야"), "「예사실.")
 							
-							;ワインはブルゴーニュ産に限ると思う勢。水代わりに飲むなら何でもいいけど
+							;와인은 브루고니산에 한정한다고 생각하는 기세. 물 대신에 마신다면 뭐든지 좋지만
 							SELECTCASE RANDEVENT(4, 4)
 								CASE 0
-									;ポマール
+									;포마르
 ;OriginalString : (COLOR_K14("사쿠야"), "ポマール、しかもプルミエ・クリュよ」")
 									CALL PRINTCOLORW(COLOR_K14("사쿠야"), "포마르, 게다가 프르미에·크류야」")
 									KFLAG:(FLAG:주인님):6 = 1
 								CASE 1
-									;シャブリ
+									;샤브리
 ;OriginalString : (COLOR_K14("사쿠야"), "シャブリ、しかもプルミエ・クリュよ」")
 									CALL PRINTCOLORW(COLOR_K14("사쿠야"), "샤브리 와인, 게다가 프르미에·크류야」")
 									KFLAG:(FLAG:주인님):6 = 2
 								CASE 2
-									;ヴォルネイ
+									;보르네이
 ;OriginalString : (COLOR_K14("사쿠야"), "ヴォルネイ・ドメーヌ・ニコラ・ロシニョールよ」")
 									CALL PRINTCOLORW(COLOR_K14("사쿠야"), "보르네이·드메이누·니코라·로시뇨르야」")
 									KFLAG:(FLAG:주인님):6 = 3
 								CASE 3
-									;コート・ド・ボーヌ
+									;코트·드·보누
 ;OriginalString : (COLOR_K14("사쿠야"), "ボーヌ・クロ・デ・モンスニエール・ブランよ」")
 									CALL PRINTCOLORW(COLOR_K14("사쿠야"), "보누·크로·데·몬스니에이르·브랑이야」")
 									KFLAG:(FLAG:주인님):6 = 4
 							ENDSELECT
 							
-							;今見返すと統合してよさそうだけど書く段階では分けて考えたかったのでこんな感じに
-							;まぁ面倒なのでとりあえずこのままで
+							;이마미돌려주면 통합해 좋은 것 같지만 쓸 단계에서는 나누고 생각하고 싶었기 때문에 이런 느낌에
+							;아무튼 귀찮은 것으로 우선 이대로
 							SELECTCASE KFLAG:(FLAG:주인님):6
 								CASE 1
-									PRINTFORMW 「브루고니의 빨강은 최고군요♪ 그렇지만 프르미에·크류는 자주(잘) 손에 들어 온 원이군요？」
+									PRINTFORMW 「브루고니의 빨강은 최고군요♪그렇지만 프르미에·크류는 자주(잘) 손에 들어 온 원이군요?」
 								CASE 2
-									PRINTFORMW 「굉장하다！ 샤브리 와인의 프르미에·크류를 마실 수 있다고 생각하지 않았어요♪」
+									PRINTFORMW 「굉장하다! 샤브리 와인의 프르미에·크류를 마실 수 있다고 생각하지 않았어요♪」
 								CASE 3
-									PRINTFORMW 「니코라·로시뇨르는 최근 평판이군요？ 보르네이의 빨강도 기다려지구나♪」
+									PRINTFORMW 「니코라·로시뇨르는 최근 평판이군요? 보르네이의 빨강도 기다려지구나♪」
 								CASE 4
 									PRINTFORMW 「성·드·라·베르군요. 흰색은 오래간만이니까 즐겨♪」
 							ENDSELECT
@@ -678,10 +678,10 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 							PRINTL
 							PRINTFORMW 「후후, 알았다…기대하고 있다. 그런데…사쿠야」
 ;OriginalString : (COLOR_K14("사쿠야"), "「なに？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「뭐?」")
 							PRINTFORMW 「너무 좋아…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「貴女、ワインに対して言ってるんじゃないの？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당신, 와인에 대해서 말하고 있는 것이지 않아？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「당신, 와인에 대해서 말하고 있는 것이지 않아?」")
 							PRINTFORMW 「그것도 있을지도」
 ;OriginalString : (COLOR_K14("사쿠야"), "「正直ね…」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「정직하구나…」")
@@ -692,30 +692,30 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 						CASE 1
 ;OriginalString : (COLOR_K14("사쿠야"), "「春の風…、って感じね」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「봄바람…, 라는 느낌」")
-							PRINTFORMW 「그렇구나……아그렇게 자주. 봄에 생각해 냈지만, 사쿠야는 복수초는 알고 있다？」
+							PRINTFORMW 「그렇구나…… 아그렇게 자주. 봄에 생각해 냈지만, 사쿠야는 복수초는 알고 있다?」
 							PRINTFORMW 「여러가지 용도가 있을 듯 하기 때문에, 집에도 심어 볼까하고 생각하고 있었지만」
 ;OriginalString : (COLOR_K14("사쿠야"), "「それはもう。なんてったって紅魔舘の庭にも植えてあるもの」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그것은 이제(벌써). 뭐라고 해도 홍마관의 뜰에도 심어 있는 것」")
-							PRINTFORMW 「그렇구나？」
+							PRINTFORMW 「그렇구나?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「お嬢様のお茶にも煎じて混ぜてみたりとか」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아가씨의 차에도 달여 혼합해 보거나 든지」")
-							PRINTFORMW 「주인의 차에 독을 혼합하는 메이드는 어떤가 해들？ 아무튼 흡혈귀에게 영향이 있다고도 생각되지 않는데」
+							PRINTFORMW 「주인의 차에 독을 혼합하는 메이드는 어떤가 해들? 아무튼 흡혈귀에게 영향이 있다고도 생각되지 않는데」
 ;OriginalString : (COLOR_K14("사쿠야"), "「失礼ね。私は良かれと思ってやっただけよ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「실례군요. 나는 잘 되라라고 생각해 준 것 뿐이야」")
 							PRINTFORMW 「확실히 뿌리의 부분에는 강심 작용이 있는데…올바른 지식도 없게 취급하는 것은 감탄하지 않네요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「あら、私は判ってるつもりよ？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아라, 나는 알고 있을 생각이야？」")
-							PRINTFORMW 「불필요하게 질이 나빠요……. 그래서 자주(잘) 메이드를 해고되지 않네요？」
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아라, 나는 알고 있을 생각이야?」")
+							PRINTFORMW 「불필요하게 질이 나빠요……. 그래서 자주(잘) 메이드를 해고되지 않네요?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「お互い承知の上だからね。色々とあるのよ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「서로 용서 후니까. 다양하게 있는거야」")
 ;OriginalString : (COLOR_K14("사쿠야"), "「ある種の信頼感といってもいいかしら？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어느 종의 신뢰감이라고 해도 괜찮을까？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「어느 종의 신뢰감이라고 해도 괜찮을까?」")
 							PRINTFORMW 「……싫은 신뢰감이군요」
 						CASE 2
 							PRINTFORMW 「사쿠야, 가 풀리고 있는 원. 내가 짜 준다」
 ;OriginalString : (COLOR_K14("사쿠야"), "「できるの？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「할 수 있어？」")
-							PRINTFORMW 「 나를 누구라고 생각하고 있는 거나？ 손재주가 있음에서는 사쿠야에 지지 않을 생각」
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「할 수 있어?」")
+							PRINTFORMW 「나를 누구라고 생각하고 있는 거나? 손재주가 있음에서는 사쿠야에 지지 않을 생각」
 ;OriginalString : (COLOR_K14("사쿠야"), "「そうだったわね。じゃ、お願いしようかしら」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그랬네요. 그러면, 부탁할까」")
 							
@@ -729,22 +729,22 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「과연이네. 위손감자응이예요」")
 							PRINTFORMW 「아, 조금 기다려. 모처럼이니까 평상시와는 조금 바꾸어 보려고 생각해」
 ;OriginalString : (COLOR_K14("사쿠야"), "「あまり変なのはお断りよ？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「너무 이상한 것은 거절이야？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「너무 이상한 것은 거절이야?」")
 							PRINTFORMW 「괜찮아, 조금 헐렁하게 해 캐쥬얼인 느낌으로 할 뿐(만큼)이니까」
-							PRINTFORMW 「이봐요, 그물코를 조금 무너뜨리면(자) 인상이 다르겠죠？」
+							PRINTFORMW 「이봐요, 그물코를 조금 무너뜨리면 인상이 다르겠죠?」
 							PRINTFORMDW 앨리스는 손 거울을 사쿠야에 건네주면서 그렇게 말했다…
 							PRINTL
 ;OriginalString : (COLOR_K14("사쿠야"), "「…ん。悪くない、かも…」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…응. 나쁘지 않은, 일지도…」")
 							
-							PRINTFORM 「이지요？ 조금 젊어진 느낌으로 사랑스러워요
+							PRINTFORM 「이지요? 조금 젊어진 느낌으로 사랑스러워요
 							CALL PRINT_HEARTCBW_K14(COLOR2_K14("pink"), , , COLOR2_K14("ALICE"))
 							
 ;OriginalString : (COLOR_K14("사쿠야"), "「…失礼ね。まだまだ十分若いつもりよ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…실례군요. 아직도 충분히 젊을 생각」")
 							PRINTFORMW 「후후, 그랬어」
 					ENDSELECT
-				CASE 1 ;夏
+				CASE 1 ;여름
 					SELECTCASE RANDEVENT(2, 5)
 						CASE 0
 ;OriginalString : (COLOR_K14("사쿠야"), "「流石に日差しが強くなってきたわね」")
@@ -754,19 +754,19 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「조금 부럽네요. 특히 앞으로의 시기는」")
 							PRINTFORMW 「 나는 사계를 감지할 수 있는 귀부인을 부럽다고 생각해요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「そういうもの？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러한 것？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러한 것?」")
 							PRINTFORMW 「그러한 것이야」
 ;OriginalString : (COLOR_K14("사쿠야"), "「上손くいかないものね」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「위손구 가지 않은 거네」")
 							PRINTFORMW 「서로, 군요」
 							
-							;フェードアウト
+							;페이드 아웃
 							CALL FADE(20, COLOR2_K14("SAKUYA"), COLOR_K14("black"), "「후훗」")
-							CLEARLINE 1 ;行削除
+							CLEARLINE 1 ;행 삭제
 							
-							;フェードアウト
+							;페이드 아웃
 							CALL FADE(20, COLOR2_K14("ALICE"), COLOR_K14("black"), "「킥킥…」")
-							CLEARLINE 1 ;行削除
+							CLEARLINE 1 ;행 삭제
 						CASE 1
 							PRINTFORMDW 사쿠야는 앨리스에게 안아 다하면서, 그 체온의 차이를 즐기고 있다…
 ;OriginalString : (COLOR_K14("사쿠야"), "「…ふふふ、最高」")
@@ -775,19 +775,19 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 							PRINTL
 ;OriginalString : (COLOR_K14("사쿠야"), "「この계절は엘리스に抱きついてるに限るわね♪」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이계절하엘리스에 껴안고 있는 한정해요♪」")
-							PRINTFORMW 「조금은 여기의 몸으로도 되어…라고, 뺨스리스리 하지 않는거야！」
+							PRINTFORMW 「조금은 여기의 몸으로도 되어… 라고, 뺨스리스리 하지 않는거야!」
 ;OriginalString : (COLOR_K14("사쿠야"), "「イ・ヤ・よ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이·야·」")
 							PRINTFORMW 「소쇄인 종자의 이름이 울어요, 그런 일이다」
 ;OriginalString : (COLOR_K14("사쿠야"), "「どうでもいいわ。何とでも言って頂戴。후후후…」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아무래도 좋아요. 어떻게든 말해 줘. 후후후…」")
-							PRINTFORMW 「후~～～아휴, 군요」
+							PRINTFORMW 「후～～아휴, 군요」
 					ENDSELECT
-				;以下の部分は実際に目にする人はまずいないという確信があるけど、勢いでなんとなくやってしまう。まぁ趣味の領域
-				CASE 2 ;秋
+				;이하의 부분은 실제로 보는 사람은 우선 없다고 할 확신이 있지만, 기세로 어딘지 모르게 해 버린다. 뭐 취미의 영역
+				CASE 2 ;가을
 					PRINTFORMDL 시원스러운 바람이 가을의 도래를 고한다
 					PRINTFORMDW 맑은 가을 하늘의 하늘은 어디까지나 높고, 다 푸르고 맑고 있다…
-					;一行空ける
+					;일행 비운다
 					PRINTL
 					
 					SELECTCASE RANDEVENT(2, 6)
@@ -805,19 +805,19 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 							PRINTFORMW 「방심하고 있다고(면) 소 밤에도 높아져요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「油断とか私には縁遠い話ね」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「방심이라든지 나에게는 인연이 먼 이야기군요」")
-							PRINTFORMW 「그럴까？ 나는 상당히 이상하다고 생각해요？ 그 근처는, 이군요」
+							PRINTFORMW 「그럴까? 나는 상당히 이상하다고 생각해요? 그 근처는, 이군요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「これでも完全で瀟洒で通ってるんですけど？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이것이라도 완전해 소쇄로 다니고 있습니다만？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「이것이라도 완전해 소쇄로 다니고 있습니다만?」")
 							PRINTFORML 「그랬어, 그렇지만 방심은 금물」
 							PRINTFORMW 「지금이래 이봐요, 배의 근처라든지…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「冗談にしても度が過ぎてるわ、それ…」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「농담으로 해도 도가 지나치고 있어요, 그것…」")
 							PRINTFORMW 「그렇구나, 미안해요. 후후」
 					ENDSELECT
-				CASE 3 ;冬
+				CASE 3 ;동
 					PRINTFORMDL 불경기의 하늘, 눈과 얼음 에 갇힌 경치.
 					PRINTFORMDW 낮 더욱 어두운 마법의 숲은, 다만 조용하게 봄의 도래를 기다린다…
-					;一行空ける
+					;일행 비운다
 					PRINTL
 					
 					SELECTCASE RANDEVENT(2, 7)
@@ -825,29 +825,29 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 							PRINTFORMW 「보고, 또 눈이 내리기 시작했어요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「…やれやれね。もう雪はうんざりよ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…아휴. 벌써 눈은 지긋지긋해요」")
-							PRINTFORMW 「진짜, 사쿠야는 그러한 사람이군요？ 아무튼에서도…그 기분은 알지 않는 것도 아닌데」
+							PRINTFORMW 「진짜, 사쿠야는 그러한 사람이군요? 아무튼에서도… 그 기분은 모르는 것도 아닌데」
 ;OriginalString : (COLOR_K14("사쿠야"), "「人形に雪かきさせてる人は楽でいいわよねぇ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「인형에게 눈치우기 시키고 있는 사람은 편하고 좋네요」")
 							PRINTFORMW 「귀부인의 곳에는 요정 메이드가 있잖아」
 ;OriginalString : (COLOR_K14("사쿠야"), "「うちのメイド達を”役に立たない”って言ってた人の言葉とも思えないわね」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「우리 메이드들을”도움이 되지 않는다”라고 말하고 있었던 사람의 말이라고도 생각되지 않네요」")
-							PRINTFORMW 「그렇게 말하면 그런 일도 있었는지 해들？ 후후」
+							PRINTFORMW 「그렇게 말하면 그런 일도 있었는지 해들? 후후」
 						CASE 1
 ;OriginalString : (COLOR_K14("사쿠야"), "「また雪……ホント冬は嫌ねぇ。早く春にならないかしら」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「또 눈……정말동은 싫구나. 빨리 봄이 되지 않을까」")
-							PRINTFORMW 「그것뿐은 어쩔 수 없네요. 얌전하게 기다리고 있으면？」
+							PRINTFORMW 「그것뿐은 어쩔 수 없네요. 얌전하게 기다리고 있으면?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「でも、そう考えない人もいるのよ。ま、人じゃないんだけど」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그렇지만, 그렇게 생각하지 않는 사람도 있는거야. 뭐, 인이 아니지만」")
 							PRINTFORMW 「어딘지 모르게 알았다…」
 ;OriginalString : (COLOR_K14("사쿠야"), "「私は別にいいんだけどね？ それなりに愉しんでるから」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나는 별로 좋지만 말야？ 그 나름대로 즐기고 있기 때문에」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「나는 별로 좋지만 말야? 그 나름대로 즐기고 있기 때문에」")
 							PRINTFORMW 「유석, 소쇄인 메이드라는 곳일까」
 ;OriginalString : (COLOR_K14("사쿠야"), "「あら、それで終わり？ もっと褒めていいのよ？」")
-							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아라, 그래서 끝나？ 좀 더 칭찬해도 좋은거야？」")
+							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「아라, 그래서 끝나? 좀 더 칭찬해도 좋은거야?」")
 							PRINTFORMW 「……자만 없고 주세요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「…손厳しいわね。まぁでも、ここまでにしておきますわ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「…손어렵네요. 뭐 그렇지만, 여기까지로 해 두어요」")
-							PRINTFORMW 「그 말하는 방법, 어쩐지 싫지만？」
+							PRINTFORMW 「그 말하는 방법, 어쩐지 싫지만?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「ふふ、そうね…気をつける事にするわ」")
 							CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「후후, 그렇구나…조심하는 일로 해요」")
 					ENDSELECT
@@ -860,53 +860,53 @@ IF 구상記入チェック(100) && AFFECTION("상사상애") && KFLAG:(FLAG:주
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;대만족보너스を得ている FIRSTEVENT(7) RANDEVENT(10)
+;대만족보너스를 얻고 있는 FIRSTEVENT(7) RANDEVENT(10)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:금회대만족 && TALENT:TARGET:주인님
+IF 구상기입체크(100) && TFLAG:금회대만족 && TALENT:TARGET:주인님
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTEVENT(7)
+	IF 구상기입체크(100) && FIRSTEVENT(7)
 		PRINTFORMW 「소 밤에도 하면 할 수 있지 않다. 나쁘지 않았어요」
 		PRINTFORMW 「아무튼에서도, 나로서는 좀 더 기대하고 있었지만, 이군요」
 		RETURN 1
 	ENDIF
 	
-	;その他
+	;그 외
 	PRINTFORMW 「후후……오늘은 좋았어요…」
 	PRINTFORMW 「다음도 기대해…♪」
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교完了（호의2000以上） FIRSTEVENT(8) RANDEVENT(11)
+;죠교완료（호의 2000 이상） FIRSTEVENT(8) RANDEVENT(11)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && AFFECTION("죠교完了")
+IF 구상기입체크(100) && AFFECTION("죠교완료")
 	SELECTCASE RANDEVENT(2, 11)
 		CASE 0
-			PRINTFORMW 「최근 상당히 얌전하지 않아？ 진짜는 무엇인가 기도하고 있는  것이 아닐까」
+			PRINTFORMW 「최근 상당히 얌전하지 않아? 진짜는 뭔가 기도하고 있는  것이 아닐까」
 ;OriginalString : (COLOR_K14("사쿠야"), "「勘ぐり過ぎよ。私はただあるがままを受け入れてるだけ」")
 			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「너무 억측했어. 나는 다만 있는 그대로를 받아들이고 있을 뿐」")
-			PRINTFORMW 「그렇게？ 그렇지만, 귀부인이 그렇게 말하는 것을 솔직하게는 납득할 수 없어…」
+			PRINTFORMW 「그렇게? 그렇지만, 귀부인이 그렇게 말하는 것을 솔직하게는 납득할 수 없어…」
 		CASE 1
-			PRINTFORMW 「응, 사쿠야…진짜는 이런 일 끝내고 싶을 것입니다？」
+			PRINTFORMW 「응, 사쿠야… 진짜는 이런 일 끝내고 싶을 것입니다?」
 			PRINTFORMW 「귀부인같은 사람이 언제까지나 얌전하게 해도 부자연스럽습니다 것이군요」
 ;OriginalString : (COLOR_K14("사쿠야"), "「何を言ってるのか判らないわね」")
 			CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「무슨 말을 하고 있는지 알지 않네요」")
-			PRINTFORMW 「그렇게？ 뭐, 그러한 일로 해 두어도 괜찮은데…그런데」
+			PRINTFORMW 「그렇게? 뭐, 그러한 일로 해 두어도 괜찮은데… 그런데」
 	ENDSELECT
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;익애（호감도2000以上） FIRSTEVENT(9) RANDEVENT(12)
+;익애（호감도 2000 이상） FIRSTEVENT(9) RANDEVENT(12)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && AFFECTION("익애")
+IF 구상기입체크(100) && AFFECTION("익애")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTEVENT(9)
-		PRINTFORMW 「응, 조금은 익숙해져 주었는지 해들？」
+	IF 구상기입체크(100) && FIRSTEVENT(9)
+		PRINTFORMW 「응, 조금은 익숙해져 주었는지 해들?」
 ;OriginalString : (COLOR_K14("사쿠야"), "「さぁね。私にも良く判らないわ」")
 		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「글쎄. 나에게도 자주(잘) 알지 않아요」")
 		PRINTFORMW 「그렇게, 아무튼별로 좋은데. 어차피 귀부인은 어디에도 갈 수 있고 야자 없어요」
@@ -916,7 +916,7 @@ IF 구상記入チェック(100) && AFFECTION("익애")
 		RETURN 1
 	ENDIF
 	
-	;汎用処理
+	;범용 처리
 	SELECTCASE RANDEVENT(2, 12)
 		CASE 0
 			PRINTFORMW 「나머지는 천천히 쉬어 주세요. 나의 사랑스러운 살인 실업 수당씨♪」
@@ -930,19 +930,19 @@ IF 구상記入チェック(100) && AFFECTION("익애")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교済み（호의1000以上） FIRSTEVENT(10) RANDEVENT(13)
+;죠교가 끝난 상태（호의 1000 이상） FIRSTEVENT(10) RANDEVENT(13)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && AFFECTION("죠교済み") && TALENT:TARGET:주인님
+IF 구상기입체크(100) && AFFECTION("죠교가 끝난 상태") && TALENT:TARGET:주인님
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTEVENT(10)
-		PRINTFORMW 「벌써 끝나？ 라는 얼굴 해」
+	IF 구상기입체크(100) && FIRSTEVENT(10)
+		PRINTFORMW 「벌써 끝나? 라는 얼굴 해」
 ;OriginalString : (COLOR_K14("사쿠야"), "「！？ き、気のせいではないかしら…」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「！？ 기, 기분탓은 아닐까…」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「!? 기, 기분탓은 아닐까…」")
 		PRINTFORMW 「그것은 유감이구나. 귀부인도 상당히 나의 일 받아들여 주었다고 생각해 있었다지만」
 ;OriginalString : (COLOR_K14("사쿠야"), "「だから、私は最初から！」")
-		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러니까, 나는 최초부터！」")
+		CALL PRINTCOLORW(COLOR_K14("사쿠야"), "「그러니까, 나는 최초부터!」")
 		PRINTFORMW 「좋아, 무리하게 그런 일 말하지 않아서…」
 		PRINTFORMW 「내가 요구하고 있는 것은, 그런 거짓의 감정은 아닌 것」
 ;OriginalString : (COLOR_K14("사쿠야"), "「偽りだなんて、そんな」")
@@ -952,20 +952,20 @@ IF 구상記入チェック(100) && AFFECTION("죠교済み") && TALENT:TARGET:�
 		RETURN 1
 	ENDIF
 	
-	;その他
+	;그 외
 	PRINTFORMW 「그래요…솔직하게 하고 있으면 나쁘게는 하지 않아요…」
 	PRINTFORMW 「다음은 또 이번, 이군요……나도 기대하고 있으니♪」
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;嫌悪（호의-100未満） FIRSTEVENT(11) RANDEVENT(14)
+;혐오（호의-100 미만） FIRSTEVENT(11) RANDEVENT(14)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && AFFECTION("嫌悪")
+IF 구상기입체크(100) && AFFECTION("혐오")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTEVENT(11)
+	IF 구상기입체크(100) && FIRSTEVENT(11)
 		PRINTFORMW 「어머나, 무서운 얼굴…온화하지 않네요」
 		PRINTFORMW 「 그렇지만 싫지 않아요, 그러한 것」
 		PRINTFORMDW 앨리스는 사악한 미소를 띄우면서, %CALLNAME:MASTER%에 가까워 짐 귓전으로 속삭였다…
@@ -974,7 +974,7 @@ IF 구상記入チェック(100) && AFFECTION("嫌悪")
 		RETURN 1
 	ENDIF
 	
-	;その他
+	;그 외
 	PRINTFORMW 「그렇게 예없고 주세요」
 	PRINTFORMW 「그런 얼굴 되면(자), 나……자신을 억제할 수 없게 되어버리니까」
 	PRINTFORMW 「후후후……」
@@ -982,17 +982,17 @@ IF 구상記入チェック(100) && AFFECTION("嫌悪")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;공포（호의200未満・트라우마Lv3以上） FIRSTEVENT(12) RANDEVENT(15)
+;공포（호의 200 미만·트라우마Lv3 이상） FIRSTEVENT(12) RANDEVENT(15)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;・心に傷を作られ、주인님の姿を見るだけで怯えてしまう
-;・트라우마の種は「%ACTSTR(CFLAG:MASTER:8)%」で表示できる
-;　例）PRINTFORMW 「もう%ACTSTR(CFLAG:MASTER:8)%は嫌ですって？」
+;·마음에 상처를 만들어져주인님의 모습을 보는 것만으로 무서워해 버린다
+;·트라우마의 종은 「%ACTSTR(CFLAG:MASTER:8)%」로 표시할 수 있다
+;  예）PRINTFORMW 「이제(벌써)%ACTSTR(CFLAG:MASTER:8)%는 싫습니다 라고?」
 ;-------------------------------------------------
-IF 구상記入チェック(100) && AFFECTION("공포")
+IF 구상기입체크(100) && AFFECTION("공포")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTEVENT(12)
+	IF 구상기입체크(100) && FIRSTEVENT(12)
 		PRINTFORMW 「완전히 무서워해…」 
 		PRINTFORMW 「그런데……, 그런 얼굴 되면(자), 나」
 		PRINTFORMW 「 좀 더, 좀 더 심한 일 하고 싶어져버린다의…♪」
@@ -1000,62 +1000,62 @@ IF 구상記入チェック(100) && AFFECTION("공포")
 		RETURN 1
 	ENDIF
 	
-	;その他
-	PRINTFORMW 「그렇게 무서워할 수 있으면, 좀 더 학째 싶어지는데？」
-	PRINTFORMW 「%CNAME(MASTER, TARGET)%……, 알고 있어 주고 있는 거나, 응？」
+	;그 외
+	PRINTFORMW 「그렇게 두려워해지면, 좀 더 학째 싶어지는데?」
+	PRINTFORMW 「%CNAME(MASTER, TARGET)%……, 알고 있어 주고 있는 거나, 응?」
 	PRINTFORMW 「후훅, 다음번을 기대하고 있어 주세요……」
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;반항（호의0以下・반항각인Lv1以上） FIRSTEVENT(13) RANDEVENT(16)
+;반항（호의 0 이하·반항각인Lv1 이상） FIRSTEVENT(13) RANDEVENT(16)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && AFFECTION("반항")
+IF 구상기입체크(100) && AFFECTION("반항")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTEVENT(13)
+	IF 구상기입체크(100) && FIRSTEVENT(13)
 		PRINTFORMW 「사용할 수 없네요. 흥이 깨지구나…」
-		PRINTFORMW 「거역해 어떻게든 되는 상황이 아니다고 것이, 모르는 것일까？」
+		PRINTFORMW 「거역해 어떻게든 되는 상황이 아니라고 것이, 모르는 것일까?」
 		PRINTFORMW 「우둔, 이군요……」
 		RETURN 1
 	ENDIF
 	
-	;その他
+	;그 외
 	PRINTFORMW 「 아직 거역할 생각인 것……」
-	PRINTFORMW 「자신의 입장이 나빠질 뿐(만큼)인 것이, 모르는 것일까？」
+	PRINTFORMW 「자신의 입장이 나빠질 뿐(만큼)인 것이, 모르는 것일까?」
 	PRINTFORMW 「우둔, 이군요……」
 	RETURN 1
 ENDIF
 
 [SKIPSTART]
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;目覚め（호의500以上） FIRSTEVENT(14) RANDEVENT(17)
+;눈을 뜨고（호의 500 이상） FIRSTEVENT(14) RANDEVENT(17)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("目覚め")
+IF 구상기입 체크(0) && AFFECTION("눈을 뜸")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;順応（호의100以上・호감도100以上） FIRSTEVENT(15) RANDEVENT(18)
+;순응（호의 100 이상·호감도 100 이상） FIRSTEVENT(15) RANDEVENT(18)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && AFFECTION("順応")
+IF 구상기입 체크(0) && AFFECTION("순응")
 ENDIF
 [SKIPEND]
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;序盤（条件なし） FIRSTEVENT(16) RANDEVENT(19)
+;초반（조건 없음） FIRSTEVENT(16) RANDEVENT(19)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100)
+IF 구상기입체크(100)
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTEVENT(16)
+	IF 구상기입체크(100) && FIRSTEVENT(16)
 		PRINTFORMW 「우선 이런 곳일까」
 		PRINTFORMW 「당황할 필요도 없는 것」
 		RETURN 1
 	ENDIF
 	
-	;その他
+	;그 외
 	PRINTFORMW 「시간은 얼마든지 있어요…」
 	PRINTFORMW 「차분히 길들여 가 준다. 기대하고 있어 주세요……」
 	RETURN 1

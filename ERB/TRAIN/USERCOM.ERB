@@ -10,23 +10,23 @@ $START
 SIF FLAG:죠교UI패드화
 	REDRAW 0
 CLEARLINE LINECOUNT - LINE
-SELECTCOM = COM_VITALITY("消費低", , SELECTCOM_RANK)
+SELECTCOM = COM_VITALITY("소비저", , SELECTCOM_RANK)
 LOCAL:9 = GETCOLOR()
 FLAG:COM표기법 = 1
 IF FLAG:COM표기법 == 0
 	FOR LOCAL, 0, 100
 		;CALL SHOW_USERCOM_COM(LOCAL, LOCAL:9)
-		CALL SHOW_USERCOM_COM2(LOCAL, LOCAL:9)		;HTML_PRINT版に変更@revkoishi(14/07/07)
+		CALL SHOW_USERCOM_COM2(LOCAL, LOCAL:9)		;HTML_PRINT판으로 변경@revkoishi(14/07/07)
 	NEXT
 ELSE
 	FOR LOCAL, 0, TFLAG:가능한COM수
-		LOCAL:1 = COM_VITALITY("消費低", , LOCAL)
+		LOCAL:1 = COM_VITALITY("소비저", , LOCAL)
 		SIF LOCAL:1 == -1
 			CONTINUE
 		SIF LOCAL:1 == SELECTCOM
 			SELECTCOM_RANK = LOCAL
 		;CALL SHOW_USERCOM_COM(LOCAL:1, LOCAL:9)
-		CALL SHOW_USERCOM_COM2(LOCAL:1, LOCAL:9)	;HTML_PRINT版に変更@revkoishi(14/07/07)
+		CALL SHOW_USERCOM_COM2(LOCAL:1, LOCAL:9)	;HTML_PRINT판으로 변경@revkoishi(14/07/07)
 	NEXT
 ENDIF
 IF FLAG:죠교UI패드화
@@ -57,11 +57,11 @@ IF FLAG:디버그
 	PRINTC 히트치 표시[998]
 ;OriginalString : C 죠교強制終了[999]
 	PRINTC 조교 강제 종료[999]
-	;디버그のため999は죠교強制終了のままで
+	;디버그이기 때문에 999는죠교강제 종료인 채로
 ENDIF
 PRINTL 
 DRAWLINE
-;修正後の자세表示はいったんオミット
+;수정 후의자세표시는 일단 생략
 ;CALL POSE_PRINT(L_FIRST == 0)
 L_FIRST = 1
 IF FLAG:죠교UI패드화
@@ -188,7 +188,7 @@ ELSE
 				GOTO START
 			ENDIF
 		CASE 999
-			;強制終了시킨다際にSHOW_USERCOM内でBEGINできないのでEVENCOMに落として終わらせる
+			;강제 종료시킨다때에 SHOW_USERCOM내에서 BEGIN 할 수 없기 때문에 EVENCOM에 떨어뜨려 끝낸다
 			IF FLAG:디버그
 				DOTRAIN 999
 				RETURN 1
@@ -199,12 +199,12 @@ GOTO START
 
 
 @SHOW_USERCOM_COM(ARG, ARG:1)
-TSTR:実行COM名 = %TRAINNAME:ARG%
+TSTR:실행COM명 = %TRAINNAME:ARG%
 SIF ARG == 71 && PENIS(TARGET)
-	TSTR:実行COM名 = 펠라チオ
-;同一COM色변화を一度止める
+	TSTR:실행COM명 = 펠라티오
+;동일 COM색변화를 한 번 멈춘다
 ;SETCOLOR PREVCOM == ARG ? 0xC0C070 # ARG:1
-;負荷によって色を変える
+;부하에 의해 색을 바꾼다
 IF SELECTCOM == ARG && FLAG:죠교UI패드화
 	SETCOLOR 0x7070C0
 	IF GET_COMEFFORT(TRAINNAME:ARG) == 1
@@ -215,7 +215,7 @@ IF SELECTCOM == ARG && FLAG:죠교UI패드화
 ELSE
 	SELECTCASE GET_COMEFFORT(TRAINNAME:ARG)
 		CASE 0
-			;デフォ0xC0C0C0
+			;데포 0xC0C0C0
 			SETCOLOR ARG:1
 		CASE 1
 			SETCOLOR 0x909090
@@ -240,19 +240,19 @@ PRINTL
 
 
 ;-------------------------------------------------
-;関数名:SHOW_USERCOM_COM2
-;概　要:COM表示関数(HTML_PRINT対応版)
-;引　数:ARG:0…COM번호
-;　　　 ARG:1…文字表示色
-;戻り値:なし(RESULT保護)
-;@SHOW_USERCOM_COM関数のHTML_PRINT対応版。なんかケオスめいてしまった
-;新規作成@revkoishi(14/07/07)
+;함수명:SHOW_USERCOM_COM2
+;개  요점:COM 표시 함수(HTML_PRINT 대응판)
+;인  수:ARG:0…COM번호
+;　　　 ARG:1… 문자 표시색
+;반환값:없음(RESULT 보호)
+;@SHOW_USERCOM_COM 함수의 HTML_PRINT 대응판. 뭔가 무질서인 듯해 버렸다
+;신규 작성@revkoishi(14/07/07)
 ;-------------------------------------------------
 @SHOW_USERCOM_COM2(ARG:0, ARG:1)
-TSTR:実行COM名 '= \@ ARG:0 == 71 && PENIS(TARGET) ? 펠라チオ # %TRAINNAME:(ARG:0)% \@
+TSTR:실행COM명 '= \@ ARG:0 == 71 && PENIS(TARGET) ? 펠라티오 # %TRAINNAME:(ARG:0)% \@
 {
-HTML_PRINT HTMLFONT(\@ FLAG:죠교UI패드화 ? # %" " * MAX(PRINTCLENGTH() - STRLENS(TSTR:実行COM名) - 6, 0)% \@
-         + HTMLBUTTON(\@ FLAG:죠교UI패드화 ? %TSTR:実行COM名, 28% # %TSTR:実行COM名%[{ARG:0, 3}]%" "% \@,
+HTML_PRINT HTMLFONT(\@ FLAG:죠교UI패드화 ? # %" " * MAX(PRINTCLENGTH() - STRLENS(TSTR:실행COM명) - 6, 0)% \@
+         + HTMLBUTTON(\@ FLAG:죠교UI패드화 ? %TSTR:실행COM명, 28% # %TSTR:실행COM명%[{ARG:0, 3}]%" "% \@,
            \@ FLAG:죠교UI패드화 ? %UNICODE(10000 + ARG:0)% # %TOSTR(ARG:0)% \@, COM_RANK(GET_COMEFFORT(TRAINNAME:(ARG:0))))
          + @"({COM_VITALITY(, TRAINNAME:(ARG:0)), 4}) ", , (SELECTCOM == ARG:0 && FLAG:죠교UI패드화)
            ? SIGNV(GET_COMEFFORT(TRAINNAME:(ARG:0)) - 1, 0x7070C0, BRIGHTCOLORF(70, 0x7070C0), BRIGHTCOLORF(40, 0x7070C0))
@@ -303,9 +303,9 @@ SIF TEQUIP:이뇨제
 SIF TEQUIP:은방울꽃독
 	PRINTFORM [은방울꽃의 독(%EFFECT(TEQUIP:은방울꽃독)%)]
 SIF TEQUIP:바이브
-	PRINTFORM [\@ TEQUIP:바이브 > 1 ? 特注 # \@바이브래이터]
+	PRINTFORM [\@ TEQUIP:바이브 > 1 ? 특주 # \@바이브래이터]
 SIF TEQUIP:항문바이브
-	PRINTFORM [\@ TEQUIP:항문바이브 > 1 ? 特注 # \@어널 바이브래이터]
+	PRINTFORM [\@ TEQUIP:항문바이브 > 1 ? 특주 # \@어널 바이브래이터]
 SIF TEQUIP:항문비즈
 ;OriginalString : [항문비즈]
 	PRINT [어널 비즈]
@@ -313,11 +313,11 @@ SIF TEQUIP:관장그릇＋플러그
 ;OriginalString : [관장＋항문プラグ]
 	PRINT [관장＋어널 플러그]
 SIF TEQUIP:클리캡
-	PRINTFORM [\@ TEQUIP:클리캡 > 1 ? 特注 # \@구리 캡]
+	PRINTFORM [\@ TEQUIP:클리캡 > 1 ? 특주 # \@구리 캡]
 SIF TEQUIP:오나홀
-	PRINTFORM [\@ TEQUIP:오나홀 > 1 ? 特注 # \@오나홀]
+	PRINTFORM [\@ TEQUIP:오나홀 > 1 ? 특주 # \@오나홀]
 SIF TEQUIP:유두캡
-	PRINTFORM [\@ TEQUIP:유두캡 > 1 ? 特注 # \@유두캡]
+	PRINTFORM [\@ TEQUIP:유두캡 > 1 ? 특주 # \@유두캡]
 SIF TEQUIP:밧줄
 ;OriginalString : [밧줄で긴박]
 	PRINT [줄로 긴박]
@@ -332,45 +332,45 @@ SIF TEQUIP:삼각목마
 	PRINT [삼각 목마 승마중]
 PRINTL 
 
-;시오후키を追加、ｃｖｂａを大文字に修正@revkoishi(14/05/26)
+;시오후키를 추가, cvba를 대문자에 수정@revkoishi(14/05/26)
 {
 ;OriginalString : \@ EX:MASTER:Ｃ절정 ? Ｃ절정:{EX:MASTER:Ｃ절정}回%" "% # \@ + \@ EX:MASTER:Ｖ절정 ? Ｖ절정:{EX:MASTER:Ｖ절정}回%" "% # \@ + 
 PRINTS \@ EX:MASTER:Ｃ절정 ? Ｃ절정:{EX:MASTER:Ｃ절정}회%" "% # \@ + \@ EX:MASTER:Ｖ절정 ? Ｖ절정:{EX:MASTER:Ｖ절정}회%" "% # \@ + 
-       \@ EX:MASTER:Ａ절정 ? Ａ절정:{EX:MASTER:Ａ절정}回%" "% # \@ + \@ EX:MASTER:Ｂ절정 ? Ｂ절정:{EX:MASTER:Ｂ절정}回%" "% # \@ + 
-       \@ EX:MASTER:분유 ? 분유:{EX:MASTER:분유}回%" "% # \@ + \@ EX:MASTER:사정 ? 사정:{EX:MASTER:사정}回%" "% # \@ + 
-       \@ EX:MASTER:방뇨 ? 방뇨:{EX:MASTER:방뇨}回%" "% # \@ + \@ EX:MASTER:시오후키 ? 시오후키:{EX:MASTER:시오후키}回%" "% # \@
+       \@ EX:MASTER:Ａ절정 ? Ａ절정:{EX:MASTER:Ａ절정}회%" "% # \@ + \@ EX:MASTER:Ｂ절정 ? Ｂ절정:{EX:MASTER:Ｂ절정}회%" "% # \@ + 
+       \@ EX:MASTER:분유 ? 분유:{EX:MASTER:분유}회%" "% # \@ + \@ EX:MASTER:사정 ? 사정:{EX:MASTER:사정}회%" "% # \@ + 
+       \@ EX:MASTER:방뇨 ? 방뇨:{EX:MASTER:방뇨}회%" "% # \@ + \@ EX:MASTER:시오후키 ? 시오후키:{EX:MASTER:시오후키}회%" "% # \@
 }
 PRINTFORM \@ LINEISEMPTY() ? # \n \@
 PRINTFORM \@ 20 - MATCH(EX:TARGET, 0, 0, 20) ? （죠교자）\n # \@
 {
 ;OriginalString : \@ EX:TARGET:Ｃ절정 ? Ｃ절정:{EX:TARGET:Ｃ절정}回%" "% # \@ + \@ EX:TARGET:Ｖ절정 ? Ｖ절정:{EX:TARGET:Ｖ절정}回%" "% # \@ + 
 PRINTS \@ EX:TARGET:Ｃ절정 ? Ｃ절정:{EX:TARGET:Ｃ절정}회%" "% # \@ + \@ EX:TARGET:Ｖ절정 ? Ｖ절정:{EX:TARGET:Ｖ절정}회%" "% # \@ + 
-       \@ EX:TARGET:Ａ절정 ? Ａ절정:{EX:TARGET:Ａ절정}回%" "% # \@ + \@ EX:TARGET:Ｂ절정 ? Ｂ절정:{EX:TARGET:Ｂ절정}回%" "% # \@ + 
-       \@ EX:TARGET:분유 ? 분유:{EX:TARGET:분유}回%" "% # \@ + \@ EX:TARGET:사정 ? 사정:{EX:TARGET:사정}回%" "% # \@ + 
-       \@ EX:TARGET:방뇨 ? 방뇨:{EX:TARGET:방뇨}回%" "% # \@ + \@ EX:TARGET:시오후키 ? 시오후키:{EX:TARGET:시오후키}回%" "% # \@
+       \@ EX:TARGET:Ａ절정 ? Ａ절정:{EX:TARGET:Ａ절정}회%" "% # \@ + \@ EX:TARGET:Ｂ절정 ? Ｂ절정:{EX:TARGET:Ｂ절정}회%" "% # \@ + 
+       \@ EX:TARGET:분유 ? 분유:{EX:TARGET:분유}회%" "% # \@ + \@ EX:TARGET:사정 ? 사정:{EX:TARGET:사정}회%" "% # \@ + 
+       \@ EX:TARGET:방뇨 ? 방뇨:{EX:TARGET:방뇨}회%" "% # \@ + \@ EX:TARGET:시오후키 ? 시오후키:{EX:TARGET:시오후키}회%" "% # \@
 }
 PRINTFORM \@ LINEISEMPTY() ? # \n \@
 WAIT
 
 
 @SHOW_HEAT
-PRINTFORML 휴게[{TFLAG:71,3}]/ ｿﾌﾄ[{TFLAG:72,3}]/ﾉｰﾏﾙ[{TFLAG:73,3}]/ﾊｰﾄﾞ[{TFLAG:74,3}]/이상[{TFLAG:75,3}]
+PRINTFORML 휴게[{TFLAG:71,3}]/소프트[{TFLAG:72,3}]/노멀[{TFLAG:73,3}]/하드[{TFLAG:74,3}]/이상[{TFLAG:75,3}]
 PRINTFORML 회화[{TFLAG:81,3}]/애무[{TFLAG:82,3}]/도구[{TFLAG:83,3}]/성교[{TFLAG:84,3}]/수치[{TFLAG:85,3}]
 PRINTFORML 봉사[{TFLAG:86,3}]/가학[{TFLAG:87,3}]/이상[{TFLAG:88,3}]/사역[{TFLAG:89,3}]/성 봉[{TFLAG:350,3}]
-PRINTFORML ﾛｰｼｮ[{FLAG:20,3}]/미약[{FLAG:21,3}]/영양[{FLAG:23,3}]/치료[{FLAG:24,3}]
+PRINTFORML 로쇼[{FLAG:20,3}]/미약[{FLAG:21,3}]/영양[{FLAG:23,3}]/치료[{FLAG:24,3}]
 WAIT
 
 
 @ACTION_RESERVATION
 DRAWLINE
 PRINTL [-1] - 돌아온다
-PRINTFORML [0] - 조교자의 \@ TFLAG:ACT분류예약 >= 0 ? 次のメニュー:%MENU(TFLAG:ACT분류예약)% # 메뉴 예약 \@
-PRINTFORML [1] - 조교자의 \@ TCVAR:행동예약 >= 0 ? 次の행동:%STR:(TCVAR:행동예약)% # 행동 예약 \@
+PRINTFORML [0] - 조교자의 \@ TFLAG:ACT분류예약 >= 0 ? 다음의 메뉴:%MENU(TFLAG:ACT분류예약)% # 메뉴 예약 \@
+PRINTFORML [1] - 조교자의 \@ TCVAR:행동예약 >= 0 ? 다음의행동:%STR:(TCVAR:행동예약)% # 행동 예약 \@
 SIF ASSI:1 >= 0
 	PRINTL [2] - 조수1의 행동 예약
 SIF ASSI:2 >= 0
 	PRINTL [3] - 조수2의 행동 예약
-SIF ASSI:1 >= 0 && !TFLAG:コンビネーション예약 && TCVAR:행동예약 >= 0 && TFLAG:조수１행동예약 < 0
+SIF ASSI:1 >= 0 && !TFLAG:콤비네이션예약 && TCVAR:행동예약 >= 0 && TFLAG:조수1행동예약 < 0
 	PRINTL [4] - 콤비네이션의 예약
 $INPUT_LOOP
 INPUT
@@ -393,18 +393,18 @@ SELECTCASE RESULT
 			GOTO INPUT_LOOP
 		PRINTL 행동 번호를 입력해 주세요.
 		INPUT
-		TFLAG:조수１행동예약 = RESULT
+		TFLAG:조수1행동예약 = RESULT
 	CASE 3
 		SIF ASSI:2 < 0
 			GOTO INPUT_LOOP
 		PRINTL 행동 번호를 입력해 주세요.
 		INPUT
-		TFLAG:조수２행동예약 = RESULT
+		TFLAG:조수2행동예약 = RESULT
 	CASE 4
-		SIF ASSI:1 < 0 || TFLAG:コンビネーション예약 || TFLAG:조수１행동예약 >= 0 || TCVAR:행동예약 < 0
+		SIF ASSI:1 < 0 || TFLAG:콤비네이션예약 || TFLAG:조수1행동예약 >= 0 || TCVAR:행동예약 < 0
 			GOTO INPUT_LOOP
 		PRINTL 콤비네이션을 예약했습니다.
-		TFLAG:コンビネーション예약 = 1
+		TFLAG:콤비네이션예약 = 1
 	CASEELSE
 		GOTO INPUT_LOOP
 ENDSELECT

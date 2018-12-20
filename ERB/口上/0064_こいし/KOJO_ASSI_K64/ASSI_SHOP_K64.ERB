@@ -1,50 +1,50 @@
 ﻿;-------------------------------------------------
-;코이시구상 조수ショップ이벤트구상ファイル
+;코이시구상 조수숍이벤트구상파일
 ;-------------------------------------------------
-;ショップから呼び出される조수구상をまとめたファイル
+;숍으로부터 불려 가는조수구상를 정리한 파일
 ;-------------------------------------------------
 
 ;*************************************************
-;조수ショップ이벤트구상
+;조수숍이벤트구상
 ;*************************************************
 
 ;=================================================
-;AEV102, 조수任命구상
+;AEV102, 조수임명구상
 ;=================================================
-;・조수として任命당했다ときに表示
-;・いかなる場合でも「구상主=ASSI」となって呼び出される
-;・TARGETが-1になるケースが発生する仕様がまだ残っているのか調べていない
-;・ついでにこの関数のARGは機能していない。働いてもいいのよ
+;·조수로서 임명당했다때에 표시
+;·어떠한 경우에서도 「구상주=ASSI」라고 되고 불려 간다
+;·TARGET가-1이 되는 케이스가 발생하는 사양이 아직 남아 있는지 조사하지 않았다
+;·하는 김에 이 함수의 ARG는 기능하고 있지 않다. 일해도 괜찮은거야
 ;-------------------------------------------------
 ;=================================================
 @KOJO_EVENT_ASSI_K64_102(ARG)
 ;=================================================
-;引数内訳…
+;인수 내역…
 ;ARG=()
 ;-------------------------------------------------
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;주인님自ら조수になる
+;주인님 스스로조수가 된다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && TALENT:ASSI:주인님
-	IF TARGET < 0	;죠교자が未定
+IF 구상기입체크() && TALENT:ASSI:주인님
+	IF TARGET < 0	;죠교자가 미정
 ;OriginalString : 「ちょっと他の人の躾け方も見てみたいなぁ…」
 		PRINTFORMW 「조금 다른 사람의 예의범절을 가르치는 방법도 보고 싶다…」
 ;OriginalString : 「さて、誰に%K64_CNAME(MASTER, 2)%を躾けてもらおうかしら」
 		PRINTFORMW 「그런데, 누구에게%K64_CNAME(MASTER, 2)%(을)를 예의범절을 가르쳐 줄까」
-	ELSE			;죠교자は決まっている
-		SELECTCASE NO:TARGET	;죠교자分岐
-			CASE 61		;さとり
+	ELSE			;죠교자는 정해져 있다
+		SELECTCASE NO:TARGET	;죠교자분기
+			CASE 61		;사토리
 ;OriginalString : 「お姉ちゃん、私も一緒に付いていってもいい？」
-				PRINTFORMW 「언니, 나도 함께 뒤따라 가도 괜찮다？」
+				PRINTFORMW 「언니, 나도 함께 뒤따라 가도 괜찮다?」
 ;OriginalString : 「お姉ちゃんがどうやって%K64_CNAME(MASTER, 2)%を躾けるか、見てみたいの」
 				PRINTFORMW 「언니가 어떻게%K64_CNAME(MASTER, 2)%(을)를 예의범절을 가르치는지, 보고 싶은거야」
-			CASE 62, 63	;燐/空
+			CASE 62, 63	;린/하늘
 ;OriginalString : 「ねぇ、%CALLNAME:TARGET%。私も一緒に付いていってあげよっか」
 				PRINTFORMW 「응, %CALLNAME:TARGET%. 나도 함께 뒤따라 가 주어라 인가」
 ;OriginalString : 「その方がきっと上손くいくわ。私も楽しめるし♪」
 				PRINTFORMW 「그 쪽이 반드시 능숙하게 가요. 나도 즐길 수 있고♪」
-			CASEELSE	;上記以外
+			CASEELSE	;상기 이외
 ;OriginalString : 「私も一緒に行くわ」
 				PRINTFORMW 「 나도 함께 가요」
 ;OriginalString : 「でも、躾けるのは%K64_CNAME(TARGET)%だからよろしくね♪」
@@ -55,25 +55,25 @@ IF 구상記入チェック() && TALENT:ASSI:주인님
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;주인님の조수になる
+;주인님의조수가 된다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;・주인님の조수になるので、죠교자が未定は無い
+;·주인님의조수가 되므로, 죠교자가 미정은 없다
 ;------------------------------------------------
-IF 구상記入チェック() && TARGET >= 0 && TALENT:TARGET:주인님
-	SELECTCASE NO:TARGET	;죠교자分岐
-		CASE 61		;さとり
+IF 구상기입체크() && TARGET >= 0 && TALENT:TARGET:주인님
+	SELECTCASE NO:TARGET	;죠교자분기
+		CASE 61		;사토리
 ;OriginalString : 「お姉ちゃんのお손伝いをすればいいの？」
-			PRINTFORMW 「언니를 도우면 좋은거야？」
+			PRINTFORMW 「언니를 도우면 좋은거야?」
 ;OriginalString : 「うん、やってみる♪」
 			PRINTFORMW 「응, 해 본다♪」
-		CASE 62, 63	;燐/空
+		CASE 62, 63	;린/하늘
 ;OriginalString : 「ねぇねぇ%CALLNAME:TARGET%。これから新しいおもちゃで遊ぶんでしょ？」
-			PRINTFORMW 「응%CALLNAME:TARGET%. 지금부터 새로운 장난감으로 노는거죠？」
+			PRINTFORMW 「응%CALLNAME:TARGET%. 지금부터 새로운 장난감으로 노는거죠?」
 ;OriginalString : 「私も一緒に遊びたいなぁ…いい？」
-			PRINTFORMW 「 나도 함께 놀고 싶다…좋다？」
-		CASEELSE	;上記以外
+			PRINTFORMW 「나도 함께 놀고 싶다… 좋다?」
+		CASEELSE	;상기 이외
 ;OriginalString : 「えっと、%K64_CNAME(MASTER, 2)%を躾けるお손伝いをすればいいのね？」
-			PRINTFORMW 「어와%K64_CNAME(MASTER, 2)%(을)를 예의범절을 가르치는 도우면 좋구나？」
+			PRINTFORMW 「어와%K64_CNAME(MASTER, 2)%를 예의범절을 가르치는 도우면 좋구나?」
 ;OriginalString : 「私にちゃんとできるかなぁ…」
 			PRINTFORMW 「 나가 제대로 할 수 있을까…」
 	ENDSELECT
@@ -81,39 +81,39 @@ IF 구상記入チェック() && TARGET >= 0 && TALENT:TARGET:주인님
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;주인님以外の조수になる
+;주인님 이외의조수가 된다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック() && ((TARGET < 0) || !TALENT:TARGET:주인님)
-	IF TARGET < 0	;죠교자が未定
+IF 구상기입체크() && ((TARGET < 0) || !TALENT:TARGET:주인님)
+	IF TARGET < 0	;죠교자가 미정
 ;OriginalString : 
 		PRINTFORMW 
-	ELSE			;죠교자は決まっている
-		SELECTCASE NO:TARGET	;죠교자分岐
-			CASE 61		;さとり
+	ELSE			;죠교자는 정해져 있다
+		SELECTCASE NO:TARGET	;죠교자분기
+			CASE 61		;사토리
 ;OriginalString : 「えへへー、금일はお姉ちゃんと一緒だね」
 				PRINTFORMW 「네에에―, 오늘은 언니와 함께구나」
 ;OriginalString : 「お姉ちゃんの無慈悲で容赦のない躾、楽しみだなぁ♪」
 				PRINTFORMW 「언니의 무자비해 용서가 없는 예의 범절, 기다려지는구나♪」
-			CASE 62, 63	;燐/空
+			CASE 62, 63	;린/하늘
 ;OriginalString : 「あら、금일は%CALLNAME:TARGET%が躾ける役なのね」
 				PRINTFORMW 「어머나, 안녕하세요%CALLNAME:TARGET%(은)는 예의범절을 가르치는 역인 것」
 ;OriginalString : 「でも、私がお姉ちゃんのペットのお손伝いって…普通逆じゃない？」
-				PRINTFORMW 「 그렇지만, 내가 언니의 애완동물의 조력은…보통역이 아니다？」
-				IF NO:MASTER == 61	;죠교대상がさとりで追加
+				PRINTFORMW 「그렇지만, 내가 언니의 애완동물의 조력은… 보통역이 아니다?」
+				IF NO:MASTER == 61	;죠교대상가 사토리로 추가
 ;OriginalString : 「それにしても…」
 					PRINTFORMW 「그렇다 치더라도…」
 ;OriginalString : 「お姉ちゃんのペットがお姉ちゃんを躾ける…？」
-					PRINTFORMW 「언니의 애완동물이 언니를 예의범절을 가르친다…？」
+					PRINTFORMW 「언니의 애완동물이 언니를 예의범절을 가르친다…?」
 ;OriginalString : 「私はお姉ちゃんのペットのお손伝い…？？」
-					PRINTFORMW 「 나는 언니의 애완동물의 조력…？？」
+					PRINTFORMW 「나는 언니의 애완동물의 조력…??」
 ;OriginalString : 「じゃあ%CALLNAME:TARGET%はペットのペットで…私は？？？」
-					PRINTFORMW 「자%CALLNAME:TARGET%(은)는 애완동물의 애완동물로…나는？？？」
+					PRINTFORMW 「자%CALLNAME:TARGET%는 애완동물의 애완동물로… 나는???」
 ;OriginalString : 「うう…わかんなくなってきた…」
 					PRINTFORMW 「우우…몰라졌다…」
 				ENDIF
-			CASEELSE	;上記以外
+			CASEELSE	;상기 이외
 ;OriginalString : 「私はお손伝いをすればいいの？」
-				PRINTFORMW 「 나는 도우면 좋은거야？」
+				PRINTFORMW 「나는 도우면 좋은거야?」
 ;OriginalString : 「よろしくね、%K64_CNAME(TARGET)%」
 				PRINTFORMW 「잘 부탁해,%K64_CNAME(TARGET)%」
 		ENDSELECT

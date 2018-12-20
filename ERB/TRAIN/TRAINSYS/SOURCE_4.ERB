@@ -1,45 +1,45 @@
 ﻿;────────────────────────────────────
-;굴종のソース（굴복、억울、흥미）
+;굴종의 소스（굴복, 억울, 흥미）
 ;────────────────────────────────────
 @CALC_SOURCE30
 
-;ABL:순종、반항각인、죠교度合い、素質をみる
+;ABL:순종, 반항각인, 죠교정도, 소질을 본다
 CUP:MASTER:굴복 += SOURCE:MASTER:굴종 * (3 + GET_ABL(MASTER, "순종")) * (11 - MARK:반항각인) / 800
 CUP:MASTER:억울 += SOURCE:MASTER:굴종 * (140 - GET_ABL(MASTER, "순종")) * (2 + TALENT:MASTER:비관적 - TALENT:MASTER:낙관적 - TALENT:MASTER:예속) / ((10 + CFLAG:MASTER:죠교레벨) * 20)
 
-;죠교がまだ進んでない段階で簡単に折ると、새드持ちの죠교자は興ざめ
+;죠교가 아직 진행되지 않을 단계에서 간단하게 꺾으면, 새드소유의죠교자는 흥을 깸
 SIF SOURCE:MASTER:굴종 > (CFLAG:MASTER:죠교레벨 + 1) * (10 + GET_ABL(MASTER, "순종")) * 10 && TALENT:새드
 	BASE:흥미 -= SOURCE:MASTER:굴종 / (CFLAG:MASTER:죠교레벨 + 1)
 
 ;────────────────────────────────────
-;달성感のソース（초조함、만족）
+;달성감의 소스（초조함, 만족）
 ;────────────────────────────────────
 @CALC_SOURCE31
 
-;징계・모드の特典
-SIF TFLAG:징계・플래그
+;징계·모드의 특전
+SIF TFLAG:징계·플래그
 	SOURCE:MASTER:달성 += SOURCE:MASTER:공포 * (2 + TALENT:MASTER:겁쟁이 - TALENT:MASTER:굳셈) / 20
 
-;초조함が減少、만족が増大
+;초조함가 감소, 만족가 증대
 BASE:초조함 -= SOURCE:MASTER:달성 / 10
 DOWNBASE:만족 -= SOURCE:MASTER:달성 / 2
 
 ;────────────────────────────────────
-;열락のソース（공순、초조함）
+;열락의 소스（공순, 초조함）
 ;────────────────────────────────────
 @CALC_SOURCE32
 
-;공순増大、초조함減少
+;공순증대, 초조함감소
 CUP:MASTER:공순 += SOURCE:MASTER:열락 * (20 - MARK:반항각인) / 60
 BASE:초조함 -= SOURCE:MASTER:열락 / 100
 
 ;────────────────────────────────────
-;반항のソース（반항、초조함）
+;반항의 소스（반항, 초조함）
 ;────────────────────────────────────
 @CALC_SOURCE33
 
-;REACT분류に応じてSOURCE減少
-SIF IS_COMGRONAME("なし")
+;REACT분류에 응해 SOURCE 감소
+SIF IS_COMGRONAME("없음")
 	TIMES SOURCE:MASTER:반항 , 0.75
 SIF IS_COMGRONAME("소극적으로 한다")
 	TIMES SOURCE:MASTER:반항 , 0.50
@@ -50,21 +50,21 @@ SIF IS_COMGRONAME("용서를 빌다")
 SIF IS_COMGRONAME("거부")
 	TIMES SOURCE:MASTER:반항 , 0.90
 
-;반항PALAM増大
+;반항PALAM 증대
 CUP:MASTER:반항 += SOURCE:MASTER:반항 * (31 - MARK:MASTER:트라우마 - MARK:굴복각인 * 2) * (5 + MARK:반항각인) / 200
 
-;반항SOURCEから보정値を作る
-LOCAL = LINE_CALC(SOURCE:MASTER:반항, "0→0,5000→65,LIMIT/0～65")
+;반항SOURCE로부터보정치를 만든다
+LOCAL = LINE_CALC(SOURCE:MASTER:반항, "0→0, 5000→65, LIMIT/0～65")
 
-;죠교자が분노なら초조함보정
+;죠교자가분노라면초조함보정
 SIF TCVAR:상태변화 == 6
 	TIMES LOCAL, 1.50
 
-;초조함増大
+;초조함증대
 BASE:초조함 += LOCAL * (2 + TALENT:민감 - TALENT:신중함) * (2 + TALENT:정서적 - TALENT:감정결여)
 
 ;────────────────────────────────────
-;공포のソース（공포、이성、흥미）
+;공포의 소스（공포, 이성, 흥미）
 ;────────────────────────────────────
 @CALC_SOURCE34
 
@@ -74,10 +74,10 @@ SIF TALENT:MASTER:겁쟁이
 SIF TALENT:MASTER:굳셈
 	TIMES SOURCE:MASTER:공포 , 0.80
 
-;공포増大
+;공포증대
 CUP:MASTER:공포 += SOURCE:MASTER:공포
 
-;흥미BASEの現在量に応じて죠교대상이성減少、흥미増大
+;흥미BASE의 현재량에 응해죠교대상이성감소, 흥미증대
 LOCAL = MIN(BASE:흥미 / 100, 100)
 DOWNBASE:MASTER:이성 += LOCAL
 BASE:흥미 += LOCAL

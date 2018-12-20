@@ -1,15 +1,15 @@
 ﻿
 ;────────────────────────────────────
-;자세変更 地の文
+;자세변경 지문
 ;
-;죠교자행동によって자세が変更되었다場合ここで表示します。
-;구상で指定することによって置換했다文章を表示し呼ばれないようにするべきかもしれないけど
-;今はまだできません。
+;죠교자행동에 의해자세가 변경되었다경우 여기서 표시합니다.
+;구상로 지정하는 것에 의해 치환했다문장을 표시해 불리지 않도록 해야할 것인가도 모르지만
+;지금은 아직 할 수 없습니다.
 ;────────────────────────────────────
 @POSE_CHANGE
 #LOCALSIZE 3
 VARSET LOCAL, -1
-;변화内容のチェック
+;변화내용의 체크
 SIF TCVAR:MASTER:자세 != TCVAR:MASTER:전회의자세
 	LOCAL = TCVAR:MASTER:자세
 SIF TCVAR:MASTER:위치전후 != TCVAR:MASTER:전회의위치전후
@@ -17,15 +17,15 @@ SIF TCVAR:MASTER:위치전후 != TCVAR:MASTER:전회의위치전후
 SIF TCVAR:MASTER:위치상하 != TCVAR:MASTER:전회의위치상하
 	LOCAL:2 = TCVAR:MASTER:위치상하
 
-;何も変わっていないなら돌아가기
+;아무것도 변함없으면돌아가기
 SIF LOCAL < 0 && LOCAL:1 < 0 && LOCAL:2 < 0
 	RETURN 0
 
-;구상呼び出し
+;구상호출
 CALL KOJO_POSE(LOCAL, LOCAL:1, LOCAL:2)
 
-;スレへの対応손段
-SIF MENU(GET_ACTM(TFLAG:ACT)) == "不明"
+;스레에의 대응손단
+SIF MENU(GET_ACTM(TFLAG:ACT)) == "불명"
 ;OriginalString : ＠＠＠エラーです。ACT번호{TFLAG:ACT}です、スレで報告くださいませ＠＠＠
 	PRINTFORMW ＠＠＠에러입니다.ACT번호{TFLAG:ACT}입니다, 스레로 보고해 주십시오＠＠＠
 
@@ -48,7 +48,7 @@ SELECTCASE LOCAL:2
 				CASE 1
 ;OriginalString : %CALLNAME:MASTER%は누움に寝かせた…
 					PRINTFORMW %CALLNAME:MASTER%(은)는 위로 향해 뉘었다…
-				;座り
+				;안정도
 				CASE 2
 ;OriginalString : %CALLNAME:MASTER%を\@ TEQUIP:야외플레이 ? 地面 # 침대 \@의 위에 앉혀た…
 					PRINTFORMW %CALLNAME:MASTER%(을)를 \@ TEQUIP:야외플레이 ? 지면 # 침대 \@의 위에 앉게 했다…
@@ -69,11 +69,11 @@ SELECTCASE LOCAL:2
 ;OriginalString : た…
 			PRINTFORMW …
 		ENDIF
-	;上に乗った
+	;상을 탔다
 	CASE 1
 ;OriginalString : %CALLNAME:TARGET%は\@ TCVAR:MASTER:전회의위치상하 == 2 ? 上に乗っている%CALLNAME:MASTER%と身体を入れ替え # %CALLNAME:MASTER%의 위にのしかかり \@、깔고 앉으려고했다…
 		PRINTFORML %CALLNAME:TARGET%(은)는 \@ TCVAR:MASTER:전회의위치상하 == 2 ? 위를 타고 있는 %CALLNAME:MASTER%(와)과 신체를 교체 # %CALLNAME:MASTER%의 위에 덮쳐 \@,깔고 앉으려고했다…
-	;上に乗せた
+	;상에 실었다
 	CASE 2
 		;정상위
 		IF IS_NOWACTNAME("정상위시킨다")
@@ -83,7 +83,7 @@ SELECTCASE LOCAL:2
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%に、\@ TCVAR:MASTER:위치전후 == 3 ? 背中を # 身体を \@跨いで上になるように言った…
 			PRINTFORM %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에,\@ TCVAR:MASTER:위치전후 == 3 ? 등을 # 신체를 \@넘어 위가 되도록(듯이) 말했다…
 		ENDIF
-	;上下변화なし
+	;상하변화없음
 	CASEELSE
 ;OriginalString : %CALLNAME:TARGET%は
 		PRINTFORM %CALLNAME:TARGET%은(는) 
@@ -92,7 +92,7 @@ SELECTCASE LOCAL:2
 			SELECTCASE LOCAL
 				;누움
 				CASE 1
-					;イった後
+					;간 후
 					IF NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정 || NOWEX:MASTER:사정
 ;OriginalString : 、절정の余韻で腰が抜け、力なく横たわった%CALLNAME:MASTER%を見て만족げに頬を緩め
 						PRINTFORM , 절정의 여운으로 넋을 잃어 힘 없게 가로놓인 %CALLNAME:MASTER%(을)를 보고 만족스럽게 입꼬리를 올리며
@@ -100,13 +100,13 @@ SELECTCASE LOCAL:2
 ;OriginalString : %CALLNAME:MASTER%を누움に寝かせ
 						PRINTFORM %CALLNAME:MASTER%(을)를 위로 향해 재우고
 					ENDIF
-				;座り
+				;안정도
 				CASE 2
-					;가버려、전회が누움
+					;가버려, 전회가누움
 					IF TCVAR:MASTER:가버려 && TCVAR:MASTER:전회의자세 == 1
 ;OriginalString : 、快感を求めて身を起こし、앉다ように腰を引く%CALLNAME:MASTER%を眺めて笑みを浮かべ
 						PRINTFORM , 쾌감을 추구해, 앉듯이 허리를 당기는 %CALLNAME:MASTER%(을)를 바라봐 미소를 띄우고
-					;イった後
+					;간 후
 					ELSEIF NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정 || NOWEX:MASTER:사정
 ;OriginalString : 、절정の余韻で腰が抜け、くたりと座りこんだ%CALLNAME:MASTER%を見て만족げに頬を緩め
 						PRINTFORM , 절정의 여운으로 넋을 잃고 입을 벌린 %CALLNAME:MASTER%(을)를 봐 만족스럽게 미소짓고

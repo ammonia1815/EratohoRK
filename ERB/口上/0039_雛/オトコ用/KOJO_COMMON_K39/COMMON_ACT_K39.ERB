@@ -1,34 +1,34 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
-;	히나구상　汎用アクション구상ファイル
+;	히나구상  범용 액션구상파일
 
-;	汎用アクション구상をまとめたファイル
+;	범용 액션구상를 정리한 파일
 
 ;Version		Reason
-;1.11			修正等
+;1. 11			수정등
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
 ;=================================================
-;簡易フロー
-;    表示タイミング・まずアクションごとの구상
-;        表示しなかった場合、コンビネーションが発生していれば派生前を呼んでみる
-;            表示しなかった場合汎用アクション구상(←いまここ)
+;간이 플로우
+;    표시 타이밍·우선 액션마다의구상
+;        표시하지 않았던 경우, 콤비 네이션이 발생하고 있으면 파생전을 불러 본다
+;            표시하지 않았던 경우 범용 액션구상(←지금 여기)
 ;=================================================
 
 ;========================================================================
-;汎用アクション구상 AUTORAND(500) ～
+;범용 액션구상 AUTORAND(500) ～
 ;========================================================================
-;・個別の죠교자アクションが表示されなかった際に表示
-;・@KOJO_ACT_KX以外で関数分けはされておらず、全て共通で呼び出される
-;・この部分のみを使用し、コマンド毎に呼び出しを分けていな他のバリアント구상のような使い方も可能
-;・元々は손間を減ら했다い場合のeasy用機能として設けられたもの
-;・SELECTCASE GET_ACTNAME(TFLAG:ACT)で分けるもいいし、IS_NOWACTNAMEでIF ELSEIFで分けてもいい
-;・さらに손間を減ら했다いならMENUMATCH等でACT분류で分けてもいい(基本的に非推奨だけど)
-;・個別にRESULT返してもいいし、最後にまとめてRESULTを返してもいい
-;・ACT毎の名称はStr.CSVの0～103を参照の事
+;·개별의죠교자액션이 표시되지 않았던 때에 표시
+;·@KOJO_ACT_KX 이외로 함수 나누기는 되지 않고, 모두 공통으로 불려 간다
+;·이 부분만을 사용해, 커맨드마다 호출을 나누어도 좋은 다른 바리안트구상와 같은 사용법도 가능
+;·원래는손간을 감소등했다 있고 경우의 easy용 기능으로서 설치된 것
+;·SELECTCASE GET_ACTNAME(TFLAG:ACT)로 나누는 것도 좋고, IS_NOWACTNAME로 IF ELSEIF로 나누어도 괜찮다
+;·한층 더손간을 감소등했다 좋은들 MENUMATCH등으로 ACT분류로 나누어도 괜찮다(기본적으로 비추천이지만)
+;·개별적으로 RESULT 돌려주어도 괜찮고, 마지막에 정리해 RESULT를 돌려주어도 괜찮다
+;·ACT 마다의 명칭은 Str.CSV의 0～103을 참조의 일
 ;-------------------------------------------------
-;・easy用구상テンプレートはこの汎用アクション(@KOJO_ACT)と
-;      統括汎用リアクション(@KOJO_REACT)機能を基本として作成する予定
+;·easy용구상템플릿은 이 범용 액션(@KOJO_ACT)과
+;      통괄 범용 리액션(@KOJO_REACT) 기능을 기본으로서 작성할 예정
 ;-------------------------------------------------
 @KOJO_MALE_ACT_K39
 #LOCALSIZE 10
@@ -37,21 +37,21 @@ VARSET LOCAL
 VARSET LOCALS
 RESULT = 0
 
-;//この구상は통상のACT구상、"기타・조건없음"の箇所が確立で真になるようになっているので
-;//そこから漏れた場合はこちらで処理されるようになっている
-;//汎用ACTが実装당했다時に試験的にやり始めて、結局そのまま残ってるといかいうアレ
-;//今更통상のACTに移し替えるのも面倒だし…
+;//이구상는통상의 ACT구상, "기타·조건없음"의 개소가 확립으로 실로 될 대로 되고 있으므로
+;//거기로부터 빠졌을 경우는 이쪽에서 처리되게 되어 있다
+;//범용 ACT가 실장당했다시에 시험적으로 하기 시작해, 결국 그대로 남아 있으면 있고인가 말하는 저것
+;//이제 와서통상의 ACT에 바꾸는 것도 귀찮고…
 
-;//ACT系の最後の受け皿なので確率で真偽になる類の分岐は基本的に設けない
-;//今後この箇所を손入れする可能性は非常に低い
-;//上気の理由によりここでは記入チェックを使わない
-;//条件毎の우선度の見極め、不要な部分の削除、コメントアウトが徹底できるなら、そもそも不要でもある
+;//ACT계의 마지막 받침접시인 것으로 확률로 진위가 되는 종류의 분기는 기본적으로 마련하지 않는다
+;//향후 이 개소를손 넣고 할 가능성은 매우 낮다
+;//상기의 이유에 의해 여기에서는 기입 체크를 사용하지 않는다
+;//조건 마다의우선도가 지켜봐, 불필요한 부분의 삭제, comment out를 철저히 할 수 있다면, 원래 불필요하기도 함
 
 ;────────────────────────────────────
-;ACT10：애무
+;ACT10:애무
 ;────────────────────────────────────
 IF IS_NOWACTNAME("손으로 애무")
-	;수음する
+	;수음 한다
 	IF TFLAG:ACT파생 == 1
 		IF 0
 		;연속실행
@@ -61,31 +61,31 @@ IF IS_NOWACTNAME("손으로 애무")
 				SELECTCASE AUTORAND(5, 500)
 					CASE 0
 ;OriginalString : 「思いっきり激しくシゴかれるの大好きでしょ？」
-						PRINTFORMW 「마음껏 격렬하고 시고 쉬는 것 정말 좋아하겠지？」
+						PRINTFORMW 「마음껏 격렬하고 시고 쉬는 것 정말 좋아하겠지?」
 					CASE 1
 ;OriginalString : 「シゴかれながら乳首を弄られるのはどう？」
-						PRINTFORMW 「시고 그면서 유두를 만지작거려지는 것은 어때？」
+						PRINTFORMW 「시고 그면서 유두를 만지작거려지는 것은 어때?」
 					CASE 2
 ;OriginalString : 「唾液塗れの손で先っぽばかり責められるのはどう？」
-						PRINTFORMW 「타액 바를 수 있는의 손으로 끝(쪽)만 꾸짖을 수 있는 것은 어때？」
+						PRINTFORMW 「타액 바를 수 있는의 손으로 끝(쪽)만 꾸짖을 수 있는 것은 어때?」
 					CASE 3
 ;OriginalString : 「左손でシゴかれるとちょっと違う感じでしょ？」
-						PRINTFORMW 「왼손으로 시고 쉬면(자) 조금 다른 느낌이겠지？」
+						PRINTFORMW 「왼손으로 시고 쉬면 조금 다른 느낌이겠지?」
 					CASE 4
 ;OriginalString : 「一緒におしりの穴も弄られると堪らないでしょ？」
-						PRINTFORMW 「함께 엉덩이의 구멍도 만지작거려지면(자) 감등 없지요？」
+						PRINTFORMW 「함께 엉덩이의 구멍도 만지작거려지면 감등 없지요?」
 				ENDSELECT
 				SELECTCASE AUTORAND(5, 501)
 					CASE 0
 ;OriginalString : 「イク時はちゃんと『イキます！』って言わないと駄目よ？　うふふっ」
-						PRINTFORMW 「이크시는 분명하게 「이키！」(이)라고 말하지 않으면 안되어요？ 후후」
+						PRINTFORMW 「이크시는 분명하게 「이키!」라고 말하지 않으면 안되어요? 후후」
 					CASE 1
 ;OriginalString : 「손の中でどんどん大きくなってくる……なんか私も興奮してきちゃった
 						PRINTFORM 「손안으로 자꾸자꾸 커진다……어쩐지 나도 흥분해 와 버렸다
 						CALL PRINT_SYMBOL_K39
 					CASE 2
 ;OriginalString : 「イキたくなったら何時でも사정して？　ほらほらっ！　早くイっちゃいなさいよ
-						PRINTFORM 「이키 싶어지면(자) 언제라도 사정해？ 이봐요 이봐요！ 빨리 이좋은 차이야
+						PRINTFORM 「이키 싶어지면 언제라도 사정해? 이봐요 이봐요! 빨리 이좋은 차이야
 						CALL PRINT_SYMBOL_K39
 					CASE 3
 ;OriginalString : 「ほら、もっと感じて、%TNAME_K39()%の손で気持ちよくなって…」
@@ -95,7 +95,7 @@ IF IS_NOWACTNAME("손으로 애무")
 						PRINTFORMW 「우대신, 벌벌 시켜 버려서. 그렇게 기분 좋은 것일까
 						CALL PRINT_SYMBOL_K39
 				ENDSELECT
-			;その他
+			;그 외
 			ELSE
 				SELECTCASE AUTORAND(6, 502)
 					CASE 0
@@ -103,19 +103,19 @@ IF IS_NOWACTNAME("손으로 애무")
 						PRINTFORMW 「벌벌 시켜 기분이야 유혹하는 것으로 무릎…」
 					CASE 1
 ;OriginalString : 「もう少し強めにシゴいた方がいいですか？」
-						PRINTFORMW 「좀 더 강하게 해에 시고 있는 것이 좋습니까？」
+						PRINTFORMW 「좀 더 강하게 해에 시고 있는 것이 좋습니까?」
 					CASE 2
 ;OriginalString : 「声が出るのを抑えられないみたいですね？」
-						PRINTFORMW 「소리가 나오는 것을 억제할 수 없는 것 같네요？」
+						PRINTFORMW 「소리가 나오는 것을 억제할 수 없는 것 같네요?」
 					CASE 3
 ;OriginalString : 「唾液で濡らして先端を擦られるのはどうでしょう…」
 						PRINTFORMW 「타액으로 적셔 첨단을 켜지는 것은 어떻습니까…」
 					CASE 4
 ;OriginalString : 「逆손でシゴくなんていうのはどうですか？」
-						PRINTFORMW 「역수로 시고 고난이라고 말하는 것은 어떻습니까？」
+						PRINTFORMW 「역수로 시고 고난이라고 말하는 것은 어떻습니까?」
 					CASE 5
 ;OriginalString : 「一緒に乳首を弄られるのはどうでしょう？」
-						PRINTFORMW 「함께 유두를 만지작거려지는 것은 어떻습니까？」
+						PRINTFORMW 「함께 유두를 만지작거려지는 것은 어떻습니까?」
 				ENDSELECT
 				SELECTCASE AUTORAND(4, 503)
 					CASE 0
@@ -126,29 +126,29 @@ IF IS_NOWACTNAME("손으로 애무")
 						PRINTFORMW 「, 액신의 손가락 다루기를 좀 더 즐겨 주세요♪」
 					CASE 2
 ;OriginalString : 「腰が自然に動いてしまうのも止められないみたいですね？　うふっ」	
-						PRINTFORMW 「허리가 자연스럽게 움직여 버리는 것도 멈출 수 없는 것 같네요？ 우대신」	
+						PRINTFORMW 「허리가 자연스럽게 움직여 버리는 것도 멈출 수 없는 것 같네요? 우대신」	
 					CASEELSE
 ;OriginalString : 「イク時はちゃんと私に言ってくださいね？　うふ」
-						PRINTFORMW 「이크시는 분명하게 나에게 말해 주세요？ 우대신」
+						PRINTFORMW 「이크시는 분명하게 나에게 말해 주세요? 우대신」
 				ENDSELECT
 			ENDIF
 ;OriginalString : %CALLNAME%は時折%CALLNAME:MASTER%의 %RAND_SPLIT("乳首を弄り/엉덩이를 애무하기/음낭を優しく揉み解し/耳に息を吹きかけ")%ながら、페니스를しごき続けた…
 			PRINTFORMDW %CALLNAME%(은)는 때때로%CALLNAME:MASTER%의 %RAND_SPLIT("유두를 만지작거려/엉덩이를 애무하기/음낭을 상냥하게 주물러 품/귀에 입김을 내뿜고")%(이)면서, 페니스를 계속 훑어 냈다…
 			RETURN 1
-		;その他：통상のアクション
+		;그 외:통상의 액션
 		ELSE
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
 				SELECTCASE AUTORAND(4, 505)
 					CASE 0
 ;OriginalString : 「손で擦って欲しくて待ちきれないんでしょ？　ほら、正直に言わないとシてあげないよ？」
-						PRINTFORMW 「손으로 켰으면 좋아서 기다릴 수  없지요？ 이봐요, 정직하게 말하지 않으면 시라고 주지 않아？」
+						PRINTFORMW 「손으로 켰으면 좋아서 기다릴 수  없지요? 이봐요, 정직하게 말하지 않으면 시라고 주지 않아?」
 					CASE 1
 ;OriginalString : 「ほら、じっとしてて？　손コキで昇天させてあげるから♪」
-						PRINTFORMW 「이봐요, 가만히 하고 있어？ 손코키로 승천 시켜 주기 때문에♪」
+						PRINTFORMW 「이봐요, 가만히 하고 있어? 손코키로 승천 시켜 주기 때문에♪」
 					CASE 2
 ;OriginalString : 「さぁ、大人しく私にシゴかれなさい？　空っぽになるまでシてあげるから♪」
-						PRINTFORMW 「, 얌전하게 나에게 시고 그없음 있고？ 텅 비게 될 때까지 시라고 주기 때문에♪」
+						PRINTFORMW 「, 얌전하게 나에게 시고 그하세요? 텅 비게 될 때까지 시라고 주기 때문에♪」
 					CASE 3
 ;OriginalString : 「そんな目で見なくても分かるわ。いいよ、손でシゴいてあげる♪」
 						PRINTFORMW 「그런 눈으로 보지 않아도 알아요. 좋아, 손으로 시고 있어 준다♪」
@@ -156,18 +156,18 @@ IF IS_NOWACTNAME("손으로 애무")
 				SELECTCASE AUTORAND(4, 506)
 					CASE 0
 ;OriginalString : 「相変わらず良い손応えね？　ねぇ、もっと強くシゴいた方がいいかしら」
-						PRINTFORMW 「변함 없이 좋은 반응이군요？ 응, 좀 더 강하고 시고 있는 것이 좋을까」
+						PRINTFORMW 「변함 없이 좋은 반응이군요? 응, 좀 더 강하고 시고 있는 것이 좋을까」
 					CASE 1
 ;OriginalString : 「ねぇ、簡単にイっては駄目よ？　少しは愉しませてね。うふっ」
-						PRINTFORMW 「응, 간단하게 이는은 안되어요？ 조금은 즐기게 해. 우대신」
+						PRINTFORMW 「응, 간단하게 이는은 안되어요? 조금은 즐기게 해. 우대신」
 					CASE 2
 ;OriginalString : 「こんな感じ？　それともこう했다方がいい？　うふっ」
-						PRINTFORMW 「이런 느낌？ 그렇지 않으면 이러한 (분)편이 좋다？ 우대신」
+						PRINTFORMW 「이런 느낌? 그렇지 않으면 이러한 (분)편이 좋다? 우대신」
 					CASE 3
 ;OriginalString : 「もう先っぽがこんなにヌルヌルなのね？　ほら、もっと気持ちよくしてあげる」
-						PRINTFORMW 「벌써 끝(쪽)이 이렇게 누르눌인 것？ 이봐요, 좀 더 기분 좋게 해 준다」
+						PRINTFORMW 「벌써 끝(쪽)이 이렇게 누르눌인 것? 이봐요, 좀 더 기분 좋게 해 준다」
 				ENDSELECT
-			;その他
+			;그 외
 			ELSE
 				SELECTCASE AUTORAND(4, 507)
 					CASE 0
@@ -175,27 +175,27 @@ IF IS_NOWACTNAME("손으로 애무")
 						PRINTFORMW 「, 나의 손으로 녹여 주어요♪」
 					CASE 1
 ;OriginalString : 「私の손でシゴかれるのが待ちきれないですか？」
-						PRINTFORMW 「 나의 손으로 시고 쉬는 것이 기다릴 수  없습니까？」
+						PRINTFORMW 「나의 손으로 시고 쉬는 것이 기다릴 수  없습니까?」
 					CASE 2
 ;OriginalString : 「もうこんなに硬くしてしまって……すぐに楽にしてあげます♪」
 						PRINTFORMW 「벌써 이렇게 딱딱하게 해 버려……곧바로 편하게 해 줍니다♪」
 					CASE 3
 ;OriginalString : 「期待しているのでしょう？　言わなくても分かりますよ」
-						PRINTFORMW 「기대하고 있겠지요？ 말하지 않아도 알아요」
+						PRINTFORMW 「기대하고 있겠지요? 말하지 않아도 알아요」
 				ENDSELECT
 				SELECTCASE AUTORAND(4, 508)
 					CASE 0
 ;OriginalString : 「ほら、こんな感じはどうでしょう。えっ、もっと強くですか？　うふふ」
-						PRINTFORMW 「이봐요, 이런 느낌은 어떻습니까. 어, 좀 더 강하고입니까？ 후후」
+						PRINTFORMW 「이봐요, 이런 느낌은 어떻습니까. 어, 좀 더 강하고입니까? 후후」
 					CASE 1
 ;OriginalString : 「ほら、見つめられながらシゴかれると興奮しませんか？　うふっ」
-						PRINTFORMW 「이봐요, 응시할 수 있는이면서 시고 쉬면(자) 흥분하지 않겠습니까？ 우대신」
+						PRINTFORMW 「이봐요, 응시되어지면서 시고 쉬면 흥분하지 않겠습니까? 우대신」
 					CASE 2
 ;OriginalString : 「中々扱き応えがありますね…空になるまでシてあげますよ♪」
 						PRINTFORMW 「꽤 잡아당겨 반응이 있네요…비울 때까지 시라고 주어요♪」
 					CASE 3
 ;OriginalString : 「すっかり大人しくなってしまって。そんなに良いんでしょうか？　うふっ」
-						PRINTFORMW 「완전히 얌전해져 버려. 그렇게 좋을까요？ 우대신」
+						PRINTFORMW 「완전히 얌전해져 버려. 그렇게 좋을까요? 우대신」
 				ENDSELECT
 			ENDIF
 ;OriginalString : %CALLNAME%は%RAND_SPLIT("妖艶な笑みを浮かべつつ/自らの愛液を塗하면서/自らの唾液を塗하면서/ねっとりと했다視線を絡めながら")%、その손で당신의 페니스를 しごき始めた…
@@ -206,38 +206,38 @@ IF IS_NOWACTNAME("손으로 애무")
 ENDIF
 
 ;────────────────────────────────────
-;ACT파생11：가슴애무
+;ACT파생 11:가슴애무
 ;────────────────────────────────────
 IF IS_NOWACTNAME("가슴애무")
 	SELECTCASE TFLAG:ACT파생
-		;乳首吸い
+		;유두 들이마셔
 		CASE 1
 			RETURN 0
-		;揉み合い
+		;몸싸움
 		CASE 2
 			RETURN 0
-		;乳首責め
+		;유두 고문
 		CASE 3
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
 				SELECTCASE AUTORAND(3, 510)
 					CASE 0
 ;OriginalString : 「ほら、じっとしてて？」
-						PRINTFORMW 「이봐요, 가만히 하고 있어？」
+						PRINTFORMW 「이봐요, 가만히 하고 있어?」
 ;OriginalString : 「思いっきり愉しませてあげるから♪」
 						PRINTFORMW 「마음껏 즐기게 해 주기 때문에♪」
 					CASE 1
 ;OriginalString : 「ねぇ、弄って欲しいんでしょ？」
-						PRINTFORMW 「응, 만지작거렸으면 좋지요？」
+						PRINTFORMW 「응, 만지작거렸으면 좋지요?」
 ;OriginalString : 「솔직に言わないとシてあげないから♪」
 						PRINTFORMW 「솔직하게 말하지 않으면 시라고 주지 않으니까♪」
 					CASE 2
 ;OriginalString : 「さぁ、愉しませてあげる」
 						PRINTFORMW 「, 즐기게 해 준다」
 ;OriginalString : 「期待していいわよ？　うふっ」
-						PRINTFORMW 「기대해도 좋아요？ 우대신」
+						PRINTFORMW 「기대해도 좋아요? 우대신」
 				ENDSELECT
-			;その他
+			;그 외
 			ELSE
 				SELECTCASE AUTORAND(4, 511)
 					CASE 0
@@ -247,7 +247,7 @@ IF IS_NOWACTNAME("가슴애무")
 						PRINTFORMW 「안심해 나에게 맡겨 주세요♪」
 					CASE 1
 ;OriginalString : 「大人しくしててくださいね？」
-						PRINTFORMW 「얌전하게 하고 있어 주세요？」
+						PRINTFORMW 「얌전하게 하고 있어 주세요?」
 ;OriginalString : 「気持ちよくしてあげるだけですから♪」
 						PRINTFORMW 「기분 좋게 해 줄 뿐입니다로부터♪」
 					CASE 2
@@ -257,9 +257,9 @@ IF IS_NOWACTNAME("가슴애무")
 						PRINTFORMW 「마음껏 즐기게 해 줄테니까♪」
 					CASE 3
 ;OriginalString : 「당신はどんな感じに弄られるのが好きなんでしょうか？」
-						PRINTFORMW 「당신은 어떤 느낌에 만지작거려지는 것을 좋아하는 것입니까？」
+						PRINTFORMW 「당신은 어떤 느낌에 만지작거려지는 것을 좋아하는 것입니까?」
 ;OriginalString : 「こんな感じ？ それともこうでしょうか？ うふ……」
-						PRINTFORMW 「이런 느낌？ 그렇지 않으면 이러할까요？ 우대신……」
+						PRINTFORMW 「이런 느낌? 그렇지 않으면 이러할까요? 우대신……」
 				ENDSELECT
 			ENDIF
 			RETURN 1
@@ -269,24 +269,24 @@ IF IS_NOWACTNAME("가슴애무")
 ENDIF
 
 ;────────────────────────────────────
-;ACT파생12：입으로 애무
+;ACT파생 12:입으로 애무
 ;────────────────────────────────────
 IF IS_NOWACTNAME("입으로 애무")
-	;ACT파생1：펠라
+	;ACT파생 1:펠라
 	IF TFLAG:ACT파생 == 1
 		;연속실행
 		IF TFLAG:ACT == TFLAG:전ACT
-			;フェードアウト
+			;페이드 아웃
 			CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(, , "펠라", 1)
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
 				SELECTCASE AUTORAND(4, 520)
 					CASE 0
 ;OriginalString : 「上目遣いで見つめられてしゃぶられるのって興奮するの…？」
-						PRINTFORMW 「눈을 치켜 뜨고 봄으로 응시할 수 있어 빨아지는 것이라는 흥분해…？」
+						PRINTFORMW 「눈을 치켜 뜨고 봄으로 응시할 수 있어 빨아지는 것이라는 흥분해…?」
 					CASE 1
 ;OriginalString : 「가버려되었다ら教えて？　全部飲んであげるから…
-						PRINTFORM 「이 기초가 되면 가르쳐 줘？ 전부 마셔 주기 때문에…
+						PRINTFORM 「이 기초가 되면 가르쳐 줘? 전부 마셔 주기 때문에…
 						CALL PRINT_SYMBOL_K39
 					CASE 2
 ;OriginalString : 「うふ、おいし♪　ほら、もっと激しくシてあげる…
@@ -297,28 +297,28 @@ IF IS_NOWACTNAME("입으로 애무")
 						PRINTFORM 「이봐요 , 움직이면(자) 잘 나오고 오지 않지요. 얌전하게 하고 있어…
 						CALL PRINT_SYMBOL_K39
 				ENDSELECT
-				;終端でRETURN
-			;その他
+				;종단으로 RETURN
+			;그 외
 			ELSE
 				SELECTCASE AUTORAND(4, 521)
 					CASE 0
 ;OriginalString : 「気持ち良いですか？　うふ、もっと蕩かしてあげます…
-						PRINTFORM 「기분 좋습니까？ 우대신, 좀 더 녹여 줍니다…
+						PRINTFORM 「기분 좋습니까? 우대신, 좀 더 녹여 줍니다…
 						CALL PRINT_SYMBOL_K39
 					CASE 1
 ;OriginalString : 「가버려되었다ら言ってくださいね？」
-						PRINTFORMW 「이 기초가 되면 말해 주세요？」
+						PRINTFORMW 「이 기초가 되면 말해 주세요?」
 					CASE 2
 ;OriginalString : 「先端の後ろ側を舌で突かれるのがいいみたいですね？」
-						PRINTFORMW 「첨단의 뒤측을 혀로 찔리는 것이 좋은 것 같네요？」
+						PRINTFORMW 「첨단의 뒤측을 혀로 찔리는 것이 좋은 것 같네요?」
 					CASE 3
 ;OriginalString : 「まだ頑張るんですね？　では、ちょっと激しくイきますよ
-						PRINTFORM 「 아직 노력합니다？ 그럼, 조금 격렬하고 이 와요
+						PRINTFORM 「아직 노력합니다? 그럼, 조금 격렬하고 이 와요
 						CALL PRINT_SYMBOL_K39
 				ENDSELECT
-				;終端でRETURN
+				;종단으로 RETURN
 			ENDIF
-			;죠교자が"정욕"もしくは25%で真
+			;죠교자가"정욕"혹은 25%로 진
 			SIF IS_CONDITION(TARGET, "정욕") || !RAND:4
 				CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(, , "펠라", 1)
 			RETURN 1
@@ -329,30 +329,30 @@ IF IS_NOWACTNAME("입으로 애무")
 				SELECTCASE AUTORAND(4, 522)
 					CASE 0
 ;OriginalString : 「입でシて欲しいんでしょ？ ほら、正直に言いなさいよ…
-						PRINTFORM 「입으로 시라고 갖고 싶지요？ 이봐요, 정직하게 말하세요…
+						PRINTFORM 「입으로 시라고 갖고 싶지요? 이봐요, 정직하게 말하세요…
 						CALL PRINT_SYMBOL_K39
 					CASE 1
 ;OriginalString : 「ほら、발を開いて。これをシて欲しかったんでしょ？ うふ」
-						PRINTFORMW 「이봐요, 다리를 열어. 이것을 시라고 갖고 싶어서 실마리？ 우대신」
+						PRINTFORMW 「이봐요, 다리를 열어. 이것을 시라고 갖고 싶어서 실마리? 우대신」
 					CASE 2
 ;OriginalString : 「うふ、イヤラシイ匂いね。ちょっと興奮しちゃう
 						PRINTFORM 「우대신, 이야라시이 냄새군요. 조금 흥분해버린다
 						CALL PRINT_SYMBOL_K39
 					CASE 3
 ;OriginalString : 「さぁ、입で蕩かしてあげる。準備はいい？」
-						PRINTFORMW 「, 입으로 녹여 준다. 준비는 좋다？」
+						PRINTFORMW 「, 입으로 녹여 준다. 준비는 좋다?」
 				ENDSELECT
-				;フェードアウト
+				;페이드 아웃
 				CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(, , "펠라", 1)
 ;OriginalString : 「ん%RAND_SPLIT("っ/ッ")%……
 				PRINT 「응%RAND_SPLIT("/")%……
 				SELECTCASE AUTORAND(4, 523)
 					CASE 0
 ;OriginalString : まだまだこんなものじゃ済まないわよ？」
-						PRINTFORMW 아직도 이런 것은 미안해요？」
+						PRINTFORMW 아직도 이런 것은 미안해요?」
 					CASE 1
 ;OriginalString : ねぇ、気持ち良い？ どうなの？」
-						PRINTFORMW 응, 기분 좋다？ 어떻게야？」
+						PRINTFORMW 응, 기분 좋다? 어떻게야?」
 					CASE 2
 ;OriginalString : すごく、熱い……」
 						PRINTFORMW 몹시, 뜨겁다……」
@@ -360,26 +360,26 @@ IF IS_NOWACTNAME("입으로 애무")
 ;OriginalString : どんどん大きくなって…」
 						PRINTFORMW 자꾸자꾸 커져…」
 				ENDSELECT
-				;RETURNは終端で
-			;その他
+				;RETURN는 종단으로
+			;그 외
 			ELSE
 				SELECTCASE AUTORAND(4, 524)
 					CASE 0
 ;OriginalString : 「言わなくても分かりますよ、입でシて欲しいんですね？」
-						PRINTFORMW 「말하지 않아도 알아요, 입으로 시라고 갖고 싶네요？」
+						PRINTFORMW 「말하지 않아도 알아요, 입으로 시라고 갖고 싶네요?」
 					CASE 1
 ;OriginalString : 「さぁ、厄神の혀기술を存分に堪能してもらいますよ。覚悟してくださいね？」
-						PRINTFORMW 「, 액신의 혀사용을 마음껏 만끽해 주어요. 각오 해 주세요？」
+						PRINTFORMW 「, 액신의 혀사용을 마음껏 만끽해 주어요. 각오 해 주세요?」
 					CASE 2
 ;OriginalString : 「動かないでくださいね？ 私の입で搾り取ってあげます%RAND_SPLIT("から/")%
-						PRINTFORM 「움직이지 말아 주세요？ 나의 입으로 짜 취해 줍니다%RAND_SPLIT("로부터/")%
+						PRINTFORM 「움직이지 말아 주세요? 나의 입으로 짜 취해 줍니다%RAND_SPLIT("로부터/")%
 						CALL PRINT_SYMBOL_K39
 					CASE 3
 ;OriginalString : 「この匂いが堪らないですね
 						PRINTFORM 「이 냄새가 감등 없네요
 						CALL AUTOHEARTCB2_K39
 ;OriginalString : 　さ、準備はいいですか？」
-						PRINTFORMW  , 준비는 좋습니까？」
+						PRINTFORMW  , 준비는 좋습니까?」
 				ENDSELECT
 				CALL CHK_FADECONFIG_OUTPUT_OF_KOJORAND_K39(, , "펠라", 1)
 ;OriginalString : 「ん%RAND_SPLIT("っ/ッ")%……」
@@ -391,7 +391,7 @@ IF IS_NOWACTNAME("입으로 애무")
 						CALL PRINT_SYMBOL_K39
 					CASE 1
 ;OriginalString : 愉しんでもらえてますか？」
-						PRINTFORMW 즐겨 줄 수 있습니까？」
+						PRINTFORMW 즐겨 줄 수 있습니까?」
 					CASE 2
 ;OriginalString : すごく、熱くて……」
 						PRINTFORMW 몹시, 뜨거워서……」
@@ -399,7 +399,7 @@ IF IS_NOWACTNAME("입으로 애무")
 ;OriginalString : 입の中で、こんなに大きく…」
 						PRINTFORMW 입 중(안)에서, 이렇게 크고…」
 				ENDSELECT
-				;RETURNは終端で
+				;RETURN는 종단으로
 			ENDIF
 ;OriginalString : %CALLNAME%は%RAND_SPLIT("귀두に舌を絡めつつ/上目遣いで見上げながら/손で根元を擦りながら/片손で음낭を優しく揉み解하면서")%、당신의 페니스를 입でしごき始めた…
 			PRINTFORMDW %CALLNAME%(은)는 %RAND_SPLIT("귀두에 혀를 걸면서/눈을 치켜 뜨고 봄으로 올려보면서/손그리고 근원을 비비면서/편손그리고 음낭을 상냥하게 비비어 해하면서")%, 당신의 페니스를 입으로 훑어 내기 시작했다…
@@ -409,35 +409,35 @@ IF IS_NOWACTNAME("입으로 애무")
 ENDIF
 
 ;────────────────────────────────────
-;ACT13：항문애무
+;ACT13:항문애무
 ;────────────────────────────────────
 ;IF IS_NOWACTNAME("항문애무")
 ;ENDIF
 
 ;────────────────────────────────────
-;ACT14：항문펠라
+;ACT14:항문펠라
 ;────────────────────────────────────
 ;IF IS_NOWACTNAME("항문펠라")
 ;ENDIF
 
 ;────────────────────────────────────
-;ACT15：키스
+;ACT15:키스
 ;────────────────────────────────────
 ;IF IS_NOWACTNAME("키스")
 ;ENDIF
 
 ;────────────────────────────────────
-;ACT16：성기마찰한다
+;ACT16:성기마찰한다
 ;────────────────────────────────────
 ;IF IS_NOWACTNAME("성기마찰한다")
-	;ACTへ移設
+	;ACT에 이전
 ;ENDIF
 
 ;────────────────────────────────────
-;ACT17：파이즈리한다
+;ACT17:파이즈리한다
 ;────────────────────────────────────
 IF IS_NOWACTNAME("파이즈리한다") && !FLAG:오토모드
-	;죠교자が거유
+	;죠교자가거유
 	IF TALENT:TARGET:거유
 		;상사상애
 		IF GET_KFLAG_K39("상사상애")
@@ -445,7 +445,7 @@ IF IS_NOWACTNAME("파이즈리한다") && !FLAG:오토모드
 			PRINTFORM 「모처럼 젖가슴이 커졌으니까 즐기지 않으면
 			CALL PRINT_SYMBOL_K39
 ;OriginalString : 「ねぇ、당신はどう했다い？」
-			PRINTFORMW 「응, 당신은 어떻게 하고 싶다？」
+			PRINTFORMW 「응, 당신은 어떻게 하고 싶다?」
 ;OriginalString : 
 			PRINTL
 ;OriginalString : [0] 縦파이즈리
@@ -455,40 +455,40 @@ IF IS_NOWACTNAME("파이즈리한다") && !FLAG:오토모드
 ;OriginalString : [2] 거유を揉みしだきながら허리를 흔든다
 			PRINTFORMDL [2] 큰 가슴을 비비어 하기 만이면서 허리를 거절한다
 ;OriginalString : [3] 谷間から顔出했다先端をペロペロして！
-			PRINTFORMDL [3] 골짜기로부터 출석첨단을 날름날름 해！
+			PRINTFORMDL [3] 골짜기로부터 출석첨단을 날름날름 해!
 			CALL INPUTINTD(0, 1, 2, 3)
 			SELECTCASE RESULT
 				CASE 0
 ;OriginalString : 「ふふっ、いいわよ？　%TNAME_K39()%のおっぱいとえっちさせてあげる
-					PRINTFORM 「후후, 좋아요？ %TNAME_K39()%의 젖가슴과 시켜 준다
+					PRINTFORM 「후후, 좋아요?  %TNAME_K39()%의 젖가슴과 시켜 준다
 				CASE 1
 ;OriginalString : 「意外と普通ね？　まぁ、それもいいかも
-					PRINTFORM 「의외로 보통이군요？ 아무튼, 그것도 좋을지도
+					PRINTFORM 「의외로 보통이군요? 아무튼, 그것도 좋을지도
 				CASE 2
 ;OriginalString : 「うふ、激しくシたいのね？　いいよ…思いっきり愉しんで
-					PRINTFORM 「우대신, 격렬하고 시 싶구나？ 좋아…마음껏 즐겨
+					PRINTFORM 「우대신, 격렬하고 시 싶구나? 좋아… 마음껏 즐겨
 				CASE 3
 ;OriginalString : 「クスクス、分かったわ。가슴と입で愉しませてあげる
 					PRINTFORM 「킥킥, 알았어요. 가슴과 입으로 즐기게 해 준다
 			ENDSELECT
 			CALL PRINT_SYMBOL_K39
-		;その他
+		;그 외
 		ELSE
 ;OriginalString : 「折角大きく했다のですから、思い切り愉しんでくださいね
 			PRINTFORM 「모처럼 크게 했으니까, 마음껏 즐겨 주세요
 			CALL PRINT_SYMBOL_K39
 ;OriginalString : 「今回は何が했다いですか？」
-			PRINTFORMW 「이번은 무엇을 하고 싶습니까？」
+			PRINTFORMW 「이번은 무엇을 하고 싶습니까?」
 ;OriginalString : 
 			PRINTL
 ;OriginalString : [0] ぱふぱふして！
-			PRINTFORMDL [0] 해！
+			PRINTFORMDL [0] 해!
 ;OriginalString : [1] 縦파이즈리
 			PRINTFORMDL [1] 세로 파이즈리
 ;OriginalString : [2] 거유で普通に파이즈리
 			PRINTFORMDL [2] 큰 가슴으로 보통으로 파이즈리
 ;OriginalString : [3] 谷間から顔出했다先端をペロペロして！
-			PRINTFORMDL [3] 골짜기로부터 출석첨단을 날름날름 해！
+			PRINTFORMDL [3] 골짜기로부터 출석첨단을 날름날름 해!
 			CALL INPUTINTD(0, 1, 2, 3)
 			SELECTCASE RESULT
 				CASE 0
@@ -507,14 +507,14 @@ IF IS_NOWACTNAME("파이즈리한다") && !FLAG:오토모드
 			CALL PRINT_SYMBOL_K39
 		ENDIF
 		RETURN 1
-	;죠교자が거유ではない
+	;죠교자가거유는 아니다
 	ELSE
 		;상사상애
 		IF GET_KFLAG_K39("상사상애")
 ;OriginalString : 「いつも同じじゃツマラナイから、何かリクエストがあったら言ってみて？」
-			PRINTFORML 「언제나 같지 트마라나이로부터, 무엇인가 리퀘스트가 있으면 말해 봐？」
+			PRINTFORML 「언제나 같지 트마라나이로부터, 뭔가 리퀘스트가 있으면 말해 봐?」
 ;OriginalString : 「ねぇ、당신はどうして欲しいの？」
-			PRINTFORMW 「응, 당신은 어째서 갖고 싶은거야？」
+			PRINTFORMW 「응, 당신은 어째서 갖고 싶은거야?」
 ;OriginalString : 
 			PRINTL
 ;OriginalString : [0] 裏スジを乳首で刺激하면서
@@ -529,10 +529,10 @@ IF IS_NOWACTNAME("파이즈리한다") && !FLAG:오토모드
 			SELECTCASE RESULT
 				CASE 0
 ;OriginalString : 「それやると私もよくなっちゃうんだけど？　まぁ、別にいいけど♪」
-					PRINTFORMW 「그것 하면 나도 좋아져버리는 이지만？ 아무튼, 별로 좋은데♪」
+					PRINTFORMW 「그것 하면 나도 좋아져버리는 이지만? 아무튼, 별로 좋은데♪」
 				CASE 1
 ;OriginalString : 「それはいいけど……すぐイっちゃうんじゃない？　うふふっ」
-					PRINTFORMW 「그것은 좋은데……곧 이낳으면 않는다？ 후후」
+					PRINTFORMW 「그것은 좋은데…… 곧 이낳으면 않는다? 후후」
 				CASE 2
 ;OriginalString : 「いいよ……%TNAME_K39()%のおっぱいでたっぷり可愛がってあげる♪」
 					PRINTFORMW 「좋아……%TNAME_K39()%의 젖가슴으로 충분히 귀여워해 준다♪」
@@ -540,26 +540,26 @@ IF IS_NOWACTNAME("파이즈리한다") && !FLAG:오토모드
 ;OriginalString : 「うふっ、可愛い事言うじゃない♪」
 					PRINTFORMW 「우대신, 사랑스러운 일 말하잖아♪」
 			ENDSELECT
-		;それ以外
+		;그 이외
 		ELSE
 ;OriginalString : 「ちょっと強めにシゴかれるのと、先端를 핥아ながらと、どちらが良いですか？」
-			PRINTFORMW 「조금 강하게 해에 시고 쉬는 것과 첨단을 빨면서와 어느 쪽이 좋습니까？」
+			PRINTFORMW 「조금 강하게 해에 시고 쉬는 것과 첨단을 빨면서와 어느 쪽이 좋습니까?」
 ;OriginalString : 
 			PRINTL
 ;OriginalString : [0] 격렬하게！
-			PRINTFORMDL [0] 격렬하게 해！
+			PRINTFORMDL [0] 격렬하게 해!
 ;OriginalString : [1] 先っぽ舐め舐めして！
-			PRINTFORMDL [1] 끝(쪽) 빨고 해！
+			PRINTFORMDL [1] 끝(쪽) 빨고 해!
 ;OriginalString : [2] 両方！
-			PRINTFORMDL [2] 양쪽 모두！
+			PRINTFORMDL [2] 양쪽 모두!
 			CALL INPUTINTD(0, 1, 2)
 			SELECTCASE RESULT
 				CASE 0
 ;OriginalString : 「激しいのがお望みなんですね？　いいですよ、思いっきり激しくシてあげます♪」
-					PRINTFORMW 「격렬한 것이 바래이군요？ 좋아요, 마음껏 격렬하게 시라고 줍니다♪」
+					PRINTFORMW 「격렬한 것이 바래이군요? 좋아요, 마음껏 격렬하게 시라고 줍니다♪」
 				CASE 1
 ;OriginalString : 「うふ、舐めながら가슴で擦って欲しいんですね？　では、お望み通りに♪」
-					PRINTFORMW 「우대신, 빨면서 가슴으로 켰으면 좋네요？ 그럼, 소망 대로에♪」
+					PRINTFORMW 「우대신, 빨면서 가슴으로 켰으면 좋네요? 그럼, 소망 대로에♪」
 				CASE 2
 ;OriginalString : 「クスクス、欲張りなんですね。いいですよ、どちらもシてあげます♪」
 					PRINTFORMW 「킥킥, 욕심장이이네요. 좋아요, 어느쪽이나 시라고 줍니다♪」
@@ -570,20 +570,20 @@ IF IS_NOWACTNAME("파이즈리한다") && !FLAG:오토모드
 ENDIF
 
 ;────────────────────────────────────
-;ACT18：풋잡하기
+;ACT18:풋잡하기
 ;────────────────────────────────────
 IF IS_NOWACTNAME("풋잡하기")
-	;죠교자が하반신속옷着用中
+	;죠교자가하반신속옷착용중
 	IF PANTSCHECK(0, 1)
 		;상사상애
 		IF GET_KFLAG_K39("상사상애")
 			SELECTCASE AUTORAND(2, 540)
 				CASE 0
 ;OriginalString : 「ほら、발でシゴかれるの大好きでしょ？」
-					PRINTFORMW 「이봐요, 다리로 시고 쉬는 것 정말 좋아하겠지？」
+					PRINTFORMW 「이봐요, 다리로 시고 쉬는 것 정말 좋아하겠지?」
 				CASE 1
 ;OriginalString : 「うふ、もう期待して興奮してるみたいね？」
-					PRINTFORMW 「우대신, 이제 기대해 흥분하고 있는 것 같구나？」
+					PRINTFORMW 「우대신, 이제 기대해 흥분하고 있는 것 같구나?」
 			ENDSELECT
 			SELECTCASE AUTORAND(4, 541)
 				CASE 0
@@ -591,48 +591,48 @@ IF IS_NOWACTNAME("풋잡하기")
 					PRINTFORMW 「응…그런 눈으로 볼 수 있으면, 흥분해 젖어 와버린다…」
 				CASE 1
 ;OriginalString : 「ねぇ、속옷がぐっしょり濡れてるの分かる？ ふふ」
-					PRINTFORMW 「응, 속옷이 흠뻑 젖어 안다？ 후후」
+					PRINTFORMW 「응, 속옷이 흠뻑 젖어 안다? 후후」
 				CASE 2
 ;OriginalString : 「もっと強く踏んで欲しいの？ まったく、イヤラシイ人ね
-					PRINTFORM 「 좀 더 강하게 밟았으면 좋은거야？ 완전히, 이야라시이인이군요
+					PRINTFORM 「좀 더 강하게 밟았으면 좋은거야? 완전히, 이야라시이인이군요
 					CALL PRINT_SYMBOL_K39
 				CASE 3
 ;OriginalString : 「ねぇ、こんな感じはどう？ もっと強く擦った方がいい？」
-					PRINTFORMW 「응, 이런 느낌은 어때？ 좀 더 강하게 켜는 것이 좋다？」
+					PRINTFORMW 「응, 이런 느낌은 어때? 좀 더 강하게 켜는 것이 좋다?」
 			ENDSELECT
-		;その他
+		;그 외
 		ELSE
 			SELECTCASE AUTORAND(2, 542)
 				CASE 0
 ;OriginalString : 「こういうのは嫌いじゃないみたいですね？」
-					PRINTFORMW 「이런 것은 싫지 않은 것 같네요？」
+					PRINTFORMW 「이런 것은 싫지 않은 것 같네요?」
 				CASE 1
 ;OriginalString : 「コレが大好きという人も居るようですが、당신はどうなんでしょう？」
-					PRINTFORMW 「코레가 너무 좋아라고 하는 사람도 있는 것 같습니다만, 당신은 어떨까요？」
+					PRINTFORMW 「코레가 너무 좋아라고 하는 사람도 있는 것 같습니다만, 당신은 어떨까요?」
 			ENDSELECT
 			SELECTCASE AUTORAND(3, 543)
 				CASE 0
 ;OriginalString : 「目つきがイヤラシイですね♪　속옷を穿いてると不満ですか？」
-					PRINTFORMW 「눈초리가 이야라시이군요♪ 속옷을 입고 있다고(면) 불만입니까？」
+					PRINTFORMW 「눈초리가 이야라시이군요♪속옷을 입고 있다고(면) 불만입니까?」
 				CASE 1
 ;OriginalString : 「속옷を穿いてる方がむしろ興奮するんじゃないですか？ ふふ」
-					PRINTFORMW 「속옷을 입고 있는 (분)편이 오히려 흥분하지 않습니까？ 후후」
+					PRINTFORMW 「속옷을 입고 있는 (분)편이 오히려 흥분하지 않습니까? 후후」
 				CASE 2
 ;OriginalString : 「속옷が濡れているの、判りますか？ もっと良く見ていいんですよ。うふっ」
-					PRINTFORMW 「속옷이 젖고 있는 것, 압니까？ 좀 더 자주(잘) 봐도 좋아요. 우대신」
+					PRINTFORMW 「속옷이 젖고 있는 것, 압니까? 좀 더 자주(잘) 봐도 좋아요. 우대신」
 			ENDSELECT
 		ENDIF
 ;OriginalString : %CALLNAME%は%RAND_SPLIT("비순を見せつけながら/自ら指で秘裂を広げて見せながら/溢れ出す愛液を당신の남성기に塗りつけ")%、その발で당신의 페니스를 しごき始めた…
-		PRINTFORMDW %CALLNAME%(은)는 %RAND_SPLIT("비순를 과시하면서/스스로 손가락으로 비밀의 틈[秘裂]을 벌려 보이면서/흘러넘치기 시작하는 애액을당신노남성기에 바르고")%, 그 다리로 당신의 페니스를 훑어 내기 시작했다…
+		PRINTFORMDW %CALLNAME%(은)는 %RAND_SPLIT("비순를 과시하면서/스스로 손가락으로 비밀의 틈[비밀의 틈]을 벌려 보이면서/흘러넘치기 시작하는 애액을당신노남성기에 바르고")%, 그 다리로 당신의 페니스를 훑어 내기 시작했다…
 		RETURN 1
-	;穿いてない
+	;입지 않았다
 	ELSE
 		;상사상애
 		IF GET_KFLAG_K39("상사상애")
 			SELECTCASE AUTORAND(2, 544)
 				CASE 0
 ;OriginalString : 「ほら、折角穿いてないんだから、もっと良く見て？」
-					PRINTFORMW 「이봐요, 모처럼 입지 않기 때문에, 좀 더 자주(잘) 봐？」
+					PRINTFORMW 「이봐요, 모처럼 입지 않기 때문에, 좀 더 자주(잘) 봐?」
 				CASE 1
 ;OriginalString : 「これ、私も興奮しちゃって……溢れ出すのが止まらなくなっちゃう…」
 					PRINTFORMW 「이것, 나도 흥분해 버려서……흘러넘치고 내는 것이 멈추지 않게 되어버린다…」
@@ -640,49 +640,49 @@ IF IS_NOWACTNAME("풋잡하기")
 			SELECTCASE AUTORAND(4, 545)
 				CASE 0
 ;OriginalString : 「ねぇ、발で擦られながら%TNAME_K39()%とえっちしてるような気分なんじゃない？　うふっ」
-					PRINTFORMW 「응, 다리로 켜지고면서%TNAME_K39()%물을 수 있는 통치하고 있는 것 같은 기분이 아니다？ 우대신」
+					PRINTFORMW 「응, 다리로 켜지고면서%TNAME_K39()%물을 수 있는 통치하고 있는 것 같은 기분이 아니다? 우대신」
 				CASE 1
 ;OriginalString : 「なに？ もっと強く踏んで欲しいの？ まったく、イヤラシイ人ね
-					PRINTFORM 「뭐？ 좀 더 강하게 밟았으면 좋은거야？ 완전히, 이야라시이인이군요
+					PRINTFORM 「뭐? 좀 더 강하게 밟았으면 좋은거야? 완전히, 이야라시이인이군요
 					CALL PRINT_SYMBOL_K39
 				CASE 2
 ;OriginalString : 「先っぽクニクニされるのはどう？　うふ、気に入ったみたいね
-					PRINTFORM 「끝(쪽) 나라 나라 되는 것은 어때？ 우대신, 마음에 든 것 같구나
+					PRINTFORM 「끝(쪽) 나라 나라 되는 것은 어때? 우대신, 마음에 든 것 같구나
 					CALL PRINT_SYMBOL_K39
 				CASE 3
 ;OriginalString : 「こんなに硬くしちゃって…やっぱり見えてる方が興奮するの？」
-					PRINTFORMW 「이렇게 딱딱하게 해 버려서…역시 보이고 있는 (분)편이 흥분해？」
+					PRINTFORMW 「이렇게 딱딱하게 해 버려서… 역시 보이고 있는 (분)편이 흥분해?」
 			ENDSELECT
-		;その他
+		;그 외
 		ELSE
 			SELECTCASE AUTORAND(2, 546)
 				CASE 0
 ;OriginalString : 「さぁ、恥ずかしがらず、もっと良く見ていいんですよ？」
-					PRINTFORMW 「, 부끄러워하지 않고, 좀 더 자주(잘) 봐도 좋아요？」
+					PRINTFORMW 「, 부끄러워하지 않고, 좀 더 자주(잘) 봐도 좋아요?」
 				CASE 1
 ;OriginalString : 「奥から溢れ出してるの、分かりますか？　당신に見られて、私も見られて興奮してるんですよ…」
-					PRINTFORMW 「안쪽으로부터 넘쳐 나오고 해, 압니까？ 당신으로 보여져, 나도 볼 수 있어 흥분하고 있는 거에요…」
+					PRINTFORMW 「안쪽으로부터 넘쳐 나오고 해, 압니까? 당신으로 보여져, 나도 볼 수 있어 흥분하고 있는 거에요…」
 			ENDSELECT
 			SELECTCASE AUTORAND(3, 547)
 				CASE 0
 ;OriginalString : 「ん…凄く硬いですね…やはり속옷を穿いてない方が興奮しますか？　うふっ」
-					PRINTFORMW 「응…굉장히 딱딱하네요…역시 속옷을 입지 않은 것이 흥분합니까？ 우대신」
+					PRINTFORMW 「응… 굉장히 딱딱하네요… 역시 속옷을 입지 않은 것이 흥분합니까? 우대신」
 				CASE 1
 ;OriginalString : 「片발で袋を弄られるのはどうですか？　うふ、もっと愉しんでくださいね♪」
-					PRINTFORMW 「한쪽 발로 봉투를 만지작거려지는 것은 어떻습니까？ 우대신, 좀 더 즐겨 주세요♪」
+					PRINTFORMW 「한쪽 발로 봉투를 만지작거려지는 것은 어떻습니까? 우대신, 좀 더 즐겨 주세요♪」
 				CASE 2
 ;OriginalString : 「もっと強く짓밟아るように、ですか？　クス、本当にイヤラシイ人ですね♪」
-					PRINTFORMW 「 좀 더 강하게 짓밟도록(듯이), 입니까？ 쿠쿡, 정말로 이야라시이인이군요♪」
+					PRINTFORMW 「좀 더 강하게 짓밟도록(듯이), 입니까? 쿠쿡, 정말로 이야라시이인이군요♪」
 			ENDSELECT
 		ENDIF
 ;OriginalString : %CALLNAME%は%RAND_SPLIT("비순を見せつけながら/自ら指で秘裂を広げて見せながら溢れ出す愛液を당신の남성기に塗りつけ")%、その발で당신의 페니스를 しごき始めた…
-		PRINTFORMDW %CALLNAME%(은)는 %RAND_SPLIT("비순를 과시하면서/스스로 손가락으로 비밀의 틈[秘裂]을 벌려 보이면서 흘러넘치기 시작하는 애액을당신노남성기에 바르고")%, 그 다리로 당신의 페니스를 훑어 내기 시작했다…
+		PRINTFORMDW %CALLNAME%(은)는 %RAND_SPLIT("비순를 과시하면서/스스로 손가락으로 비밀의 틈[비밀의 틈]을 벌려 보이면서 흘러넘치기 시작하는 애액을당신노남성기에 바르고")%, 그 다리로 당신의 페니스를 훑어 내기 시작했다…
 		RETURN 1
 	ENDIF
 ENDIF
 
 ;────────────────────────────────────
-;ACT50：손으로 애무強制
+;ACT50:손으로 애무강제
 ;────────────────────────────────────
 IF IS_NOWACTNAME("손으로 애무를 강요")
 	IF !TFLAG:ACT파생
@@ -694,7 +694,7 @@ IF IS_NOWACTNAME("손으로 애무를 강요")
 					PRINTFORMW 「당신에게 만지작거려 줄 수 있는 것이 기뻐서……」
 				CASE 1
 ;OriginalString : 「ねぇ、私の体、期待で熱くなってるの分かる？」
-					PRINTFORMW 「응, 나의 몸, 기대로 뜨거워져 안다？」
+					PRINTFORMW 「응, 나의 몸, 기대로 뜨거워져 안다?」
 				CASE 2
 ;OriginalString : 「당신に触れられる度、%TNAME_K39()%の体は悦んじゃうの……」
 					PRINTFORMW 「당신이 접할 수 있을 때,%TNAME_K39()%의 몸은 기쁨응은 우노……」
@@ -702,7 +702,7 @@ IF IS_NOWACTNAME("손으로 애무를 강요")
 ;OriginalString : 「ねぇ、はやく弄って。もう待ちきれないの……」
 					PRINTFORMW 「응, 빨리 만지작거려. 이제 기다릴 수  없는거야……」
 			ENDSELECT
-		;その他
+		;그 외
 		ELSE
 			SELECTCASE AUTORAND(4, 551)
 				CASE 0
@@ -710,7 +710,7 @@ IF IS_NOWACTNAME("손으로 애무를 강요")
 					PRINTFORMW 「, 당신의 좋아하는 대로 해도 좋아요」
 				CASE 1
 ;OriginalString : 「私の体、期待で熱くなってるの分かりますか？」
-					PRINTFORMW 「 나의 몸, 기대로 뜨거워져 압니까？」
+					PRINTFORMW 「나의 몸, 기대로 뜨거워져 압니까?」
 				CASE 2
 ;OriginalString : 「당신に触れられる度、私はちょっと\@ AFFECTION("익애") ? 幸せな気持ちになり # ドキドキしてしまい \@ます……」
 					PRINTFORMW 「당신이 접할 수 있을 때, 나는 조금\@ AFFECTION("익애") ? 행복한 기분이 되어 # 두근두근 해 버려 \@……」
@@ -724,13 +724,13 @@ IF IS_NOWACTNAME("손으로 애무를 강요")
 ENDIF
 
 ;────────────────────────────────────
-;ACT51：입으로 애무를 강요
+;ACT51:입으로 애무를 강요
 ;────────────────────────────────────
 IF IS_NOWACTNAME("입으로 애무를 강요")
-	;죠교대상が페니스를責められている時
+	;죠교대상가페니스를 꾸짖어지고 있을 때
 	IF INRANGE(TEQUIP:죠교대상Ｃ사용, 1, 2)
 		IF 0
-		;질내사정後しばらく
+		;질내사정 후 당분간
 		ELSEIF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
@@ -739,14 +739,14 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 ;OriginalString : 「당신のも弄ってあげるから、ちゃんと舐めて綺麗にして」
 						PRINTFORMW 「당신의 것도 만지작거려 주기 때문에, 분명하게 빨아 깨끗이 하며」
 ;OriginalString : 「まだ奥から出てくるから、しっかり舐めないと駄目よ？」
-						PRINTFORMW 「 아직 안쪽으로부터 나오기 때문에, 확실히 빨지 않으면 안되어요？」
+						PRINTFORMW 「아직 안쪽으로부터 나오기 때문에, 확실히 빨지 않으면 안되어요?」
 					CASE 1
 ;OriginalString : 「これって、凄くいけない事してるみたいで…」
 						PRINTFORMW 「이것은, 굉장히 안 되는 것 하고 있는 것 같아…」
 ;OriginalString : 「ちょっと興奮しちゃう…」
 						PRINTFORMW 「조금 흥분해버린다…」
 				ENDSELECT
-			;その他
+			;그 외
 			ELSE
 ;OriginalString : 「さぁ、自分が出했다ものは、ちゃんと綺麗にしてもらいますよ」
 				PRINTFORMW 「, 자신이 낸 것은, 분명하게 깨끗이 받아요」
@@ -754,7 +754,7 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 				PRINTFORM 「그 대신해, 여기도 분명하게 만지작거려 줄테니까
 				CALL PRINT_SYMBOL_K39
 			ENDIF
-		;안면승마항문派生
+		;안면승마항문파생
 		ELSEIF TFLAG:ACT파생 == 3
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
@@ -769,19 +769,19 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 				PRINTFORM 「 나, 이것이라도 기대하고 있습니다
 				CALL PRINT_SYMBOL_K39
 			ENDIF
-		;クンニ強制
+		;쿤닐링구스 강제
 		ELSE
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
 				SELECTCASE AUTORAND(3, 561)
 					CASE 0
 ;OriginalString : 「ねぇ…舐めてもらうの期待して、ヒクヒクしてるの、分かる？」
-						PRINTFORMW 「응…빨아 주는 것 기대해, 히크히크 해, 안다？」
+						PRINTFORMW 「응… 빨아 주는 것 기대해, 히크히크 해, 안다?」
 ;OriginalString : 「早くシて欲しくて、もう참다できないの…」
 						PRINTFORMW 「빨리 시라고 갖고 싶어서, 이제 참을 수 없는거야…」
 					CASE 1
 ;OriginalString : 「ほら、당신の舌で存分に味わって？」
-						PRINTFORMW 「이봐요, 당신의 혀로 마음껏 맛봐？」
+						PRINTFORMW 「이봐요, 당신의 혀로 마음껏 맛봐?」
 ;OriginalString : 「遠慮なく舐めまわしていいわよ♪」
 						PRINTFORMW 「사양말고 빨아 돌려도 좋아요♪」
 					CASE 2
@@ -790,12 +790,12 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 ;OriginalString : 「疼いちゃって、つらいの…」
 						PRINTFORMW 「쑤셔 버려서, 괴로운거야…」
 				ENDSELECT
-			;その他
+			;그 외
 			ELSE
 				SELECTCASE AUTORAND(4, 562)
 					CASE 0
 ;OriginalString : 「舐めて欲しくて、ヒクヒクしてるの分かりますか？」
-						PRINTFORMW 「빨았으면 좋아서, 히크히크 해 압니까？」
+						PRINTFORMW 「빨았으면 좋아서, 히크히크 해 압니까?」
 ;OriginalString : 「さ、優しくお願いしますね…」
 						PRINTFORMW 「, 상냥하고 부탁드릴게요…」
 					CASE 1
@@ -811,9 +811,9 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 			ENDIF
 		ENDIF
 		RETURN 1
-	;안면승마中
+	;안면승마중
 	ELSEIF TFLAG:ACT파생 == 2
-		;질내정액あり
+		;질내정액 있어
 		IF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
@@ -822,7 +822,7 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 ;OriginalString : 「당신のも弄ってあげるから、ちゃんと舐めて綺麗にして」
 						PRINTFORMW 「당신의 것도 만지작거려 주기 때문에, 분명하게 빨아 깨끗이 하며」
 ;OriginalString : 「まだ奥から出てくるから、しっかり舐めないと駄目よ？」
-						PRINTFORMW 「 아직 안쪽으로부터 나오기 때문에, 확실히 빨지 않으면 안되어요？」
+						PRINTFORMW 「아직 안쪽으로부터 나오기 때문에, 확실히 빨지 않으면 안되어요?」
 					CASE 1
 ;OriginalString : 「これって、凄くいけない事してるみたいで…」
 						PRINTFORMW 「이것은, 굉장히 안 되는 것 하고 있는 것 같아…」
@@ -835,19 +835,19 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 ;OriginalString : 「その代わり、こっちもちゃんと弄ってあげますから♪」
 				PRINTFORMW 「그 대신해, 여기도 분명하게 만지작거려 줄테니까♪」
 			ENDIF
-		;その他
+		;그 외
 		ELSE
 			;상사상애
 			IF GET_KFLAG_K39("상사상애")
 				SELECTCASE AUTORAND(3, 564)
 					CASE 0
 ;OriginalString : 「ねぇ…舐めてもらうの期待して、ヒクヒクしてるの、分かる？」
-						PRINTFORMW 「응…빨아 주는 것 기대해, 히크히크 해, 안다？」
+						PRINTFORMW 「응… 빨아 주는 것 기대해, 히크히크 해, 안다?」
 ;OriginalString : 「早くシて欲しくて、もう참다できないの…」
 						PRINTFORMW 「빨리 시라고 갖고 싶어서, 이제 참을 수 없는거야…」
 					CASE 1
 ;OriginalString : 「ほら、당신の舌で存分に味わって？」
-						PRINTFORMW 「이봐요, 당신의 혀로 마음껏 맛봐？」
+						PRINTFORMW 「이봐요, 당신의 혀로 마음껏 맛봐?」
 ;OriginalString : 「遠慮なく舐めまわしていいわよ♪」
 						PRINTFORMW 「사양말고 빨아 돌려도 좋아요♪」
 					CASE 2
@@ -856,12 +856,12 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 ;OriginalString : 「疼いちゃって、つらいの…」
 						PRINTFORMW 「쑤셔 버려서, 괴로운거야…」
 				ENDSELECT
-			;その他
+			;그 외
 			ELSE
 				SELECTCASE AUTORAND(4, 565)
 					CASE 0
 ;OriginalString : 「舐めて欲しくて、ヒクヒクしてるの分かりますか？」
-						PRINTFORMW 「빨았으면 좋아서, 히크히크 해 압니까？」
+						PRINTFORMW 「빨았으면 좋아서, 히크히크 해 압니까?」
 ;OriginalString : 「さ、優しくお願いしますね…」
 						PRINTFORMW 「, 상냥하고 부탁드릴게요…」
 					CASE 1
@@ -877,19 +877,19 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 			ENDIF
 		ENDIF
 		RETURN 1
-	;안면승마항문中
+	;안면승마항문중
 	ELSEIF TFLAG:ACT파생 == 3
 		;상사상애
 		IF GET_KFLAG_K39("상사상애")
 			SELECTCASE AUTORAND(3, 566)
 				CASE 0
 ;OriginalString : 「ねぇ…舐めてもらうの期待して、ヒクヒクしてるの、分かる？」
-					PRINTFORMW 「응…빨아 주는 것 기대해, 히크히크 해, 안다？」
+					PRINTFORMW 「응… 빨아 주는 것 기대해, 히크히크 해, 안다?」
 ;OriginalString : 「早くシて欲しくて、もう참다できないの…」
 					PRINTFORMW 「빨리 시라고 갖고 싶어서, 이제 참을 수 없는거야…」
 				CASE 1
 ;OriginalString : 「ほら、당신の舌で存分に味わって？」
-					PRINTFORMW 「이봐요, 당신의 혀로 마음껏 맛봐？」
+					PRINTFORMW 「이봐요, 당신의 혀로 마음껏 맛봐?」
 ;OriginalString : 「遠慮なく舐めまわしていいわよ♪」
 					PRINTFORMW 「사양말고 빨아 돌려도 좋아요♪」
 				CASE 2
@@ -898,7 +898,7 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 ;OriginalString : 「おしりが疼いて、つらいの…」
 					PRINTFORMW 「엉덩이가 쑤셔, 괴로운거야…」
 			ENDSELECT
-		;その他
+		;그 외
 		ELSE
 			SELECTCASE AUTORAND(3, 567)
 				CASE 0
@@ -920,7 +920,7 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 			ENDSELECT
 		ENDIF
 		RETURN 1
-	;クンニ強制
+	;쿤닐링구스 강제
 	ELSE
 		;상사상애
 		IF GET_KFLAG_K39("상사상애")
@@ -939,7 +939,7 @@ IF IS_NOWACTNAME("입으로 애무를 강요")
 ENDIF
 
 ;────────────────────────────────────
-;ACT분류が가학系(스펭킹/채찍/바늘/밧줄/눈가리개/볼개그/매도/삼각목마/관장세트)
+;ACT분류가가학계(스펭킹/채찍/바늘/밧줄/눈가리개/볼개그/매도/삼각목마/관장세트)
 ;────────────────────────────────────
 IF MENUMATCH(TFLAG:ACT, "가학") && !IS_NOWACTNAME("매도") && !IS_NOWACTNAME("눈가리개")
 	;상사상애
@@ -947,7 +947,7 @@ IF MENUMATCH(TFLAG:ACT, "가학") && !IS_NOWACTNAME("매도") && !IS_NOWACTNAME(
 		SELECTCASE AUTORAND(3, 570)
 			CASE 0
 ;OriginalString : 「ねぇ、本当はこういうの嫌いじゃないんでしょ？」
-				PRINTFORMW 「응, 사실은 이런 것 싫지 않지요？」
+				PRINTFORMW 「응, 사실은 이런 것 싫지 않지요?」
 ;OriginalString : 「\@ ABL:MASTER:마조끼 > 4 ? その目を見れば判るわ # って、私の勘違いかもしれないけど \@…
 				PRINTFORM 「\@ ABL:MASTER:마조끼 > 4 ? 그 눈을 보면 알아요 # 읏, 나의 착각일지도 모르지만 \@…
 				CALL PRINT_SYMBOL_K39
@@ -955,19 +955,19 @@ IF MENUMATCH(TFLAG:ACT, "가학") && !IS_NOWACTNAME("매도") && !IS_NOWACTNAME(
 ;OriginalString : 「ねぇ、正直に言って」
 				PRINTFORMW 「응, 정직하게 말하며」
 ;OriginalString : 「本当はもっと虐めて欲しいんじゃないの？」
-				PRINTFORMW 「사실은 좀 더 학째라고 갖고 싶은거 아니야？」
+				PRINTFORMW 「사실은 좀 더 학째라고 갖고 싶은거 아니야?」
 			CASE 2
 ;OriginalString : 「こういうのってあまり趣味じゃないんだけど」
 				PRINTFORML 「이런 것은 그다지 취미가 아니지만」
 ;OriginalString : 「\@ ABL:MASTER:마조끼 > 4 ? 당신が悦ぶ # 厄祓いの為 \@なら、それも仕方ないかなって……」
 				PRINTFORMW 「\@ ABL:MASTER:마조끼 > 4 ? 당신하지만 기뻐한다 # 액불제이기 때문에 \@(이)라면, 그것도 어쩔 수 없을까는……」
 		ENDSELECT
-	;その他
+	;그 외
 	ELSE
 		SELECTCASE AUTORAND(3, 571)
 			CASE 0
 ;OriginalString : 「ちょっと痛いかもしれませんが、참다してくださいね…？」
-				PRINTFORML 「조금 아플지도 모릅니다만, 참아 주세요…？」
+				PRINTFORML 「조금 아플지도 모릅니다만, 참아 주세요…?」
 			CASE 1
 ;OriginalString : 「自分にこういう趣味は無いと思っていたのですが」
 				PRINTFORML 「자신에게 이런 취미는 없다고 생각하고 있었습니다만」

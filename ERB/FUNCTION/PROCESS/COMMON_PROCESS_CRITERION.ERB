@@ -1,408 +1,408 @@
 ﻿;==================================================
 ;
-;	基準値関数
-;		基準値の表示や관리、改変にあたる一連の関数
+;	기준치 함수
+;		기준치의 표시나관리, 개변하는 일련의 함수
 ;
-;		別バリアントでも動くと良かったんだが@これみ
+;		별 바리안트에서도 움직이면 좋았던 것이지만@이것 보고
 ;
 ;==================================================
 
-;複数の선택肢が存在するとき、
-;変数情報などから基準値の大小を決定して선택を行う場合、
-;これらの関数が利用できます。
+;복수의선택지가 존재할 때,
+;변수 정보 따위로부터 기준치의 대소를 결정해선택를 실시하는 경우,
+;이것들의 함수를 이용할 수 있습니다.
 
-;[重要] 基本的には入出力関数のみを呼び出して使ってください
-;       表示関数及び관리関数を直接呼び出すのは推奨しません
+;[중요] 기본적으로는 입출력 함수만을 호출해 사용해 주세요
+;       표시 함수 및관리함수를 직접 호출하는 것은 추천 하지 않습니다
 
-;※これは元あった디버그用表示システムを改造して作ったものです
+;※이것은 원 있던디버그용 표시 시스템을 개조해 만든 것입니다
 
 ;-------------------------------------------------------------------------------
-;	定義関数
+;	정의 함수
 ;-------------------------------------------------------------------------------
 
 ;-------------------------------------------
-;一段組最大文字数(全角)[0-]
-;一行の文字数がここに指定당했다文字数を
-;突破すると二段組へ移行
-;※きわめて大きな数を設定しておけば強制一段組、
-;  逆に0を設定すれば強制二段組とすることができます
+;일단조최대 문자수(전각)[0-]
+;일행의 문자수가 여기로 지정당했다문자수를
+;돌파하면 2단조에 이행
+;※극히 큰 수를 설정해 두면 강제 일단조,
+;  반대로 0을 설정하면 강제 2단조로 할 수가 있습니다
 ;-------------------------------------------
 @DEF_CRI_WID
 #FUNCTION
 RETURNF 58
 
 ;-------------------------------------------
-;보정項目名表示領域幅(全角)[8-]
-;보정項目名が;ここに指定당했다文字数を突破すると切り捨て
+;보정항목명 표시 영역폭(전각)[8-]
+;보정항목명이;여기로 지정당했다문자수를 돌파하면 잘라서 버림
 ;-------------------------------------------
 @DEF_CRI_WID_ITEM
 #FUNCTION
 RETURNF 10
 
 ;-------------------------------------------
-;우선度計算
-;判定要素毎の우선度を決定する
+;우선도 계산
+;판정 요소 마다의우선도를 결정한다
 ;-------------------------------------------
 @DEF_CRI_ELE_PRI(ARGS)
 SELECTCASE ARGS
-	CASE "基準値"
+	CASE "기준치"
 		CALL PRI_CRI_VAR(, 1)
-	CASE "ACT보정値"
+	CASE "ACT보정치"
 		CALL PRI_CRI_VAR( 10)
 	CASEELSE
 		CALL PRI_CRI_VAR(, 2)
 ENDSELECT
 
 ;-------------------------------------------------------------------------------
-;	入出力関数群 ;입출력 함수 군
+;	입출력 함수군 ;입출력 함수 군
 ;-------------------------------------------------------------------------------
 
-;外部からは以下の入出力関数を呼び出して利用してください ; 외부로부터 다음 입출력 함수를 호출하여 사용하십시오
+;외부로부터는 이하의 입출력 함수를 호출해 이용해 주세요; 외부로부터 다음 입출력 함수를 호출하여 사용하십시오
 
 ;-------------------------------------------
-;数値定義
-;ARGSが방침名
-;ARGが固定値
-;数値加算に変換して扱う
+;수치 정의
+;ARGS가방침명
+;ARG가 고정치
+;수치 가산으로 변환해 취급한다
 ; 값 정의
 ; ARGS이 방침 이름
 ; ARG가 고정 값
 ; 수치 가산로 변환하여 처리
 ;-------------------------------------------
 @DIM_CRI_VAR, ARGS, ARG
-ARG = ARG - VARIABLE_OF_CRI("GET", ARGS + "累計")
+ARG = ARG - VARIABLE_OF_CRI("GET", ARGS + "누계")
 CALLF VARIABLE_OF_CRI("ADD", ARGS, ARG)
 
 ;-------------------------------------------
-;数値加算
-;ARGSが방침名
-;ARGが固定値
-;ARG:1が変動値(0～ARG:1)
+;수치 가산
+;ARGS가방침명
+;ARG가 고정치
+;ARG:1이 변동치(0～ARG:1)
 ;-------------------------------------------
 @ADD_CRI_VAR, ARGS, ARG, ARG:1
 CALLF VARIABLE_OF_CRI("ADD", ARGS, ARG, ARG:1)
 
 ;-------------------------------------------
-;数値減算
-;混乱を招くので用意しない
-;加算関数に負の値を代入すること
+;수치 감산
+;혼란을 부르므로 준비하지 않는다
+;가산 함수에 부의 값을 대입하는 것
 ;-------------------------------------------
 
 ;-------------------------------------------
-;数値乗算(×引数%)
-;ARGSが방침名
-;ARGが固定値
-;ARG:1が変動値(0～ARG:1)
+;수치 곱셈(×인수%)
+;ARGS가방침명
+;ARG가 고정치
+;ARG:1이 변동치(0～ARG:1)
 ;-------------------------------------------
 @MUL_CRI_VAR, ARGS, ARG = 100, ARG:1 = 100
 CALLF VARIABLE_OF_CRI("MUL", ARGS, ARG, ARG:1)
 
 ;-------------------------------------------
-;数値除算
-;混乱を招くので用意しない
-;乗算関数に100未満の値を代入すること
+;수치 제산
+;혼란을 부르므로 준비하지 않는다
+;곱셈 함수에 100 미만의 값을 대입하는 것
 ;-------------------------------------------
 
 ;-------------------------------------------
-;우선度変更
-;ARGを1/100に했다量を指定
-;ARG:1=0 ARGを採用
-;      1 우선度基準値を使用(ARGを無視し、100に変更)
-;      2 우선度処理をしない(ARGを無視し、100に変更)
+;우선도 변경
+;ARG를 1/100에했다량을 지정
+;ARG:1=0 ARG를 채용
+;      1 우선도 기준치를 사용(ARG를 무시해, 100으로 변경)
+;      2 우선도 처리를 하지 않는다(ARG를 무시해, 100으로 변경)
 ;-------------------------------------------
 @PRI_CRI_VAR, ARG = 100, ARG:1 = 0
 CALLF VARIABLE_OF_CRI("PRI", , ARG, ARG:1)
 
 ;-------------------------------------------
-;数値演算
-;ARGSが방침名
-;ARGS:1が演算指定
+;수치 연산
+;ARGS가방침명
+;ARGS:1이 연산 지정
 ;
-;まだよ
+;아직
 ;-------------------------------------------
 ;@ARI_CRI_VAR, ARGS, ARGS:1
 
 ;--------------------------------------------
-;関数初期化 ;함수 초기화/基準値種,略称指定
-;ARGSに基準値種,略称を/区切りで指定する
-;例：種  『테위ちゃん/うどんげ/えーりん/ひめさま』
-;    略称『테위      /どん    /えり    /ぐや    』
-;※種と略称は頭から順番に関連付けられます。
-;  完全な空白を種や略称に指定することはできません。バグります
-;  基準値種名に重複は許されません。バグります
-;  略称は別になくても動きます。量に多少があっても動きます。
-;ARG  =偽 関数初期化  (基準値処理開始、ARGS,ARG:1指定可)
-;     =真 基準値種追加(既にある基準値種,略称にARGSを追加)
-;ARG:1=偽 ARGSは基準値種
-;     =真 ARGSは基準値略称
-;※基準値種の追加が終了するまで
-;  他の入出力関数を呼び出さないでください
+;함수 초기화 ;함수 초기화/기준치종, 약칭 지정
+;ARGS에 기준치종, 약칭을/단락으로 지정한다
+;예:종  『테위//네─응/공주님』
+;    약칭 『테위/응/옷깃/나    』
+;※종과 약칭은 머리로부터 차례로 관련지을 수 있습니다.
+;  완전한 공백을 종이나 약칭으로 지정할 수 없습니다. 버그를 일으킵니다
+;  기준치 종명에 중복은 용서되지 않습니다. 버그를 일으킵니다
+;  약칭은 별로 없어도 움직입니다. 양에 다소가 있어도 움직입니다.
+;ARG  =가짜 함수 초기화  (기준치 처리 개시, ARGS, ARG:1 지정가능)
+;     =진기준치종 추가(이미 있는 기준치종, 약칭에 ARGS를 추가)
+;ARG:1=가짜 ARGS는 기준치종
+;     =진 ARGS는 기준치 약칭
+;※기준치종의 추가가 종료할 때까지
+;  다른 입출력 함수를 호출하지 말아 주세요
 ;--------------------------------------------
 @SET_CRI_VAR, ARGS, ARG = 0, ARG:1 = 0
-;ARG=0で表示関数も初期化
+;ARG=0으로 표시 함수도 초기화
 SIF ARG == 0
-	CALL SHOW_CRI_VAR, "@初期化"
-;관리関数に渡す
+	CALL SHOW_CRI_VAR, "@초기화"
+;관리함수에 건네준다
 CALLF VARIABLE_OF_CRI("SET", ARGS, ARG, ARG:1)
 
 ;--------------------------------------------
-;数値初期化
-;ARG=偽 小計のみリセット
-;    真 累計も含めてリセット
+;수치 초기화
+;ARG=가짜 소계만 리셋트
+;    진누계도 포함해 리셋트
 ;--------------------------------------------
 @RES_CRI_VAR, ARG
-;관리関数に渡す
+;관리함수에 건네준다
 CALLF VARIABLE_OF_CRI("RES", , ARG)
 
 ;--------------------------------------------
-;項目変更/우선度計算
-;ARGSに新たな項目を指定する
-;ARG(ビット0)=小計等をリセットしません
-;   (ビット1)=우선度計算を行いません
+;항목 변경/우선도 계산
+;ARGS에 새로운 항목을 지정한다
+;ARG(비트 0)=소계등을 리셋트 하지 않습니다
+;   (비트 1)=우선도 계산을 실시하지 않습니다
 ;--------------------------------------------
 @CHA_CRI_VAR, ARGS, ARG = 0
-;項目が指定されていれば項目変更
+;항목이 지정되고 있으면 항목 변경
 IF ARGS != ""
-	;관리関数に渡す
+	;관리함수에 건네준다
 	CALLF VARIABLE_OF_CRI("CHA", ARGS)
-	;전회項目を受け取る
+	;전회항목을 받는다
 	LOCALS = %RESULTS%
-	;전회項目がなければ開始処理
+	;전회항목이 없으면 개시 처리
 	SIF LOCALS == ""
-		LOCALS = @開始
-	;表示関数呼び出し
+		LOCALS = @개시
+	;표시 함수 호출
 	CALL SHOW_CRI_VAR, LOCALS
 ENDIF
-;小計等リセット
+;소계등 리셋트
 SIF (ARG & 1) == 0
 	CALLF VARIABLE_OF_CRI("RES")
-;우선度計算
+;우선도 계산
 SIF (ARG & 2) == 0
 	CALL DEF_CRI_ELE_PRI(ARGS)
 
 ;--------------------------------------------
-;선택確定
-;ARGS=確定方法
+;선택확정
+;ARGS=확정 방법
 ;--------------------------------------------
 @DEF_CRI_VAR, ARGS
-;전회項目を受け取る
-CALLF VARIABLE_OF_CRI("GET", "項目")
-;表示関数呼び出し
+;전회항목을 받는다
+CALLF VARIABLE_OF_CRI("GET", "항목")
+;표시 함수 호출
 CALL SHOW_CRI_VAR, RESULTS
-;선택確定
+;선택확정
 CALLF VARIABLE_OF_CRI("DEF", ARGS)
-;表示関数呼び出し(終了処理)
-CALL SHOW_CRI_VAR, "@終了"
+;표시 함수 호출(종료 처리)
+CALL SHOW_CRI_VAR, "@종료"
 
 ;--------------------------------------------
-;基準値보정量解析
+;기준치보정량 해석
 ;--------------------------------------------
 @ANA_CRI_VAR
-;관리関数に渡す
-CALL SHOW_CRI_VAR, "@解析"
+;관리함수에 건네준다
+CALL SHOW_CRI_VAR, "@해석"
 
 ;--------------------------------------------
-;数値취득
-;ARGSに취득했다い変数名を入れて使う
+;수치취득
+;ARGS에취득했다 있고 변수명을 넣어 사용한다
 ;--------------------------------------------
 @GET_CRI_VAR, ARGS
 #FUNCTION
-;관리関数に渡す
+;관리함수에 건네준다
 RETURNF VARIABLE_OF_CRI("GET", ARGS)
 
 ;-------------------------------------------------------------------------------
-;	表示関数群
+;	표시 함수군
 ;-------------------------------------------------------------------------------
 
 ;-------------------------------------
-;表示関数
-;小関数を抜けた後、その関数の内容がどうだったかを表示する
-;ARGSは表示するときのタイトル名
+;표시 함수
+;오제키수를 빠진 후, 그 함수의 내용이 어땠던인지를 표시한다
+;ARGS는 표시할 때의 타이틀명
 ;-------------------------------------
 @SHOW_CRI_VAR, ARGS
 #LOCALSIZE 4
 #LOCALSSIZE 6
-;一時文字列変数
+;약 2시간 마다 써서 보내는 편지자열변수
 #DIMS LTEMPS, 6
-;カウント変数
+;카운트 변수
 #DIM LCOUNT, 1
-;表번호変数
+;표번호변수
 #DIM LTABLE, 1
-;基準値種번호変数
+;기준치종번호변수
 #DIM LCRI, 1
-;基準値種段組振り分け指定
+;기준치종단조배분 지정
 #DIM LLINE, 2
-;보정項目名表示領域
+;보정항목명 표시 영역
 #DIM LWITEM, 1
-;進行状況監視
+;진행 상황 감시
 #DIM LCHECK, 1
-;小計・総計一時保存
+;소계·총계 일시 보존
 #DIM LSTOT, 30
 #DIM LTOT, 30
-;디버그時かつ表示指定時のみ表示
+;디버그시 또한 표시 지정시만 표시
 SIF !FLAG:디버그 || FLAG:디버그표시끄기
 	RETURN RESULT
-;初期化処理
-IF ARGS == "@初期化"
+;초기화 처리
+IF ARGS == "@초기화"
 	VARSET LLINE
 	VARSET LWITEM
 	VARSET LCHECK
-;表示開始処理
-ELSEIF ARGS == "@開始"
-	;表示開始されていれば強制終了
+;표시 개시 처리
+ELSEIF ARGS == "@개시"
+	;표시 개시되고 있으면 강제 종료
 	SIF LCHECK & 1
 		RETURN RESULT
-	;表示開始を確認
+	;표시 개시를 확인
 	LCHECK |= 1
-	;基準値種数취득
-	LOCAL = VARIABLE_OF_CRI("GET", "基準値種数")
-	;一段組最大文字数を元に段組振り分けを決定
+	;기준치종수취득
+	LOCAL = VARIABLE_OF_CRI("GET", "기준치종수")
+	;일단조최대 문자수를 바탕으로단조배분을 결정
 	IF (DEF_CRI_WID() * 2) >= (24 + (LOCAL * 10))
 		LLINE = LOCAL
 	ELSE
 		LLINE:1 = LOCAL / 2
 		LLINE = LOCAL - LLINE:1
 	ENDIF
-	;보정項目名表示領域を確認
+	;보정항목명 표시 영역을 확인
 	LWITEM = DEF_CRI_WID_ITEM() * 2
-	;補助関数群に필요な引数を渡す
+	;보조 함수군에게필요인 인수를 건네준다
 	CALL SHOW_CRI_VAR_SEP(-1, LWITEM, LLINE, LLINE:1)
 	CALL SHOW_CRI_VAR_TIT(, LWITEM)
-;表示終了処理
-ELSEIF ARGS == "@終了"
-	;ヘッダ表示がされていなければ強制終了
+;표시 종료 처리
+ELSEIF ARGS == "@종료"
+	;헤더 표시가되어 있지 않으면 강제 종료
 	SIF !(LCHECK & 2)
 		RETURN RESULT
-	;フッタ表示を確認
+	;footer 표시를 확인
 	LCHECK |= 4
-	;ヘッダ、解析表示を可能に
+	;헤더, 해석 표시를 가능하게
 	LCHECK &= ~10
 	;-------------------------------------
-	;フッタ生成
+	;footer 생성
 	;-------------------------------------
-	;累計취득
-	CALLF VARIABLE_OF_CRI("GET", "累計")
+	;누계취득
+	CALLF VARIABLE_OF_CRI("GET", "누계")
 	FOR LCRI, 0, LLINE + LLINE:1
 		LTOT:LCRI = RESULT:LCRI
 	NEXT
-	;開始色保存
+	;개시색보존
 	LOCAL = GETCOLOR()
-	;決定種0を確認
-	LOCAL:1 = GET_CRI_VAR("決定")
-	;確認決定種数カウント
+	;결정종 0을 확인
+	LOCAL:1 = GET_CRI_VAR("결정")
+	;확인 결정종수카운트
 	LOCAL:2 = 0
-	;表の数だけループ
+	;표의 수만큼 루프
 	FOR LTABLE, 0, 1 + (LLINE:1 > 0)
-		;文字列保管関数の指定位置変更
+		;캐릭터 라인 보관 함수의 지정 위치 변경
 		CALL STRBANK_CRI(, LTABLE)
-		;区切り生成
+		;단락 생성
 		CALL SHOW_CRI_VAR_SEP, 1, LTABLE
-		;項目名表示
-		CALL SHOW_CRI_VAR_TIT, "合計値"
-		;基準値種別処理
+		;항목명 표시
+		CALL SHOW_CRI_VAR_TIT, "합계치"
+		;기준치 종별 처리
 		FOR LCRI, SUMARRAY(LLINE, 0, LTABLE), SUMARRAY(LLINE, 0, LTABLE + 1)
-			;区切り生成
+			;단락 생성
 			CALL STRBANK_CRI("│")
-			;決定種であれば
+			;결정종이면
 			IF LCRI == LOCAL:1
-				;色を変更し、次の決定種を確認
+				;색을 변경해, 다음의 결정종을 확인
 				CALL STRBANK_CRI(@"{LTOT:LCRI, 8}", , 0, 2, 0x66FFFF)
 				LOCAL:2++
-				LOCAL:1 = GET_CRI_VAR("決定" + @"{LOCAL:2}")
+				LOCAL:1 = GET_CRI_VAR("결정" + @"{LOCAL:2}")
 			ELSE
-				;そうでなければ色は開始色
+				;그렇지 않으면 색은 개시색
 				CALL STRBANK_CRI(@"{LTOT:LCRI, 8}")
 			ENDIF
 		NEXT
-		;表を閉じる
+		;표를 닫는다
 		CALL STRBANK_CRI("│", , 1)
 		CALL SHOW_CRI_VAR_SEP, 2, LTABLE
-		;表示し、テ키스ト保管関数を空にする
+		;표시해, 테키스트 보관 함수를 비운다
 		CALL STRBANK_CRI(, , 3)
 	NEXT
-;解析処理
-ELSEIF ARGS == "@解析"
-	;フッタ表示がされていないか、解析表示がされていれば強制終了
+;해석 처리
+ELSEIF ARGS == "@해석"
+	;footer 표시가되어 있지 않은지, 해석 표시가 되고 있으면 강제 종료
 	SIF !(LCHECK & 4) || LCHECK & 8
 		RETURN RESULT
-	;解析表示を確認
+	;해석 표시를 확인
 	LCHECK |= 8
 	;-------------------------------------
-	;解析表生成
+	;해석표 생성
 	;-------------------------------------
-	;開始色保存
+	;개시색보존
 	LOCAL = GETCOLOR()
-	;略称취득
-	CALLF VARIABLE_OF_CRI("GET", "基準値種略称")
-	;表の数だけループ
+	;약칭취득
+	CALLF VARIABLE_OF_CRI("GET", "기준치종 약칭")
+	;표의 수만큼 루프
 	FOR LTABLE, 0, 1 + (LLINE:1 > 0)
-		;文字列保管関数の指定位置変更
+		;캐릭터 라인 보관 함수의 지정 위치 변경
 		CALL STRBANK_CRI(, LTABLE)
-		;表を開く
+		;표를 연다
 		CALL SHOW_CRI_VAR_SEP, 0, LTABLE
-		;項目名表示
-		CALL SHOW_CRI_VAR_TIT, "名称"
-		;基準値種名表示
+		;항목명 표시
+		CALL SHOW_CRI_VAR_TIT, "명칭"
+		;기준치 종명 표시
 		LOCALS = 
 		FOR LCRI, SUMARRAY(LLINE, 0, LTABLE), SUMARRAY(LLINE, 0, LTABLE + 1)
 			LOCALS += @"│%SUBSTRING(RESULTS:LCRI, 0, 7), 8, LEFT%"
 		NEXT
 		CALL STRBANK_CRI(@"%LOCALS%│", , 1)
-		;区切り生成
+		;단락 생성
 		CALL SHOW_CRI_VAR_SEP, 1, LTABLE
 	NEXT
-	;취득引数文字列
-	SPLIT "固定累計/変動累計/変動負累計/固定乗算累計/変動乗算累計/変動負乗算累計", "/", LOCALS
-	;項目名
-	SPLIT "合計固定値(加算)/合計変動値(加算・正)/合計変動値(加算・負)/合計固定値(乗算)/合計変動値(乗算・正)/合計変動値(乗算・負)", "/", LTEMPS
+	;취득인수 캐릭터 라인
+	SPLIT "고정 누계/변동 누계/변동부누계/고정 곱셈 누계/변동 곱셈 누계/변동부곱셈 누계", "/", LOCALS
+	;항목명
+	SPLIT "합계 고정치(가산)/합계 변동치(가산·정)/합계 변동치(가산·부)/합계 고정치(곱셈)/합계 변동치(곱셈·정)/합계 변동치(곱셈·부)", "/", LTEMPS
 	FOR LCOUNT, 0, 6
-		;加算値処理前は0に初期化
+		;가산치 처리전은 0에 초기화
 		IF LCOUNT == 0
 			VARSET RESULT
-		;乗算値処理前は100(%)に初期化
+		;곱셈치 처리전은 100(%)에 초기화
 		ELSEIF LCOUNT == 3
 			VARSET RESULT, 100
 		ENDIF
-		;固定累計(加算)취득
+		;고정 누계(가산)취득
 		CALLF VARIABLE_OF_CRI("GET", LOCALS:LCOUNT)
-		;全て0(加算系)、全て100(乗算系)でなければ
+		;모두 0(가산계), 모두 100(곱셈계)이 아니면
 		LOCAL:2 = LCOUNT < 3 ? 0 # 100
 		IF MAXARRAY(RESULT) > LOCAL:2 || MINARRAY(RESULT) < LOCAL:2
-			;一時変数に内容を確保
+			;일시 변수에 내용을 확보
 			FOR LCRI, 0, LLINE + LLINE:1
 				LSTOT:LCRI = RESULT:LCRI
-				;固定累計(加算)の場合総計には100倍を加算
+				;고정 누계(가산)의 경우 총계에는 100배를 가산
 				IF LCOUNT < 1
 					LTOT:LCRI = RESULT:LCRI * 100
-				;※これ以降、絶対値99を越えたら上限突破と見なす
-				;変動累計(加算)の場合総計には50倍を加算
+				;※이 이후, 절대치 99를 넘으면 상한 돌파라고 본다
+				;변동 누계(가산)의 경우 총계에는 50배를 가산
 				ELSEIF LCOUNT < 3
 					SIF ABS(LTOT:LCRI) < 9900
 						LTOT:LCRI += RESULT:LCRI * 50
-				;※上限突破時も*0だけは無視しない
-				;固定累計(乗算)の場合総計にはそのまま乗算処理
+				;※상한 돌파시도*0만은 무시하지 않는다
+				;고정 누계(곱셈)의 경우 총계에는 그대로 곱셈 처리
 				ELSEIF LCOUNT < 4
 					SIF (ABS(LTOT:LCRI) < 9900) || (RESULT:LCRI == 0)
 						LTOT:LCRI = LTOT:LCRI * RESULT:LCRI / 100
-				;変動累計(乗算)の場合総計には1/2を乗算処理
+				;변동 누계(곱셈)의 경우 총계에는 1/2을 곱셈 처리
 				ELSE
 					SIF (ABS(LTOT:LCRI) < 9900) || (RESULT:LCRI == 0)
 						LTOT:LCRI = LTOT:LCRI * RESULT:LCRI / 200
 				ENDIF
 			NEXT
-			;表の数だけループ
+			;표의 수만큼 루프
 			FOR LTABLE, 0, 1 + (LLINE:1 > 0)
-				;文字列保管関数の指定位置変更
+				;캐릭터 라인 보관 함수의 지정 위치 변경
 				CALL STRBANK_CRI(, LTABLE)
-				;項目名表示
+				;항목명 표시
 				CALL SHOW_CRI_VAR_TIT, LTEMPS:LCOUNT
-				;基準値種別処理
+				;기준치 종별 처리
 				FOR LCRI, SUMARRAY(LLINE, 0, LTABLE), SUMARRAY(LLINE, 0, LTABLE + 1)
-					;区切り生成
+					;단락 생성
 					CALL STRBANK_CRI("│")
-					;加算系表示
+					;가산계 표시
 					IF LCOUNT < 3
-						;限界突破時に色を変える(正：青、負：赤)
+						;한계 돌파시에 색을 바꾼다(정:파랑, 부:세키)
 						IF LSTOT:LCRI == -9900
 							LOCAL:1 = 0xC07070
 						ELSEIF LSTOT:LCRI == 9900
@@ -410,43 +410,43 @@ ELSEIF ARGS == "@解析"
 						ELSE
 							LOCAL:1 = LOCAL
 						ENDIF
-						;数値表示
+						;수치 표시
 						CALL STRBANK_CRI(@"{LSTOT:LCRI, 5}   ", , 0, 2, LOCAL:1)
-					;乗算系表示
+					;곱셈계 표시
 					ELSE
-						;数値表示
+						;수치 표시
 						CALL STRBANK_CRI(@"{LSTOT:LCRI, 5}\%  ", , 0, 2, LOCAL:1)
 					ENDIF
 				NEXT
-				;区切り生成
+				;단락 생성
 				CALL STRBANK_CRI("│", , 1)
 			NEXT
 		ENDIF
 	NEXT
-	;RESULT初期化
+	;RESULT 초기화
 	VARSET RESULT
-	;表の数だけループ
+	;표의 수만큼 루프
 	FOR LTABLE, 0, 1 + (LLINE:1 > 0)
-		;文字列保管関数の指定位置変更
+		;캐릭터 라인 보관 함수의 지정 위치 변경
 		CALL STRBANK_CRI(, LTABLE)
-		;項目名表示
-		CALL SHOW_CRI_VAR_TIT, "合計期待値"
-		;基準値種別処理
+		;항목명 표시
+		CALL SHOW_CRI_VAR_TIT, "합계 기대치"
+		;기준치 종별 처리
 		FOR LCRI, SUMARRAY(LLINE, 0, LTABLE), SUMARRAY(LLINE, 0, LTABLE + 1)
-			;区切り生成
+			;단락 생성
 			CALL STRBANK_CRI("│")
-			;絶対値99以上を+-99.99(上限突破)として扱う
+			;절대치 99이상을+-99.99(상한 돌파)로서 취급한다
 			SIF ABS(LTOT:LCRI) >= 9900
 				LTOT:LCRI = SIGN(LTOT:LCRI) * 9999
-			;値を취득
+			;치를취득
 			LOCALS = {LTOT:LCRI}
-			;長さを計る
+			;길이를 잰다
 			STRLENS LOCALS
-			;長さに合わせて整形
+			;길이에 맞추어 정형
 			LOCALS = %"0" * LIMIT(3 - RESULT, 0, 3)%%LOCALS%
-			;長さを計り直す
+			;길이를 다시 잰다
 			STRLENS LOCALS
-			;上限突破時色を変える
+			;상한 돌파시 색을 바꾼다
 			IF LTOT:LCRI == -9999
 				LOCAL:1 = 0xC07070
 			ELSEIF LTOT:LCRI == 9999
@@ -454,70 +454,70 @@ ELSEIF ARGS == "@解析"
 			ELSE
 				LOCAL:1 = LOCAL
 			ENDIF
-			;数値表示
+			;수치 표시
 			CALL STRBANK_CRI(@"%SUBSTRING(LOCALS, 0, RESULT-2),5%.%SUBSTRING(LOCALS, RESULT-2)%", , 0, 2, LOCAL:1)
 		NEXT
-		;表を閉じる
+		;표를 닫는다
 		CALL STRBANK_CRI("│", , 1)
 		CALL SHOW_CRI_VAR_SEP, 2, LTABLE
-		;表示し、テ키스ト保管関数を空にする
+		;표시해, 테키스트 보관 함수를 비운다
 		CALL STRBANK_CRI(, , 3)
 	NEXT
-;項目表示処理
+;항목 표시 처리
 ELSE
-	;表示開始がされていなければ強制終了
+	;표시 개시가되어 있지 않으면 강제 종료
 	SIF !(LCHECK & 1)
 		RETURN RESULT
-	;全ての小計が0の項目は表示しない
-	SIF !VARIABLE_OF_CRI("GET", "小変動有無")
+	;모든 소계가 0의 항목은 표시하지 않는다
+	SIF !VARIABLE_OF_CRI("GET", "작은 변화동유무")
 		RETURN RESULT
-	;처음はヘッダ生成
+	;처음는 헤더 생성
 	IF !(LCHECK & 2)
-		;略称취득
-		CALLF VARIABLE_OF_CRI("GET", "基準値種略称")
-		;表の数だけループ
+		;약칭취득
+		CALLF VARIABLE_OF_CRI("GET", "기준치종 약칭")
+		;표의 수만큼 루프
 		FOR LTABLE, 0, 1 + (LLINE:1 > 0)
-			;文字列保管関数の指定位置変更
+			;캐릭터 라인 보관 함수의 지정 위치 변경
 			CALL STRBANK_CRI(, LTABLE)
-			;表を開く
+			;표를 연다
 			CALL SHOW_CRI_VAR_SEP, 0, LTABLE
-			;項目名表示
-			CALL SHOW_CRI_VAR_TIT, "名称"
-			;基準値種名表示
+			;항목명 표시
+			CALL SHOW_CRI_VAR_TIT, "명칭"
+			;기준치 종명 표시
 			LOCALS = 
 			FOR LCRI, SUMARRAY(LLINE, 0, LTABLE), SUMARRAY(LLINE, 0, LTABLE + 1)
 				LOCALS += @"│%SUBSTRING(RESULTS:LCRI, 0, 7), 8, LEFT%"
 			NEXT
 			CALL STRBANK_CRI(@"%LOCALS%│", , 1)
-			;区切り生成
+			;단락 생성
 			CALL SHOW_CRI_VAR_SEP, 1, LTABLE
 		NEXT
-		;ヘッダ表示を確認
+		;헤더 표시를 확인
 		LCHECK |= 2
-		;フッタ表示を可能に
+		;footer 표시를 가능하게
 		LCHECK &= ~4
 	ENDIF
-	;項目表示開始
+	;항목 표시 개시
 	LOCAL = GETCOLOR()
-	;小計及び累計を취득
-	CALLF VARIABLE_OF_CRI("GET", "小計")
+	;소계 및 누계를취득
+	CALLF VARIABLE_OF_CRI("GET", "소계")
 	FOR LCRI, 0, LLINE + LLINE:1
 		LSTOT:LCRI = RESULT:LCRI
 	NEXT
-	CALLF VARIABLE_OF_CRI("GET", "累計")
+	CALLF VARIABLE_OF_CRI("GET", "누계")
 	FOR LCRI, 0, LLINE + LLINE:1
 		LTOT:LCRI = RESULT:LCRI
 	NEXT
-	;加算の有無を確認
-	LOCAL:3 = VARIABLE_OF_CRI("GET", "加算有無")
-	;表の数だけループ
+	;가산의 유무를 확인
+	LOCAL:3 = VARIABLE_OF_CRI("GET", "가산 유무")
+	;표의 수만큼 루프
 	FOR LTABLE, 0, 1 + (LLINE:1 > 0)
-		;文字列保管関数の指定位置変更
+		;캐릭터 라인 보관 함수의 지정 위치 변경
 		CALL STRBANK_CRI(, LTABLE)
-		;区切り生成
+		;단락 생성
 		CALL STRBANK_CRI("│")
-		;우선度状況により色分け
-		SELECTCASE VARIABLE_OF_CRI("GET", "우선度採用")
+		;우선도 상황에 의해 분류
+		SELECTCASE VARIABLE_OF_CRI("GET", "우선도 채용")
 			CASE 0
 				LOCAL:1 = LOCAL
 			CASE 1
@@ -525,15 +525,15 @@ ELSE
 			CASE 2
 				LOCAL:1 = 0x70C070
 		ENDSELECT
-		;項目名表示
+		;항목명 표시
 		CALL STRBANK_CRI(@"%SUBSTRING(ARGS, 0, LWITEM), LWITEM, LEFT%", , 0, 2, LOCAL:1)
-		;基準値種別表示
+		;기준치 종별 표시
 		FOR LCRI, SUMARRAY(LLINE, 0, LTABLE), SUMARRAY(LLINE, 0, LTABLE + 1)
-			;区切り生成
+			;단락 생성
 			CALL STRBANK_CRI("│")
-			;加算がある場合、加算式で表示
+			;가산이 있는 경우, 가산식에서 표시
 			IF LOCAL:3
-				;正負により色分け
+				;정부에 의해 분류
 				IF LSTOT:LCRI < 0
 					LOCAL:1 = 0xC07070
 				ELSEIF LSTOT:LCRI > 0
@@ -541,11 +541,11 @@ ELSE
 				ELSE
 					LOCAL:1 = LOCAL
 				ENDIF
-				;数値表示
+				;수치 표시
 				CALL STRBANK_CRI(@"\@ LSTOT:LCRI >= 0 ? + # - \@{ABS(LSTOT:LCRI), 2}({LTOT:LCRI, 3})", , 0, 2, LOCAL:1)
-			;加算がない場合、乗算式で表示
+			;가산이 없는 경우, 곱셈식에서 표시
 			ELSE
-				;増加、減少により色分け
+				;증가, 감소에 의해 분류
 				IF LSTOT:LCRI < 0
 					LOCAL:1 = 0xC07070
 				ELSEIF LSTOT:LCRI > 0
@@ -560,7 +560,7 @@ ELSE
 					CALL STRBANK_CRI(@"   ERROR", , 0, 2, LOCAL)
 					CONTINUE
 				ENDIF
-				;数値生成
+				;수치 생성
 				IF ABS(LTOT:LCRI) < ABS(LTOT:LCRI - LSTOT:LCRI) && ABS(LTOT:LCRI) != 0
 					LOCAL:2 = (LTOT:LCRI - LSTOT:LCRI) * 100 / LTOT:LCRI
 					LTEMPS = /
@@ -579,53 +579,53 @@ ELSE
 						LTEMPS = %LTEMPS%{LOCAL:2 / 100}
 					ENDIF
 				ENDIF
-				;数値表示
+				;수치 표시
 				CALL STRBANK_CRI(@"%LTEMPS%({LTOT:LCRI, 3})", , 0, 2, LOCAL:1)
 			ENDIF
 		NEXT
-		;区切り生成
+		;단락 생성
 		CALL STRBANK_CRI(@"│", , 1)
 	NEXT
 ENDIF
 RETURN RESULT
 
 ;-------------------------------------------------
-;表示補助関数群
+;표시 보조 함수군
 ;-------------------------------------------------
-;区切り生成
-;ARG   -1 = 関数初期化, 0 = 開始, 1 = 中間, 2 = 終端
+;단락 생성
+;ARG   -1 =함수 초기화, 0 =개시, 1 =중간, 2 =종단
 ;ARG:1 LTABLE
-;初期化時のみ ARG:1 = LWITEM, ARG:2 = LLINE, ARG:3 = LLINE:1
+;초기화시만 ARG:1 = LWITEM, ARG:2 = LLINE, ARG:3 = LLINE:1
 @SHOW_CRI_VAR_SEP(ARG, ARG:1, ARG:2, ARG:3)
-;区切り
+;단락
 IF ARG > -1
-	;開始区切り
+	;개시 단락
 	IF ARG == 0
 		LOCALS:0 = ┌
 		LOCALS:1 = ┬
 		LOCALS:2 = ┐
-	;中間区切り
+	;중간 단락
 	ELSEIF ARG == 1
 		LOCALS:0 = ├
 		LOCALS:1 = ┼
 		LOCALS:2 = ┤
-	;終端区切り
+	;종단 단락
 	ELSEIF ARG == 2
 		LOCALS:0 = └
 		LOCALS:1 = ┴
 		LOCALS:2 = ┘
 	ENDIF
 	CALL STRBANK_CRI(@"%LOCALS%%"─"*(LOCAL/2)%%(LOCALS:1+"─"*4)*LOCAL:(1+ARG:1)%%LOCALS:2%", , 1)
-;関数初期化 ;함수 초기화
+;함수 초기화 ;함수 초기화
 ELSE
 	LOCAL:0 = ARG:1
 	LOCAL:1 = ARG:2
 	LOCAL:2 = ARG:3
 ENDIF
 
-;項目名生成
-;ARGS 項目名
-;初期化時のみ ARG = LWITEM ※ARGを指定すると初期化と見なされます
+;항목명 생성
+;ARGS 항목명
+;초기화시만 ARG = LWITEM ※ARG를 지정하면 초기화라고 보여집니다
 @SHOW_CRI_VAR_TIT(ARGS, ARG = -1)
 IF ARG != -1
 	LOCAL = ARG
@@ -634,23 +634,23 @@ ENDIF
 CALL STRBANK_CRI(@"│%ARGS, LOCAL, LEFT%")
 
 ;-------------------------------------------------
-;表示テ키스ト保管関数_基準値関数用改変版@STRBANK_CRI
-;※ぱにめーしょんのを改変
-;	文字列引数：保存する文面（空文字列可）
-;	引数0：保管位置情報。0か1を선택。空か-1を渡했다場合は전회의物を継続
-;	引数1：改行情報。0で改行なし、1で改行、2でクリック待ち、3でテ키스ト放出して廃棄、4で放出、5で廃棄（3以上のとき文字列引数は無視する）
-;	引数2：文字色情報。0で指定なし、1で一時デフォカラー、2で一時カラー指定、3でカラー指定하면서、そのカラーを維持する（表示が終わっても戻らない）
-;	引数3：文字色指定。引数2が2か3だった場合に参照される。式中関数@RGBCOLORに対応
+;표시테키스트 보관 함수_기준치 함수용 개변판@STRBANK_CRI
+;※에 째─실마리응의 것을 개변
+;	캐릭터 라인 인수:보존하는 글내용（공문자렬가）
+;	인수 0:보관 위치 정보. 0이나 1을선택. 하늘인가-1을 도했다경우는전회의물을 계속
+;	인수 1:개행 정보. 0으로 개행 없음, 1으로 개행, 2로 클릭 기다려, 3으로 테키스트 방출해 폐기, 4로 방출, 5로 폐기（3이상 때 캐릭터 라인 인수는 무시한다）
+;	인수 2:문자 색정보. 0으로 지정 없음, 1으로 일시 데포카라, 2로 일시 칼라 지정, 3으로 칼라 지정하면서, 그 칼라를 유지한다（표시가 끝나도 돌아오지 않는다）
+;	인수 3:문자색지정. 인수 2가 2나 3이었던 경우에 참조된다. 식 안의 함수@RGBCOLOR에 대응
 ;
-;繰り返し呼ぶことで文字列をLOCALSに蓄えていき、引数で指定했다ときにすべて表示します。
-;表示方法は代入するときに指定可能。
-;保存する範囲を二つ用意しているので
+;반복해 부르는 것으로 캐릭터 라인을 LOCALS에 저축해 가 인수로 지정했다 풀어에 모두 표시합니다.
+;표시 방법은 대입할 경우에 지정 가능.
+;보존하는 범위를 2개 준비해 있으므로
 ;
-;@これみ
-;一行内でのカラー変更に対応。それに伴い『1000行』から『1000回の呼び出し』まで引き受けに劣化
-;フォント指定は今のところ不要かな
-;あくまで基準値関数用なのでSTRBANKLなどの関連関数は無視
-;その他微妙に変更。変更前のほうが速いかもしれんが困ってから考える
+;@이것 보고
+;일행내에서의 칼라 변경에 대응. 거기에 따라 『1000행』으로부터 『1000회의 호출』까지 인수에 열화
+;폰트 지정은 현재 불필요한가
+;어디까지나 기준치 함수용인 것으로 STRBANKL등의 관련 함수는 무시
+;그 외 미묘하게 변경. 변경 앞쪽이 빠를지도 모르지만 곤란하고 나서 생각한다
 ;-------------------------------------------------
 @STRBANK_CRI(ARGS = "", ARG = -1, ARG:1 = 0, ARG:2 = 0, ARG:3 = 0)
 #LOCALSIZE 2000
@@ -661,80 +661,80 @@ CALL STRBANK_CRI(@"│%ARGS, LOCAL, LEFT%")
 #DIM PLACE, 1
 #DIM SCOPE, 1
 #DIM LCOUNT, 2
-;初期設定
+;초기설정
 IF !SET_LOCALS
-	;変数初期化
+	;변수 초기화
 	VARSET LOCALS, "VOID"
 	VARSET LOCAL, 0
-	;保管位置を初期化
+	;보관 위치를 초기화
 	PLACE = 0
-	;保管範囲を初期化
+	;보관 범위를 초기화
 	SCOPE = 1000
-	;初期化完了を確認
+	;초기화 완료를 확인
 	SET_LOCALS = 1
 ENDIF
-;ARGが0以上なら保管位置を変更
+;ARG가 0이상이라면 보관 위치를 변경
 IF ARG > -1
 	PLACE = SCOPE * ARG
 ENDIF
-;預金
+;예금
 IF ARG:1 < 3
-	;まだ空の変数を探す
+	;아직 하늘의 변수를 찾는다
 	LCOUNT = FINDELEMENT(LOCALS, "VOID", PLACE, PLACE + SCOPE - 1, 1)
-	;文字列や指定を代入
+	;캐릭터 라인이나 지정을 대입
 	LOCALS:LCOUNT = %ARGS%
 	LOCAL:LCOUNT = ARG:1
 	COLORDATA:LCOUNT = ARG:2
 	COLORNUM:LCOUNT = ARG:3
-;引き出し
+;인출
 ELSE
-	;廃棄を指定されている場合表示を行わない
+	;폐기가 지정되고 있는 경우 표시를 실시하지 않는다
 	IF ARG:1 < 5
-		;表示完了まで再描画しない
+		;표시 완료까지 재묘화 하지 않는다
 		REDRAW 0
-		;順に表示処理を行う
+		;순서에 표시 처리를 실시한다
 		FOR LCOUNT, PLACE, PLACE + SCOPE
-			;空の変数に当たったら終了
+			;하늘의 변수에 해당되면 종료
 			SIF LOCALS:LCOUNT == "VOID"
 				BREAK
-			;色指定に従って表示
+			;색지정에 따라 표시
 			SELECTCASE COLORDATA:LCOUNT
-				;指定なし
+				;지정 없음
 				CASE 0
 ;OriginalString : LOCALS:LCOUNT
 					PRINTS LOCALS:LCOUNT
-				;一時デフォカラー
+				;일시 데포카라
 				CASE 1
 ;OriginalString : LOCALS:LCOUNT
 					PRINTSD LOCALS:LCOUNT
-				;一時カラー指定(色を一時的に変更し、元に戻す)
+				;일시 칼라 지정(색을 일시적으로 변경해, 원래에 되돌린다)
 				CASE 2
 					LCOUNT:1 = GETCOLOR()
 					SETCOLOR COLORNUM:LCOUNT
 ;OriginalString : LOCALS:LCOUNT
 					PRINTS LOCALS:LCOUNT
 					SETCOLOR LCOUNT:1
-				;カラー指定하면서、そのカラーを維持する
+				;칼라 지정하면서, 그 칼라를 유지한다
 				CASE 3
 					SETCOLOR COLORNUM:LCOUNT
 ;OriginalString : LOCALS:LCOUNT
 					PRINTS LOCALS:LCOUNT
 			ENDSELECT
-			;改行指定に従って改行
+			;개행 지정에 따라 개행
 			SELECTCASE LOCAL:LCOUNT
-				;改行
+				;개행
 				CASE 1
 					PRINTL 
-				;クリック待ち
+				;클릭 대기
 				CASE 2
 ;OriginalString : 
 					PRINTW 
 			ENDSELECT
 		NEXT
-		;再描画、描画設定を戻す
+		;재묘화, 묘화 설정을 되돌린다
 		REDRAW 3
 	ENDIF
-	;放出のみ指定でなければ廃棄
+	;방출만 지정이 아니면 폐기
 	IF ARG:1 != 4
 		VARSET LOCALS, "VOID", PLACE, PLACE + SCOPE
 		VARSET LOCAL, 0, PLACE, PLACE + SCOPE
@@ -743,42 +743,42 @@ ENDIF
 RETURN RESULT
 
 ;-------------------------------------------------------------------------------
-;	관리関数本体
+;	관리함수 본체
 ;-------------------------------------------------------------------------------
 
 ;-------------------------------------------
-;관리関数本体
-;直接呼び出すのは基本的になし
-;入出力・表示関数群からのみ呼び出す
+;관리함수 본체
+;직접 호출하는 것은 기본적으로 이루어
+;입출력·표시 함수군으로부터 마셔 호출한다
 ;-------------------------------------------
 @VARIABLE_OF_CRI, ARGS, ARGS:1, ARG, ARG:1
 #FUNCTION
-;LOCAL,LOCALSは最低限を確保
+;LOCAL, LOCALS는 최저한을 확보
 #LOCALSIZE 2
 #LOCALSSIZE 30
-;カウント変数
+;카운트 변수
 #DIM LCOUNT, 1
-;基準値名称
+;기준치 명칭
 #DIMS LNAME, 30
-;基準値略称
+;기준치 약칭
 #DIMS LDNAME, 30
-;項目名
+;항목명
 #DIMS LTIT, 1
-;基準値数
+;기준치수
 #DIM LNUM, 2
-;선택済スイッチ
+;선택제스윗치
 #DIM LMARK, 30
-;우선度
+;우선도
 #DIM LPRI, 2
-;数値관리変数群
-;STOT =小計
-;TOT  =総計
-;FLAG =項目別処理済スイッチ
-;FLAGG=項目横断処理済スイッチ
-;+A   =加算
-;+M   =乗算
-;+C   =変動値
-;+N   =負
+;수치관리변수군
+;STOT =소계
+;TOT  =총계
+;FLAG =항목별 처리필 스윗치
+;FLAGG=항목 횡단 처리필 스윗치
+;+A   =가산
+;+M   =곱셈
+;+C   =변동치
+;+N   =부
 #DIM LSTOT, 30
 #DIM LTOT, 30
 #DIM LASTOT, 30
@@ -793,37 +793,37 @@ RETURN RESULT
 #DIM LMCTOT, 30
 #DIM LMCNSTOT, 30
 #DIM LMCNTOT, 30
-;LOCAL,LOCALSは常に初期化
+;LOCAL, LOCALS는 항상 초기화
 VARSET LOCAL
 VARSET LOCALS
-;ARGSによって処理を分類
+;ARGS에 의해 처리를 분류
 SELECTCASE ARGS
-	;数値加算
+	;수치 가산
 	CASE "ADD"
-		;指定基準値種を探す
+		;지정 기준치종을 찾는다
 		LOCAL = FINDELEMENT(LNAME, ARGS:1, , , 1)
-		;基準値種が存在しなければ処理を中断
+		;기준치종이 존재하지 않으면 처리를 중단
 		SIF LOCAL == -1
 			RETURNF -1
-		;우선度に従って数値보정
+		;우선도에 따라 수치보정
 		ARG = ARG * LPRI / 100
 		ARG:1 = ARG:1 * LPRI / 100
-		;固定値があれば
+		;고정치가 있으면
 		IF ARG
-			;固定値を加算
+			;고정치를 가산
 			LTOT  :LOCAL += ARG
 			LSTOT :LOCAL += ARG
 			LATOT :LOCAL += ARG
 			LASTOT:LOCAL += ARG
 		ENDIF
-		;変動値があれば
+		;변동치가 있으면
 		IF ARG:1
-			;今回の加算量を計算
+			;이번 가산량을 계산
 			LOCAL:1 = ARG:1 > 0 ? RAND:(ARG:1 + 1) # -RAND:(-ARG:1 + 1)
-			;変動値を加算
+			;변동치를 가산
 			LTOT :LOCAL += LOCAL:1
 			LSTOT:LOCAL += LOCAL:1
-			;正負によって振り分け、変動値最大量を解析用に保存
+			;정부에 의해 배분해, 변동치 최대량을 해석용으로 보존
 			IF ARG:1 > 0
 				LACTOT  :LOCAL += ABS(ARG:1)
 				LACSTOT :LOCAL += ABS(ARG:1)
@@ -832,41 +832,41 @@ SELECTCASE ARGS
 				LACNSTOT:LOCAL -= ABS(ARG:1)
 			ENDIF
 		ENDIF
-	;数値乗算
+	;수치 곱셈
 	CASE "MUL"
-		;指定基準値種を探す
+		;지정 기준치종을 찾는다
 		LOCAL = FINDELEMENT(LNAME, ARGS:1, , , 1)
-		;基準値種が存在しなければ処理を中断
+		;기준치종이 존재하지 않으면 처리를 중단
 		SIF LOCAL == -1
 			RETURNF -1
-		;우선度に従って数値보정
+		;우선도에 따라 수치보정
 		IF ABS(ARG) > 100
-			;絶対値が1倍超過なら高우선度で倍率上昇
+			;절대치가 1 2배 초과과라면 고우선도로 배율 상승
 			ARG = ARG * LPRI / 100
 			ARG:1 = ARG:1 * LPRI / 100
 		ELSEIF ABS(ARG) < 100
-			;絶対値が1倍未満なら高우선度で倍率下降
+			;절대치가 1배 미만이라면 고우선도로 배율 하강
 			ARG = ARG * 100 / LPRI
 			ARG:1 = ARG:1 * 100 / LPRI
 		ENDIF
-		;固定値があれば
+		;고정치가 있으면
 		IF ARG != 100
-			;固定値を乗算
+			;고정치를 곱셈
 			LSTOT :LOCAL -= LTOT  :LOCAL
 			LTOT  :LOCAL  = LTOT  :LOCAL * ARG / 100
 			LSTOT :LOCAL += LTOT  :LOCAL
 			LMTOT :LOCAL  = LMTOT :LOCAL * ARG / 100
 			LMSTOT:LOCAL  = LMSTOT:LOCAL * ARG / 100
 		ENDIF
-		;変動値があれば
+		;변동치가 있으면
 		IF ARG:1 != 100
-			;今回の乗算量を計算
+			;이번 곱셈량을 계산
 			LOCAL:1 = ARG:1 > 0 ? RAND:(ARG:1 + 1) # -RAND:(-ARG:1 + 1)
-			;変動値を乗算
+			;변동치를 곱셈
 			LSTOT :LOCAL -= LTOT:LOCAL
 			LTOT  :LOCAL  = LTOT:LOCAL * LOCAL:1 / 100
 			LSTOT :LOCAL += LTOT:LOCAL
-			;正負によって振り分け、変動値最大量を解析用に保存
+			;정부에 의해 배분해, 변동치 최대량을 해석용으로 보존
 			IF ARG:1 > 0
 				LMCTOT  :LOCAL = LMCTOT :LOCAL * ARG:1 / 100
 				LMCSTOT :LOCAL = LMCSTOT:LOCAL * ARG:1 / 100
@@ -875,7 +875,7 @@ SELECTCASE ARGS
 				LMCNSTOT:LOCAL = LMCSTOT:LOCAL * ARG:1 / 100
 			ENDIF
 		ENDIF
-	;우선度変更
+	;우선도 변경
 	CASE "PRI"
 		LPRI:1 = 0
 		IF ARG:1 == 0
@@ -886,14 +886,14 @@ SELECTCASE ARGS
 		LPRI:1 = ARG:1
 	CASE "GET"
 		SELECTCASE ARGS:1
-			CASE "基準値種数"
+			CASE "기준치종수"
 				RETURNF LNUM
-			CASE "基準値種名"
+			CASE "기준치 종명"
 				FOR LCOUNT, 0, LNUM
 					RESULTS:LCOUNT = LNAME:LCOUNT
 				NEXT
 				RETURNF LNUM
-			CASE "基準値種略称"
+			CASE "기준치종 약칭"
 				FOR LCOUNT, 0, LNUM
 					IF LDNAME:LCOUNT != ""
 						RESULTS:LCOUNT = %LDNAME:LCOUNT%
@@ -902,9 +902,9 @@ SELECTCASE ARGS
 					ENDIF
 				NEXT
 				RETURNF LNUM
-			CASE "項目"
+			CASE "항목"
 				RESULTS = %LTIT%
-			CASE "小変動有無"
+			CASE "작은 변화동유무"
 				FOR LCOUNT, 0, LNUM
 					IF LSTOT:LCOUNT != 0
 						LOCAL = 1
@@ -912,7 +912,7 @@ SELECTCASE ARGS
 					ENDIF
 				NEXT
 				RETURNF LOCAL
-			CASE "加算有無"
+			CASE "가산 유무"
 				FOR LCOUNT, 0, LNUM
 					IF LASTOT:LCOUNT != 0 || LACSTOT:LCOUNT != 0 || LACNSTOT:LCOUNT != 0
 						LOCAL = 1
@@ -920,7 +920,7 @@ SELECTCASE ARGS
 					ENDIF
 				NEXT
 				RETURNF LOCAL
-			CASE "乗算有無"
+			CASE "곱셈 유무"
 				FOR LCOUNT, 0, LNUM
 					IF LMSTOT:LCOUNT != 100 || LMCSTOT:LCOUNT != 100 || LMCNSTOT:LCOUNT != 100
 						LOCAL = 1
@@ -928,68 +928,68 @@ SELECTCASE ARGS
 					ENDIF
 				NEXT
 				RETURNF LOCAL
-			CASE "小計"
+			CASE "소계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LSTOT:LCOUNT, -99, 99)
 				NEXT
 				RETURNF LNUM
-			CASE "累計"
+			CASE "누계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LTOT:LCOUNT, -99, 99)
 				NEXT
 				RETURNF LNUM
-			CASE "固定小計"
+			CASE "고정 소계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LASTOT:LCOUNT, -99, 99)
 				NEXT
 				RETURNF LNUM
-			CASE "固定累計"
+			CASE "고정 누계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LATOT:LCOUNT, -99, 99)
 				NEXT
 				RETURNF LNUM
-			CASE "固定乗算小計"
+			CASE "고정 곱셈 소계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LMSTOT:LCOUNT, -9900, 9900)
 				NEXT
 				RETURNF LNUM
-			CASE "固定乗算累計"
+			CASE "고정 곱셈 누계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LMTOT:LCOUNT, -9900, 9900)
 				NEXT
 				RETURNF LNUM
-			CASE "変動累計"
+			CASE "변동 누계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LACTOT:LCOUNT, -99, 99)
 				NEXT
 				RETURNF LNUM
-			CASE "変動負累計"
+			CASE "변동부누계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LACNTOT:LCOUNT, -99, 99)
 				NEXT
 				RETURNF LNUM
-			CASE "変動乗算累計"
+			CASE "변동 곱셈 누계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LMCTOT:LCOUNT, -9900, 9900)
 				NEXT
 				RETURNF LNUM
-			CASE "変動負乗算累計"
+			CASE "변동부곱셈 누계"
 				FOR LCOUNT, 0, LNUM
 					RESULT:LCOUNT = LIMIT(LMCNTOT:LCOUNT, -9900, 9900)
 				NEXT
 				RETURNF LNUM
-			CASE "우선度"
+			CASE "우선도"
 				RETURNF LPRI
-			CASE "우선度採用"
+			CASE "우선도 채용"
 				RETURNF LPRI:1
-			;基準値関連変数呼び出し
-			;書式：『基準値種名』(固定(乗算|)|変動((負|)乗算|)|)(小計|累計)
-			;-99が下限になっている
+			;기준치 관련 변수 호출
+			;서식:『기준치 종명』(고정(곱셈|)|변동((부|) 곱셈|)|)(소계|누계)
+			;-99가 하한이 되어 있다
 			CASEELSE
-				;例外
-				;名称が『決定』から始まる場合決定種을반환
-				;また、同時にRESULTSに決定種名을반환
-				IF STRFINDU(ARGS:1, "決定") != -1
+				;예외
+				;명칭이 『결정』으로부터 시작되는 경우 결정종을반환
+				;또, 동시에 RESULTS로 결정 종명을반환
+				IF STRFINDU(ARGS:1, "결정") != -1
 					ARGS:1 = SUBSTRINGU(ARGS:1, 2)
 					LOCAL = TOINT(ARGS:1)
 					LOCAL:1 = -1
@@ -1006,104 +1006,104 @@ SELECTCASE ARGS
 						RESULTS = %LNAME:(LOCAL:1)%
 					RETURNF LOCAL:1
 				ENDIF
-				;名称ポインタを末尾へ移動
+				;명칭 포인터를 말미에 이동
 				LOCAL:1 = STRLENSU(ARGS:1)
-				;LOCALSに識別子を代入
-				SPLIT "固定/変動/負/乗算/小計/累計", "/", LOCALS
-				;識別子の数ぶん処理
+				;LOCALS에 식별자를 대입
+				SPLIT "고정/변동/부/곱셈/소계/누계", "/", LOCALS
+				;식별자의 수만큼 처리
 				FOR LCOUNT, 0, FINDELEMENT(LOCALS, "", , , 1)
-					;識別子を検索し、存在すればビットを操作して位置を保存
+					;식별자를 검색해, 존재하면 비트를 조작해 위치를 보존
 					STRFINDU ARGS:1, LOCALS:LCOUNT
 					IF RESULT != -1
 						LOCAL |= 1 << LCOUNT
 						LOCAL:1 = MIN(LOCAL:1, RESULT)
 					ENDIF
 				NEXT
-				;識別子を切り取る
+				;식별자를 잘라낸다
 				ARGS:1 = %SUBSTRINGU(ARGS:1, 0, LOCAL:1)%
-				;指定基準値種を検索
+				;지정 기준치종을 검색
 				LOCAL:1 = FINDELEMENT(LNAME, ARGS:1, , , 1)
-				;基準値種が存在しなければ処理を中断
+				;기준치종이 존재하지 않으면 처리를 중단
 				SIF LOCAL:1 == -1
 					RETURNF -1
-				;固定
+				;고정
 				IF LOCAL & 1
-					;乗算
+					;곱셈
 					IF LOCAL & 8
-						;小計
+						;소계
 						IF LOCAL & 16
 							RETURNF LIMIT(LMSTOT:(LOCAL:1), -9900, 9900)
-						;累計
+						;누계
 						ELSE
 							RETURNF LIMIT(LMTOT:(LOCAL:1), -9900, 9900)
 						ENDIF
-					;その他(加算)
+					;그 외(가산)
 					ELSE
-						;小計
+						;소계
 						IF LOCAL & 16
 							RETURNF LIMIT(LASTOT:(LOCAL:1), -99, 99)
-						;累計
+						;누계
 						ELSE
 							RETURNF LIMIT(LATOT:(LOCAL:1), -99, 99)
 						ENDIF
 					ENDIF
-				;変動
+				;변동
 				ELSEIF LOCAL & 2
-					;負
+					;부
 					IF LOCAL & 4
-						;乗算
+						;곱셈
 						IF LOCAL & 8
-							;小計
+							;소계
 							IF LOCAL & 16
 								RETURNF LIMIT(LMCNSTOT:(LOCAL:1), -99, 99)
-							;累計
+							;누계
 							ELSE
 								RETURNF LIMIT(LMCNTOT:(LOCAL:1), -99, 99)
 							ENDIF
-						;その他(加算)
+						;그 외(가산)
 						ELSE
-							;小計
+							;소계
 							IF LOCAL & 16
 								RETURNF LIMIT(LACNSTOT:(LOCAL:1), -99, 99)
-							;累計
+							;누계
 							ELSE
 								RETURNF LIMIT(LACNTOT:(LOCAL:1), -99, 99)
 							ENDIF
 						ENDIF
-					;正
+					;정
 					ELSE
-						;乗算
+						;곱셈
 						IF LOCAL & 8
-							;小計
+							;소계
 							IF LOCAL & 16
 								RETURNF LIMIT(LMCSTOT:(LOCAL:1), -9900, 9900)
-							;累計
+							;누계
 							ELSE
 								RETURNF LIMIT(LMCTOT:(LOCAL:1), -9900, 9900)
 							ENDIF
-						;その他(加算)
+						;그 외(가산)
 						ELSE
-							;小計
+							;소계
 							IF LOCAL & 16
 								RETURNF LIMIT(LACSTOT:(LOCAL:1), -99, 99)
-							;累計
+							;누계
 							ELSE
 								RETURNF LIMIT(LACTOT:(LOCAL:1), -99, 99)
 							ENDIF
 						ENDIF
 					ENDIF
-				;その他(基準値)
+				;그 외(기준치)
 				ELSE
-					;小計
+					;소계
 					IF LOCAL & 16
 						RETURNF LIMIT(LSTOT:(LOCAL:1), -99, 99)
-					;累計
+					;누계
 					ELSE
 						RETURNF LIMIT(LTOT:(LOCAL:1), -99, 99)
 					ENDIF
 				ENDIF
 		ENDSELECT
-	;数値初期化
+	;수치 초기화
 	CASE "RES"
 		IF ARG
 			VARSET LTOT
@@ -1121,24 +1121,24 @@ SELECTCASE ARGS
 		VARSET LMSTOT, 100
 		VARSET LMCSTOT, 100
 		VARSET LMCNSTOT, 100
-	;項目変更
+	;항목 변경
 	CASE "CHA"
 		IF ARGS:1 != ""
 			RESULTS = %LTIT%
 			LTIT = %ARGS:1%
 		ENDIF
-	;선택確定
+	;선택확정
 	CASE "DEF"
-		;確定初期化
+		;확정 초기화
 		VARSET LMARK
-		;	以下主基準
-		;決定処理を行わない
-		;※数値を直接취득して順位を決定する場合など
+		;	이하 스키 준
+		;결정 처리를 실시하지 않는다
+		;※수치를 직접취득 해 순위를 결정하는 경우 따위
 		IF ARGS:1 == ""
 			RETURNF 0
-		;外部決定
-		;書式：外部_『確定基準値種1』/『2』,……
-		ELSEIF STRFINDU(ARGS:1, "外部") != -1
+		;외부 결정
+		;서식:외부_『확정 기준치종 1』/『2』,……
+		ELSEIF STRFINDU(ARGS:1, "외부") != -1
 			ARGS:1 = SUBSTRINGU(ARGS:1, 3)
 			SPLIT ARGS, "/", LOCALS
 			FOR LCOUNT, 0, RESULT
@@ -1150,9 +1150,9 @@ SELECTCASE ARGS
 			ELSE
 				RETURNF 0
 			ENDIF
-		;最大値採用
-		;書式：最大(『補助基準』)
-		ELSEIF STRFINDU(ARGS:1, "最大") != -1
+		;최대치 채용
+		;서식:최대( 『보조 기준』)
+		ELSEIF STRFINDU(ARGS:1, "최대") != -1
 			LOCAL = MAXARRAY(LTOT, 0, LNUM)
 			IF LOCAL > -100
 				FOR LCOUNT, 0, LNUM
@@ -1160,9 +1160,9 @@ SELECTCASE ARGS
 						LMARK:LCOUNT++
 				NEXT
 			ENDIF
-		;最小値採用
-		;書式：最小(『補助基準』)
-		ELSEIF STRFINDU(ARGS:1, "最小") != -1
+		;최소치 채용
+		;서식:최소( 『보조 기준』)
+		ELSEIF STRFINDU(ARGS:1, "최소") != -1
 			LOCAL = MINARRAY(LTOT, 0, LNUM)
 			IF LOCAL > -100
 				FOR LCOUNT, 0, LNUM
@@ -1171,10 +1171,10 @@ SELECTCASE ARGS
 				NEXT
 			ENDIF
 		ENDIF
-		;	以下補助基準
-		;前者우선
-		;書式：(『主基準』)前者
-		IF STRFINDU(ARGS:1, "前者") != -1
+		;	이하 보조 기준
+		;전자우선
+		;서식:( 『스키 준』) 전자
+		IF STRFINDU(ARGS:1, "전자") != -1
 			LOCAL = -1
 			FOR LCOUNT, 0, LNUM
 				IF LMARK:LCOUNT
@@ -1186,9 +1186,9 @@ SELECTCASE ARGS
 				VARSET LMARK
 				LMARK:LOCAL = 1
 			ENDIF
-		;後者우선
-		;書式：(『主基準』)後者
-		ELSEIF STRFINDU(ARGS:1, "後者") != -1
+		;후자우선
+		;서식:( 『스키 준』) 후자
+		ELSEIF STRFINDU(ARGS:1, "후자") != -1
 			LOCAL = -1
 			FOR LCOUNT, LNUM - 1, -1, -1
 				IF LMARK:LCOUNT
@@ -1200,48 +1200,48 @@ SELECTCASE ARGS
 				VARSET LMARK
 				LMARK:LOCAL = 1
 			ENDIF
-		;우선指定
-		;書式：(『主基準』)우선指定-(基準値種/基準値種/……)
-		ELSEIF STRFINDU(ARGS:1, "우선指定") != -1
-			;우선指定内容に集中
-			LOCAL = STRFINDU(ARGS:1, "우선指定")
-			;内容を切り出し
+		;우선지정
+		;서식:( 『스키 준』)우선지정-(기준치종/기준치종/……)
+		ELSEIF STRFINDU(ARGS:1, "우선지정") != -1
+			;우선지정 내용에 집중
+			LOCAL = STRFINDU(ARGS:1, "우선지정")
+			;내용을 잘라
 			ARGS:1 = %SUBSTRINGU(ARGS:1, LOCAL + 5)%
 			SPLIT ARGS:1, "/", LOCALS
-			;指定を初期化
+			;지정을 초기화
 			LOCAL = -1
-			;全指定を検索
+			;전지정을 검색
 			FOR LCOUNT, 0, RESULT
-				;指定대상を検索する
+				;지정대상를 검색한다
 				LOCAL:1 = FINDELEMENT(LNAME, LOCALS:LCOUNT, , , 1)
-				;指定대상が存在しなければ
+				;지정대상가 존재하지 않으면
 				IF LOCAL:1 == -1
-					;数値指定と判断
+					;수치 지정과 판단
 					LOCAL:1 = TOINT(LOCALS)
-					;数値指定でもなければ飛ばす
+					;수치 지정도 아니면 날린다
 					SIF LOCALS != @"{LOCAL:1}"
 						CONTINUE
 				ENDIF
-				;指定基準値種が選ばれていれば検索終了
+				;지정 기준치종이 선택되고 있으면 검색 종료
 				IF LMARK:(LOCAL:1)
 					LOCAL = LOCAL:1
 					BREAK
 				ENDIF
 			NEXT
-			;指定があれば確定種切り替え
+			;지정이 있으면 확정종 변환
 			IF LOCAL != -1
 				VARSET LMARK
 				LMARK:LOCAL = 1
 			ENDIF
 		ENDIF
-		;確定値数을반환
+		;확정 치수을반환
 		LOCAL = 0
 		FOR LCOUNT, 0, LNUM
 			SIF LMARK:LCOUNT
 				LOCAL++
 		NEXT
 		RETURNF LOCAL
-	;関数初期化 ;함수 초기화/基準値種指定
+	;함수 초기화 ;함수 초기화/기준치종 지정
 	CASE "SET"
 		IF ARG == 0
 			VARSET LNAME

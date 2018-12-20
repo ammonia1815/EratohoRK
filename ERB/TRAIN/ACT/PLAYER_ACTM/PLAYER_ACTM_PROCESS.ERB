@@ -1,10 +1,10 @@
 ﻿
 ;────────────────────────────────────
-;関数初期化 ;함수 초기화
+;함수 초기화 ;함수 초기화
 ;────────────────────────────────────
 @ACT_M_INIT(ARG)
 #DIM LCOUNT
-;変数を初期化 ;변수 초기화
+;변수를 초기화 ;변수 초기화
 CALL SET_CRI_VAR
 FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 	LOCAL = ACTM_NUM(ARG, LCOUNT)
@@ -13,20 +13,20 @@ FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 NEXT
 
 ;────────────────────────────────────
-;보정値計算
+;보정치 계산
 ;────────────────────────────────────
-;보정値加算に関しては系列内でも共有の物を加算했다りしなかったりがあるので
-;共通処理にはしない。その気になれば出来るだろって？
-;面倒なんだよ。言わせんな恥ずかしい@これみ
+;보정치 가산에 관해서는 계열내에서도 공유의 물건을 가산했다하지 않기도 하고가 있으므로
+;공통 처리에는 하지 않는다. 그럴 기분이 들면 할 수 있을 것이다 라고?
+;귀찮은 것이야. 말하게 하지 않지 부끄럽다@이것 보고
 ; 보정 값 계산
 ; ────────────────────────────────────
 ; 보정 값 가산 관해서는 계열 내에서 공유의 물건을 추가했다 리시 않거나 있으므로
 ; 일반적인 처리는하지 않는다. 그 마음 만 먹으면 할 수있을라고?
-; 귀찮은거야. 말하게 거 창피 @ これみ
+; 귀찮은거야. 말하게 거 창피 @ 이것 보고
 
 @ACT_ACTM_CORRECTION(ARG)
 #DIM LCOUNT
-;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
+;보정치를 판정치에 가산한다  ; 보정 값을 판정 값에 가산한다
 FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 	LOCAL = ACTM_NUM(ARG, LCOUNT)
 	CALL ACT_M_RES_FETCH(LOCAL)
@@ -34,19 +34,19 @@ FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 NEXT
 
 ;────────────────────────────────────
-;구상ACT분류보정값加算 ;추가
+;구상ACT분류보정값가산 ;추가
 ;────────────────────────────────────
 @ACT_MENU_KOJO_CORRECTION_T
 #DIM LCOUNT
-;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
+;보정치를 판정치에 가산한다  ; 보정 값을 판정 값에 가산한다
 FOR LCOUNT, 0, STRCOUNT(MENULIST(), "/")
 	CALL ADD_CRI_VAR(MENU(LCOUNT), 0, GET_KOJO_MENU_CORRECTION(MENU(LCOUNT), TARGET))
 NEXT
 ;────────────────────────────────────
-;구상보정値취득
-;_コマンド번호/보정値_
-;ARGS		メニュー名・あるいはメニュー번호
-;ARG		대상のキャラクター
+;구상보정치취득
+;_커맨드번호/보정치_
+;ARGS		메뉴명·혹은 메뉴번호
+;ARG		대상의 캐릭터
 ;────────────────────────────────────
 @GET_KOJO_MENU_CORRECTION(ARGS, ARG = -1)
 #FUNCTION
@@ -64,8 +64,8 @@ RETURNF 0
 
 
 ;────────────────────────────────────
-;구상보정値消去関数
-;ARG	대상のキャラ　省略했다場合はTARGETになります
+;구상보정치 소거 함수
+;ARG	대상의 캐릭터  생략했다경우는 TARGET가 됩니다
 ;────────────────────────────────────
 @CLEAR_KOJO_MENU_CORRECTION, ARGS, ARG = -1
 SIF ARG == -1
@@ -73,19 +73,19 @@ SIF ARG == -1
 CSTR:ARG:구상ACT분류보정값 = 
 
 ;────────────────────────────────────
-;구상보정値設定
-;_コマンド번호/보정値_
-;ARGS		メニュー名・あるいはメニュー번호
-;ARG		보정値の数値
-;ARG:1		대상のキャラクター
+;구상보정치 설정
+;_커맨드번호/보정치_
+;ARGS		메뉴명·혹은 메뉴번호
+;ARG		보정치의 수치
+;ARG:1		대상의 캐릭터
 ;────────────────────────────────────
 @SET_KOJO_MENU_CORRECTION(ARGS, ARG, ARG:1 = -1)
 CALLF SETF_KOJO_MENU_CORRECTION, ARGS, ARG, ARG:1
 
 ;────────────────────────────────────
-;구상보정値設定
-;_コマンド번호/보정値_
-;디버그ウィンドウでつかうための式中版
+;구상보정치 설정
+;_커맨드번호/보정치_
+;디버그윈드우로 사용하기 위한 식중판
 ;────────────────────────────────────
 @SETF_KOJO_MENU_CORRECTION(ARGS, ARG, ARG:1 = -1)
 #FUNCTION
@@ -100,7 +100,7 @@ ELSE
 	LARGS = %ARGS%
 ENDIF
 SIF LARGS == "" || MENUNUM(LARGS) == -1
-	THROW 구상ACT분류보정값設定において「%ARGS%」はコマンドの指定として不適切です
+	THROW 구상ACT분류보정값설정에 대해 「%ARGS%」는 커맨드의 지정으로서 부적절합니다
 IF STRFIND(CSTR:(ARG:1):구상ACT분류보정값, "_" + LARGS + "/") >= 0
 	SPLIT CSTR:(ARG:1):구상ACT분류보정값, "_", LOCALS
 	CSTR:(ARG:1):구상ACT분류보정값 = %REPLACE(CSTR:(ARG:1):구상ACT보정값, "_" + LOCALS:FINDELEMENT(LOCALS, LARGS + "/",  , , 0), "_" + LARGS + "/" + TOSTR(ARG) + "_")%
@@ -111,12 +111,12 @@ ELSE
 ENDIF
 
 ;────────────────────────────────────
-;구상보정値加算
-;メニュー問わずとメニュー限定はそのまま발してるので注意
+;구상보정치 가산
+;메뉴 묻지 않고와 메뉴 한정은 그대로발 하고 있으므로 주의
 ;────────────────────────────────────
 @ACT_ACTM_KOJO_CORRECTION_T(ARG)
 #DIM LCOUNT
-;보정値を判定値に加算する  ; 보정 값을 판정 값에 가산한다
+;보정치를 판정치에 가산한다  ; 보정 값을 판정 값에 가산한다
 FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 	LOCAL = ACTM_NUM(ARG, LCOUNT)
 	CALL ADD_CRI_VAR(GET_ACTNAME(LOCAL), 0, GET_KOJO_CORRECTION(GET_ACTNAME(ACTM_NUM(ARG, LCOUNT)), , TARGET))
@@ -124,11 +124,11 @@ FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 NEXT
 
 ;────────────────────────────────────
-;구상보정値취득
-;_コマンド번호/보정値_
-;ARGS		コマンド名・あるいはコマンド번호
-;ARGS:1		メニュー名・あるいはメニュー번호　省略했다場合はメニュー問わずになる
-;ARG		대상のキャラクター
+;구상보정치취득
+;_커맨드번호/보정치_
+;ARGS		커맨드명·혹은 커맨드번호
+;ARGS:1		메뉴명·혹은 메뉴번호  생략했다경우는 메뉴 묻지 않고가 된다
+;ARG		대상의 캐릭터
 ;────────────────────────────────────
 @GET_KOJO_CORRECTION(ARGS, ARGS:1, ARG = -1)
 #FUNCTION
@@ -150,20 +150,20 @@ RETURNF 0
 
 
 ;────────────────────────────────────
-;구상보정値設定
-;_コマンド번호/보정値_
-;ARGS		コマンド名・あるいはコマンド번호
-;ARGS:1		メニュー名・あるいはメニュー번호　省略했다場合はメニュー問わずになる
-;ARG		보정値の数値
-;ARG:1		대상のキャラクター
+;구상보정치 설정
+;_커맨드번호/보정치_
+;ARGS		커맨드명·혹은 커맨드번호
+;ARGS:1		메뉴명·혹은 메뉴번호  생략했다경우는 메뉴 묻지 않고가 된다
+;ARG		보정치의 수치
+;ARG:1		대상의 캐릭터
 ;────────────────────────────────────
 @SET_KOJO_CORRECTION(ARGS, ARGS:1, ARG, ARG:1 = -1)
 CALLF SETF_KOJO_CORRECTION, ARGS, ARGS:1, ARG, ARG:1
 
 ;────────────────────────────────────
-;구상보정値設定
-;_コマンド번호/보정値_
-;디버그ウィンドウでつかうための式中版
+;구상보정치 설정
+;_커맨드번호/보정치_
+;디버그윈드우로 사용하기 위한 식중판
 ;────────────────────────────────────
 @SETF_KOJO_CORRECTION(ARGS, ARGS:1, ARG, ARG:1 = -1)
 #FUNCTION
@@ -178,14 +178,14 @@ ELSE
 	LARGS = %ARGS%
 ENDIF
 SIF LARGS == "" || GET_ACTNUM(LARGS) == -1
-	THROW 구상ACT보정값設定において「%ARGS%」はコマンドの指定として不適切です
+	THROW 구상ACT보정값설정에 대해 「%ARGS%」는 커맨드의 지정으로서 부적절합니다
 IF ISNUMERIC(ARGS:1)
 	LARGS:1 = %MENU(TOINT(ARGS:1))%
 ELSE
 	LARGS:1 = %ARGS:1%
 ENDIF
 SIF MENUNUM(LARGS:1) == -1
-	THROW 구상ACT보정값設定において「%ARGS:1%」はメニューの指定として不適切です
+	THROW 구상ACT보정값설정에 대해 「%ARGS:1%」는 메뉴의 지정으로서 부적절합니다
 SIF ARGS:1 != ""
 	LARGS += "<" + LARGS:1
 IF STRFIND(CSTR:(ARG:1):구상ACT보정값, "_" + LARGS + "/") >= 0
@@ -199,9 +199,9 @@ ENDIF
 
 
 ;────────────────────────────────────
-;구상보정値消去関数
-;ARGS	メニュー名を入れるとそのMENUのものをすべて消します。省略했다場合は全て消えます
-;ARG	대상のキャラ　省略했다場合はTARGETになります
+;구상보정치 소거 함수
+;ARGS	메뉴명을 넣으면 그 MENU의 것을 모두 지웁니다. 생략했다경우는 모두 사라집니다
+;ARG	대상의 캐릭터  생략했다경우는 TARGET가 됩니다
 ;────────────────────────────────────
 @CLEAR_KOJO_CORRECTION, ARGS, ARG = -1
 #DIMS LARGS
@@ -217,7 +217,7 @@ ELSE
 		LARGS = %ARGS%
 	ENDIF
 	SIF MENUNUM(LARGS) == -1
-		THROW 구상ACT보정값設定において「%ARGS%」はメニューの指定として不適切です
+		THROW 구상ACT보정값설정에 대해 「%ARGS%」는 메뉴의 지정으로서 부적절합니다
 		LARGS = <%LARGS%
 	LTEMPS = 
 	SPLIT CSTR:ARG:구상ACT보정값, "_", LOCALS
@@ -232,11 +232,11 @@ ELSE
 ENDIF
 
 ;────────────────────────────────────
-;実行不可能の判定
+;실행 불가능의 판정
 ;────────────────────────────────────
 @ACT_ACTM_ABLE(ARG)
 #DIM LCOUNT
-;不可能判定
+;불가능 판정
 FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 	LOCAL = ACTM_NUM(ARG, LCOUNT)
 	CALLFORM ACT_ABLE{LOCAL}
@@ -245,7 +245,7 @@ FOR LCOUNT, 0, ACTM_NUM(ARG, -1)
 NEXT
 
 ;────────────────────────────────────
-;系列一括実行判定
+;계열 일괄 실행 판정
 ;────────────────────────────────────
 @ACTM_ABLE(ARG)
 #DIM LCOUNT

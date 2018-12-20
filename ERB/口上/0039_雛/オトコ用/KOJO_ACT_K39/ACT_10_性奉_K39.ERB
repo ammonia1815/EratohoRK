@@ -1,13 +1,13 @@
 ﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;히나구상 성교봉사系アクション구상ファイル
+;히나구상 성교봉사계 액션구상파일
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;#####################
-;성교봉사系 ACT95～103
-;#####################
+;          #
+;성교봉사계 ACT95～103
+;          #
 [SKIPSTART]
 	#TFLAG:ACT
 		95=정상위시킨다
@@ -17,16 +17,16 @@
 		99=항문섹스시킨다
 		103=역강간
 
-	#TFLAG:ACT분류 == 10に該当
-	#汎用リアクションにおいてはMENUMATCH(TFLAG:ACT, "성봉")で参照する事が可能
-	#原則として죠교대상→죠교자の삽입となる
-	#体位の連携によってTFLAG:ACT파생で派生する
-	#各ACTに於ける主導権は@SEX_INITIATIVEにて定義される
+	#TFLAG:ACT분류 == 10에 해당
+	#범용 리액션에 대해서는 MENUMATCH(TFLAG:ACT, "성봉")로 참조하는 것이 가능
+	#원칙으로서죠교대상→죠교자의삽입가 된다
+	#체위의 제휴에 의해 TFLAG:ACT파생로 파생한다
+	#각 ACT 에 있어서 주도권은@SEX_INITIATIVE에서 정의된다
 
-	関連変数…
+	관련 변수…
 		FIRSTACT
-			初回ACT判定関数
-			TFLAG:ACTを自動で参照、現在実行されているACTごとに번호が独立して保存される
+			첫회 ACT 판정 함수
+			TFLAG:ACT를 자동으로 참조, 현재 실행되고 있는 ACT 마다번호가 독립해 보존된다
 [SKIPEND]
 
 
@@ -34,103 +34,103 @@
 ;ACT95, 정상위시킨다//
 ;/////////////////////
 [SKIPSTART]
-	#죠교자が죠교대상に정상위での삽입を命じる
-	#죠교대상に페니스、페니스밴드がない場合は発生しない
-	#죠교자が페니스밴드장착中の場合は発生しない
-	#죠교대상が누움、かつ성교봉사중でない場合は発生しない
-	#죠교대상の발기도が1000以下の場合は発生しない
-	#밀어넘어지는중には発生しない
-	#죠교자が남자の場合は発生しない
-	#죠교대상が오나홀사용중の場合には発生しない
-	#성교중からは派生しない
-	#배면좌위での성교봉사중からは派生しない
-	#Ａ성교봉사중からは派生しない
-	#主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+	#죠교자가죠교대상에정상위에서의삽입를 명한다
+	#죠교대상에페니스, 페니스밴드가 없는 경우는 발생하지 않는다
+	#죠교자가페니스밴드장착중의 경우는 발생하지 않는다
+	#죠교대상가누움, 한편성교봉사중가 아닌 경우는 발생하지 않는다
+	#죠교대상의발기도가 1000 이하의 경우는 발생하지 않는다
+	#밀어넘어지는중에는 발생하지 않는다
+	#죠교자가남자의 경우는 발생하지 않는다
+	#죠교대상가오나홀사용중의 경우에는 발생하지 않는다
+	#성교중로부터는 파생하지 않는다
+	#배면좌위에서의성교봉사중로부터는 파생하지 않는다
+	#Ａ성교봉사중로부터는 파생하지 않는다
+	#주도권은죠교대상"SEX_INITIATIVE(MASTER)"
 	
-	*REACT분류が"날뛴다", "거부"であった場合は취소される
-	*죠교대상が동정なら동정상실が起こる
-	*죠교자が처녀なら처녀상실が起こる
-	*これらの処理は@ACTION_APPLY2_95にて行われる
+	*REACT분류가"날뛴다", "거부"였던 경우는취소 된다
+	*죠교대상가동정라면동정상실가 일어난다
+	*죠교자가처녀라면처녀상실가 일어난다
+	*이것들의 처리는@ACTION_APPLY2_95에서 행해진다
 [SKIPEND]
-@KOJO_MALE_ACT_K39_95 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성봉から/3=Ａ성교から/4=Ｖ성교から/5=Ａ성봉から)
+@KOJO_MALE_ACT_K39_95 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성봉로부터/3=Ａ성교로부터/4=Ｖ성교로부터/5=Ａ성봉로부터)
 #LOCALSIZE  1
 #LOCALSSIZE 1
 VARSET LOCAL
 VARSET LOCALS
 LOCAL :0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
-LOCALS:0 '= RAND_SPLIT("出/사정")
+LOCALS:0 '= RAND_SPLIT("출/사정")
 
-;성교봉사系初回用処理
+;성교봉사계 첫회용 처리
 CALL CHK_DEBUG_AND_FIRSTTIME_10_K39
 
 [SKIPSTART]
-;죠교대상が동정
+;죠교대상가동정
 ;==============
-IF 구상記入チェック(0) && TALENT:MASTER:동정
-;OriginalString : 「%CNAME(MASTER, TARGET)%の初めての女になれるなんて…」
+IF 구상기입 체크(0) && TALENT:MASTER:동정
+;OriginalString : 「%CNAME(MASTER, TARGET)%의 처음의 여자가 될 수 있다니…」
 	PRINTFORMW 「%CNAME(MASTER, TARGET)%의 처음의 여자가 될 수 있다니…」
-;OriginalString : 「嬉しいです。ええ、本当に…」
+;OriginalString : 「기쁩니다. 에에, 정말로…」
 	PRINTFORMW 「기쁩니다. 예, 정말로…」
 	RETURN 1
 ENDIF
 [SKIPEND]
 
-;안빼고に続行
+;안빼고에 속행
 ;============
 IF TFLAG:안빼고
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_0
 	RETURN 1
 ENDIF
 
-;ACT파생１：연속
+;ACT파생 1:연속
 ;===============
 IF TFLAG:ACT파생 == 1
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_1_K39
 	RETURN 1
 ENDIF
 
-;ACT파생２：体位変更 //他のＶ성교봉사から
+;ACT파생 2:체위 변경//다른Ｖ성교봉사로부터
 ;===================
 IF TFLAG:ACT파생 == 2
-	;애태움中
+	;애태움중
 	;========
 	IF TCVAR:MASTER:애태움도 > 1
 		;상사상애
 		IF LOCAL:0
 ;OriginalString : 「ふふ、そんなに中に%LOCALS:0%했다いの？」
-			PRINTFORMW 「후후, 그렇게 안에%LOCALS:0%하고 싶은거야？」
-			CALL HTMLPRINTW("「簡単にイかせるつもりはないから、精々頑張ってね%HTML_PS_K39()%」")
+			PRINTFORMW 「후후, 그렇게 안에%LOCALS:0%하고 싶은거야?」
+			CALL HTMLPRINTW("「간단하게 가게 할 생각은 없기 때문에, 최대한 노력해%HTML_PS_K39()%」")
 		ELSE
 ;OriginalString : 「そんなに慌てる事ないと思いますけど、もうイきたくて堪らないんですね。ふふ」
 			PRINTFORMW 「그렇게 당황하는 일 없다고 생각합니다만, 이제 이 오고 싶어서 감등 없네요. 후후」
-			CALL HTMLPRINTW(@"「でも、もう少しだけ참다してもらいますよ%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「그렇지만, 조금만 더참다 해 받아요%HTML_PS_K39()%」")
 		ENDIF
 		RETURN 1
 	ENDIF
 
-	;애태움終了
+	;애태움종료
 	;==========
 	IF TCVAR:MASTER:애태움도 == 1
 ;OriginalString : 「\@ LOCAL:0 ? んんっ！ ね%RAND_SPLIT("ぇ/")% # いいですよ \@、このまま%LOCALS:0%して」
-		PRINTFORMW 「\@ LOCAL:0 ? 응읏！ 저기%RAND_SPLIT("에/")% # 좋아요 \@、このまま%LOCALS:0%하며」
+		PRINTFORMW 「\@ LOCAL:0 ? 응읏! 저기%RAND_SPLIT("에/")% # 좋아요 \@, 이대로%LOCALS:0%하며」
 ;OriginalString : 「%TNAME_K39()%の中、%CNAME(MASTER, TARGET)%でいっぱいにして\@ !LOCAL:0 ? 下さい # \@…」
 		PRINTFORMW 「%TNAME_K39()%의 안,%CNAME(MASTER, TARGET)%그리고 가득 해\@ !LOCAL:0 ? 주세요 # \@…」
 		RETURN 1
 	ENDIF
 
-	;애태움無し
+	;애태움없음
 	;==========
 	IF !TCVAR:MASTER:애태움도
-		;죠교자が가버려
+		;죠교자가가버려
 		;================
 		IF PALAM:쾌Ｖ > 8500
 			CALL QUAKE(4)
 			{
 			CALL HTMLPRINTW(
-			@"「ふぁっ、あぁっ%HTML_AH_K39()%　あっ、あっ" + 
-			@"%HTML_AH_K39()%　こ、こんなの…もう、もうぅっ！」")
+			@"「후앗, 아앗%HTML_AH_K39()%  아, 앗" + 
+			@"%HTML_AH_K39()%  개, 이런 건… 이제(벌써), 이제(벌써)!」")
 			}
 ;OriginalString : %CALLNAME:TARGET%は쾌락に戦慄きつつも%CALLNAME:MASTER%의 突き込みに合わせ、激しく腰を振っている…
 			PRINTFORMDW %CALLNAME:TARGET%(은)는 쾌락에 전율개개도%CALLNAME:MASTER%의 찔러 포함에 맞추어 격렬하게 허리를 털고 있다…
@@ -140,39 +140,39 @@ IF TFLAG:ACT파생 == 2
 		;상사상애
 		;========
 		IF LOCAL:0
-			;죠교대상が가버려
+			;죠교대상가가버려
 			IF TCVAR:MASTER:가버려
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「や%RAND_SPLIT("ぁぁ/")%っ%HTML_AH_K39()%　あんっ、" + 
-				@"あぁっ%HTML_AH_K39()%　は、はげしいっ…ッ…！」")
+				@"「야%RAND_SPLIT("/")%%HTML_AH_K39()%  팥고물," + 
+				@"아%HTML_AH_K39()%  는, 격렬하닷……!」")
 				}
 ;OriginalString : 自らの限界を悟った%CALLNAME:MASTER%は%CALLNAME:TARGET%を抱きしめ、腰を激しく叩き付けた…
 				PRINTFORMDW 스스로의 한계를 깨달은 %CALLNAME:MASTER%(은)는 %CALLNAME:TARGET%(을)를 꼭 껴안아 허리를 격렬하게 내던졌다…
 			ELSE
-				CALL HTMLPRINTW(@"「うふ%HTML_AH2_K39()%　やっぱりこの方がなんか安心する%HTML_PS_K39()%」")
+				CALL HTMLPRINTW(@"「우후%HTML_AH2_K39()%  역시 이 (분)편이 뭔가 안심한다%HTML_PS_K39()%」")
 ;OriginalString : 「いいよ、早く来て…このまま思いっきり犯して……」
 				PRINTFORMW 「좋아, 빨리 와…이대로 마음껏 범해……」
 			ENDIF
 			RETURN 1
 		ENDIF
 
-		;その他
+		;그 외
 		;======
 		IF !LOCAL:0
-			;죠교대상が가버려
+			;죠교대상가가버려
 			IF TCVAR:MASTER:가버려
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「あっ%HTML_AH_K39()%　あ%RAND_SPLIT("んっ/")%っ%HTML_AH_K39()%　" + 
-				@"は、激しいですっ！　あっ%HTML_AH_K39()%　%RAND_SPLIT("んぁ/")%ぁっ…ッ…！」")
+				@"「앗%HTML_AH_K39()%  아%RAND_SPLIT("응/")%%HTML_AH_K39()%　" + 
+				@"는, 격렬합니닷!   아%HTML_AH_K39()%　%RAND_SPLIT("응/")%……!」")
 				}
 ;OriginalString : 自らの限界を悟った%CALLNAME:MASTER%は%CALLNAME:TARGET%を抱きしめ、腰を激しく叩き付けた…
 				PRINTFORMDW 스스로의 한계를 깨달은 %CALLNAME:MASTER%(은)는 %CALLNAME:TARGET%(을)를 꼭 껴안아 허리를 격렬하게 내던졌다…
 			ELSE
-				CALL HTMLPRINTW(@"「%CNAME(MASTER, TARGET)%の顔が見えると安心します%HTML_PS_K39()%」")
+				CALL HTMLPRINTW(@"「%CNAME(MASTER, TARGET)%의 얼굴이 보이면 안심합니다%HTML_PS_K39()%」")
 ;OriginalString : 「さぁ、いいですよ。このまま私を犯してください…」
 				PRINTFORMW 「, 좋아요. 이대로 나를 범해 주세요…」
 			ENDIF
@@ -182,14 +182,14 @@ IF TFLAG:ACT파생 == 2
 ENDIF
 
 [SKIPSTART]
-Ａ섹스は구상で봉인。そして남자専用구상なので派生4のＶ성교系からはあり得ない
-;ACT파생３、４ //Ａ성교系、Ｖ성교系から
+Ａ섹스는구상로봉인. 그리고남자전용구상인 것으로 파생 4의Ｖ성교계로부터는 있을 수 없다
+;ACT파생 3, 4 //Ａ성교계, Ｖ성교계로부터
 ;=============
 IF GROUPMATCH(TFLAG:ACT파생, 3, 4) > 0
 ENDIF
 [SKIPEND]
 
-;ACT파생５：体位変更 //Ａ성교봉사系から
+;ACT파생 5:체위 변경//Ａ성교봉사계로부터
 ;===================
 IF TFLAG:ACT파생 == 5
 	;상사상애
@@ -198,7 +198,7 @@ IF TFLAG:ACT파생 == 5
 		PRINTFORMW 「응, 여기가 안타까운거야…」
 ;OriginalString : 「今度は前に삽입れて…」
 		PRINTFORMW 「이번은 전에 삽입라고…」
-	;それ以外
+	;그 이외
 	ELSE
 ;OriginalString : 「私、こっちが切なくって…」
 		PRINTFORMW 「 나, 여기가 안타까워서…」
@@ -208,15 +208,15 @@ IF TFLAG:ACT파생 == 5
 	RETURN 1
 ENDIF
 
-;죠교대상が가버려
+;죠교대상가가버려
 ;==================
 IF TCVAR:MASTER:가버려
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_2_K39
 	RETURN 1
 ENDIF
 
-;죠교자が정욕
+;죠교자가정욕
 ;============
 IF T_COND("정욕")
 	IF RAND:2
@@ -232,17 +232,17 @@ IF T_COND("정욕")
 	;상사상애
 	IF LOCAL:0
 ;OriginalString : 「ねぇっ、は、はやく삽입れてよぉっ！」
-		PRINTFORMW 「응 , 는, 빠르게 삽입라고！」
+		PRINTFORMW 「응, 는, 빠르게 삽입라고!」
 ;OriginalString : 「も、もうっ、待ちきれないのっ！　頭おかしくなっちゃうの！」
-		PRINTFORMW 「도, 이제 , 기다릴 수  없는 것！ 머리 이상해져버린다의！」
-	;その他
+		PRINTFORMW 「도, 이제, 기다릴 수  없는 것! 머리 이상해져버린다의!」
+	;그 외
 	ELSE
 ;OriginalString : 「はやくっ！ 早く、삽입れてくださいっ！」
-		PRINTFORMW 「빠르게！ 빨리, 삽입라고 주세요！」
+		PRINTFORMW 「빠르게! 빨리, 삽입라고 주세요!」
 ;OriginalString : 「私っ、もう待ちきれないんです！」
-		PRINTFORMW 「 나, 이제 기다릴 수  없습니다！」
+		PRINTFORMW 「나, 이제 기다릴 수  없습니다!」
 	ENDIF
-	;書いた時点では취소となることは無かった。まぁいいけど
+	;쓴 시점에서는취소가 되는 일은 없었다. 뭐 좋지만
 ;OriginalString : 溢れ出す愛液は%VAGINA_DESCRIPTION2(TARGET)%を伝わり落ち、침대の上に丸い滲みをつくっている
 	PRINTFORMDW 흘러넘치고 내는 애액은%VAGINA_DESCRIPTION2(TARGET)%(을)를 전해져 떨어져 침대 위에 둥근 스며들고를 만들고 있다
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME:TARGET%の求めに応じるまま、膣입に페니스를あてがうと一気に最奥まで刺し貫いた…
@@ -250,9 +250,9 @@ IF T_COND("정욕")
 	RETURN 1
 ENDIF
 
-;기타・조건없음 //汎用ACTにはパスしない
+;기타·조건없음//범용 ACT에는 패스하지 않는다
 ;================
-IF 구상記入チェック(100)
+IF 구상기입체크(100)
 ;OriginalString : 
 	PRINTL
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 손をとり優しく招きよせた
@@ -261,10 +261,10 @@ IF 구상記入チェック(100)
 	PRINTFORMDW %ANUS_DESCRIPTION(TARGET)%하지만 보여질수록 양 다리를 크게 넓혀 그%VAGINA_DESCRIPTION2(TARGET)%(을)를 기대에 비굴한가 키라고 있다…
 	;상사상애
 	IF LOCAL:0
-		CALL HTMLPRINTW(@"「やっぱりお互いの顔が見えるのは良いわね…%HTML_PS_K39()%」")
+		CALL HTMLPRINTW(@"「역시 서로의 얼굴이 보이는 것은 좋네요…%HTML_PS_K39()%」")
 ;OriginalString : 「ほら、いいよ…壊れちゃうくらい思いっきり突いて…」
 		PRINTFORMW 「이봐요, 좋아…망가져버릴 정도 마음껏 찔러…」
-	;その他
+	;그 외
 	ELSE
 ;OriginalString : 「さぁ、いいですよ。きてください…」
 		PRINTFORMW 「, 좋아요. 와 주세요…」
@@ -278,79 +278,79 @@ ENDIF
 
 
 ;////////////////////
-;ACT96,후배위시킨다//
+;ACT96, 후배위시킨다//
 ;////////////////////
 [SKIPSTART]
-	#죠교자が죠교대상に후배위での삽입を命じる
-	#죠교대상に페니스、페니스밴드がない場合は発生しない
-	#죠교자が페니스밴드장착中の場合は発生しない
-	#죠교대상が누움、かつ성교봉사중でない場合は発生しない
-	#죠교대상の발기도が1000以下の場合は発生しない
-	#밀어넘어지는중には発生しない
-	#죠교자が남자の場合は発生しない
-	#죠교대상が오나홀사용중の場合には発生しない
-	#성교중からは派生しない
-	#대면좌위での성교봉사중からは派生しない
-	#Ａ성교봉사중からは派生しない
-	#主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+	#죠교자가죠교대상에후배위에서의삽입를 명한다
+	#죠교대상에페니스, 페니스밴드가 없는 경우는 발생하지 않는다
+	#죠교자가페니스밴드장착중의 경우는 발생하지 않는다
+	#죠교대상가누움, 한편성교봉사중가 아닌 경우는 발생하지 않는다
+	#죠교대상의발기도가 1000 이하의 경우는 발생하지 않는다
+	#밀어넘어지는중에는 발생하지 않는다
+	#죠교자가남자의 경우는 발생하지 않는다
+	#죠교대상가오나홀사용중의 경우에는 발생하지 않는다
+	#성교중로부터는 파생하지 않는다
+	#대면좌위에서의성교봉사중로부터는 파생하지 않는다
+	#Ａ성교봉사중로부터는 파생하지 않는다
+	#주도권은죠교대상"SEX_INITIATIVE(MASTER)"
 
-	*REACT분류が"날뛴다", "거부"であった場合は취소される
-	*죠교대상が동정なら동정상실が起こる
-	*죠교자が처녀なら처녀상실が起こる
-	*これらの処理は@ACTION_APPLY2_96にて行われる
+	*REACT분류가"날뛴다", "거부"였던 경우는취소 된다
+	*죠교대상가동정라면동정상실가 일어난다
+	*죠교자가처녀라면처녀상실가 일어난다
+	*이것들의 처리는@ACTION_APPLY2_96에서 행해진다
 [SKIPEND]
 
-@KOJO_MALE_ACT_K39_96 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사から/3=Ａ성교から/4=Ｖ성교から/5=Ａ성교봉사から)
-;※v1.020現在、ACT파생3/4/5はACT_ABLEで規制されているので機能しない
+@KOJO_MALE_ACT_K39_96 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사로부터/3=Ａ성교로부터/4=Ｖ성교로부터/5=Ａ성교봉사로부터)
+;※v1. 020 현재, ACT파생 3/4/5는 ACT_ABLE로 규제되고 있으므로 기능하지 않는다
 #LOCALSIZE  1
 #LOCALSSIZE 1
 VARSET LOCAL
 VARSET LOCALS
 LOCAL :0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
-LOCALS:0 '= RAND_SPLIT("出/사정")
+LOCALS:0 '= RAND_SPLIT("출/사정")
 
-;성교봉사系初回用処理
+;성교봉사계 첫회용 처리
 CALL CHK_DEBUG_AND_FIRSTTIME_10_K39
 
-;안빼고に続行
+;안빼고에 속행
 ;============
 IF TFLAG:안빼고
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_0
 	RETURN 1
 ENDIF
 
-;ACT파생１：연속
+;ACT파생 1:연속
 ;===============
 IF TFLAG:ACT파생 == 1
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_1_K39
 	RETURN 1
 ENDIF
 
-;ACT파생２：体位変更 //他のＶ성교봉사系から
+;ACT파생 2:체위 변경//다른Ｖ성교봉사계로부터
 ;===================
 IF TFLAG:ACT파생 == 2
-	;애태움中
+	;애태움중
 	;========
 	IF TCVAR:MASTER:애태움도 > 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ふふ、そんなに中に%LOCALS:0%했다いの？」
-			PRINTFORMW 「후후, 그렇게 안에%LOCALS:0%하고 싶은거야？」
-			CALL HTMLPRINTW(@"「簡単にイかせるつもりはないから、精々頑張ってね%HTML_PS_K39()%」")
+			PRINTFORMW 「후후, 그렇게 안에%LOCALS:0%하고 싶은거야?」
+			CALL HTMLPRINTW(@"「간단하게 가게 할 생각은 없기 때문에, 최대한 노력해%HTML_PS_K39()%」")
 		ELSE
 ;OriginalString : 「そんなに慌てる事ないと思いますけど、もうイきたくて堪らないんですね。ふふ」
 			PRINTFORMW 「그렇게 당황하는 일 없다고 생각합니다만, 이제 이 오고 싶어서 감등 없네요. 후후」
-			CALL HTMLPRINTW(@"「でも、もう少しだけ참다してもらいますよ%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「그렇지만, 조금만 더참다 해 받아요%HTML_PS_K39()%」")
 		ENDIF
 		RETURN 1
 	ENDIF
 
-	;애태움終了
+	;애태움종료
 	;==========
 	IF TCVAR:MASTER:애태움도 == 1
-		IF LOCAL:0 ;호의、호감도で分岐
-			CALL HTMLPRINTW(@"「ん%RAND_SPLIT("ん/")%っ%HTML_AH_K39()%　ね、このまま%LOCALS:0%して」")
+		IF LOCAL:0 ;호의, 호감도로 분기
+			CALL HTMLPRINTW(@"「응%RAND_SPLIT("응/")%%HTML_AH_K39()%  군요, 이대로%LOCALS:0%해」")
 ;OriginalString : 「%TNAME_K39()%の中、%CNAME(MASTER, TARGET)%でいっぱいにして…」
 			PRINTFORMW 「%TNAME_K39()%의 안,%CNAME(MASTER, TARGET)%그리고 가득 해…」
 		ELSE
@@ -362,16 +362,16 @@ IF TFLAG:ACT파생 == 2
 		RETURN 1
 	ENDIF
 
-	;애태움なし
+	;애태움없음
 	;==========
 	IF !TCVAR:MASTER:애태움도
-		;죠교자が가버려
+		;죠교자가가버려
 		IF PALAM:쾌Ｖ >= 8500
 			CALL QUAKE(4)
 			{
 			CALL HTMLPRINTW(
-			@"「ふぁっ、あぁっ%HTML_AH_K39()%　あ%RAND_SPLIT("゛/")%っ、" + 
-			@"あっ%HTML_AH_K39()%　こ、こんなの…もう、もうぅっ！」")
+			@"「후앗, 아앗%HTML_AH_K39()%  아%RAND_SPLIT("″/")%," + 
+			@"아%HTML_AH_K39()%  개, 이런 건… 이제(벌써), 이제(벌써)!」")
 			}
 ;OriginalString : %CALLNAME:TARGET%は쾌락に戦慄きつつ背後からの突き込みに合わせ、激しく腰を振っている…
 			PRINTFORMDW %CALLNAME:TARGET%(은)는 쾌락에 전율개개배후로부터의 찔러 포함에 맞추어 격렬하게 허리를 털고 있다…
@@ -381,8 +381,8 @@ IF TFLAG:ACT파생 == 2
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「や%RAND_SPLIT("ぁぁ/")%っ%HTML_AH_K39()%　あんっ、" + 
-				@"あぁっ%HTML_AH_K39()%　は、はげしいっ…ッ…！」")
+				@"「야%RAND_SPLIT("/")%%HTML_AH_K39()%  팥고물," + 
+				@"아%HTML_AH_K39()%  는, 격렬하닷……!」")
 				}
 			ELSE
 ;OriginalString : 「この格好、凄く興奮しちゃうの…こんな、獣みたいな格好なのに…」
@@ -390,14 +390,14 @@ IF TFLAG:ACT파생 == 2
 ;OriginalString : 「いいよ、来て……壊れちゃうくらい、思いっきり犯して……」
 				PRINTFORMW 「좋아, 와……망가져버릴 정도, 마음껏 범해……」
 			ENDIF
-		;それ以外
+		;그 이외
 		ELSE
 			IF TCVAR:MASTER:가버려
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「あっ、あん%RAND_SPLIT("っ/")%っ%HTML_AH_K39()%　" + 
-				@"は、激しいですっ！　あっ%HTML_AH_K39()%　んぁぁっ…ッ…！」")
+				@"「아, 앙%RAND_SPLIT("/")%%HTML_AH_K39()%　" + 
+				@"는, 격렬합니닷!   아%HTML_AH_K39()%  응……!」")
 				}
 			ELSE
 ;OriginalString : 「%CNAME(MASTER, TARGET)%の顔が見えないと、ちょっと不安なのですが…」
@@ -406,7 +406,7 @@ IF TFLAG:ACT파생 == 2
 				PRINTFORMW 「 나, 그런데도 흥분해 버려……자신이 억제할 수 없게 될 것 같습니다……」
 			ENDIF
 		ENDIF
-		;特定の条件の場合に地の文を追加表示する
+		;특정의 조건의 경우에 지문을 추가 표시한다
 		SIF TCVAR:MASTER:가버려
 ;OriginalString : %CALLNAME:MASTER%は自らの限界を感じ取り、%CALLNAME:TARGET%の背後から腰を激しく叩きつけた…
 			PRINTFORMDW %CALLNAME:MASTER%(은)는 스스로의 한계를 감지해, %CALLNAME:TARGET%의 배후로부터 허리를 격렬하게 두드려 붙였다…
@@ -414,10 +414,10 @@ IF TFLAG:ACT파생 == 2
 	ENDIF
 ENDIF
 
-;ACT파생５：Ａ성교봉사系から
+;ACT파생 5:Ａ성교봉사계로부터
 ;===========================
 IF TFLAG:ACT파생 == 5
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇ、こっちが切ないの…」
 		PRINTFORMW 「응, 여기가 안타까운거야…」
 ;OriginalString : 「今度は前に삽입れて…」
@@ -431,36 +431,36 @@ IF TFLAG:ACT파생 == 5
 	RETURN 1
 ENDIF
 
-;죠교대상が가버려
+;죠교대상가가버려
 ;==================
 IF TCVAR:MASTER:가버려
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_2_K39
 	RETURN 1
 ENDIF
 
-;죠교자が정욕
+;죠교자가정욕
 ;============
 IF T_COND("정욕")
 	{
 ;OriginalString : 尻を高く上げ、濡れる%VAGINA_DESCRIPTION2(
 	PRINTFORMDL 엉덩이를 높게 올려 젖는다%VAGINA_DESCRIPTION2(
-	TARGET)%をひくつかせる淫靡な%CALLNAME:TARGET%の姿が%CALLNAME:MASTER%의 욕정を煽る
+	TARGET)%를 실룩거리게 하는 음미로운%CALLNAME:TARGET%의 모습이%CALLNAME:MASTER%의 욕정를 부추긴다
 	}
 ;OriginalString : 止めどなく溢れ出す愛液は、%CALLNAME:TARGET%の太股を伝い落ち、大きな滲みをつくっている…
 	PRINTFORMDL 한 없게 흘러넘치고 내는 애액은, %CALLNAME:TARGET%의 넓적다리를 타 떨어져 큰 스며들고를 만들고 있다…
 ;OriginalString : 
 	PRINTL
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇっ、焦らさないで…は、早く삽입れてよぉっ…！」
-		PRINTFORMW 「응 , 초조하게 하지 마…(은)는, 빨리 삽입라고…！」
+		PRINTFORMW 「응, 초조하게 하지 마… 는, 빨리 삽입라고…!」
 ;OriginalString : 「獣みたいに犯してっ！ %TNAME_K39()%のおまんこ、グチャグチャに掻き回してっ…！」
-		PRINTFORMW 「짐승같이 범해！ %TNAME_K39()%의 보지, 그체그체에 휘저어…！」
+		PRINTFORMW 「짐승같이 범해!  %TNAME_K39()%의 보지, 그체그체에 휘저어…!」
 	ELSE
 ;OriginalString : 「焦らさないで…はやくっ！ 早く、くださいっ！」
-		PRINTFORMW 「초조하게 하지 마…빠르게！ 빨리, 주세요！」
+		PRINTFORMW 「초조하게 하지 마… 빠르게! 빨리, 주세요!」
 ;OriginalString : 「私っ、もう待ちきれないんです！」
-		PRINTFORMW 「 나, 이제 기다릴 수  없습니다！」
+		PRINTFORMW 「나, 이제 기다릴 수  없습니다!」
 	ENDIF
 ;OriginalString : その淫靡な様に興奮했다%CALLNAME:MASTER%は、
 	PRINTFORMDL 그 음미인님이 흥분했다%CALLNAME:MASTER%(은)는,
@@ -469,20 +469,20 @@ IF T_COND("정욕")
 	RETURN 1
 ENDIF
 
-;기타・조건없음 //汎用ACTにはパスしない
+;기타·조건없음//범용 ACT에는 패스하지 않는다
 ;================
-IF 구상記入チェック(100)
-	;PRINTFORMDL 尻を高く上げ濡れる%VAGINA_DESCRIPTION2(TARGET)%をひくつかせる淫靡な%CALLNAME:TARGET%の姿が、%CALLNAME:MASTER%의 욕정を煽る…
+IF 구상기입체크(100)
+	;PRINTFORMDL 엉덩이를 높게 올리고 젖는%VAGINA_DESCRIPTION2(TARGET)%를 실룩거리게 하는 음미로운 %CALLNAME:TARGET%의 모습이, %CALLNAME:MASTER%의 욕정를 부추긴다…
 	;PRINTL
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ほら、%CNAME(MASTER, TARGET)%後ろからするの好きでしょ？」
-		PRINTFORMW 「이봐요,%CNAME(MASTER, TARGET)%뒤로부터 하는 것 좋아하겠지？」
-		CALL HTMLPRINTW(@"「ねぇ、早く来て…もう、待ちきれないの…%HTML_PS_K39()%」")
+		PRINTFORMW 「이봐요,%CNAME(MASTER, TARGET)%뒤로부터 하는 것 좋아하겠지?」
+		CALL HTMLPRINTW(@"「저기, 빨리 와… 이제(벌써), 기다릴 수 없는거야…%HTML_PS_K39()%」")
 	ELSE
 		{
 		CALL HTMLPRINTW(
-		@"「この格好でされるのって、ちょっと%RAND_SPLIT("
-		興奮してしまいます/恥ずかしいですね")%…%HTML_PS_K39()%」")
+		@"「이모습으로되는것은、조금%RAND_SPLIT("
+		흥분해버립니다/부끄럽네요")%…%HTML_PS_K39()%」")
 		}
 ;OriginalString : 「さ、いつでもいいですよ。後ろから犯してください…」
 		PRINTFORMW 「, 언제라도 좋아요. 뒤로부터 범해 주세요…」
@@ -499,73 +499,73 @@ ENDIF
 ;ACT97, 대면좌위시킨다//
 ;///////////////////////
 [SKIPSTART]
-	#죠교자が죠교대상に대면좌위での삽입を命じる
-	#죠교대상に페니스、페니스밴드がない場合は発生しない
-	#죠교자が페니스밴드장착中の場合は発生しない
-	#죠교대상が누움、かつ성교봉사중でない場合は発生しない
-	#죠교대상の발기도が1000以下の場合は発生しない
-	#밀어넘어지는중には発生しない
-	#죠교자が남자の場合は発生しない
-	#죠교대상が오나홀사용중の場合には発生しない
-	#성교중からは派生しない
-	#배면좌위での성교봉사중からは派生しない
-	#Ａ성교봉사중からは派生しない
-	#主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+	#죠교자가죠교대상에대면좌위에서의삽입를 명한다
+	#죠교대상에페니스, 페니스밴드가 없는 경우는 발생하지 않는다
+	#죠교자가페니스밴드장착중의 경우는 발생하지 않는다
+	#죠교대상가누움, 한편성교봉사중가 아닌 경우는 발생하지 않는다
+	#죠교대상의발기도가 1000 이하의 경우는 발생하지 않는다
+	#밀어넘어지는중에는 발생하지 않는다
+	#죠교자가남자의 경우는 발생하지 않는다
+	#죠교대상가오나홀사용중의 경우에는 발생하지 않는다
+	#성교중로부터는 파생하지 않는다
+	#배면좌위에서의성교봉사중로부터는 파생하지 않는다
+	#Ａ성교봉사중로부터는 파생하지 않는다
+	#주도권은죠교대상"SEX_INITIATIVE(MASTER)"
 
-	*REACT분류が"날뛴다", "거부"であった場合は취소される
-	*죠교대상が동정なら동정상실が起こる
-	*죠교자が처녀なら처녀상실が起こる
-	*これらの処理は@ACTION_APPLY2_97にて行われる
+	*REACT분류가"날뛴다", "거부"였던 경우는취소 된다
+	*죠교대상가동정라면동정상실가 일어난다
+	*죠교자가처녀라면처녀상실가 일어난다
+	*이것들의 처리는@ACTION_APPLY2_97에서 행해진다
 [SKIPEND]
-@KOJO_MALE_ACT_K39_97 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+@KOJO_MALE_ACT_K39_97 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사계로부터/3=Ａ성교계로부터/4=Ｖ성교계로부터/5=Ａ성교봉사계로부터)
 #LOCALSIZE  1
 #LOCALSSIZE 1
 VARSET LOCAL
 VARSET LOCALS
 LOCAL :0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
-LOCALS:0 '= RAND_SPLIT("出/사정")
+LOCALS:0 '= RAND_SPLIT("출/사정")
 
-;성교봉사系初回用処理
+;성교봉사계 첫회용 처리
 CALL CHK_DEBUG_AND_FIRSTTIME_10_K39
 
-;안빼고に続行
+;안빼고에 속행
 ;============
 IF TFLAG:안빼고
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_0
 	RETURN 1
 ENDIF
 
-;ACT파생１：연속
+;ACT파생 1:연속
 ;===============
 IF TFLAG:ACT파생 == 1
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_1_K39
 	RETURN 1
 ENDIF
 
-;ACT파생２：体位変更 //他のＶ성교봉사系から
+;ACT파생 2:체위 변경//다른Ｖ성교봉사계로부터
 ;===================
 IF TFLAG:ACT파생 == 2
-	;애태움中
+	;애태움중
 	;========
 	IF TCVAR:MASTER:애태움도 > 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ふふ、そんなに中に出했다いの？」
-			PRINTFORMW 「후후, 그렇게 안에 내고 싶은거야？」
-			CALL HTMLPRINTW(@"「簡単にイかせるつもりはないから、精々頑張ってね%HTML_PS_K39()%」")
+			PRINTFORMW 「후후, 그렇게 안에 내고 싶은거야?」
+			CALL HTMLPRINTW(@"「간단하게 가게 할 생각은 없기 때문에, 최대한 노력해%HTML_PS_K39()%」")
 		ELSE
 ;OriginalString : 「そんなに慌てる事ないと思いますけど、もうイきたくて堪らないんですね」
 			PRINTFORMW 「그렇게 당황하는 일 없다고 생각합니다만, 이제 이 오고 싶어서 감등 없네요」
-			CALL HTMLPRINTW(@"「でも、もう少しだけ참다してもらいますよ%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「그렇지만, 조금만 더참다 해 받아요%HTML_PS_K39()%」")
 		ENDIF
 		RETURN 1
 	ENDIF
 
-	;애태움終了
+	;애태움종료
 	;==========
 	IF TCVAR:MASTER:애태움도 == 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「%KOJO_RAND_K39(("키스"), 1)%　ねぇ、このまま中に%LOCALS:0%して」
 			PRINTFORMW 「%KOJO_RAND_K39(("키스"), 1)% 응, 이대로 안에%LOCALS:0%하며」
 ;OriginalString : 「抱き合っ하며 、%TNAME_K39()%の中に注ぎ込んで…」
@@ -579,52 +579,52 @@ IF TFLAG:ACT파생 == 2
 		RETURN 1
 	ENDIF
 
-	;애태움無し
+	;애태움없음
 	;==========
 	IF !TCVAR:MASTER:애태움도
-		;죠교자が가버려
+		;죠교자가가버려
 		IF PALAM:쾌Ｖ > 8500
 			CALL QUAKE(4)
 			{
 			CALL HTMLPRINTW(
-			@"「ふぁっ%HTML_AH_K39()%　あぁっ%HTML_AH_K39()%　" + 
-			@"あっ、あっ%HTML_AH_K39()%　こ、こんなの…もう、もうぅっ！」")
+			@"「후앗%HTML_AH_K39()%  아%HTML_AH_K39()%　" + 
+			@"아, 앗%HTML_AH_K39()%  개, 이런 건… 이제(벌써), 이제(벌써)!」")
 			}
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%にしっかりとしがみつきながら、激しく腰を振っている…
 			PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 제대로 매달리면서, 격렬하게 허리를 털고 있다…
-		;상사상애かつ죠교자の쾌Ｖが8500以下
+		;상사상애 또한죠교자의쾌Ｖ가 8500 이하
 		ELSEIF LOCAL:0 && PALAM:쾌Ｖ < 8500
-			;죠교대상が가버려
+			;죠교대상가가버려
 			IF TCVAR:MASTER:가버려
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「やぁぁっ%HTML_AH_K39()% 　あんっ%HTML_AH_K39()%　" + 
-				@"あぁっ%HTML_AH_K39()%　は、はげしいっ…ッ…！」")
+				@"「야앗%HTML_AH_K39()%   팥고물%HTML_AH_K39()%　" + 
+				@"아%HTML_AH_K39()%  는, 격렬하닷……!」")
 				}
 ;OriginalString : 自らの限界を悟った%CALLNAME:MASTER%は%CALLNAME:TARGET%を抱きしめながら、腰を激しく突き上げた…
 				PRINTFORMDW 스스로의 한계를 깨달은 %CALLNAME:MASTER%(은)는 %CALLNAME:TARGET%(을)를 꼭 껴안으면서, 허리를 격렬하게 밀어 올렸다…
 			ELSE
-				CALL HTMLPRINTW(@"「うふ、顔が近くてちょっとドキドキしちゃう…%HTML_PS_K39()%」")
+				CALL HTMLPRINTW(@"「우후, 얼굴이 가깝고 조금 두근두근 해 버린다…%HTML_PS_K39()%」")
 ;OriginalString : 「ねぇ、키스して。強く抱いて。思いっきり、突き上げて…\@ TENSION(TARGET, 8) == "高い" ? っ！ # \@」
-				PRINTFORMW 「응, 키스 해. 강하게 안아. 마음껏, 밀어 올려…\@ TENSION(TARGET, 8) == "비싸다" ? 읏！ # \@」
+				PRINTFORMW 「응, 키스 해. 강하게 안아. 마음껏, 밀어 올려…\@ TENSION(TARGET, 8) == "비싸다" ? 읏!  # \@」
 			ENDIF
-		;その他
+		;그 외
 		ELSE
-			;죠교대상が가버려
+			;죠교대상가가버려
 			IF TCVAR:MASTER:가버려
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「あっ%HTML_AH_K39()%　あんっっ%HTML_AH_K39()%　" + 
-				"は、激しいですっ！　あっ、　んぁぁっ…ッ…！」")
+				@"「앗%HTML_AH_K39()%  팥고물%HTML_AH_K39()%　" + 
+				"는, 격렬합니닷!   아,   응……!」")
 				}
-				;PRINTFORMDW 自らの限界を悟った%CALLNAME:MASTER%は%CALLNAME:TARGET%を抱きしめながら、腰を激しく突き上げた…
+				;PRINTFORMDW 스스로의 한계를 깨달은 %CALLNAME:MASTER%는 %CALLNAME:TARGET%를 껴안으면서, 허리를 격렬하게 밀어올렸다…
 			ELSE
 				{
 				CALL HTMLPRINTW(
-				@"「%CNAME(MASTER, TARGET)%がとても近くに感じられて、" + 
-				"ちょっとドキドキしてしまいます%HTML_PS_K39()%」")
+				@"「%CNAME(MASTER, TARGET)%가 매우 근처에 느껴져," + 
+				"조금 두근두근 해 버립니다%HTML_PS_K39()%」")
 				}
 ;OriginalString : 「さ、しっかり抱いていてくださいね……」
 				PRINTFORMW 「, 확실히 안고 있어 주세요……」
@@ -634,10 +634,10 @@ IF TFLAG:ACT파생 == 2
 	ENDIF
 ENDIF
 
-;ACT파생５：Ａ성교봉사系から
+;ACT파생 5:Ａ성교봉사계로부터
 ;===========================
 IF TFLAG:ACT파생 == 5
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇ、こっちが切ないの…」
 		PRINTFORMW 「응, 여기가 안타까운거야…」
 ;OriginalString : 「今度は前に삽입れて…」
@@ -648,32 +648,32 @@ IF TFLAG:ACT파생 == 5
 ;OriginalString : 「今度は前に삽입れてください…」
 		PRINTFORMW 「이번은 전에 삽입라고 주세요…」
 	ENDIF
-	;죠교대상が가버려な場合
+	;죠교대상가가버려인 경우
 	SIF TCVAR:MASTER:가버려
 ;OriginalString : 「でも%CNAME(MASTER, TARGET)%はもう限界みたい\@ !LOCAL:0 ? です # \@ね？ ふふ」
-		PRINTFORMW 「 그렇지만%CNAME(MASTER, TARGET)%(은)는 이제 한계 보고 싶다\@ !LOCAL:0 ? 입니다 # \@그런데？ 후후」
+		PRINTFORMW 「 그렇지만%CNAME(MASTER, TARGET)%(은)는 이제 한계 보고 싶다\@ !LOCAL:0 ? 입니다 # \@그런데? 후후」
 	RETURN 1
 ENDIF
 
-;죠교대상が가버려
+;죠교대상가가버려
 ;==================
 IF TCVAR:MASTER:가버려
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_2_K39
 	RETURN 1
 ENDIF
 
-;죠교자が정욕
+;죠교자가정욕
 ;============
 IF T_COND("정욕")
 	{
 	CALL HTMLPRINTL(
-	@"「んっ%HTML_AH_K39()%　ちゅっ…んく、" + 
-	@"\@ LOCAL:0 ? ねぇはやくっ！ 早く삽입れてっ… # はやくっ！ 早く삽입れてくださいっ \@！」")
+	@"「읏%HTML_AH_K39()%  … 응쿠," + 
+	@"\@ LOCAL:0 ? 응 빠르게! 빨리삽입라고… # 빠르게! 빨리삽입라고 주세요 \@!」")
 	}
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「もう待てないのっ！ 抱き合っ하며 、思いっきり突いて…」
-		PRINTFORMW 「이제 기다릴 수 없는 것！ 얼싸안은 채로, 마음껏 찔러…」
+		PRINTFORMW 「이제 기다릴 수 없는 것! 얼싸안은 채로, 마음껏 찔러…」
 	ELSE
 ;OriginalString : 「私っ、もう참다できなくって…」
 		PRINTFORMW 「 나, 이제 참을 수 없어서…」
@@ -683,13 +683,13 @@ IF T_COND("정욕")
 	RETURN 1
 ENDIF
 
-;기타・조건없음 //汎用ACTにはパスしない
+;기타·조건없음//범용 ACT에는 패스하지 않는다
 ;================
-IF 구상記入チェック(100) ;100%
-	IF LOCAL:0 ;호의、호감도で分岐
-		CALL HTMLPRINTW(@"「他のも嫌いじゃないけど、愛し合ってる感じがしてこれが一番好き%HTML_PS_K39()%」")
+IF 구상기입체크(100) ;100%
+	IF LOCAL:0 ;호의, 호감도로 분기
+		CALL HTMLPRINTW(@"「다른 것도 싫지 않지만, 서로 사랑하고 있는 느낌이 들어 이것이 제일 좋아%HTML_PS_K39()%」")
 	ELSE
-		CALL HTMLPRINTL(@"「うふ、この格好大好きです%HTML_PS_K39()%」")
+		CALL HTMLPRINTL(@"「우후, 이 모습 정말 좋아합니다%HTML_PS_K39()%」")
 ;OriginalString : 「しっかり抱きながら突いてください」
 		PRINTFORMW 「확실히 안으면서 찔러 주세요」
 	ENDIF
@@ -700,74 +700,74 @@ ENDIF
 
 
 ;//////////////////////
-;ACT98,배면좌위시킨다//
+;ACT98, 배면좌위시킨다//
 ;//////////////////////
 [SKIPSTART]
-	#죠교자が죠교대상に배면좌위での삽입を命じる
-	#죠교대상に페니스、페니스밴드がない場合は発生しない
-	#죠교자が페니스밴드장착中の場合は発生しない
-	#죠교대상が누움、かつ성교봉사중でない場合は発生しない
-	#죠교대상の발기도が1000以下の場合は発生しない
-	#밀어넘어지는중には発生しない
-	#죠교자が남자の場合は発生しない
-	#죠교대상が오나홀사용중の場合には発生しない
-	#성교중からは派生しない
-	#정상위、대면좌위での성교봉사중からは派生しない
-	#Ａ성교봉사중からは派生しない
-	#主導権は죠교대상"SEX_INITIATIVE(MASTER)"
+	#죠교자가죠교대상에배면좌위에서의삽입를 명한다
+	#죠교대상에페니스, 페니스밴드가 없는 경우는 발생하지 않는다
+	#죠교자가페니스밴드장착중의 경우는 발생하지 않는다
+	#죠교대상가누움, 한편성교봉사중가 아닌 경우는 발생하지 않는다
+	#죠교대상의발기도가 1000 이하의 경우는 발생하지 않는다
+	#밀어넘어지는중에는 발생하지 않는다
+	#죠교자가남자의 경우는 발생하지 않는다
+	#죠교대상가오나홀사용중의 경우에는 발생하지 않는다
+	#성교중로부터는 파생하지 않는다
+	#정상위, 대면좌위에서의성교봉사중로부터는 파생하지 않는다
+	#Ａ성교봉사중로부터는 파생하지 않는다
+	#주도권은죠교대상"SEX_INITIATIVE(MASTER)"
 
-	*REACT분류が"날뛴다", "거부"であった場合は취소される
-	*죠교대상が동정なら동정상실が起こる
-	*죠교자が처녀なら처녀상실が起こる
-	*これらの処理は@ACTION_APPLY2_98にて行われる
+	*REACT분류가"날뛴다", "거부"였던 경우는취소 된다
+	*죠교대상가동정라면동정상실가 일어난다
+	*죠교자가처녀라면처녀상실가 일어난다
+	*이것들의 처리는@ACTION_APPLY2_98에서 행해진다
 [SKIPEND]
-@KOJO_MALE_ACT_K39_98 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+@KOJO_MALE_ACT_K39_98 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사계로부터/3=Ａ성교계로부터/4=Ｖ성교계로부터/5=Ａ성교봉사계로부터)
 #LOCALSIZE 1
 #LOCALSSIZE 1
 VARSET LOCAL
 VARSET LOCALS
 LOCAL:0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
-LOCALS:0 '= RAND_SPLIT("出/사정")
+LOCALS:0 '= RAND_SPLIT("출/사정")
 
-;성교봉사系初回用処理
+;성교봉사계 첫회용 처리
 CALL CHK_DEBUG_AND_FIRSTTIME_10_K39
 
-;안빼고に続行
+;안빼고에 속행
 ;============
 IF TFLAG:안빼고
 	CALL PRINT_KOJO_ACT_GRU10_0
 	RETURN 1
 ENDIF
 
-;ACT파생１：연속
+;ACT파생 1:연속
 ;===============
 IF TFLAG:ACT파생 == 1
 	CALL PRINT_KOJO_ACT_GRU10_1_K39
 	RETURN 1
 ENDIF
 
-;ACT파생２：体位変更 //他のＶ성교봉사系から
+;ACT파생 2:체위 변경//다른Ｖ성교봉사계로부터
 ;===================
 IF TFLAG:ACT파생 == 2
-	;애태움中
+	;애태움중
 	;========
 	IF TCVAR:MASTER:애태움도 > 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ふふ、そんなに中に%LOCALS:0%했다いの？」
-			PRINTFORMW 「후후, 그렇게 안에%LOCALS:0%하고 싶은거야？」
-			CALL HTMLPRINTW(@"「簡単にイかせるつもりはないから、精々頑張ってね%HTML_PS_K39()%」")
+			PRINTFORMW 「후후, 그렇게 안에%LOCALS:0%하고 싶은거야?」
+			CALL HTMLPRINTW(@"「간단하게 가게 할 생각은 없기 때문에, 최대한 노력해%HTML_PS_K39()%」")
 		ELSE
 ;OriginalString : 「そんなに慌てる事ないと思いますけど、もうイきたくて堪らないんですね」
 			PRINTFORMW 「그렇게 당황하는 일 없다고 생각합니다만, 이제 이 오고 싶어서 감등 없네요」
-			CALL HTMLPRINTW(@"「でも、もう少しだけ참다してもらいますよ%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「그렇지만, 조금만 더참다 해 받아요%HTML_PS_K39()%」")
 		ENDIF
 		RETURN 1
 	ENDIF
 
-	;애태움終了
+	;애태움종료
 	;=========
 	IF TCVAR:MASTER:애태움도 == 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「%KOJO_RAND_K39(("키스"), 1)%　このまま中に%LOCALS:0%して」
 			PRINTFORMW 「%KOJO_RAND_K39(("키스"), 1)% 이대로 안에%LOCALS:0%하며」
 ;OriginalString : 「後ろから抱い하며 、%TNAME_K39()%の中に注ぎ込んで…」
@@ -781,52 +781,52 @@ IF TFLAG:ACT파생 == 2
 		RETURN 1
 	ENDIF
 
-	;애태움無し
+	;애태움없음
 	;==========
 	IF !TCVAR:MASTER:애태움도
-		;죠교자が가버려
+		;죠교자가가버려
 		IF PALAM:쾌Ｖ > 8500
 			CALL QUAKE(4)
 			{
 			CALL HTMLPRINTW(
-			@"「ふぁっ%HTML_AH_K39()%　あぁっ%HTML_AH_K39()%　" + 
-			@"あっ、あっ%HTML_AH_K39()%　こ、こんなの…もう、もうぅっ！」")
+			@"「후앗%HTML_AH_K39()%  아%HTML_AH_K39()%　" + 
+			@"아, 앗%HTML_AH_K39()%  개, 이런 건… 이제(벌써), 이제(벌써)!」")
 			}
 			{
 ;OriginalString : 
 			PRINTFORMDW 
-			%CALLNAME:TARGET%は쾌락に戦慄きつつ、%CALLNAME:
-			MASTER%의 突き込みに合わせ、激しく腰を振っている…
+			%CALLNAME:TARGET%는쾌락에전율하면서、%CALLNAME:
+			MASTER%의 공격에맞추고、격렬하게허리를흔들고있다…
 			}
-		;상사상애かつ죠교자が가버려ではない場合
+		;상사상애 또한죠교자가가버려가 아닌 경우
 		ELSEIF LOCAL:0 && PALAM:쾌Ｖ < 8500
 			IF TCVAR:MASTER:가버려
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「や%RAND_SPLIT("ぁぁ/")%っ！ あんっ%HTML_AH_K39()%　" + 
-				@"あ%RAND_SPLIT("ぁ/")%っ%HTML_AH_K39()%　は、はげし…ッ…！」")
+				@"「야%RAND_SPLIT("/")%! 아읏%HTML_AH_K39()%　" + 
+				@"아%RAND_SPLIT("/")%%HTML_AH_K39()%  는, 벗길 수 있는 해……!」")
 				}
-				;PRINTFORMDL 自らの限界を悟った%CALLNAME:MASTER%は%CALLNAME:	TARGET%の両腕を掴み、乱暴に질내を抉りまくった…
-				;PRINTFORMDW %CALLNAME:TARGET%は声にならない嬌声を上げ、力なく、ただ激しい突き込みを受け止めている…
+				;PRINTFORMDL 스스로의 한계를 깨달은 %CALLNAME:MASTER%는 %CALLNAME:	TARGET%의 양팔을 잡아, 난폭하게질내를 마구 후벼팠다…
+				;PRINTFORMDW %CALLNAME:TARGET%는 소리가 되지 않는 교성을 올려, 힘 없고, 다만 격렬한 공격을 받아 들이고 있다…
 			ELSE
-				CALL HTMLPRINTW(@"「この格好っておもちゃにされてるみたいで、ちょっと興奮しちゃう…%HTML_PS_K39()%」")
+				CALL HTMLPRINTW(@"「이 모습은 장난감으로 되고 있는 것 같아, 조금 흥분해 버린다…%HTML_PS_K39()%」")
 ;OriginalString : 「いいよ…%CNAME(MASTER, TARGET)%の好きなようにして。壊れちゃうくらい激しく犯して……」
 				PRINTFORMW 「좋아…%CNAME(MASTER, TARGET)%(이)가 좋아하는 것 같게 해. 망가져버릴 정도 격렬하게 범해……」
 			ENDIF
-		;それ以外
+		;그 이외
 		ELSE
 			IF TCVAR:MASTER:가버려
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「あっ%HTML_AH_K39()%　あん%RAND_SPLIT("っ/")%っ…" + 
-				@"%HTML_AH_K39()%　は、激しいですっ…あっ%HTML_AH_K39()%　んぁぁっ…ッ…！」")
+				@"「앗%HTML_AH_K39()%  팥고물%RAND_SPLIT("/")%…" + 
+				@"%HTML_AH_K39()%  는, 격렬합니닷… 앗%HTML_AH_K39()%  응……!」")
 				}
-				;PRINTFORMDL 自らの限界を悟った%CALLNAME:MASTER%は%CALLNAME:TARGET%の両腕を掴み、乱暴に질내を抉りまくった…
-				;PRINTFORMDW %CALLNAME:TARGET%は声にならない嬌声を上げ、力なく、ただ激しい突き込みを受け止めている…
+				;PRINTFORMDL 스스로의 한계를 깨달은 %CALLNAME:MASTER%는 %CALLNAME:TARGET%의 양팔을 잡아, 난폭하게질내를 마구 후벼팠다…
+				;PRINTFORMDW %CALLNAME:TARGET%는 소리가 되지 않는 교성을 올려, 힘 없고, 다만 격렬한 공격을 받아 들이고 있다…
 			ELSE
-				CALL HTMLPRINTW(@"「この格好ってなんか凄くいやらしいですね%HTML_PS_K39()%」")
+				CALL HTMLPRINTW(@"「이 모습은 뭔가 굉장히 추잡하네요%HTML_PS_K39()%」")
 ;OriginalString : 「さぁ、いいですよ。このまま私を犯してください…」
 				PRINTFORMW 「, 좋아요. 이대로 나를 범해 주세요…」
 			ENDIF
@@ -835,64 +835,64 @@ IF TFLAG:ACT파생 == 2
 	ENDIF
 ENDIF
 
-;ACT파생５：Ａ성교봉사系から
+;ACT파생 5:Ａ성교봉사계로부터
 ;===========================
 IF TFLAG:ACT파생 == 5
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇ、こっちが切ないの…」
 		PRINTFORML 「응, 여기가 안타까운거야…」
 ;OriginalString : 「今度は前に삽입れて…」
 		PRINTFORMW 「이번은 전에 삽입라고…」
 		SIF TCVAR:MASTER:가버려
-			CALL HTMLPRINTW(@"「でも…、%CNAME(MASTER, TARGET)%は삽입れた瞬間にイっちゃいそうだけど。ふふ…%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「그렇지만…,%CNAME(MASTER, TARGET)%는삽입순간에 가 버릴 것 같지만. 후후…%HTML_PS_K39()%」")
 	ELSE
 ;OriginalString : 「私、こっちが切なくって…」
 		PRINTFORML 「 나, 여기가 안타까워서…」
 ;OriginalString : 「今度は前に삽입れてください…」
 		PRINTFORMW 「이번은 전에 삽입라고 주세요…」
 		SIF TCVAR:MASTER:가버려
-			CALL HTMLPRINTW(@"「でも%CNAME(MASTER, TARGET)%はもう限界みたいですね？ ふふ%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「그렇지만%CNAME(MASTER, TARGET)%는 이제 한계같네요? 후후%HTML_PS_K39()%」")
 	ENDIF
 	RETURN 1
 ENDIF
 
-;죠교대상が가버려
+;죠교대상가가버려
 ;==================
 IF TCVAR:MASTER:가버려
-	;汎用処理
+	;범용 처리
 	CALL PRINT_KOJO_ACT_GRU10_2_K39
 	RETURN 1
 ENDIF
 
-;죠교자が정욕
+;죠교자가정욕
 ;============
 IF T_COND("정욕")
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇっ、は、はやく삽입れてよぉっ！」
-		PRINTFORMW 「응 , 는, 빠르게 삽입라고！」
+		PRINTFORMW 「응, 는, 빠르게 삽입라고!」
 ;OriginalString : 「%TNAME_K39()%のおまんこ、めちゃめちゃに突いてよぉっ…ッ…！」
-		PRINTFORMW 「%TNAME_K39()%의 보지, 엄청에 찔러……！」
+		PRINTFORMW 「%TNAME_K39()%의 보지, 엄청에 찔러……!」
 	ELSE
 ;OriginalString : 「はやくっ！ 早く삽입れてくださいっ！」
-		PRINTFORMW 「빠르게！ 빨리 삽입라고 주세요！」
+		PRINTFORMW 「빠르게! 빨리 삽입라고 주세요!」
 ;OriginalString : 「私っ、もう待ちきれないんです！」
-		PRINTFORMW 「 나, 이제 기다릴 수  없습니다！」
+		PRINTFORMW 「나, 이제 기다릴 수  없습니다!」
 	ENDIF
 ;OriginalString : 정욕にたぎる%CALLNAME:TARGET%は%CALLNAME:MASTER%의 体に손발を絡め、삽입を待ちわびている…
 	PRINTFORMDW 정욕에 끓어오른다%CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 몸에 손발을 걸어 삽입을 애타게 기다리고 있다…
 	RETURN 1
 ENDIF
 
-;기타・조건없음 //汎用ACTにはパスしない
+;기타·조건없음//범용 ACT에는 패스하지 않는다
 ;================
-IF 구상記入チェック(100)
-	IF LOCAL:0 ;호의、호감도で分岐
+IF 구상기입체크(100)
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「こうやって後ろから抱きしめられてするもの好き…」
 		PRINTFORML 「이렇게 뒤로부터 꼭 껴안을 수 있고 하는 것 좋아…」
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 손を取り、自らの乳房へ導いた…
 		PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 수를 잡아, 스스로의 유방에 이끌었다…
 ;OriginalString : 「ほら、好きな様に弄って…私の身体は全部%CNAME(MASTER, TARGET)%の物よ？」
-		PRINTFORMW 「이봐요, 좋아하는님이 만지작거려…나의 신체는 전부%CNAME(MASTER, TARGET)%의 물건이야？」
+		PRINTFORMW 「이봐요, 좋아하는님이 만지작거려…나의 신체는 전부%CNAME(MASTER, TARGET)%의 물건이야?」
 	ELSE
 		SELECTCASE RANDACT(2, 50)
 			CASE 0
@@ -911,72 +911,72 @@ ENDIF
 ;ACT99, 항문섹스시킨다//
 ;/////////////////////////////
 [SKIPSTART]
-	#죠교자が죠교대상に엉덩이への삽입を命じる
-	#죠교대상に페니스、페니스밴드がない場合は発生しない
-	#죠교자が페니스밴드장착中の場合は発生しない
-	#죠교대상が누움、かつ성교봉사중でない場合は発生しない
-	#죠교대상の발기도が1000以下の場合は発生しない
-	#턴방침が"소프트"でＡ성교봉사중でない場合は発生しない
-	#밀어넘어지는중には発生しない
-	#죠교자が남자の場合は発生しない
-	#죠교대상が오나홀사용중の場合には発生しない
-	#성교중からは派生しない
-	#Ｖ성교봉사중からは派生しない
-	#죠교자のＡ감각が2以下の場合は発生しない
-	#主導権は죠교대상"SEX_INITIATIVE(MASTER)"
-	#REACT분류が"날뛴다", "거부"であった場合は취소される
+	#죠교자가죠교대상에엉덩이에의삽입를 명한다
+	#죠교대상에페니스, 페니스밴드가 없는 경우는 발생하지 않는다
+	#죠교자가페니스밴드장착중의 경우는 발생하지 않는다
+	#죠교대상가누움, 한편성교봉사중가 아닌 경우는 발생하지 않는다
+	#죠교대상의발기도가 1000 이하의 경우는 발생하지 않는다
+	#턴방침가"소프트"로Ａ성교봉사중가 아닌 경우는 발생하지 않는다
+	#밀어넘어지는중에는 발생하지 않는다
+	#죠교자가남자의 경우는 발생하지 않는다
+	#죠교대상가오나홀사용중의 경우에는 발생하지 않는다
+	#성교중로부터는 파생하지 않는다
+	#Ｖ성교봉사중로부터는 파생하지 않는다
+	#죠교자의Ａ감각가 2 이하의 경우는 발생하지 않는다
+	#주도권은죠교대상"SEX_INITIATIVE(MASTER)"
+	#REACT분류가"날뛴다", "거부"였던 경우는취소 된다
 [SKIPEND]
-@KOJO_MALE_ACT_K39_99 ;TFLAG:ACT파생(0=통상/1=연속/2=Ａ성교系から/3=Ｖ성교봉사系から/4=Ｖ성교系から)
+@KOJO_MALE_ACT_K39_99 ;TFLAG:ACT파생(0=통상/1=연속/2=Ａ성교계로부터/3=Ｖ성교봉사계로부터/4=Ｖ성교계로부터)
 #LOCALSIZE  1
 #LOCALSSIZE 1
 VARSET LOCAL
 VARSET LOCALS
 LOCAL :0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
-LOCALS:0 '= RAND_SPLIT("出/사정")
+LOCALS:0 '= RAND_SPLIT("출/사정")
 
-;성교봉사系初回用処理
+;성교봉사계 첫회용 처리
 ;====================
 IF !FLAG:오토모드 && FIRSTTIME(195)
-	;성교봉사判定に代入
+	;성교봉사판정에 대입
 	KFLAG:TARGET = 1
 ELSEIF FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTTIME(196)
-	;오토모드時用処理
-	CALL PRINT_RAINBOW2W("初回", 20)
-	;データ로드処理
+	;오토모드시 용 처리
+	CALL PRINT_RAINBOW2W("첫회", 20)
+	;데이터로드처리
 	CALL GAME_OVER_K39
 	FORCEWAIT
 	RETURN 1
 ELSE
-	;その他なら処理無し
+	;그 외라면 처리 없음
 ENDIF
 
-;안빼고に続行
+;안빼고에 속행
 ;============
 IF TFLAG:안빼고
 	CALL PRINT_KOJO_ACT_GRU10_0
 	RETURN 1
 ENDIF
 
-;ACT파생１：연속
+;ACT파생 1:연속
 ;===============
 IF TFLAG:ACT파생 == 1
 	CALL PRINT_KOJO_ACT_GRU10_1_K39
 	RETURN 1
 ENDIF
 
-;ACT파생２～４ //基本的に想定しているのはACT파생3
-;============= //発生し得るのもACT파생3のみであるはずだが、条件は一応カバーしておく的なアレ
+;ACT파생 2～4//기본적으로 상정하고 있는 것은 ACT파생 3
+;=============//발생 할 수 있는 것도 ACT파생 3만일 것이지만, 조건은 일단 커버해 두는적인 저것
 IF INRANGE(TFLAG:ACT파생, 2, 4)
-	;Ａ감각4以上
+	;Ａ감각 4 이상
 	;===========
 	IF ABL:TARGET:Ａ감각 >= 4
 		{
 ;OriginalString : 
 		PRINTFORMDW 
-		%CALLNAME:TARGET%はほぐれきった%ANUS_DESCRIPTION(
-		TARGET)%を見せつけ、%CALLNAME:MASTER%의 욕정を煽っている…
+		%CALLNAME:TARGET%는자포자기하고잘랐다%ANUS_DESCRIPTION(
+		TARGET)%를과시하고、%CALLNAME:MASTER%의 욕정를부추기고있다…
 		}
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇ、見て…欲しくて、こんなにヒクヒクしちゃってるの…」
 			PRINTFORML 「응, 봐…갖고 싶어서, 이렇게 히크히크 해 버린다의…」
 ;OriginalString : 「おしりでするのが好きな神様なんて最低よね…でも、참다できないの…」
@@ -988,20 +988,20 @@ IF INRANGE(TFLAG:ACT파생, 2, 4)
 			PRINTFORMW 「 나를 이런 식으로 한 책임, 제대로 취해 주세요…」
 		ENDIF
 		[SKIPSTART]
-;OriginalString : %CALLNAME:MASTER%は%CALLNAME:TARGET%の膣입から溢れる愛液をすくい取り、페니스に塗りつけると
-		PRINTFORMDL %CALLNAME:MASTER%(은)는 %CALLNAME:TARGET%의 질구로부터 흘러넘치는 애액을 건져 올려, 페니스에 바르면(자)
-;OriginalString : 入り입で軽く馴染ませたあと、一気に最奥まで突き刺했다…
+;OriginalString : %CALLNAME:MASTER%는 %CALLNAME:TARGET%의 질입로부터 흘러넘치는 애액을 건져 올려, 페니스에 바르면
+		PRINTFORMDL %CALLNAME:MASTER%는 %CALLNAME:TARGET%의 질구로부터 흘러넘치는 애액을 건져 올려, 페니스에 바르면
+;OriginalString : 들이입로 가볍게 친숙해 지게 한 뒤, 단번에 최안쪽까지 찔러 회했다…
 		PRINTFORMDW 입구에서 가볍게 친숙해 지게 한 뒤, 단번에 최안쪽까지 찔렀다…
 		[SKIPEND]
 		RETURN 1
 	ENDIF
 
-	;まだ馴染んでない
+	;아직 친숙해 지지 않았다
 	;================
 	IF ABL:TARGET:Ａ감각 < 4
 ;OriginalString : %CALLNAME:TARGET%は気恥ずかしげに%CALLNAME:MASTER%의 眼前に%ANUS_DESCRIPTION(TARGET)%を晒している…
 		PRINTFORMDW %CALLNAME:TARGET%(은)는 기치않다 기울 수 있는에%CALLNAME:MASTER%의 눈앞에%ANUS_DESCRIPTION(TARGET)%(을)를 쬐고 있다…
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「今度はおしりに頂戴…」
 			PRINTFORML 「이번은 엉덩이에 주세요…」
 ;OriginalString : 「まだこっちは慣れないの。お願い、ゆっくりシて…」
@@ -1012,63 +1012,63 @@ IF INRANGE(TFLAG:ACT파생, 2, 4)
 ;OriginalString : 「まだ慣れないので、ゆっくりお願いしますね…」
 			PRINTFORMW 「 아직 익숙해지지 않기 때문에, 천천히 부탁드릴게요…」
 		ENDIF
-		;PRINTFORMDL %CALLNAME:MASTER%は%CALLNAME:TARGET%の膣입から指先に愛液をすくい取り、二本の指で장내を軽くかき混ぜたあと
-		;PRINTFORMDW 十分に愛液を塗했다페니스를腸壁の抵抗を感じつつ、신중함に奥へと進めていった…
+		;PRINTFORMDL %CALLNAME:MASTER%는 %CALLNAME:TARGET%의 질입로부터 손가락끝에 애액을 건져 올려, 2 개의 손가락으로장내를 가볍게 휘저은 뒤
+		;PRINTFORMDW 충분히 애액을 도했다페니스를장벽의 저항을 느끼면서, 신중함에 안쪽으로 진행해 갔다…
 		RETURN 1
 	ENDIF
 ENDIF
 
-;죠교대상が가버려
+;죠교대상가가버려
 ;==================
 IF TCVAR:MASTER:가버려
-	IF LOCAL:0 ;호의、호감도で分岐
-		CALL HTMLPRINTW(@"「うふ%HTML_AH2_K39()%　今にも暴発しそうね？」")
+	IF LOCAL:0 ;호의, 호감도로 분기
+		CALL HTMLPRINTW(@"「우후%HTML_AH2_K39()%  당장 폭발할 것 같구나?」")
 ;OriginalString : 「ほら、慌てないで。ゆっくり、신중함にね」
 		PRINTFORMW 「이봐요, 당황하지 마. 천천히, 신중하게」
 	ELSE
 ;OriginalString : 「その様子だと、すぐにイってしまいそうですね」
 		PRINTFORMW 「그 모습이라고, 곧바로 이는 버릴 것 같네요」
-		CALL HTMLPRINTW(@"「でも、少しは愉しませてくださいよ？ 期待してるんですから%HTML_PS_K39()%」")
+		CALL HTMLPRINTW(@"「그렇지만, 조금은 즐겁게 해 주세요? 기대하고 있으니까%HTML_PS_K39()%」")
 	ENDIF
 ;OriginalString : %CALLNAME:TARGET%は사정間際의 페니스が暴発しないよう括約筋を緩め、%ANUS_DESCRIPTION(TARGET)%の最奥へと導いた…
 	PRINTFORMDW %CALLNAME:TARGET%(은)는 사정 직전의 페니스가 폭발하지 않게 괄약근을 느슨한,%ANUS_DESCRIPTION(TARGET)%의 최안쪽으로 이끌었다…
 	RETURN 1
 ENDIF
 
-;죠교자が정욕
+;죠교자가정욕
 ;============
 IF T_COND("정욕")
 ;OriginalString : %CALLNAME:TARGET%はたぎる정욕を抑えきれず、自らねっとりと했다愛液を엉덩이に塗りたくり
 	PRINTFORMDL %CALLNAME:TARGET%(은)는 끓어오르는 정욕을 억제하지 않고, 스스로새로 한 애액을 애널에 발라 빼앗아
 ;OriginalString : %CALLNAME:MASTER%의 삽입を促했다…
 	PRINTFORMDW %CALLNAME:MASTER%의 삽입을 재촉했다…
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇっ、は、はやく삽입れてよぉっ！」
-		PRINTFORMW 「응 , 는, 빠르게 삽입라고！」
+		PRINTFORMW 「응, 는, 빠르게 삽입라고!」
 ;OriginalString : 「おしりが疼いて、おかしくなっちゃう…ッ…！」
-		PRINTFORMW 「엉덩이가 쑤셔, 이상해져버린다……！」
+		PRINTFORMW 「엉덩이가 쑤셔, 이상해져버린다……!」
 	ELSE
 ;OriginalString : 「はやくっ！ 早く、삽입れてくださいっ！」
-		PRINTFORMW 「빠르게！ 빨리, 삽입라고 주세요！」
+		PRINTFORMW 「빠르게! 빨리, 삽입라고 주세요!」
 ;OriginalString : 「おしりが切なくて、待ちきれません！」
-		PRINTFORMW 「엉덩이가 안타까워서, 기다릴 수 없습니다！」
+		PRINTFORMW 「엉덩이가 안타까워서, 기다릴 수 없습니다!」
 	ENDIF
-	;PRINTFORMDL %CALLNAME:MASTER%は%CALLNAME:TARGET%の膣입で페니스に愛液を馴染ませた後、それを全体に塗り広げ
-	;PRINTFORMDW 先端をあてがうと、期待にヒクつく엉덩이を一気に最奥まで貫いた…
+	;PRINTFORMDL %CALLNAME:MASTER%는 %CALLNAME:TARGET%의 질입로페니스에 애액을 친숙해 지게 한 후, 그것을 전체에 펴바름
+	;PRINTFORMDW 첨단을위안할당 라고 기대에 실룩거리는엉덩이를 단번에 최안쪽까지 관철했다…
 	RETURN 1
 ENDIF
 
-;기타・조건없음
+;기타·조건없음
 ;================
-IF 구상記入チェック(100)
-	;Ａ감각4以上
+IF 구상기입체크(100)
+	;Ａ감각 4 이상
 	;===========
 	IF ABL:TARGET:Ａ감각 >= 4
 ;OriginalString : %CALLNAME:TARGET%はほぐれきった엉덩이を見せつけ、%CALLNAME:MASTER%의 욕정を煽っている…
 		PRINTFORMDW %CALLNAME:TARGET%자포자기하고 자른 애널를 과시해%CALLNAME:MASTER%의 욕정을 부추기고 있다…
 ;OriginalString : 
 		PRINTL
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇ、もう準備出来てるから…」
 			PRINTFORMW 「응, 이제 준비 되어있기 때문에…」
 ;OriginalString : 「いいよ…遠慮しないで。思いっきり突いて…」
@@ -1079,17 +1079,17 @@ IF 구상記入チェック(100)
 ;OriginalString : 「遠慮なく、思いっきり突いてください…」
 			PRINTFORMW 「사양말고, 마음껏 찔러 주세요…」
 		ENDIF
-		;PRINTFORMDL %CALLNAME:MASTER%は%CALLNAME:TARGET%の膣입から溢れる愛液をすくい取り、페니스に塗りつけ
-		;PRINTFORMDW 先端を엉덩이にあてがうと、一気に最奥まで突き刺했다…
+		;PRINTFORMDL %CALLNAME:MASTER%는 %CALLNAME:TARGET%의 질입로부터 흘러넘치는 애액을 건져 올려, 페니스에 바르고
+		;PRINTFORMDW 첨단을엉덩이에위안할당 와 단번에 최안쪽까지 찔러 회했다…
 		RETURN 1
 	ENDIF
 
-	;まだ馴染んでない
+	;아직 친숙해 지지 않았다
 	;================
 	IF ABL:TARGET:Ａ감각 < 4
 ;OriginalString : %CALLNAME:TARGET%は気恥ずかしげに%CALLNAME:MASTER%의 眼前に엉덩이を晒している…
 		PRINTFORMDW %CALLNAME:TARGET%(은)는 기치않다 기울 수 있는에%CALLNAME:MASTER%의 눈앞에 애널를 쬐고 있다…
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「そんなに見られると、ちょっと恥ずかしい…」
 			PRINTFORMW 「그렇게 볼 수 있으면, 조금 부끄럽다…」
 ;OriginalString : 「でも、いいよ……きて…」
@@ -1100,8 +1100,8 @@ IF 구상記入チェック(100)
 ;OriginalString : 「でも、いいですよ。来てください…」
 			PRINTFORMW 「 그렇지만, 좋아요. 와 주세요…」
 		ENDIF
-		;PRINTFORMDL %CALLNAME:MASTER%は%CALLNAME:TARGET%の膣입から指先に愛液をすくい取り、二本の指で장내を軽くかき混ぜたあと
-		;PRINTFORMDW 十分に愛液を塗했다페니스를腸壁の抵抗を感じつつ、신중함に奥へと進めていった…
+		;PRINTFORMDL %CALLNAME:MASTER%는 %CALLNAME:TARGET%의 질입로부터 손가락끝에 애액을 건져 올려, 2 개의 손가락으로장내를 가볍게 휘저은 뒤
+		;PRINTFORMDW 충분히 애액을 도했다페니스를장벽의 저항을 느끼면서, 신중함에 안쪽으로 진행해 갔다…
 		RETURN 1
 	ENDIF
 ENDIF
@@ -1111,33 +1111,33 @@ ENDIF
 ;ACT103, 역강간//
 ;//////////////////
 [SKIPSTART]
-	#죠교자が기승위で強引に성교渉に及ぶ
-	#죠교대상に페니스、페니스밴드がない場合は発生しない
-	#죠교자が페니스밴드장착中の場合は発生しない
-	#죠교대상の발기도が1000以下の場合は発生しない
-	#죠교자が남자の場合は発生しない
-	#죠교대상が오나홀사용중の場合には発生しない
-	#성교중からは派生しない
-	#Ａ성교봉사중からは派生しない
-	#主導権は죠교대상"SEX_INITIATIVE(TARGET)"
+	#죠교자가기승위로 억지로성교섭에 이른다
+	#죠교대상에페니스, 페니스밴드가 없는 경우는 발생하지 않는다
+	#죠교자가페니스밴드장착중의 경우는 발생하지 않는다
+	#죠교대상의발기도가 1000 이하의 경우는 발생하지 않는다
+	#죠교자가남자의 경우는 발생하지 않는다
+	#죠교대상가오나홀사용중의 경우에는 발생하지 않는다
+	#성교중로부터는 파생하지 않는다
+	#Ａ성교봉사중로부터는 파생하지 않는다
+	#주도권은죠교대상"SEX_INITIATIVE(TARGET)"
 
-	*他の성교봉사系と異なり、죠교대상は抵抗できない
-	*죠교대상が동정なら동정상실が起こる
-	*죠교자が처녀なら처녀상실が起こる
-	*これらの処理は@ACTION_APPLY2_103にて行われる
+	*다른성교봉사계와 달리, 죠교대상는 저항 할 수 없다
+	*죠교대상가동정라면동정상실가 일어난다
+	*죠교자가처녀라면처녀상실가 일어난다
+	*이것들의 처리는@ACTION_APPLY2_103에서 행해진다
 [SKIPEND]
-@KOJO_MALE_ACT_K39_103 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사系から/3=Ａ성교系から/4=Ｖ성교系から/5=Ａ성교봉사系から)
+@KOJO_MALE_ACT_K39_103 ;TFLAG:ACT파생(0=통상/1=연속/2=Ｖ성교봉사계로부터/3=Ａ성교계로부터/4=Ｖ성교계로부터/5=Ａ성교봉사계로부터)
 #LOCALSIZE 1
 #LOCALSSIZE 1
 VARSET LOCAL
 VARSET LOCALS
 LOCAL:0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
-LOCALS:0 '= RAND_SPLIT("出/사정")
+LOCALS:0 '= RAND_SPLIT("출/사정")
 
-;성교봉사系初回用処理
+;성교봉사계 첫회용 처리
 CALL CHK_DEBUG_AND_FIRSTTIME_10_K39
 
-;성교系から派生했다ら0을반환
+;성교계로부터 파생했다등 0을반환
 SIF INRANGE(TFLAG:ACT파생, 3, 4)
 	RETURN 0
 
@@ -1146,37 +1146,37 @@ SIF INRANGE(TFLAG:ACT파생, 3, 4)
 ;====
 IF FIRSTACT(1)
 	IF TALENT:MASTER:동정
-;OriginalString : 「最初はあなから求めて欲しかったけど…私、もう참다出来ないんです…」
-		PRINTFORML 「처음은 구멍으로부터 요구했으면 좋았지만…나, 이제 인내 할 수 없습니다…」
-;OriginalString : 「でも、%CNAME(MASTER, TARGET)%の初めての女になれるのが嬉しいのは本当ですよ…」
-		PRINTFORMW 「 그렇지만,%CNAME(MASTER, TARGET)%의 처음의 여자가 될 수 있는 것이 기쁜 것은 사실이에요…」
+;OriginalString : 「처음은 구멍으로부터 요구하기를 원했지만… 나, 이제참다 할 수 없습니다…」
+		PRINTFORML 「처음은 구멍으로부터 요구했으면 좋았지만… 나, 이제 인내 할 수 없습니다…」
+;OriginalString : 「그렇지만,%CNAME(MASTER, TARGET)%의 처음의 여자가 될 수 있는 것이 기쁜 것은 사실이에요…」
+		PRINTFORMW 「그렇지만,%CNAME(MASTER, TARGET)%의 처음의 여자가 될 수 있는 것이 기쁜 것은 사실이에요…」
 	ELSE
-;OriginalString : 「二人の最初がこんな形でご免なさい…」
-		PRINTFORMW 「두 명의 최초가 이런 형태로 면없음 있고…」
-;OriginalString : 「私、もう참다できなくて…」
-		PRINTFORMW 「 나, 이제 참을 수 없어서…」
+;OriginalString : 「두 명의 최초가 이런 형태로 미안해요…」
+		PRINTFORMW 「두 명의 최초가 이런 형태로 면하세요…」
+;OriginalString : 「나, 이제참다 할 수 없어서…」
+		PRINTFORMW 「나, 이제 참을 수 없어서…」
 	ENDIF
-	;성교봉사判定に代入
+	;성교봉사판정에 대입
 	KFLAG:TARGET = 1
 	RETURN 1
 ENDIF
 [SKIPEND]
 
-;안빼고に続行 //역강간は汎用処理は使わない
+;안빼고에 속행//역강간는 범용 처리는 사용하지 않는다
 ;============
 IF TFLAG:안빼고
 	CALL QUAKE(4)
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 		SELECTCASE RANDACT(2, 10)
 			CASE 0
-				CALL HTMLPRINTW(@"「あっ%HTML_AH_K39()%　あぁんっ%HTML_AH_K39()%　や…どうして、こんなに…ッ…！」")
+				CALL HTMLPRINTW(@"「앗%HTML_AH_K39()%  아%HTML_AH_K39()%  나… 어째서, 이렇게……!」")
 				CALL QUAKE(4)
-				CALL HTMLPRINTW(@"「興奮が、とまらなくっ…てぇ…ッ！　あぁっ…%HTML_PS2_K39()%」")
+				CALL HTMLPRINTW(@"「흥분이, 멈추지 않고… 테에…!   아…%HTML_PS2_K39()%」")
 			CASE 1
 				{
 				CALL HTMLPRINTW(
-				@"「んんっ%HTML_AH_K39()%　あっ%HTML_AH_K39()%　" + 
-				@"あっ%HTML_AH_K39()%　中が……擦れ、て…ッ…！」")
+				@"「응읏%HTML_AH_K39()%  아%HTML_AH_K39()%　" + 
+				@"아%HTML_AH_K39()%  중이…… 스쳐, 라고……!」")
 				}
 		ENDSELECT
 	ELSE
@@ -1184,118 +1184,118 @@ IF TFLAG:안빼고
 			CASE 0
 				{
 				CALL HTMLPRINTW(
-				@"「んっ%HTML_AH_K39()%　んっ%HTML_AH_K39()%　あぁっ" + 
-				@"%HTML_AH_K39()%　いいですっ、もっと突き上げて…」")
+				@"「읏%HTML_AH_K39()%  응%HTML_AH_K39()%  아" + 
+				@"%HTML_AH_K39()%  좋습니닷, 좀 더 밀어올려…」")
 				}
 				CALL QUAKE(4)
 ;OriginalString : 「私、凄く興奮しちゃって……止まらなく……んぁぁっ…！」
-				PRINTFORMW 「 나, 굉장히 흥분해 버려서……멈추지 않고……응…！」
+				PRINTFORMW 「나, 굉장히 흥분해 버려서…… 멈추지 않고…… 응…!」
 			CASE 1
 				{
 				CALL HTMLPRINTW(
-				@"「んぁっ%HTML_AH_K39()%　あんっ" + 
-				@"%HTML_AH_K39()%　私、こんな事して…でも、とめられなくて……」")
+				@"「응앗%HTML_AH_K39()%  팥고물" + 
+				@"%HTML_AH_K39()%  나, 이런 일 해… 에서도, 멈추어지지 않아서……」")
 				}
 		ENDSELECT
 	ENDIF
-	;죠교자の쾌Ｖが一定以上
+	;죠교자의쾌Ｖ가 일정 이상
 	SIF PALAM:TARGET:쾌Ｖ > 8500
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 위で激しく腰を振り쾌락を貪っている…
 		PRINTFORMDW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 위에서 격렬하게 허리를 거절해 쾌락을 탐내고 있다…
 	RETURN 1
 ENDIF
 
-;ACT파생１：연속
+;ACT파생 1:연속
 ;===============
 IF TFLAG:ACT파생 == 1
-	;애태움中
+	;애태움중
 	;========
 	IF TCVAR:MASTER:애태움도 > 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ほら、こうやってじっくり嬲られるのも悪くないでしょ？」
-			PRINTFORMW 「이봐요, 이렇게 차분히 요의 것도 나쁘지 않지요？」
-			CALL HTMLPRINTW(@"「厄神の허리기술、たっぷり愉しんでね%HTML_PS_K39()%」")
+			PRINTFORMW 「이봐요, 이렇게 차분히 요의 것도 나쁘지 않지요?」
+			CALL HTMLPRINTW(@"「액신의허리기술, 충분히 즐겨%HTML_PS_K39()%」")
 	 	ELSE
 ;OriginalString : 「お互いの感触が良く伝わって、こういうのも良いですね…」
 	 		PRINTFORMW 「서로의 감촉이 자주(잘) 전해져, 이런 것도 좋네요…」
-	 		CALL HTMLPRINTW(@"「私の허리기술、じっくり味わってもらいますよ%HTML_PS_K39()%」")
+	 		CALL HTMLPRINTW(@"「나의허리기술, 차분히 맛보여 받아요%HTML_PS_K39()%」")
 	 	ENDIF
 		RETURN 1
 	ENDIF
 
-	;애태움終了
+	;애태움종료
 	;==========
 	IF TCVAR:MASTER:애태움도 == 1
-	 	IF LOCAL:0 ;호의、호감도で分岐
-			CALL HTMLPRINTW(@"「ん%RAND_SPLIT("ん/")%っ%HTML_AH_K39()%　これでいいかしら」")
+	 	IF LOCAL:0 ;호의, 호감도로 분기
+			CALL HTMLPRINTW(@"「응%RAND_SPLIT("응/")%%HTML_AH_K39()%  이것으로 좋을까」")
 ;OriginalString : 「ほら、子宮の入り입に当たってるの判る？」
-	 		PRINTFORMW 「이봐요, 자궁의 입구에 해당되어 안다？」
+	 		PRINTFORMW 「이봐요, 자궁의 입구에 해당되어 안다?」
 ;OriginalString : 「このまま%LOCALS:0%して…子宮の中、%CNAME(MASTER, TARGET)%でいっぱいにして…」
 	 		PRINTFORMW 「이대로%LOCALS:0%해…자궁안,%CNAME(MASTER, TARGET)%그리고 가득 해…」
 	 	ELSE
 ;OriginalString : 「これで、いいでしょうか」
 			PRINTFORMW 「이것으로, 좋을까요」
 ;OriginalString : 「判りますか？ %CNAME(MASTER, TARGET)%のが子宮の入り입まで届いてるの」
-			PRINTFORMW 「압니까？ %CNAME(MASTER, TARGET)%의가 자궁의 입구까지 닿아」
+			PRINTFORMW 「압니까?  %CNAME(MASTER, TARGET)%의가 자궁의 입구까지 닿아」
 ;OriginalString : 「さぁ、いいですよ…私の一番奥に%LOCALS:0%して下さい…」
 	 		PRINTFORMW 「, 좋아요…나의 가장 안쪽에%LOCALS:0%해 주세요…」
 	 	ENDIF
 		RETURN 1
 	ENDIF
 
-	;애태움なし
+	;애태움없음
 	;==========
 	IF !TCVAR:MASTER:애태움도
 		CALL QUAKE(4)
-		IF LOCAL:0 ;호의、호감도で分岐
-			;죠교대상が정욕
+		IF LOCAL:0 ;호의, 호감도로 분기
+			;죠교대상가정욕
 			IF M_COND("정욕")
-				CALL HTMLPRINTW(@"「な、なにこれ……こんなの知らないっ%HTML_AH_K39()%　しらないっ！」")
+				CALL HTMLPRINTW(@"「뭐, 뭐야 이것…… 이런 것 모른닷%HTML_AH_K39()%  모르닷!」")
 				CALL QUAKE(4)
 				{
 				CALL HTMLPRINTW(
-				@"「%RAND_SPLIT("う")%ぁっ%HTML_AH_K39()%　あぁんっ" + 
-				@"%HTML_AH_K39()%　おかしくっ、おかしくなっちゃうぅっ…！」")
+				@"「%RAND_SPLIT("")%%HTML_AH_K39()%  아" + 
+				@"%HTML_AH_K39()%  이상하고, 이상해져 버린다앗…!」")
 				}
 			ELSE
 				SELECTCASE RANDACT(2, 20)
 					CASE 0
 						{
 						CALL HTMLPRINTW(
-						@"「あんっ%HTML_AH_K39()%　や、気持ちよくって…" + 
-						@"とまらなくなっちゃう……%HTML_PS2_K39()%」")
+						@"「아읏%HTML_AH_K39()%  나, 기분 좋아서…" + 
+						@"멈추지 않게 되어 버린다……%HTML_PS2_K39()%」")
 						}
 						CALL QUAKE(4)
 						{
 						CALL HTMLPRINTW(
-						@"「どうしてっ！　こ、こんなに%RAND_SPLIT("ぃ/")%…感じちゃうのっ！　" + 
-						@"あっ%HTML_AH_K39()%　んぁっ…%HTML_PS2_K39()%」")
+						@"「어째서!   개, 이렇게%RAND_SPLIT("/")%… 느껴 버려! 　" + 
+						@"아%HTML_AH_K39()%  응…%HTML_PS2_K39()%」")
 						}
 					CASE 1
-						CALL HTMLPRINTW(@"「あっ%HTML_AH_K39()%　やっ%HTML_AH_K39()%　激しいっ！　激しいよぉっ…！」")
+						CALL HTMLPRINTW(@"「앗%HTML_AH_K39()%  나%HTML_AH_K39()%  격렬하닷!   격렬해…!」")
 						{
 						CALL HTMLPRINTW(
-						@"「だめぇっ%HTML_AH_K39()%　そんなに、突いたらぁ…っ" + 
-						@"%HTML_AH_K39()%　壊れるっ！　こわれちゃうぅっ…！」")
+						@"「안돼엣%HTML_AH_K39()%  그렇게, 찌르면…" + 
+						@"%HTML_AH_K39()%  망가진닷!   부서져 버린다앗…!」")
 						}
 				ENDSELECT
 			ENDIF
 		ELSE
 			SELECTCASE RANDACT(2, 21)
 				CASE 0
-					CALL HTMLPRINTW(@"「んんっ、あぁっ%HTML_AH_K39()%　腰が、止まらなく…ッ…%HTML_PS2_K39()%」")
+					CALL HTMLPRINTW(@"「응읏, 아앗%HTML_AH_K39()%  허리가, 멈추지 않고……%HTML_PS2_K39()%」")
 ;OriginalString : 「私、厄神なのに……こんなに……乱れて……」
 					PRINTFORMW 「 나, 액신인데……이렇게……흐트러져……」
 				CASE 1
 					{
 					CALL HTMLPRINTW(
-					@"「あんっ%HTML_AH_K39()%　あぁっ%HTML_AH_K39()%　" + 
-					@"はげしっ…激しいです…ッ…%HTML_PS2_K39()%」")
+					@"「아읏%HTML_AH_K39()%  아%HTML_AH_K39()%　" + 
+					@"벗길 수 있는 쉿… 격렬합니다……%HTML_PS2_K39()%」")
 					}
 					{
 					CALL HTMLPRINTW(
-					@"「こ、こんなに…、突き上げられたら、私っ…%HTML_AH_K39()%　" + 
-					@"んあぁっ……%HTML_PS2_K39()%」")
+					@"「이, 이렇게…, 밀어올릴 수 있으면, 나…%HTML_AH_K39()%　" + 
+					@"응아……%HTML_PS2_K39()%」")
 					}
 			ENDSELECT
 		ENDIF
@@ -1303,30 +1303,30 @@ IF TFLAG:ACT파생 == 1
 	ENDIF
 ENDIF
 
-;ACT파생２：体位変更 //他のＶ성교봉사系から
+;ACT파생 2:체위 변경//다른Ｖ성교봉사계로부터
 ;===================
 IF TFLAG:ACT파생 == 2
-	;애태움中
+	;애태움중
 	;========
 	IF TCVAR:MASTER:애태움도 > 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ふふ、この格好だとイかせるのもイかせないのも私次第ね」
 			PRINTFORMW 「후후, 이 모습이라면 이인가 다투는 것도 이나 등 있고 것도 나나름이군요」
-			CALL HTMLPRINTW(@"「ほら、ちょっと심술궂음してあげる…%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「이봐요, 조금심술궂음 해 준다…%HTML_PS_K39()%」")
 		ELSE
 ;OriginalString : 「ふふ、駄目ですよ。まだ가게해줘あげません」
 			PRINTFORMW 「후후, 안되어요. 아직 이나 키라고 주지 않습니다」
-			CALL HTMLPRINTW(@"「もう少しだけ愉しませてもらいますよ%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「조금만 더 즐겁게 해 받아요%HTML_PS_K39()%」")
 		ENDIF
 		RETURN 1
 	ENDIF
 
-	;애태움終了
+	;애태움종료
 	;==========
 	IF TCVAR:MASTER:애태움도 == 1
-		IF LOCAL:0 ;호의、호감도で分岐
+		IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇ判る？ %CNAME(MASTER, TARGET)%のが子宮の入り입まで届いてるの」
-			PRINTFORMW 「응 안다？ %CNAME(MASTER, TARGET)%의가 자궁의 입구까지 닿아」
+			PRINTFORMW 「응 안다?  %CNAME(MASTER, TARGET)%의가 자궁의 입구까지 닿아」
 ;OriginalString : 「いいよ、このまま%LOCALS:0%して。子宮の中に注ぎ込んで…」
 			PRINTFORMW 「좋아, 이대로%LOCALS:0%해. 자궁안에 쏟아…」
 		ELSE
@@ -1338,15 +1338,15 @@ IF TFLAG:ACT파생 == 2
 		RETURN 1
 	ENDIF
 
-	;애태움なし
+	;애태움없음
 	;===========
 	IF !TCVAR:MASTER:애태움도
-		IF LOCAL:0 ;호의、호감도で分岐
-			CALL HTMLPRINTW(@"「うふ、今度は私が犯してあげる……%HTML_PS_K39()%」")
+		IF LOCAL:0 ;호의, 호감도로 분기
+			CALL HTMLPRINTW(@"「우후, 이번은 내가 범해 준다……%HTML_PS_K39()%」")
 ;OriginalString : 「%CNAME(MASTER, TARGET)%はそのままでいいから…私のいやらしい姿、よく見ていて…」
 			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 그대로 좋으니까…나의 불쾌한 모습, 잘 보고 있어…」
 		ELSE
-			CALL HTMLPRINTW(@"「今度は私からシてあげます%HTML_PS_K39()%」")
+			CALL HTMLPRINTW(@"「이번은 나부터 시라고 줍니다%HTML_PS_K39()%」")
 ;OriginalString : 「%CNAME(MASTER, TARGET)%は少し休んでいてください…」
 			PRINTFORMW 「%CNAME(MASTER, TARGET)%(은)는 조금 쉬고 있어 주세요…」
 		ENDIF
@@ -1354,75 +1354,75 @@ IF TFLAG:ACT파생 == 2
 	ENDIF
 ENDIF
 
-;ACT파생５：Ａ성교봉사系から
+;ACT파생 5:Ａ성교봉사계로부터
 ;===========================
 IF TFLAG:ACT파생 == 5
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「んっ、もうダメっ！ 前が疼いちゃって、참다できない…ッ…！」
-		PRINTFORMW 「응, 이제 안 됨！ 앞이 쑤셔 버려서, 참을 수 없다……！」
+		PRINTFORMW 「응, 이제 안 됨! 앞이 쑤셔 버려서, 참을 수 없다……!」
 ;OriginalString : 「――今度は私が犯してあげる。今…삽입れるから、動かないで……」
 		PRINTFORMW 「――이번은 내가 범해 준다. 지금…삽입로부터, 움직이지 마……」
 	ELSE
 ;OriginalString : 「%CNAME(MASTER, TARGET)%はちょっと休んでいてくださいね…？」
-		PRINTFORML 「%CNAME(MASTER, TARGET)%(은)는 조금 쉬고 있어 주세요…？」
-		CALL HTMLPRINTW(@"「あとは私が……んっ%HTML_AH_K39()%　あぁっ…%HTML_PS2_K39()%」")
+		PRINTFORML 「%CNAME(MASTER, TARGET)%는 조금 쉬고 있어 주세요…?」
+		CALL HTMLPRINTW(@"「뒤는 내가…… 읏%HTML_AH_K39()%  아…%HTML_PS2_K39()%」")
 	ENDIF
 	RETURN 1
 ENDIF
 
-;죠교대상が가버려
+;죠교대상가가버려
 ;==================
 IF TCVAR:MASTER:가버려
-	IF LOCAL:0 ;호의、호감도で分岐
+	IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ほら、中で가게해줘あげる。%CNAME(MASTER, TARGET)%もココでイきたいんでしょう？」
-		PRINTFORMW 「이봐요, 안으로 이나 키라고 준다.%CNAME(MASTER, TARGET)%도 코코로 이 오고 싶겠지요？」
-		CALL HTMLPRINTW(@"「でも、あんまり簡単にはイかないでよね%HTML_PS_K39()%」")
+		PRINTFORMW 「이봐요, 안으로 이나 키라고 준다.%CNAME(MASTER, TARGET)%도 코코로 이 오고 싶겠지요?」
+		CALL HTMLPRINTW(@"「그렇지만, 너무 간단하게는 가지 말아요%HTML_PS_K39()%」")
 	ELSE
 ;OriginalString : 「んっ、今にもイってしまいそうですね」
 		PRINTFORMW 「응, 당장 이는 버릴 것 같네요」
-		CALL HTMLPRINTW(@"「でも、少しは愉しませてくださいね%HTML_PS_K39()%」")
+		CALL HTMLPRINTW(@"「그렇지만, 조금은 즐겁게 해 주세요%HTML_PS_K39()%」")
 	ENDIF
 	RETURN 1
 ENDIF
 
-;기타・조건없음
+;기타·조건없음
 ;================
-IF 구상記入チェック(100)
-	IF LOCAL:0 ;호의、호감도で分岐
+IF 구상기입체크(100)
+	IF LOCAL:0 ;호의, 호감도로 분기
 		{
 ;OriginalString : 「%RAND_SPLIT(
 		PRINTFORMW 「%RAND_SPLIT(
-		"ほら、動かないで……私が犯してあげるから…/" + 
-		@"%CNAME(MASTER, TARGET)%はじっとしてて。厄神の本気、見せてあげるわ…/" + 
-		@"%CNAME(MASTER, TARGET)%は何もしなくていいわ。私が愉しませてあげる…/" + 
-		@"%CNAME(MASTER, TARGET)%が欲しくて……もう참다できないっ…！")%」
+		"이봐요, 움직이지 말고…… 내가 범해 주기 때문에…/" + 
+		@"%CNAME(MASTER, TARGET)%는 가만히 하고 있어. 액신의 진심, 보여 주어요…/" + 
+		@"%CNAME(MASTER, TARGET)%는 아무것도 하지 않아도 괜찮아요. 내가 즐겁게 해 준다…/" + 
+		@"%CNAME(MASTER, TARGET)%를 갖고 싶고…… 이제참다 할 수 없닷…!")%」
 		}
 	ELSE
 		{
 ;OriginalString : 「%RAND_SPLIT(
 		PRINTFORMW 「%RAND_SPLIT(
-		"さぁ、私からシてあげます。動かないで下さいね…/" + 
-		"心配いりませんよ。あとは全部、わたしに任せて…/" + 
-		"これから何をするのか、言わなくても判りますよね？ ふふ")%」
+		", 나부터 시라고 줍니다. 움직이지 말아 주세요…/" + 
+		"걱정 필요 없어요. 뒤는 전부, 나에게 맡겨…/" + 
+		"지금부터 무엇을 하는지, 말하지 않아도 아는군요? 후후")%」
 		}
 	ENDIF
 	{
 ;OriginalString : %CALLNAME:TARGET%は%RAND_SPLIT(
 	PRINTFORMDW %CALLNAME:TARGET%(은)는 %RAND_SPLIT(
-	"発情しきった雌の表情で/" + 
-	@"愛液の滴る%VAGINA_DESCRIPTION2(TARGET)%を見せつけながら/" + 
-	"自らを指で慰めながら/" + 
-	"정욕に燃える女の表情で")% %CALLNAME:MASTER%に跨り、一気に페니스를膣奥まで咥え込んだ…
+	"발정해 버린 암컷의 표정으로/" + 
+	@"애액이 방울져 떨어진다%VAGINA_DESCRIPTION2(TARGET)%를 과시하면서/" + 
+	"스스로를 손가락으로 위로하면서/" + 
+	"정욕에 불타는 여자의 표정으로")% %CALLNAME:MASTER%에 걸쳐, 단번에페니스를질 안쪽까지 물었다…
 	}
 	RETURN 1
 ENDIF
 
 
-;##########
-;関数置き場
-;##########
+;     
+;함수 두는 곳
+;     
 
-;안빼고用。역강간以外で使用するもの
+;안빼고용. 역강간 이외로 사용하는 것
 ;////////////////////////////////////
 @PRINT_KOJO_ACT_GRU10_0
 #LOCALSIZE 1
@@ -1430,62 +1430,62 @@ VARSET LOCAL
 LOCAL:0 = GET_KFLAG_K39("상사상애", (FLAG:주인님))
 
 CALL QUAKE(4)
-;죠교자のPALAMによって派生
+;죠교자의 PALAM에 의해 파생
 SELECTCASE PALAM:TARGET:쾌Ｖ || PALAM:TARGET:쾌Ａ
 	CASE IS >= 8500
 		{
 		CALL HTMLPRINTW(
-		@"「んあぁぁっ%HTML_AH_K39()%　だめっ%HTML_AH_K39()%　" + 
-		@"すごいぃっ！　あぁぁっ…%HTML_PS2_K39()%」")
+		@"「응아앗%HTML_AH_K39()%  안됏%HTML_AH_K39()%　" + 
+		@"굉장하다앗!   아…%HTML_PS2_K39()%」")
 		}
 		CALL QUAKE(4)
 		IF RAND:2
-			IF LOCAL:0 ;호의、호감도で分岐
+			IF LOCAL:0 ;호의, 호감도로 분기
 				{
 				CALL HTMLPRINTW(
-				@"「おかしくなっちゃう%HTML_AH_K39()%　%RAND_SPLIT(
-				"良/感じ")%すぎてぇっ、おかしくなっちゃうっ…ッ…%HTML_PS2_K39()%」")
+				@"「이상해져 버린다%HTML_AH_K39()%　%RAND_SPLIT(
+				"양/느낌")%지나앗, 이상해져 버린닷……%HTML_PS2_K39()%」")
 				}
 			ELSE
-				CALL HTMLPRINTW(@"「わ、わたしっ！ こんなの、もう……耐えられ…ッ%HTML_PS2_K39()%」")
+				CALL HTMLPRINTW(@"「나, 나! 이런 건, 이제(벌써)…… 참을 수 있는…%HTML_PS2_K39()%」")
 			ENDIF
 		ELSE
 			{
 			CALL HTMLPRINTW(
-			@"「犯して\@ !LOCAL:0 ? ください # \@っ、もっとっ！　\@ IS_NOWACTNAME("항문섹스시킨다") 
-			? おしりを犯してぇっ # もっと \@！　んあぁっ…ッ…%HTML_PS2_K39()%」")
+			@"「범해\@ !LOCAL:0 ? 주세요 # \@, 좀 더! 　\@ IS_NOWACTNAME("항문섹스시킨다") 
+			? 엉덩이를 범해 # 좀 더 \@!   응아……%HTML_PS2_K39()%」")
 			}
 		ENDIF
 	CASE IS >= 5000
 		{
 		CALL HTMLPRINTW(
-		@"「あ%RAND_SPLIT("ぁ/")%っ%HTML_AH_K39()%　%RAND_SPLIT("う/")%んっ%RAND_SPLIT("っ/")%、" + 
-		@"あっ%HTML_AH_K39()%　%RAND_SPLIT("ん/ふ/っ")%あぁっ…%HTML_PS2_K39()%」")
+		@"「아%RAND_SPLIT("/")%%HTML_AH_K39()%　%RAND_SPLIT("/")%응%RAND_SPLIT("/")%、" + 
+		@"아%HTML_AH_K39()%　%RAND_SPLIT("응//읏")%아…%HTML_PS2_K39()%」")
 		}
 		CALL QUAKE(4)
 		SELECTCASE AUTORAND(4, 195)
 			CASE 0
 				{
 				CALL HTMLPRINTW(
-				@"「あぁんっ、突いて\@ LOCAL:0 ? ぇっ # ください \@" + 
-				@"%HTML_AH_K39()%　もっと、奥までぇ…ッ…%HTML_PS2_K39()%」")
+				@"「아아읏, 찔러\@ LOCAL:0 ? # 주세요 \@" + 
+				@"%HTML_AH_K39()%  좀 더, 안쪽까지……%HTML_PS2_K39()%」")
 				}
 			CASE 1
 				{
 				CALL HTMLPRINTW(
-				@"「んあぁぁっ%HTML_AH_K39()%　だめっ%HTML_AH_K39()%　" + 
-				@"すごいぃっ……あぁぁっ…%HTML_PS2_K39()%」")
+				@"「응아앗%HTML_AH_K39()%  안됏%HTML_AH_K39()%　" + 
+				@"굉장하다앗…… 아앗…%HTML_PS2_K39()%」")
 				}
 			CASE 2
 				{
 				CALL HTMLPRINTW(
-				@"「あっ%HTML_AH_K39()%　ああぁぁっ！　ひぁっ、あふっ…" + 
-				@"あっ%HTML_AH_K39()%　あぁっ%HTML_PS2_K39()%」")
+				@"「앗%HTML_AH_K39()%  아!   히, 아훗…" + 
+				@"아%HTML_AH_K39()%  아%HTML_PS2_K39()%」")
 				}
 			CASE 3
 				{
 				CALL HTMLPRINTW(
-				@"「%RAND_SPLIT("んっ、くっ！　あっ、あっ、あぁっ/あぁっ、うんっっ！　あっ……んあぁっ")%" + 
+				@"「%RAND_SPLIT("응, 쿳!   아, 아, 아/아앗, 우읏!   아…… 응아앗")%" + 
 				@"…%HTML_PS2_K39()%」")
 				}
 ;OriginalString : 「いい\@ LOCAL:0 ? よ # ですよ \@…もっと\@ LOCAL:0 ? 격렬하게も # 突いてください \@……」
@@ -1494,7 +1494,7 @@ SELECTCASE PALAM:TARGET:쾌Ｖ || PALAM:TARGET:쾌Ａ
 ENDSELECT
 
 
-;ACT파생1用(역강간は除く)
+;ACT파생 1용(역강간는 제외함)
 ;//////////////////////////
 @PRINT_KOJO_ACT_GRU10_1_K39
 #LOCALSIZE  1
@@ -1502,36 +1502,36 @@ ENDSELECT
 VARSET LOCAL
 VARSET LOCALS
 LOCAL :0  = GET_KFLAG_K39("상사상애", (FLAG:주인님))
-LOCALS:0 '= RAND_SPLIT("出/사정")
+LOCALS:0 '= RAND_SPLIT("출/사정")
 
 SELECTCASE TCVAR:MASTER:애태움도
-	;애태움中
+	;애태움중
 	CASE IS > 1
-		;ACT毎の派生
+		;ACT 마다의 파생
 		SELECTCASE GET_ACTNAME(TFLAG:ACT)
 			CASE "정상위시킨다", "배면좌위시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ほら、こうやってじっくり嬲られるのも悪くないでしょ？」
-					PRINTFORMW 「이봐요, 이렇게 차분히 요의 것도 나쁘지 않지요？」
-					CALL HTMLPRINTW(@"「厄神の허리기술、たっぷり愉しんでね%HTML_PS_K39()%」")
+					PRINTFORMW 「이봐요, 이렇게 차분히 요의 것도 나쁘지 않지요?」
+					CALL HTMLPRINTW(@"「액신의허리기술, 충분히 즐겨%HTML_PS_K39()%」")
 				ELSE
 ;OriginalString : 「お互いの感触が良く伝わって、こういうのも良いですね…」
 					PRINTFORMW 「서로의 감촉이 자주(잘) 전해져, 이런 것도 좋네요…」
-					CALL HTMLPRINTW(@"「私の中の感触、じっくり味わってもらいますよ%HTML_PS_K39()%」")
+					CALL HTMLPRINTW(@"「나의 안의 감촉, 차분히 맛보여 받아요%HTML_PS_K39()%」")
 				ENDIF
 			CASE "후배위시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ふふ、そんなに夢中になっちゃって」
 					PRINTFORMW 「후후, 그렇게 열중해 버려서」
-					CALL HTMLPRINTW(@"「後ろからすると興奮する？ でも、もう少し참다して%HTML_PS_K39()%」")
+					CALL HTMLPRINTW(@"「뒤로부터 하면 흥분해? 그렇지만, 좀 더참다 해%HTML_PS_K39()%」")
 				ELSE
 ;OriginalString : 「んっ、激しいですね。そんなにイきたいですか？」
-					PRINTFORMW 「응, 격렬하네요. 그렇게 이 오고 싶습니까？」
-					CALL HTMLPRINTW(@"「でも、もう少しだけ참다してもらいますよ%HTML_PS_K39()%」")
+					PRINTFORMW 「응, 격렬하네요. 그렇게 이 오고 싶습니까?」
+					CALL HTMLPRINTW(@"「그렇지만, 조금만 더참다 해 받아요%HTML_PS_K39()%」")
 				ENDIF
 			CASE "대면좌위시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
-					CALL HTMLPRINTW(@"「うふ%HTML_AH2_K39()%　ぎゅってされると動けないでしょ？」")
+				IF LOCAL:0 ;호의, 호감도로 분기
+					CALL HTMLPRINTW(@"「우후%HTML_AH2_K39()%  꽉 되면 움직일 수 없지요?」")
 ;OriginalString : 「まだイっちゃ駄目……もう少しこのままでい%RAND_SPLIT("させ/")%て…」
 					PRINTFORMW 「 아직 이타목……좀 더 이대로 있고%RAND_SPLIT("시키고/")%(이)라고…」
 				ELSE
@@ -1542,26 +1542,26 @@ SELECTCASE TCVAR:MASTER:애태움도
 				ENDIF
 			;CASE "배면좌위시킨다"
 			CASE "항문섹스시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 					{
 					CALL HTMLPRINTW(
-					@"「ふふ、\@ TENSION(TARGET, 8) == "高い" ? ダ～メ # 駄目よ \@" + 
-					@"%HTML_AH2_K39()%　まだ가게해줘てあげないわ」")
+					@"「후후,\@ TENSION(TARGET, 8) == "높다" ? 다～메 # 안 돼요 \@" + 
+					@"%HTML_AH2_K39()%  아직가게해줘라고 주지 않아요」")
 					}
 ;OriginalString : 「だって…ねぇ？ %CNAME(MASTER, TARGET)%の切なそうな声、もう少し聞いていたいもの…」
-					PRINTFORMW 「이래…응？ %CNAME(MASTER, TARGET)%의 안타까운 것 같은 소리, 좀 더 (들)물어 아픈 것…」
+					PRINTFORMW 「이래… 응?  %CNAME(MASTER, TARGET)%의 안타까운 것 같은 소리, 좀 더 (들)물어 아픈 것…」
 				ELSE
-					CALL HTMLPRINTW(@"「そろそろ限界みたいですね？ ふふ…%HTML_PS_K39()%」")
+					CALL HTMLPRINTW(@"「슬슬 한계같네요? 후후…%HTML_PS_K39()%」")
 ;OriginalString : 「でも駄目ですよ。もう少し私に付き合ってもらいますから…」
 					PRINTFORMW 「 그렇지만 안되어요. 좀 더 나가 교제해 줄테니까…」
 				ENDIF
 		ENDSELECT
-	;애태움終了
+	;애태움종료
 	CASE 1
-		;ACT毎の派生
+		;ACT 마다의 파생
 		SELECTCASE GET_ACTNAME(TFLAG:ACT)
 			CASE "정상위시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ほら、いいよ…%TNAME_K39()%の一番奥に%LOCALS:0%して……」
 					PRINTFORMW 「이봐요, 좋아…%TNAME_K39()%의 가장 안쪽에%LOCALS:0%해……」
 				ELSE
@@ -1569,7 +1569,7 @@ SELECTCASE TCVAR:MASTER:애태움도
 					PRINTFORMW 「, 좋아요…나의 가장 안쪽에%LOCALS%해 주세요…」
 				ENDIF
 			CASE "후배위시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「いい、わよ…、가게해줘あげる」
 					PRINTFORML 「좋은, 원이야…, 이나 키라고 준다」
 ;OriginalString : 「ほら、%TNAME_K39()%の一番奥に%LOCALS:0%して……」
@@ -1581,8 +1581,8 @@ SELECTCASE TCVAR:MASTER:애태움도
 					PRINTFORMW 「 나의 가장 안쪽에,%LOCALS:0%해 주세요……」
 				ENDIF
 			CASE "대면좌위시킨다"
-				CALL HTMLPRINTW(@"「あっ%HTML_AH_K39()%　奥に、当たってっ…%HTML_PS2_K39()%」")
-				IF LOCAL:0 ;호의、호감도で分岐
+				CALL HTMLPRINTW(@"「앗%HTML_AH_K39()%  안쪽에, 맞앗…%HTML_PS2_K39()%」")
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ほら、いいよ…%TNAME_K39()%の一番奥に%LOCALS:0%して……」
 					PRINTFORMW 「이봐요, 좋아…%TNAME_K39()%의 가장 안쪽에%LOCALS:0%해……」
 ;OriginalString : 「키스하면서가게해줘あげる…」
@@ -1594,7 +1594,7 @@ SELECTCASE TCVAR:MASTER:애태움도
 					PRINTFORMW 「이봐요, 키스 하면서 이나 키라고 줍니다…」
 				ENDIF
 			CASE "배면좌위시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「このまま中に%LOCALS:0%して」
 					PRINTFORML 「이대로 안에%LOCALS:0%하며」
 ;OriginalString : 「もっと%CNAME(MASTER, TARGET)%を感じさせて…」
@@ -1604,7 +1604,7 @@ SELECTCASE TCVAR:MASTER:애태움도
 					PRINTFORMW 「좋아요…이대로 안에%LOCALS:0%해 주세요…」
 				ENDIF
 			CASE "항문섹스시킨다"
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ほら、いいよ……、%TNAME_K39()%のおしりの中に%LOCALS:0%して…」
 					PRINTFORMW 「이봐요, 좋아……,%TNAME_K39()%의 엉덩이안에%LOCALS:0%해…」
 				ELSE
@@ -1612,158 +1612,158 @@ SELECTCASE TCVAR:MASTER:애태움도
 					PRINTFORMW 「, 좋습니다,……나의 엉덩이로 이나 키라고 줍니다…」
 				ENDIF
 		ENDSELECT
-	;애태움無し
+	;애태움없음
 	CASEELSE
-		;Ｖ성교봉사系。台詞の処理 //역강간は汎用処理しないので除外
+		;Ｖ성교봉사계. 대사의 처리//역강간는 범용 처리하지 않기 때문에 제외
 		IF IS_NOWACTNAME("정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다") && V_SEX(MASTER)
 			CALL QUAKE(4)
-			;PALAM:쾌Ｖ派生
+			;PALAM:쾌Ｖ파생
 			SELECTCASE PALAM:TARGET:쾌Ｖ
-				;죠교자が가버려
+				;죠교자가가버려
 				CASE IS >= 8500
-					IF LOCAL:0 ;호의、호감도で分岐
+					IF LOCAL:0 ;호의, 호감도로 분기
 						{
 						CALL HTMLPRINTW(
-						@"「ふあぁっ%HTML_AH_K39()%　ああぁぁっ%HTML_AH_K39()%　" + 
-						@"やっ、あっ、あぁぁっ…%HTML_PS2_K39()%」")
+						@"「후아앗%HTML_AH_K39()%  아%HTML_AH_K39()%　" + 
+						@"나, 아, 아앗…%HTML_PS2_K39()%」")
 						}
 						CALL QUAKE(4)
 						{
 						CALL HTMLPRINTW(
-						@"「だめっ%HTML_AH_K39()%　死んじゃうっ！　" + 
-						@"こんなに、당했다らぁっ…ッ…%HTML_PS2_K39()%」")
+						@"「안됏%HTML_AH_K39()%  죽어 버린닷! 　" + 
+						@"이렇게, 당했다등……%HTML_PS2_K39()%」")
 						}
 					ELSE
 						{
 						CALL HTMLPRINTW(
-						@"「ああぅっ%HTML_AH_K39()%　んっっ…あっ%HTML_AH_K39()%　" + 
-						@"あっ%HTML_AH_K39()%　あぁっ…%HTML_PS2_K39()%」")
+						@"「아아웃%HTML_AH_K39()%  응… 앗%HTML_AH_K39()%　" + 
+						@"아%HTML_AH_K39()%  아…%HTML_PS2_K39()%」")
 						}
 						CALL QUAKE(4)
 						{
 						CALL HTMLPRINTW(
-						@"「こ、こんなのって……やっ%HTML_AH_K39()%　やんっ%HTML_AH_K39()%　" + 
-						@"はぁっ、んんっ…%HTML_PS2_K39()%」")
+						@"「이, 이런 건은…… 얏%HTML_AH_K39()%  %HTML_AH_K39()%　" + 
+						@"후~, 응읏…%HTML_PS2_K39()%」")
 						}
 					ENDIF
-				;PALAM:쾌Ｖが5000以上
+				;PALAM:쾌Ｖ가 5000이상
 				CASE IS >= 5000
 					IF LOCAL:0
 						{
 						CALL HTMLPRINTW(
-						@"「ああぅっ、んっ%HTML_AH_K39()%　やっ！　" + 
-						@"お、奥に…当たってぇっ…ッ…%HTML_PS2_K39()%」")
+						@"「아아웃, 읏%HTML_AH_K39()%  나! 　" + 
+						@", 안쪽에… 맞아앗……%HTML_PS2_K39()%」")
 						}
 					ELSE
 						{
 						CALL HTMLPRINTW(
-						@"「あっ、あっ%HTML_AH_K39()%　こ、こんなのっ…やっ、やんっ！　" + 
-						@"はぁっ…ッ…%HTML_PS2_K39()%」")
+						@"「아, 앗%HTML_AH_K39()%  개, 이런 건… 야, 야읏! 　" + 
+						@"후~……%HTML_PS2_K39()%」")
 						}
 					ENDIF
-				;その他
+				;그 외
 				CASEELSE
 					IF LOCAL:0
 						{
 						CALL HTMLPRINTW(
-						@"「%RAND_SPLIT("私は/")%大丈夫、だから……" + 
-						@"ね、もっと激しく……んんっ%HTML_PS2_K39()%」")
+						@"「%RAND_SPLIT("나는/")%괜찮아, 그러니까……" + 
+						@"군요, 좀 더 격렬하고…… 응읏%HTML_PS2_K39()%」")
 						}
 					ELSE
-						CALL HTMLPRINTW(@"「いい、ですよ……もっと、激しくシてください……んっ%HTML_PS2_K39()%」")
+						CALL HTMLPRINTW(@"「좋은, 이에요…… 좀 더, 격렬하게 시라고 주세요…… 읏%HTML_PS2_K39()%」")
 					ENDIF
 			ENDSELECT
-		;Ａ성교봉사系
+		;Ａ성교봉사계
 		ELSE
 			IF 0
-			;죠교대상が참다している
+			;죠교대상가참다 하고 있다
 			ELSEIF TCVAR:MASTER:참다
 ;OriginalString : イキそう된 %CALLNAME:MASTER%は僅かに抽送のペースを落と했다…
 				PRINTFORMDL 이키 그렇게 된 %CALLNAME:MASTER%(은)는 불과에 추송의 페이스를 떨어뜨렸다…
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 ;OriginalString : 「ねぇっ、こんなの嫌っ…もっと、もっと動いてよ…」
 					PRINTFORMW 「응 , 이런 건 혐…좀 더, 좀 더 움직여…」
-					CALL HTMLPRINTW(@"「でも……すぐにイッては駄目だからね%HTML_PS_K39()%」")
+					CALL HTMLPRINTW(@"「그렇지만…… 곧바로 가서는 안되니까%HTML_PS_K39()%」")
 				ELSE
 ;OriginalString : 「んっ、そろそろ限界みたいですね…」
 					PRINTFORMW 「응, 이제 한계같네요…」
 ;OriginalString : 「%CNAME(MASTER, TARGET)%が動かないなら、私が少し動いてあげましょうか…？」
-					PRINTFORMW 「%CNAME(MASTER, TARGET)%하지만 움직이지 않으면, 내가 조금 움직여 줄까요…？」
-					CALL FADE_TO_CLEARLINE(12, "「クスクス…」")
+					PRINTFORMW 「%CNAME(MASTER, TARGET)%하지만 움직이지 않으면, 내가 조금 움직여 줄까요…?」
+					CALL FADE_TO_CLEARLINE(12, "「킥킥…」")
 				ENDIF
-			;죠교대상が가버려
+			;죠교대상가가버려
 			ELSEIF !TCVAR:MASTER:참다 && TCVAR:MASTER:가버려
 				CALL QUAKE(4)
-				IF LOCAL:0 ;호의、호감도で分岐
+				IF LOCAL:0 ;호의, 호감도로 분기
 					{
 					CALL HTMLPRINTW(
-					@"「やぁぁっ%HTML_AH_K39()%　あんっ、あぁっ" + 
-					@"%HTML_AH_K39()%　は、はげしいよぉっ…ッ…！」")
+					@"「야앗%HTML_AH_K39()%  팥고물, 아앗" + 
+					@"%HTML_AH_K39()%  는, 격렬해……!」")
 					}
 				ELSE
 					{
 					CALL HTMLPRINTW(
-					@"「あっ%HTML_AH_K39()%　あんっっ%HTML_AH_K39()%　" + 
-					"は、激しいですっ！　あっ…んぁぁっ…ッ…！」")
+					@"「앗%HTML_AH_K39()%  팥고물%HTML_AH_K39()%　" + 
+					"는, 격렬합니닷!   아… 응앗……!」")
 					}
 				ENDIF
 				{
 ;OriginalString : 自らの限界を悟った%CALLNAME:MASTER%は、\@ 
 				PRINTFORMDW 스스로의 한계를 깨달은 %CALLNAME:MASTER%(은)는,\@ 
 				ABL:Ａ감각 < 4 
-				? 未だ馴染まぬ # ほぐれきった 
-				\@%CALLNAME:TARGET%の엉덩이を激しく犯했다…
+				? 아직도 친숙해 지지 않다 # 자포자기하고 잘랐다 
+				\@%CALLNAME:TARGET%의엉덩이를 격렬하고 범했다…
 				}
 ;OriginalString : 
 				PRINTL
-			;その他
+			;그 외
 			ELSE
 				CALL QUAKE(4)
 				IF LOCAL:0
 					{
 					CALL HTMLPRINTW(
-					@"「んんっ%HTML_AH_K39()%　あっ、あっ%HTML_AH_K39()%　" + 
-					@"おしりの中が…擦れ、て…ッ…%HTML_PS2_K39()%」")
+					@"「응읏%HTML_AH_K39()%  아, 앗%HTML_AH_K39()%　" + 
+					@"엉덩이안이… 스쳐, 라고……%HTML_PS2_K39()%」")
 					}
 				ELSE
 					{
 					CALL HTMLPRINTW(
-					@"「んぁっ%HTML_AH_K39()% あんっ%HTML_AH_K39()%　" + 
-					@"私、おしりで…こんなにっ…%HTML_PS2_K39()%」")
+					@"「응앗%HTML_AH_K39()% 팥고물%HTML_AH_K39()%　" + 
+					@"나, 엉덩이로… 이렇게…%HTML_PS2_K39()%」")
 					}
 				ENDIF
 			ENDIF
 		ENDIF
 
-		;地の文を処理。ACTによって派生 //역강간は汎用処理しないので除外
+		;지문을 처리. ACT에 의해 파생//역강간는 범용 처리하지 않기 때문에 제외
 		SELECTCASE GET_ACTNAME(TFLAG:ACT)
 			CASE "정상위시킨다"
 				{
 ;OriginalString : \@ PALAM:쾌Ｖ >= 8500 
 				PRINTFORMDW \@ PALAM:쾌Ｖ >= 8500 
-				? %CALLNAME:TARGET%は%CALLNAME:MASTER%의 腰に발しっかりを絡め、自らも昇りつめようとしている 
-				# %CALLNAME:MASTER%が突きこむ度に、%CALLNAME:TARGET%の甘い嬌声が辺りに響いた \@…
+				? %CALLNAME:TARGET%는%CALLNAME:MASTER%의 허리에발 확실히를 관련되어, 스스로도 끝까지 오르려고 하고 있다 
+				# %CALLNAME:MASTER%가 돌진할 때에,%CALLNAME:TARGET%의 달콤한 교성이 근처에 울렸다 \@…
 				}
 			CASE "후배위시킨다"
 				{
 ;OriginalString : \@ PALAM:쾌Ｖ >= 8500 
 				PRINTFORMDW \@ PALAM:쾌Ｖ >= 8500 
-				? %CALLNAME:TARGET%は背中を弓なりに하면서身体をガクガクと震わせ、自らも昇りつめようとしている 
-				# %CALLNAME:MASTER%が背後から突きこむ度に、%CALLNAME:TARGET%の甘い嬌声が辺りに響いた \@…
+				? %CALLNAME:TARGET%는 등을 활처럼하면서신체를 삐걱삐걱 진동시켜 스스로도 끝까지 오르려고 하고 있다 
+				# %CALLNAME:MASTER%가 배후로부터 돌진할 때에,%CALLNAME:TARGET%의 달콤한 교성이 근처에 울렸다 \@…
 				}
 			CASE "대면좌위시킨다"
 				{
 ;OriginalString : \@ PALAM:쾌Ｖ >= 8500 
 				PRINTFORMDW \@ PALAM:쾌Ｖ >= 8500 
-				? 激しい突き上げと共に키스の雨を降らされ、%CALLNAME:TARGET%は狂ったように喘いでいる 
-				# %CALLNAME:TARGET%は%CALLNAME:MASTER%に強く抱きしめられ、突き上げられる度に甘い吐息を漏ら했다 \@…
+				? 격렬한 밀어올림과 함께키스가 세례를 퍼부어져%CALLNAME:TARGET%는 미친 것처럼 허덕이고 있다 
+				# %CALLNAME:TARGET%는%CALLNAME:MASTER%에 강하게 껴안을 수 있어 밀어올릴 수 있을 때에 달콤한 한숨을 루등했다 \@…
 				}
 			CASE "배면좌위시킨다"
 				{
 ;OriginalString : \@ PALAM:쾌Ｖ >= 8500 
 				PRINTFORMDW \@ PALAM:쾌Ｖ >= 8500 
-				? 激しい突き込みと共に乳房を揉みしだかれ、%CALLNAME:TARGET%は狂ったように喘いでいる 
-				# %CALLNAME:MASTER%が背後から突きこむ度に、%CALLNAME:TARGET%の甘い嬌声が辺りに響いた \@…
+				? 격렬한 공격과 함께 유방을 주물러져%CALLNAME:TARGET%는 미친 것처럼 허덕이고 있다 
+				# %CALLNAME:MASTER%가 배후로부터 돌진할 때에,%CALLNAME:TARGET%의 달콤한 교성이 근처에 울렸다 \@…
 				}
 			CASE "항문섹스시킨다"
 ;OriginalString : 抽送を繰り返す度に、%ANUS_DESCRIPTION(TARGET)%を犯される%CALLNAME:TARGET%の甘い嬌声が響き渡る…
@@ -1776,66 +1776,66 @@ SELECTCASE TCVAR:MASTER:애태움도
 ENDSELECT
 
 
-;죠교대상が가버려の汎用処理
+;죠교대상가가버려의 범용 처리
 ;//////////////////////////
 @PRINT_KOJO_ACT_GRU10_2_K39
 #LOCALSIZE  1
 #LOCALSSIZE 3
 VARSET LOCAL
 VARSET LOCALS
-LOCAL :0  = TENSION(TARGET, 8) == "高い"
+LOCAL :0  = TENSION(TARGET, 8) == "높다"
 LOCALS:0 '= \@ LOCAL:0 ? %HTML_AH2_K39()%　 # 。 \@
-LOCALS:1 '= RAND_SPLIT("出/사정")
+LOCALS:1 '= RAND_SPLIT("출/사정")
 LOCALS:2 '= HTML_PS_K39()
 
-;죠교대상が가버려
+;죠교대상가가버려
 IF TCVAR:MASTER:가버려
-	;호의、호감도で分岐
+	;호의, 호감도로 분기
 	IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
 		SELECTCASE AUTORAND(3, 196)
 			CASE 0
-				CALL HTMLPRINTW(@"「ねぇ…最後は私の中で%LOCALS:0%%CNAME(MASTER, TARGET)%だって、その方がいいでしょ？」")
+				CALL HTMLPRINTW(@"「저기… 최후는 나의 안에서%LOCALS:0%%CNAME(MASTER, TARGET)%도, 그 쪽이 좋지요?」")
 			CASE 1
-				CALL HTMLPRINTW(@"「ほら、どうせならこっちに%LOCALS:0%いっぱい%LOCALS:1%していいから…」")
+				CALL HTMLPRINTW(@"「이봐요, 어차피라면 여기에%LOCALS:0%가득%LOCALS:1%해도 좋으니까…」")
 			CASE 2
-				CALL HTMLPRINTW(@"「ねぇ、きて……%LOCALS:0%最後はやっぱり、私の中で受け止めてあげたいし……」")
+				CALL HTMLPRINTW(@"「저기, 와……%LOCALS:0%최후는 역시, 나의 안에서 받아 들여 주고 싶고……」")
 			CASE 3
-				CALL HTMLPRINTW(@"「もう少し참다してよね%LOCALS:0%どうせなら、私の中でイって欲しいし…」")
+				CALL HTMLPRINTW(@"「좀 더참다 해요%LOCALS:0%어차피라면, 나의 안에서 실시했으면 좋고…」")
 		ENDSELECT
 	ELSE
 		SELECTCASE AUTORAND(3, 197)
 			CASE 0
-				CALL HTMLPRINTW(@"「入れた瞬間にイってしまいそうですね？ ふふ…%LOCALS:2%」")
+				CALL HTMLPRINTW(@"「넣은 순간에 가 버릴 것 같네요? 후후…%LOCALS:2%」")
 			CASE 1
-				CALL HTMLPRINTW(@"「さ…いいですよ%LOCALS:0%%CNAME(MASTER, TARGET)%の厄、私の中で受け止めてあげます……」")
+				CALL HTMLPRINTW(@"「… 좋아요%LOCALS:0%%CNAME(MASTER, TARGET)%의 액, 나의 안에서 받아 들여 줍니다……」")
 			CASE 2
-				CALL HTMLPRINTW(@"「いいですよ、最後はこっちに。私だって…、最初からそのつもりで했다し%LOCALS:2%」")
+				CALL HTMLPRINTW(@"「좋아요, 최후는 여기에. 나라고…, 최초부터 그럴 생각으로했다 해%LOCALS:2%」")
 			CASE 3
-				CALL HTMLPRINTW(@"「もう少しだけ참다して下さいね。私だって、その……、少しは楽しみたいですし%LOCALS:2%」")
+				CALL HTMLPRINTW(@"「조금만 더참다 해 주세요. 나도, 그……, 조금은 즐기고 싶으며%LOCALS:2%」")
 		ENDSELECT
 	ENDIF
 ENDIF
 
 ;////////////////////
-;성교봉사系初回用処理
+;성교봉사계 첫회용 처리
 ;////////////////////
 @CHK_DEBUG_AND_FIRSTTIME_10_K39
 [IF_DEBUG]
-	;非디버그時、初回
+	;비디버그시, 첫회
 	IF !FLAG:오토모드 && FIRSTTIME(195)
-		;성교봉사判定に代入
+		;성교봉사판정에 대입
 		KFLAG:TARGET = 1
-	;디버그時、오토모드の場合 //現在の仕様では오토모드はEmueraの디버그모드での起動が前提
+	;디버그시, 오토모드의 경우//현재의 사양에서는오토모드는 Emuera의디버그모드에서의 기동이 전제
 	ELSEIF FLAG:오토모드 && FLAG:오토모드표시설정 == 0 && FIRSTTIME(196)
-		;성교봉사判定に代入
+		;성교봉사판정에 대입
 		;KFLAG:TARGET = 1
-		;오토모드時用処理
-		CALL PRINT_RAINBOW2W("初回", 20)
-		;データ로드処理
+		;오토모드시 용 처리
+		CALL PRINT_RAINBOW2W("첫회", 20)
+		;데이터로드처리
 		CALL GAME_OVER_K39
 		FORCEWAIT
 		RETURN 1
 	ELSE
-		;その他なら処理無し
+		;그 외라면 처리 없음
 	ENDIF
 [ENDIF]
