@@ -1,42 +1,42 @@
 ﻿;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
-;文字列表示・애니메ーション関数ファイル「ぱにめーしょん」0527版 同梱、東方Projectローカル関数ファイル
-;東方系バリアントで使えそうなビジュアル・雰囲気向上系の関数群です。東方系以外では…どうだろう。あっても邪魔はしませんが。
-;こちらは、ぱにめーしょん本体がないと動作しません
+;캐릭터 라인 표시·애니메─숀 함수 파일 「에 째─실마리응」0527판 동고, 동방 Project 로컬 함수 파일
+;동방계 바리안트로 사용할 수 있을 것 같은 비주얼·분위기 향상계의 함수군입니다. 동방계 이외에서는… 어떨까. 어느 방해는 하지 않습니다만.
+;이쪽은, 에 째─실마리응본체가 없으면 동작하지 않습니다
 ;≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
 
 ;-------------------------------------------------
-;東方Project風BGMカットイン関数@BGM_CUTIN
-;	文字列引数0：曲名
-;	文字列引数1：フォント（等幅じゃないと機能しません。省略했다らDFKai-SB）
-;	引数0：省略すると頭に「♪（紅・文・DS・妖戦タイプ）」、正にすると「ＢＧＭ. （永・風以降タイプ）」、負にすると何もつけない
-;	引数1：スクロール速度（デフォルトだと5）
-;	引数2：画面端まで入る文字数（デフォルトだと117）
-;	引数3：1にすると消え方がサイドアウトに（デフォルトだとフェードアウト）
+;동방 Project풍BGM 컷 인 함수@BGM_CUTIN
+;	캐릭터 라인 인수 0:곡명
+;	캐릭터 라인 인수 1:폰트（등폭이 아니면 기능하지 않습니다. 생략했다등 DFKai-SB）
+;	인수 0:생략 하면 머리에 「♪（다홍색·문장·DS·요전 타입）」, 정말로 하면 「ＢＧＭ（영·풍 이후 타입）」, 부로 하면 아무것도 붙이지 않는다
+;	인수 1:스크롤 속도（디폴트라면 5）
+;	인수 2:화면단까지 들어가는 문자수（디폴트라면 117）
+;	인수 3:1으로 하면 사라지려 할 때가 사이드 아웃에（디폴트라면 페이드 아웃）
 ;
-;Windows標準フォントではないHG創英ﾌﾟﾚｾﾞﾝｽEBは望ましくないので、独断と偏見でデフォのフォントをDFKai-SBに変更@/L(14/09/28)
+;Windows 표준 폰트가 아닌 HG창영존재 EB는 바람직하지 않기 때문에, 독단과 편견으로 데포의 폰트를 DFKai-SB로 변경@/L(14/09/28)
 ;-------------------------------------------------
 @BGM_CUTIN(ARGS, ARG, ARGS:1 = "DFKai-SB", ARG:1 = 5, ARG:2 = 117, ARG:3)
 #LOCALSIZE 2
 #LOCALSSIZE 2
 IF ARG >= 0
-	LOCALS = %\@ ARG ? %"ＢＧＭ. "% # ♪ \@+ARGS%
+	LOCALS = %\@ ARG ? %"ＢＧＭ."% # ♪ \@+ARGS%
 ELSE
 	LOCALS = %ARGS%
 ENDIF
-;色保存
+;색보존
 LOCAL:1 = GETCOLOR()
 RESETCOLOR
 ARGS = %" "*ARG:2+LOCALS%
 LOCALS:1 = %GETFONT()%
 SIF CHKFONT(ARGS:1)
 	SETFONT ARGS:1
-;表示オン
+;표시 온
 IF ANIME_CONFIG("BGM_CUTIN")
-	;スクロール速度がウィンドウ幅に対し速すぎる場合、矯正する
+	;스크롤 속도가 윈드우폭에 대해 너무 빠른 경우, 교정한다
 	ARG:1 = ARG:1 >= ARG:2 ? ARG:2-1 # ARG:1
 	REDRAW 0
 	LOCAL = 0
-	;サイドイン
+	;사이드 인
 	FOR LOCAL, 0, STRLENS(LOCALS)+4, ARG:1
 ;OriginalString : %SUBSTRING(ARGS , LOCAL)%
 		PRINTSINGLEFORM %SUBSTRING(ARGS , LOCAL)%
@@ -48,7 +48,7 @@ IF ANIME_CONFIG("BGM_CUTIN")
 	CLEARLINE 1
 
 	IF ARG:3 == 1
-		;サイドアウト
+		;사이드 아웃
 		FOR LOCAL, 0, STRLENS(LOCALS)+4, ARG:1*2
 ;OriginalString : %SUBSTRING(ARGS , STRLENS(LOCALS)+4-LOCAL)%
 			PRINTSINGLEFORM %SUBSTRING(ARGS , STRLENS(LOCALS)+4-LOCAL)%
@@ -56,9 +56,9 @@ IF ANIME_CONFIG("BGM_CUTIN")
 			CLEARLINE 1
 		NEXT
 	ELSE
-		;BGM애니메オンだとフェード를 강요表示する
+		;BGM애니메온이라면 페이드를 강요표시한다
 		CALLF ANIME_CONFIG("ONCE")
-		;フェードアウト
+		;페이드 아웃
 		CALL FADEOUT(8, " "*(ARG:2-STRLENS(LOCALS)-4)+LOCALS)
 		CLEARLINE 1
 	ENDIF
@@ -72,46 +72,46 @@ SETCOLOR LOCAL:1
 RETURN RESULT
 
 ;-------------------------------------------------
-;東方Project風キャラ登場カットイン関数@CHARA_CUTIN
-;	文字列引数0：肩書き
-;	文字列引数1：名前
-;	文字列引数2：로마자読み
-;	引数0：省略すると左、正だと右寄りに表示。表示位置の逆からクロールインする
-;	引数1：スクロール速度（デフォルトだと30）
-;	引数2：画面端まで入る文字数（デフォルトだと117）
-;			…バウンドいらんよね？
-;神霊廟風の中央揃えです。需要があれば一行目左寄せ・三行目右寄せのバージョンも作る？
+;동방 Project풍캐릭터 등장 컷 인 함수@CHARA_CUTIN
+;	캐릭터 라인 인수 0:직함
+;	캐릭터 라인 인수 1:이름
+;	캐릭터 라인 인수 2:로마자읽기
+;	인수 0:생략 하면 왼쪽, 정이라면 오른쪽 가까이에 표시. 표시 위치의 역으로부터 크롤 인 한다
+;	인수 1:스크롤 속도（디폴트라면 30）
+;	인수 2:화면단까지 들어가는 문자수（디폴트라면 117）
+;			… 바운드 필요 없어군요?
+;신령묘풍의 centering입니다. 수요가 있으면 1행째 왼쪽 맞춤·3행목우 대고의 버젼도 만들어?
 ;-------------------------------------------------
-;두명のフォントをHG教科書体からDFKai-SBへ
-;로마자読みのフォントをＭＳ 明朝からGungsuhCheへ、それぞれ変更
-;HG教科書体の粛清はWindows標準のフォントではない為。ＭＳ 明朝からGungsuhCheへの変更はついでに何か変えたかった、ということで
-;Win7であれば環境に依存しないはずだけど、Win8/8.1での検証ができていないので、そこら辺はなんともなところ@/L(2014/09/28)
+;두명의 폰트를 HG교과서체로부터 DFKai-SB에
+;로마자읽기의 폰트를나눔명조로부터 GungsuhChe에, 각각 변경
+;HG교과서체의 숙청은 Windows 표준의 폰트는 아니기 때문에. 나눔명조로부터 GungsuhChe에의 변경은 하는 김에 뭔가 바꾸고 싶었다, 라는 것으로
+;Win7이면 환경에 의존하지 않을 것이지만, Win8/8. 1에서의 검증이 되어 있지 않기 때문에, 그 근처는 뭐라고곳@/L(2014/09/28)
 ;-------------------------------------------------
 @CHARA_CUTIN(ARGS, ARGS:1, ARGS:2, ARG, ARG:1 = 30, ARG:2 = 117)
 #LOCALSIZE 11
 #LOCALSSIZE 11
-;フォント保存
+;폰트 보존
 LOCALS:10 = %GETFONT()%
-;色保存
+;색보존
 LOCAL:10 = GETCOLOR()
 RESETCOLOR
 
-;まず、３つの文字列を偶数にする
+;우선, 3개의 캐릭터 라인을 짝수로 한다
 ARGS   = %\@ STRLENS(ARGS)/2 ? %ARGS+" "% # %ARGS% \@%
 ARGS:1 = %\@ STRLENS(ARGS:1)/2 ? %ARGS:1+" "% # %ARGS:2% \@%
 ARGS:2 = %\@ STRLENS(ARGS:2)/2 ? %ARGS:2+" "% # %ARGS:2% \@%
 
-;一番長い文字列の字数を保存して、4を발す
+;제일 긴 캐릭터 라인의 자수를 보존해, 4를발
 LOCAL:3 = MAX(STRLENS(ARGS), STRLENS(ARGS:1), STRLENS(ARGS:2))+4
 
-;文字列整理
+;캐릭터 라인 정리
 FOR LOCAL, 0, 3
 	LOCAL:1 = (LOCAL:3-STRLENS(ARGS:LOCAL))/2
-	;インデントがてらに頭としっぽをつけます
+	;인덴트겸에 머리와 꼬리를 붙입니다
 	ARGS:LOCAL = %(" "*LOCAL:1)+ARGS:LOCAL+(" "*LOCAL:1)%
-	;原本を保存
+	;원본을 보존
 	LOCALS:LOCAL = %ARGS:LOCAL%
-	;スペースを付加
+	;스페이스를 부가
 	IF !ARG
 		LOCALS:LOCAL = %"  "+LOCALS:LOCAL%
 		ARGS:LOCAL = %(" "*ARG:2)+LOCALS:LOCAL%
@@ -120,10 +120,10 @@ FOR LOCAL, 0, 3
 	ENDIF
 NEXT
 
-;罫線も用意しないとね
+;괘선도 준비하지 않으면
 LOCALS:4 = %"-="*(LOCAL:3/2)%
 LOCALS:5 = %"=-"*(LOCAL:3/2)%
-;スペースを付加
+;스페이스를 부가
 IF !ARG
 	LOCALS:4 = %"  "+LOCALS:4%
 	LOCALS:5 = %"  "+LOCALS:5%
@@ -134,37 +134,37 @@ ELSE
 	LOCALS:7 = %" "*(ARG:2 - 3 - STRLENS(LOCALS:5))+LOCALS:5%
 ENDIF
 
-;表示オン
+;표시 온
 IF ANIME_CONFIG("CHARA_CUTIN")
-	;スクロール速度がウィンドウ幅に対し速すぎる場合、矯正する
+	;스크롤 속도가 윈드우폭에 대해 너무 빠른 경우, 교정한다
 	ARG:1 = ARG:1 >= ARG:2 ? ARG:2-1 # ARG:1
 	REDRAW 0
 	LOCAL = 0
 	FOR LOCAL, 0, ARG:2-2, ARG:1
 		IF !ARG
-			;罫線は元フォント
+			;괘선은 원폰트
 			SETFONT LOCALS:10
 ;OriginalString : %SUBSTRING(LOCALS:6 , LOCAL)%
 			PRINTSINGLEFORM %SUBSTRING(LOCALS:6 , LOCAL)%
-			;두명はDFKai-SB
-			;SIF CHKFONT("HG教科書体")
-			;	SETFONT "HG教科書体"
+			;두명는 DFKai-SB
+			;SIF CHKFONT("HG교과서체")
+			;	SETFONT "HG교과서체"
 			SIF CHKFONT("DFKai-SB")
 				SETFONT "DFKai-SB"
 ;OriginalString : %SUBSTRING(ARGS , LOCAL)%
 			PRINTSINGLEFORM %SUBSTRING(ARGS , LOCAL)%
-			;名前は元フォント
+			;이름은 원폰트
 			SETFONT LOCALS:10
 ;OriginalString : %SUBSTRING(ARGS:1 , LOCAL)%
 			PRINTSINGLEFORM %SUBSTRING(ARGS:1 , LOCAL)%
-			;로마자読みはGungsuhChe
+			;로마자읽기는 GungsuhChe
 			SIF CHKFONT("GungsuhChe")
 				SETFONT "GungsuhChe"
-			;SIF CHKFONT("ＭＳ 明朝")
-			;	SETFONT "ＭＳ 明朝"
+			;SIF CHKFONT("나눔명조")
+			;	SETFONT "나눔명조"
 ;OriginalString : %SUBSTRING(ARGS:2 , LOCAL)%
 			PRINTSINGLEFORM %SUBSTRING(ARGS:2 , LOCAL)%
-			;罫線は元フォント
+			;괘선은 원폰트
 			SETFONT LOCALS:10
 ;OriginalString : %SUBSTRING(LOCALS:7 , LOCAL)%
 			PRINTSINGLEFORM %SUBSTRING(LOCALS:7 , LOCAL)%
@@ -226,99 +226,99 @@ RETURN RESULT
 
 
 ;-------------------------------------------------
-;幻想暦関数@GENSOU_CALENDAR
-;	引数0：2000年1月1日（115季睦月一日）からの경과일수
-;引数に경과일수を与えることで、幻想卿の暦を文字列で返す関数です
+;환상달력(일력) 함수@GENSOU_CALENDAR
+;	인수 0:2000년 1월 1일（115계 1월 1일）로부터의경과일수
+;인수에경과일수를 주는 것으로, 환상경의 달력(일력)을 캐릭터 라인으로 돌려주는 함수입니다
 ;-------------------------------------------------
 @GENSOU_CALENDAR(ARG)
 #FUNCTIONS
 #LOCALSIZE 3
-;LOCALに연수
+;LOCAL에연수
 LOCAL = GETYEAR(ARG)
-;LOCAL:1に月数
+;LOCAL:1에 월수
 LOCAL:1 = GETDATE(GETYEAR(ARG, 1), GETURUU(LOCAL))
-;LOCAL:2に일수
+;LOCAL:2에일수
 LOCAL:2 = GETDATE(GETYEAR(ARG, 1), GETURUU(LOCAL), 1)
 
-RETURNF @"第%TOKANJI(LOCAL+115)%季　%GETMONTHNAME(LOCAL:1)%の%TOKANJI(LOCAL:2)%"
+RETURNF @"제%TOKANJI(LOCAL+115)%계　%GETMONTHNAME(LOCAL:1)%의%TOKANJI(LOCAL:2)%"
 
 
 ;-------------------------------------------------
-;古典時刻関数@CLASSICAL_TIME
-;	引数0：대상の変数（デフォでは秒）
-;	引数1：1なら引数0を秒で、2なら時で計算する
-;	引数2：表示形式（デフォ「○の○つ」、1=「○の刻、○つ」、2=「○の○つ　-○○-」）
-;式中で使用する関数です。引数に기록されている数字を秒として、現在の時刻を文字列で返します
-;古典時刻表記なので、30分単位未満の端数は切り捨てます。
+;고전 시각 함수@CLASSICAL_TIME
+;	인수 0:대상의 변수（데포에서는 초）
+;	인수 1:1이라면 인수 0을 초로, 2라면 때에 계산한다
+;	인수 2:표시 형식（데포 「○의 0개」, 1= 「○의 각, 0개」, 2= 「○의 0개  -00-」）
+;식중에서 사용하는 함수입니다. 인수에기록 되고 있는 숫자를 초로서 현재의 시각을 캐릭터 라인으로 돌려줍니다
+;고전 시각표기인 것으로, 30분 단위 미만의 끝수는 버립니다.
 ;-------------------------------------------------
 @CLASSICAL_TIME(ARG, ARG:1, ARG:2)
 #FUNCTIONS
-;分に変換する
+;분으로 변환한다
 SELECTCASE ARG:1
-	;時で渡す場合
+	;시에 건네주는 경우
 	CASE 2
 		ARG *= 60
-	;秒で渡す場合
+	;초에 건네주는 경우
 	CASE 1
 		ARG /= 60
 ENDSELECT
-;0:00が子の三つなので、60分を발す
+;0:00이 아이의 3살인 것으로, 60분을발
 ARG += 60
-;日付も관리しているケースを考え、24시간（1440分）で割ってあまりを取る（子の一つ～二つもここで対応される）
+;일자도관리 하고 있는 케이스를 생각해, 24시간（1440분 ）로 나누어 너무를 취한다（자 1개～2개도 여기서 대응된다）
 ARG %= 1440
-;表示
-SIF GET_CLASSICAL_HOUR(ARG, 1) == "丑" && (ARG%120)/30 == 2
-	RETURNF "丑三つ時"
-RETURNF @"%GET_CLASSICAL_HOUR(ARG, 1)%の\@ ARG:2 == 1 ? 刻、 # \@%TOKANJI(((ARG%120)/30)+1)%つ\@ ARG:2 == 2 ? 　-%GET_CLASSICAL_HOUR(ARG, 1, 1)%時- # \@"
+;표시
+SIF GET_CLASSICAL_HOUR(ARG, 1) == "축" && (ARG%120)/30 == 2
+	RETURNF "오밤중시"
+RETURNF @"%GET_CLASSICAL_HOUR(ARG, 1)%의\@ ARG:2 == 1 ? 각,  # \@%TOKANJI(((ARG%120)/30)+1)%개\@ ARG:2 == 2 ? 　-%GET_CLASSICAL_HOUR(ARG, 1, 1)%시- # \@"
 
-;時を취득
-;引数2を真にすると、大まかな시간の様子を取る
+;시를취득
+;인수 2를 실로 하면, 대범한시간의 모습을 취한다
 @GET_CLASSICAL_HOUR(ARG, ARG:1, ARG:2)
 #FUNCTIONS
-;分に変換する
+;분으로 변환한다
 SELECTCASE ARG:1
-	;時で渡す場合
+	;시에 건네주는 경우
 	CASE 2
 		ARG *= 60
-	;分で渡す場合（処理なし）
+	;분에 건네주는 경우（처리 없음）
 	CASE 1
-	;秒で渡す場合（デフォルト）
+	;초에 건네주는 경우（디폴트）
 	CASEELSE
 		ARG /= 60
 ENDSELECT
 
 SELECTCASE ARG/120
 	CASE 0
-		RETURNF \@ ARG:2 ? 深更（しんこう） # 子 \@
+		RETURNF \@ ARG:2 ? 야밤중（해이렇게） # 자 \@
 	CASE 1
-		RETURNF \@ ARG:2 ? 未明（みめい） # 丑 \@
+		RETURNF \@ ARG:2 ? 미명（보고째있고） # 축 \@
 	CASE 2
-		RETURNF \@ ARG:2 ? 東雲（しののめ） # 寅 \@
+		RETURNF \@ ARG:2 ? 시노노메（해가마셔라） # 인 \@
 	CASE 3
-		RETURNF \@ ARG:2 ? 暁（あかつき） # 卯 \@
+		RETURNF \@ ARG:2 ? 새벽（새벽） # 묘 \@
 	CASE 4
-		RETURNF \@ ARG:2 ? 早天（そうてん） # 辰 \@
+		RETURNF \@ ARG:2 ? 이른아침（쟁점） # 신 \@
 	CASE 5
-		RETURNF \@ ARG:2 ? 小昼（こひる） # 巳 \@
+		RETURNF \@ ARG:2 ? 간식（간식） # 미 \@
 	CASE 6
-		RETURNF \@ ARG:2 ? 昼中（ひるなか） # 午 \@
+		RETURNF \@ ARG:2 ? 낮동안（낮(안)중） # 오 \@
 	CASE 7
-		RETURNF \@ ARG:2 ? 日盛り（ひざかり） # 未 \@
+		RETURNF \@ ARG:2 ? 한낮（무릎빚） # 히츠지 \@
 	CASE 8
-		RETURNF \@ ARG:2 ? 終日（ひねもす） # 申 \@
+		RETURNF \@ ARG:2 ? 종일（히자고） # 신 \@
 	CASE 9
-		RETURNF \@ ARG:2 ? 黄昏（たそがれ） # 酉 \@
+		RETURNF \@ ARG:2 ? 황혼（황혼） # 서 \@
 	CASE 10
-		RETURNF \@ ARG:2 ? 宵（よい） # 戌 \@
+		RETURNF \@ ARG:2 ? 소（좋다） # 술 \@
 	CASE 11
-		RETURNF \@ ARG:2 ? 夜半（よわ） # 亥 \@
+		RETURNF \@ ARG:2 ? 야밤중（에요） # 돼지 \@
 ENDSELECT
 
 
 ;-------------------------------------------------
-;数値→漢数字変換関数@TOKANJI
-;TOSTR関数チックに、引数の数値を漢数字の文字列で返します
-;変数の最大値は約922京であるため、一、万、億、兆、京の5回処理します
+;수치→한수자 변환 함수@TOKANJI
+;TOSTR 함수 틱에, 인수의 수치를 한수자의 캐릭터 라인으로 돌려줍니다
+;변수의 최대치는 약 922경이기 (위해)때문에, 일, 만, 억, 조, 경의 5회 처리합니다
 ;-------------------------------------------------
 @TOKANJI(ARG)
 #FUNCTIONS
@@ -333,24 +333,24 @@ FOR LCOUNT, 0, 5
 		LOCALS += TOKANJIT(LOCAL)
 		SELECTCASE LCOUNT
 			CASE 0
-				LOCALS += "京"
+				LOCALS += "경"
 			CASE 1
-				LOCALS += "兆"
+				LOCALS += "조"
 			CASE 2
-				LOCALS += "億"
+				LOCALS += "억"
 			CASE 3
-				LOCALS += "万"
+				LOCALS += "만"
 		ENDSELECT
 	ENDIF
 NEXT
-RETURNF \@ LOCALS != "" ? %LOCALS% # 零 \@
+RETURNF \@ LOCALS != "" ? %LOCALS% # 영 \@
 
-;内部用or簡易用
-;四桁以内の漢字変換。万以上与えるとバグ
+;내부용 or간이용
+;4자리수 이내의 한자 변환. 만이상 주면 버그
 @TOKANJIT(ARG)
 #FUNCTIONS
 SIF ARG >= 10000
-	RETURNF "ばぐ"
+	RETURNF ""
 LOCALS = \@ ARG/1000 ? %TOKANJIS(ARG/1000, 1)%천 # \@
 ARG %= 1000
 LOCALS += \@ ARG/100 ? %TOKANJIS(ARG/100, 1)%백 # \@
@@ -360,12 +360,12 @@ ARG %= 10
 RETURNF LOCALS + TOKANJIS(ARG)
 
 
-;一桁の変換。引数1を真にすると一を省略する。2以上にすると零を表示する
+;1자리수의 변환. 인수 1을 실로 하면 1을 생략 한다. 2이상으로 하면 영을 표시한다
 @TOKANJIS(ARG, ARG:1)
 #FUNCTIONS
 SELECTCASE ARG
 	CASE 0
-		RETURNF \@ ARG:1 > 1 ? 零 #  \@
+		RETURNF \@ ARG:1 > 1 ? 영 #  \@
 	CASE 1
 		RETURNF \@ ARG:1 ?  # 일 \@
 	CASE 2
@@ -387,14 +387,14 @@ SELECTCASE ARG
 	CASE 10
 		RETURNF "십"
 	CASEELSE
-		RETURNF "ばぐ"
+		RETURNF ""
 ENDSELECT
 
 
 ;-------------------------------------------------
-;閏年判定関数@GETURUU
-;	引数0：연수
-;西暦で연수を与えるとその年の일수を返します
+;윤년 판정 함수@GETURUU
+;	인수 0:연수
+;서기에연수를 주면 그 해의일수를 돌려줍니다
 ;-------------------------------------------------
 @GETURUU(ARG)
 #FUNCTION
@@ -402,20 +402,20 @@ RETURNF (!(ARG % 4) && (ARG % 100)) || !(ARG % 400) ? 366 # 365
 
 
 ;-------------------------------------------------
-;연수判定関数@GETYEAR
-;	引数0：2000年1月1日からの경과일수
-;	引数1：1にすると、端일수を返します
-;경과일수から、경과연수を返します。
-;引数1を真にすると、現在の年で何日경과しているかを返します。
-;2000年を0年として返すため、西暦表記する際は2000を발してください。
-;単純に경과연수を数える場合は意識しなくてもＯＫ
+;연수판정 함수@GETYEAR
+;	인수 0:2000년 1월 1일부터의경과일수
+;	인수 1:1으로 하면, 구석일수를 돌려줍니다
+;경과일수로부터, 경과연수를 돌려줍니다.
+;인수 1을 실로 하면, 현재의 해에 며칠경과 하고 있을까를 돌려줍니다.
+;2000년을 0년으로서 돌려주기 (위해)때문에, 서기 표기할 때는 2000을발 해 주세요.
+;단순하게경과연수를 세는 경우는 의식하지 않아도ＯＫ
 ;-------------------------------------------------
 @GETYEAR(ARG, ARG:1)
 #FUNCTION
 #LOCALSIZE 1
 VARSET LOCAL
-;2000年を0年目として扱う
-;2000年から順に回して、연수LOCALを増やす
+;2000년을 0년째로서 취급한다
+;2000년부터 순서에 돌려, 연수LOCAL를 늘린다
 WHILE ARG > GETURUU(LOCAL)
 	LOCAL++
 	ARG -= GETURUU(LOCAL)
@@ -424,26 +424,26 @@ RETURNF ARG:1 ? ARG # LOCAL
 
 
 ;-------------------------------------------------
-;日付判定関数@GETDATE
-;	引数0：年内경과일수（年内総일수を超えるときはエラー…にはせず、総일수で割った余りで計算する。でもやめてね？）
-;	引数1：年内総일수（GETURUU併用推奨）
-;	引数2：省略すると○月、真にすると○日を返します
+;일자 판정 함수@GETDATE
+;	인수 0:년내경과일수（연내총일수를 넘을 때는 에러… 에는 하지 않고, 총일수로 나눈 남짓해 계산한다. 그렇지만 그만두어? ）
+;	인수 1:년내총일수（GETURUU 병용 추천）
+;	인수 2:생략 하면 0월, 실로 하면 0일을 돌려줍니다
 ;-------------------------------------------------
 @GETDATE(ARG, ARG:1 = 365, ARG:2)
 #FUNCTION
 #LOCALSIZE 2
-;念のための処理
+;만약을 위해의 처리
 ARG %= ARG:1
-;月ごとの일수計算
+;월 마다의일수계산
 FOR LOCAL, 1, 13
 	SELECTCASE LOCAL
-		;30日の月
+		;30일의 달
 		CASE 4, 6, 9, 11
 			LOCAL:1 = 30
-		;2月
+		;2월
 		CASE 2
 			LOCAL:1 = 28 + (ARG:2 == 366)
-		;31日の月
+		;31일의 달
 		CASEELSE
 			LOCAL:1 = 31
 	ENDSELECT
@@ -457,38 +457,38 @@ RETURNF ARG:2 ? ARG # LOCAL-1
 
 
 ;-------------------------------------------------
-;月名変換関数@GETMONTHNAME
-;	引数0：ｎ月のｎ
-;旧暦の月名に変換するだけ！
-;12を超えていたら勝손に12で割って計算します。
+;월명 변환 함수@GETMONTHNAME
+;	인수 0:n월의 n
+;음력의 월명으로 변환할 뿐!
+;12를 넘고 있으면 승손에 12로 나누어 계산합니다.
 ;-------------------------------------------------
 @GETMONTHNAME(ARG)
 #FUNCTIONS
-;念のための処理
+;만약을 위해의 처리
 ARG %= 12
 SELECTCASE ARG
 	CASE 1
-		RETURNF "睦月"
+		RETURNF "1월"
 	CASE 2
-		RETURNF "如月"
+		RETURNF "키사라기"
 	CASE 3
-		RETURNF "弥生"
+		RETURNF "야요이"
 	CASE 4
-		RETURNF "卯月"
+		RETURNF "우즈키"
 	CASE 5
-		RETURNF "皐月"
+		RETURNF "사츠키"
 	CASE 6
-		RETURNF "水無月"
+		RETURNF "미나즈키"
 	CASE 7
-		RETURNF "文月"
+		RETURNF "7월"
 	CASE 8
-		RETURNF "葉月"
+		RETURNF "하즈키"
 	CASE 9
-		RETURNF "長月"
+		RETURNF "9월"
 	CASE 10
-		RETURNF "神無月"
+		RETURNF "칸나즈키"
 	CASE 11
-		RETURNF "霜月"
+		RETURNF "11월"
 	CASEELSE
-		RETURNF "師走"
+		RETURNF "12월"
 ENDSELECT

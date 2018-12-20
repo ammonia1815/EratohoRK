@@ -1,46 +1,46 @@
 ﻿
-;※죠교자のABLUP処理は存在しないパラメータがあるためところどころ妥協している
+;※죠교자의 ABLUP 처리는 존재하지 않는 파라미터가 있기 (위해)때문에 군데군데 타협하고 있다
 
 ;────────────────────────────────────
-;能力上昇処理
+;능력 상승 처리
 ;────────────────────────────────────
 ;-------------------------------------------------
 ;순종ABL
 ;-------------------------------------------------
 @ABLUP_0M
-#DIM 굴복難易度
+#DIM 굴복난이도
 #DIM 굴복EXP
 #DIM 굴복보정
 #DIM 굴복달성
-#DIM 공포難易度
+#DIM 공포난이도
 #DIM 공포EXP
 #DIM 공포보정
 #DIM 공포달성
 
-;순종、굴복ルート
-;굴복難易度設定
-굴복難易度 = POWER(2, ABL:MASTER:순종) * (100 - TALENT:MASTER:프라이드낮음 * 20 + TALENT:MASTER:프라이드높음 * 20)
+;순종, 굴복루트
+;굴복난이도 설정
+굴복난이도 = POWER(2, ABL:MASTER:순종) * (100 - TALENT:MASTER:프라이드낮음 * 20 + TALENT:MASTER:프라이드높음 * 20)
 ;굴복EXP취득
 굴복EXP = EXP:MASTER:굴복경험
-;굴복각인が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;굴복각인가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (MARK:굴복각인 >= 10) ? 0 # (ABL:MASTER:순종 * 2 - 1 - MARK:굴복각인)
 굴복보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
-;굴복달성判定
+;굴복달성판정
 LOCAL = CUP:MASTER:굴복 + CUP:MASTER:공순
-굴복달성 = (LOCAL / 2 + 굴복EXP * 20 / 굴복보정) > (굴복難易度 * ABLUP_DIFFICULTY(0))
+굴복달성 = (LOCAL / 2 + 굴복EXP * 20 / 굴복보정) > (굴복난이도 * ABLUP_DIFFICULTY(0))
 
-;공포ルート
-;공포難易度設定
-공포難易度 = POWER(2, ABL:MASTER:순종) * (100 - TALENT:MASTER:겁쟁이 * 20 + TALENT:MASTER:굳셈 * 20)
+;공포루트
+;공포난이도 설정
+공포난이도 = POWER(2, ABL:MASTER:순종) * (100 - TALENT:MASTER:겁쟁이 * 20 + TALENT:MASTER:굳셈 * 20)
 ;공포EXP취득
 공포EXP = EXP:MASTER:공포경험
-;트라우마が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;트라우마가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (MARK:트라우마 >= 10) ? 0 # (ABL:MASTER:순종 * 2 - 1 - MARK:트라우마)
 공포보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
-;공포달성判定
-공포달성 = (CUP:MASTER:공포 + 공포EXP * 20 / 공포보정) > (공포難易度 * ABLUP_DIFFICULTY(0))
+;공포달성판정
+공포달성 = (CUP:MASTER:공포 + 공포EXP * 20 / 공포보정) > (공포난이도 * ABLUP_DIFFICULTY(0))
 
-;굴복系・공포系で条件を満たせばABLUP
+;굴복계·공포계로 조건을 채우면 ABLUP
 SIF 굴복달성 || 공포달성
 	CALL ABLUP_RISE(MASTER, 0)
 
@@ -54,35 +54,35 @@ CALL ABLUP_1(MASTER)
 CALL ABLUP_1(TARGET)
 
 @ABLUP_1(ARG)
-#DIM 욕망難易度
+#DIM 욕망난이도
 #DIM 욕망EXP
 #DIM 욕망보정
 
-;욕망難易度設定
-욕망難易度 = POWER(2, ABL:ARG:욕망) * (100 - TALENT:ARG:쾌감에솔직 * 20 + TALENT:ARG:쾌감을부정 * 20)
-;욕망EXP취득(高度なEXPほど보정値が大きい)
+;욕망난이도 설정
+욕망난이도 = POWER(2, ABL:ARG:욕망) * (100 - TALENT:ARG:쾌감에솔직 * 20 + TALENT:ARG:쾌감을부정 * 20)
+;욕망EXP취득(고도의 EXP(정도)만큼보정치가 크다)
 욕망EXP = EXP:ARG:Ｃ경험 + EXP:ARG:Ｂ경험 + EXP:ARG:성지식
 욕망EXP += EXP:ARG:Ｖ경험 * 2 + EXP:ARG:Ａ경험 * 2 + EXP:ARG:절정경험 * 2 + EXP:ARG:사정경험 * 2
 욕망EXP += EXP:ARG:자위경험 * 3 + EXP:ARG:분유경험 * 4 + EXP:ARG:이상경험 * 4 + EXP:ARG:Ｖ확장경험 * 5 + EXP:ARG:Ａ확장경험 * 5
 ;죠교대상
 IF ARG == MASTER
-	;쾌락각인が不발しているとEXP보정を減らす(1Lvにつき1/2)
+	;쾌락각인가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 	LOCAL = (MARK:쾌락각인 >= 10) ? 0 # (ABL:ARG:욕망 * 2 - 1 - MARK:쾌락각인)
-;죠교자(妥協)
+;죠교자(타협)
 ELSE
-	;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+	;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 	LOCAL = (CFLAG:MASTER:죠교레벨 >= 10) ? 0 # (ABL:ARG:욕망 * 2 - 1 - CFLAG:MASTER:죠교레벨)
 ENDIF
 욕망보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;욕망달성判定
+;욕망달성판정
 ;죠교대상
 IF ARG == MASTER
-	SIF (CUP:ARG:욕정 + 욕망EXP * 10 / 욕망보정) > (욕망難易度 * ABLUP_DIFFICULTY(1))
+	SIF (CUP:ARG:욕정 + 욕망EXP * 10 / 욕망보정) > (욕망난이도 * ABLUP_DIFFICULTY(1))
 		CALL ABLUP_RISE(MASTER, 1)
-;죠교자(妥協)
+;죠교자(타협)
 ELSE
-	SIF (CUP:ARG:쾌Ｃ + CUP:ARG:쾌Ｖ + CUP:ARG:쾌Ａ + CUP:ARG:쾌Ｂ + 욕망EXP * 10 / 욕망보정) > (욕망難易度 * ABLUP_DIFFICULTY(1))
+	SIF (CUP:ARG:쾌Ｃ + CUP:ARG:쾌Ｖ + CUP:ARG:쾌Ａ + CUP:ARG:쾌Ｂ + 욕망EXP * 10 / 욕망보정) > (욕망난이도 * ABLUP_DIFFICULTY(1))
 		CALL ABLUP_RISE(TARGET, 1)
 ENDIF
 
@@ -96,29 +96,29 @@ CALL ABLUP_2(MASTER)
 CALL ABLUP_2(TARGET)
 
 @ABLUP_2(ARG)
-#DIM 기교難易度
+#DIM 기교난이도
 #DIM 기교EXP
 #DIM 기교보정
-#DIM 相손
+#DIM 상손
 
-;봉사相손を代入
+;봉사상손를 대입
 IF ARG == MASTER
-	相손 = TARGET
+	상손 = TARGET
 ELSE
-	相손 = MASTER
+	상손 = MASTER
 ENDIF
 
-;기교難易度設定
-기교難易度 = POWER(2, ABL:ARG:기교) * (100 - TALENT:ARG:습득빠름 * 20 + TALENT:ARG:습득느림 * 20)
+;기교난이도 설정
+기교난이도 = POWER(2, ABL:ARG:기교) * (100 - TALENT:ARG:습득빠름 * 20 + TALENT:ARG:습득느림 * 20)
 ;기교EXP취득
 기교EXP = EXP:ARG:성지식 + EXP:ARG:구음경험 * 2 + EXP:ARG:수음경험 * 2 + EXP:ARG:성교경험 * 2 + EXP:ARG:절정시킨경험 * 4
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:ARG:죠교레벨 >= 10) ? 0 # (ABL:ARG:기교 * 2 - 1 - CFLAG:ARG:죠교레벨)
 기교보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;기교달성判定
-LOCAL = CUP:相손:쾌Ｃ + CUP:相손:쾌Ｖ + CUP:相손:쾌Ａ + CUP:相손:쾌Ｂ
-SIF (LOCAL / 3 + 기교EXP * 10 / 기교보정) > (기교難易度 * ABLUP_DIFFICULTY(2))
+;기교달성판정
+LOCAL = CUP:상손:쾌Ｃ + CUP:상손:쾌Ｖ + CUP:상손:쾌Ａ + CUP:상손:쾌Ｂ
+SIF (LOCAL / 3 + 기교EXP * 10 / 기교보정) > (기교난이도 * ABLUP_DIFFICULTY(2))
 	CALL ABLUP_RISE(ARG, 2)
 
 
@@ -143,40 +143,40 @@ CALL ABLUP_SENSITIVITY(TARGET, 5)
 CALL ABLUP_SENSITIVITY(TARGET, 6)
 
 @ABLUP_SENSITIVITY(대상, ARG)
-#DIM 部位
-#DIM 감각難易度
+#DIM 부위
+#DIM 감각난이도
 #DIM 감각EXP
 #DIM 감각보정
 #DIM 대상
 
-部位 = ARG - 3
+부위 = ARG - 3
 SPLIT "Ｃ/Ｖ/Ａ/Ｂ", "/", LOCALS
 
-;감각難易度設定
-감각難易度 = POWER(2, ABL:대상:@"%LOCALS:部位%감각") * (100 - TALENT:대상:@"%LOCALS:部位%민감" * 20 + TALENT:대상:@"%LOCALS:部位%둔감" * 20)
+;감각난이도 설정
+감각난이도 = POWER(2, ABL:대상:@"%LOCALS:부위%감각") * (100 - TALENT:대상:@"%LOCALS:부위%민감" * 20 + TALENT:대상:@"%LOCALS:부위%둔감" * 20)
 ;감각EXP취득
-감각EXP = EXP:대상:@"%LOCALS:部位%경험" * 2 + EXP:대상:절정경험
-SIF LOCALS:部位 == "Ｃ"
+감각EXP = EXP:대상:@"%LOCALS:부위%경험" * 2 + EXP:대상:절정경험
+SIF LOCALS:부위 == "Ｃ"
 	감각EXP += EXP:대상:절정경험
-SIF LOCALS:部位 == "Ｖ"
+SIF LOCALS:부위 == "Ｖ"
 	감각EXP += EXP:대상:Ｖ확장경험 * 4 + EXP:대상:성교경험 * 2
-SIF LOCALS:部位 == "Ａ"
+SIF LOCALS:부위 == "Ａ"
 	감각EXP += EXP:대상:Ａ확장경험 * 4 + EXP:대상:성교경험 + EXP:대상:이상경험
-SIF LOCALS:部位 == "Ｂ"
+SIF LOCALS:부위 == "Ｂ"
 	감각EXP += EXP:대상:분유경험 * 3
 ;죠교대상
 IF ARG == MASTER
-	;쾌락각인が不발しているとEXP보정を減らす(1Lvにつき1/2)
-	LOCAL = (MARK:쾌락각인 >= 10) ? 0 # (ABL:대상:@"%LOCALS:部位%감각" * 2 - 1 - MARK:쾌락각인)
-;죠교자(妥協)
+	;쾌락각인가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
+	LOCAL = (MARK:쾌락각인 >= 10) ? 0 # (ABL:대상:@"%LOCALS:부위%감각" * 2 - 1 - MARK:쾌락각인)
+;죠교자(타협)
 ELSE
-	;욕망ABLが不발しているとEXP보정を減らす(1Lvにつき1/2)
-	LOCAL = (ABL:대상:욕망 >= 10) ? 0 # (ABL:대상:@"%LOCALS:部位%감각" * 2 - 1 - ABL:대상:욕망)
+	;욕망ABL가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
+	LOCAL = (ABL:대상:욕망 >= 10) ? 0 # (ABL:대상:@"%LOCALS:부위%감각" * 2 - 1 - ABL:대상:욕망)
 ENDIF
 감각보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;감각달성判定
-SIF (CUP:대상:@"쾌%LOCALS:部位%" + 감각EXP * 10 / 감각보정) > (감각難易度 * ABLUP_DIFFICULTY(ARG) * 4)
+;감각달성판정
+SIF (CUP:대상:@"쾌%LOCALS:부위%" + 감각EXP * 10 / 감각보정) > (감각난이도 * ABLUP_DIFFICULTY(ARG) * 4)
 	CALL ABLUP_RISE(대상, ARG)
 
 
@@ -189,26 +189,26 @@ CALL ABLUP_7(MASTER)
 CALL ABLUP_7(TARGET)
 
 @ABLUP_7(ARG)
-#DIM 봉사정신難易度
+#DIM 봉사정신난이도
 #DIM 봉사정신EXP
 #DIM 봉사정신보정
 
-;봉사정신難易度設定
-봉사정신難易度 = POWER(2, ABL:ARG:봉사정신) * (100 - TALENT:ARG:헌신적 * 20 + TALENT:ARG:수동적 * 20)
+;봉사정신난이도 설정
+봉사정신난이도 = POWER(2, ABL:ARG:봉사정신) * (100 - TALENT:ARG:헌신적 * 20 + TALENT:ARG:수동적 * 20)
 ;봉사정신EXP취득
 봉사정신EXP = EXP:ARG:구음경험 + EXP:ARG:수음경험 + EXP:ARG:봉사쾌락경험 * 4
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:ARG:죠교레벨 >= 10) ? 0 # (ABL:ARG:봉사정신 * 2 - 1 - CFLAG:ARG:죠교레벨)
 봉사정신보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;봉사정신달성判定
+;봉사정신달성판정
 ;죠교대상
 IF ARG == MASTER
-	SIF (CUP:ARG:공순 + 봉사정신EXP * 10 / 봉사정신보정) > (봉사정신難易度 * ABLUP_DIFFICULTY(7))
+	SIF (CUP:ARG:공순 + 봉사정신EXP * 10 / 봉사정신보정) > (봉사정신난이도 * ABLUP_DIFFICULTY(7))
 		CALL ABLUP_RISE(MASTER, 7)
-;죠교자(妥協)
+;죠교자(타협)
 ELSE
-	SIF (SOURCE:MASTER:달성 / 3 + 봉사정신EXP * 10 / 봉사정신보정) > (봉사정신難易度 * ABLUP_DIFFICULTY(7))
+	SIF (SOURCE:MASTER:달성 / 3 + 봉사정신EXP * 10 / 봉사정신보정) > (봉사정신난이도 * ABLUP_DIFFICULTY(7))
 		CALL ABLUP_RISE(TARGET, 7)
 ENDIF
 
@@ -219,19 +219,19 @@ ENDIF
 @ABLUP_8M
 CALL ABLUP_8(MASTER)
 @ABLUP_8T
-;TARGETには노출증ABL上昇がない(妥協)
+;TARGET에는노출증ABL 상승이 없다(타협)
 
 @ABLUP_8(ARG)
-#DIM 노출증難易度
+#DIM 노출증난이도
 #DIM 노출증EXP
 
-;노출증難易度設定
-노출증難易度 = POWER(2, ABL:ARG:노출증) * (100 - TALENT:ARG:해방 * 20 + TALENT:ARG:억압 * 20)
+;노출증난이도 설정
+노출증난이도 = POWER(2, ABL:ARG:노출증) * (100 - TALENT:ARG:해방 * 20 + TALENT:ARG:억압 * 20)
 ;노출증EXP취득
 노출증EXP = EXP:ARG:노출경험 * 3 + EXP:ARG:절정경험
 
-;노출증달성判定
-SIF (CUP:ARG:치정 + 노출증EXP * 10) > (노출증難易度 * ABLUP_DIFFICULTY(8))
+;노출증달성판정
+SIF (CUP:ARG:치정 + 노출증EXP * 10) > (노출증난이도 * ABLUP_DIFFICULTY(8))
 	CALL ABLUP_RISE(ARG, 8)
 
 
@@ -244,16 +244,16 @@ CALL ABLUP_9(MASTER)
 CALL ABLUP_9(TARGET)
 
 @ABLUP_9(ARG)
-#DIM 레즈끼難易度
+#DIM 레즈끼난이도
 #DIM 레즈끼EXP
 
-;레즈끼難易度設定
-레즈끼難易度 = POWER(2, ABL:ARG:레즈끼) * (100 - TALENT:ARG:바이 * 20)
+;레즈끼난이도 설정
+레즈끼난이도 = POWER(2, ABL:ARG:레즈끼) * (100 - TALENT:ARG:바이 * 20)
 ;레즈끼EXP취득
 레즈끼EXP = EXP:ARG:레즈경험
 
-;레즈끼달성判定
-SIF (SOURCE:ARG:애정 + SOURCE:ARG:열락 + 레즈끼EXP * 20) > (레즈끼難易度 * ABLUP_DIFFICULTY(9))
+;레즈끼달성판정
+SIF (SOURCE:ARG:애정 + SOURCE:ARG:열락 + 레즈끼EXP * 20) > (레즈끼난이도 * ABLUP_DIFFICULTY(9))
 	CALL ABLUP_RISE(ARG, 9)
 
 
@@ -266,16 +266,16 @@ CALL ABLUP_10(MASTER)
 CALL ABLUP_10(TARGET)
 
 @ABLUP_10(ARG)
-#DIM ＢＬ끼難易度
+#DIM ＢＬ끼난이도
 #DIM ＢＬ끼EXP
 
-;ＢＬ끼難易度設定
-ＢＬ끼難易度 = POWER(2, ABL:ARG:ＢＬ끼) * (100 - TALENT:ARG:바이 * 20)
+;ＢＬ끼난이도 설정
+ＢＬ끼난이도 = POWER(2, ABL:ARG:ＢＬ끼) * (100 - TALENT:ARG:바이 * 20)
 ;ＢＬ끼EXP취득
 ＢＬ끼EXP = EXP:ARG:ＢＬ경험
 
-;ＢＬ끼달성判定
-SIF (SOURCE:ARG:애정 + SOURCE:ARG:열락 + ＢＬ끼EXP * 20) > (ＢＬ끼難易度 * ABLUP_DIFFICULTY(10))
+;ＢＬ끼달성판정
+SIF (SOURCE:ARG:애정 + SOURCE:ARG:열락 + ＢＬ끼EXP * 20) > (ＢＬ끼난이도 * ABLUP_DIFFICULTY(10))
 	CALL ABLUP_RISE(ARG, 10)
 
 
@@ -283,16 +283,16 @@ SIF (SOURCE:ARG:애정 + SOURCE:ARG:열락 + ＢＬ끼EXP * 20) > (ＢＬ끼難�
 ;마조끼ABL
 ;-------------------------------------------------
 @ABLUP_11M
-#DIM 마조끼難易度
+#DIM 마조끼난이도
 #DIM 마조끼EXP
 
-;마조끼難易度設定
-마조끼難易度 = POWER(2, ABL:MASTER:마조끼) * (100 - TALENT:MASTER:변태적 * 20)
+;마조끼난이도 설정
+마조끼난이도 = POWER(2, ABL:MASTER:마조끼) * (100 - TALENT:MASTER:변태적 * 20)
 ;마조끼EXP취득
 마조끼EXP = EXP:MASTER:고통쾌락경험 * 4 + EXP:MASTER:긴박경험 * 2 + EXP:MASTER:이상경험
 
-;마조끼달성判定
-SIF (CUP:MASTER:고통 + CUP:MASTER:불쾌 - CUP:MASTER:억울 + 마조끼EXP * 5) > (마조끼難易度 * ABLUP_DIFFICULTY(11))
+;마조끼달성판정
+SIF (CUP:MASTER:고통 + CUP:MASTER:불쾌 - CUP:MASTER:억울 + 마조끼EXP * 5) > (마조끼난이도 * ABLUP_DIFFICULTY(11))
 	CALL ABLUP_RISE(MASTER, 11)
 
 
@@ -300,20 +300,20 @@ SIF (CUP:MASTER:고통 + CUP:MASTER:불쾌 - CUP:MASTER:억울 + 마조끼EXP * 
 ;자위중독ABL
 ;-------------------------------------------------
 @ABLUP_12M
-#DIM 자위중독難易度
+#DIM 자위중독난이도
 #DIM 자위중독EXP
 #DIM 자위중독보정
 
-;자위중독難易度設定
-자위중독難易度 = POWER(2, ABL:MASTER:자위중독) * (100 - TALENT:MASTER:자위하기쉬움 * 20)
+;자위중독난이도 설정
+자위중독난이도 = POWER(2, ABL:MASTER:자위중독) * (100 - TALENT:MASTER:자위하기쉬움 * 20)
 ;자위중독EXP취득
 자위중독EXP = EXP:MASTER:자위경험 + EXP:MASTER:죠교자위경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = ((ABL:MASTER:욕망 + ABL:MASTER:노출증) >= 20) ? 0 # (ABL:MASTER:자위중독 * 2 - 1 - (ABL:MASTER:욕망 + ABL:MASTER:노출증))
 자위중독보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;자위중독달성判定
-SIF (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ + 자위중독EXP * 10 / 자위중독보정) > (자위중독難易度 * ABLUP_DIFFICULTY(12))
+;자위중독달성판정
+SIF (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ + 자위중독EXP * 10 / 자위중독보정) > (자위중독난이도 * ABLUP_DIFFICULTY(12))
 	CALL ABLUP_RISE(MASTER, 12)
 
 
@@ -326,20 +326,20 @@ CALL ABLUP_13(MASTER)
 CALL ABLUP_13(TARGET)
 
 @ABLUP_13(ARG)
-#DIM 정액중독難易度
+#DIM 정액중독난이도
 #DIM 정액중독EXP
 #DIM 정액중독보정
 
-;정액중독難易度設定
-정액중독難易度 = POWER(2, ABL:ARG:정액중독) * 100
+;정액중독난이도 설정
+정액중독난이도 = POWER(2, ABL:ARG:정액중독) * 100
 ;정액중독EXP취득
 정액중독EXP = EXP:ARG:정액경험
-;욕망ABLが不발しているとEXP보정を減らす(1Lvにつき1/2)
+;욕망ABL가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (ABL:ARG:욕망 >= 10) ? 0 # (ABL:ARG:정액중독 - 1 - ABL:ARG:욕망)
 정액중독보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;정액중독달성判定
-SIF (정액중독EXP * 40 / 정액중독보정) > (정액중독難易度 * ABLUP_DIFFICULTY(13))
+;정액중독달성판정
+SIF (정액중독EXP * 40 / 정액중독보정) > (정액중독난이도 * ABLUP_DIFFICULTY(13))
 	CALL ABLUP_RISE(ARG, 13)
 
 
@@ -352,26 +352,26 @@ CALL ABLUP_14(MASTER)
 CALL ABLUP_14(TARGET)
 
 @ABLUP_14(ARG)
-#DIM 레즈중독難易度
+#DIM 레즈중독난이도
 #DIM 레즈중독EXP
 #DIM 레즈중독보정
 
-;레즈중독難易度設定
-레즈중독難易度 = POWER(2, ABL:ARG:레즈중독) * (100 - TALENT:ARG:바이 * 20)
+;레즈중독난이도 설정
+레즈중독난이도 = POWER(2, ABL:ARG:레즈중독) * (100 - TALENT:ARG:바이 * 20)
 ;레즈중독EXP취득
 레즈중독EXP = EXP:ARG:레즈경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (ABL:ARG:레즈끼 >= 10) ? 0 # (ABL:ARG:레즈중독 - 1 - ABL:ARG:레즈끼)
 레즈중독보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;레즈중독달성判定
+;레즈중독달성판정
 ;죠교대상
 IF ARG == MASTER
-	SIF (CFLAG:M호의 / 2 + 레즈중독EXP * 20 / 레즈중독보정) > (레즈중독難易度 * ABLUP_DIFFICULTY(14))
+	SIF (CFLAG:M호의 / 2 + 레즈중독EXP * 20 / 레즈중독보정) > (레즈중독난이도 * ABLUP_DIFFICULTY(14))
 		CALL ABLUP_RISE(MASTER, 14)
 ;죠교자
 ELSE
-	SIF (CFLAG:호의 / 2 + 레즈중독EXP * 20 / 레즈중독보정) > (레즈중독難易度 * ABLUP_DIFFICULTY(14))
+	SIF (CFLAG:호의 / 2 + 레즈중독EXP * 20 / 레즈중독보정) > (레즈중독난이도 * ABLUP_DIFFICULTY(14))
 		CALL ABLUP_RISE(TARGET, 14)
 ENDIF
 
@@ -380,20 +380,20 @@ ENDIF
 ;고통중독ABL
 ;-------------------------------------------------
 @ABLUP_15M
-#DIM 고통중독難易度
+#DIM 고통중독난이도
 #DIM 고통중독EXP
 #DIM 고통중독보정
 
-;고통중독難易度設定
-고통중독難易度 = POWER(2, ABL:MASTER:고통중독) * (100 - TALENT:MASTER:도Ｍ * 20)
+;고통중독난이도 설정
+고통중독난이도 = POWER(2, ABL:MASTER:고통중독) * (100 - TALENT:MASTER:도Ｍ * 20)
 ;고통중독EXP취득
 고통중독EXP = EXP:MASTER:고통쾌락경험 * 2 + EXP:MASTER:이상경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = ((ABL:MASTER:욕망 + ABL:MASTER:마조끼) >= 20) ? 0 # (ABL:MASTER:고통중독 * 2 - 1 - (ABL:MASTER:욕망 + ABL:MASTER:마조끼))
 고통중독보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;고통중독달성判定
-SIF (CUP:MASTER:고통 + 고통중독EXP * 10 / 고통중독보정) > (고통중독難易度 * ABLUP_DIFFICULTY(15))
+;고통중독달성판정
+SIF (CUP:MASTER:고통 + 고통중독EXP * 10 / 고통중독보정) > (고통중독난이도 * ABLUP_DIFFICULTY(15))
 	CALL ABLUP_RISE(MASTER, 15)
 
 
@@ -401,49 +401,49 @@ SIF (CUP:MASTER:고통 + 고통중독EXP * 10 / 고통중독보정) > (고통중
 ;구속중독ABL
 ;-------------------------------------------------
 @ABLUP_16M
-#DIM 구속중독難易度
+#DIM 구속중독난이도
 #DIM 구속중독EXP
 #DIM 구속중독보정
 
-;구속중독難易度設定
+;구속중독난이도 설정
 IF ABL:MASTER:구속중독 >= 10
-	구속중독難易度 = POWER(2, 9) * (100 - TALENT:MASTER:도Ｍ * 20)
+	구속중독난이도 = POWER(2, 9) * (100 - TALENT:MASTER:도Ｍ * 20)
 ELSE
-	구속중독難易度 = POWER(2, ABL:MASTER:구속중독) * (100 - TALENT:MASTER:도Ｍ * 20)
+	구속중독난이도 = POWER(2, ABL:MASTER:구속중독) * (100 - TALENT:MASTER:도Ｍ * 20)
 ENDIF
 ;구속중독EXP취득
 구속중독EXP = EXP:MASTER:긴박경험 * 2 + EXP:MASTER:이상경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = ((ABL:MASTER:순종 + ABL:MASTER:마조끼) >= 20) ? 0 # (ABL:MASTER:구속중독 * 2 - 1 - (ABL:MASTER:순종 + ABL:MASTER:마조끼))
 구속중독보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;구속중독달성判定
-SIF (CUP:MASTER:불쾌 + 구속중독EXP * 10 / 구속중독보정) > (구속중독難易度 * ABLUP_DIFFICULTY(16))
+;구속중독달성판정
+SIF (CUP:MASTER:불쾌 + 구속중독EXP * 10 / 구속중독보정) > (구속중독난이도 * ABLUP_DIFFICULTY(16))
 	CALL ABLUP_RISE(MASTER, 16)
 
 
 ;────────────────────────────────────
-;죠교能力の上昇
+;죠교능력의 상승
 ;────────────────────────────────────
 ;-------------------------------------------------
 ;회화ABL
 ;-------------------------------------------------
 @ABLUP_20T
-#DIM 회화難易度
+#DIM 회화난이도
 #DIM 회화EXP
 #DIM 회화보정
 
-;회화難易度設定
-회화難易度 = POWER(2, ABL:회화) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;회화난이도 설정
+회화난이도 = POWER(2, ABL:회화) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;회화EXP취득
 회화EXP = EXP:회화경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:회화 * 2 - 1 - CFLAG:죠교레벨)
 회화보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;회화달성判定
+;회화달성판정
 LOCAL = CUP:MASTER:굴복 + CUP:MASTER:공순 * 2 + CUP:MASTER:공포 - CUP:MASTER:반항
-SIF (LOCAL / 2 + 회화EXP * 20 / 회화보정) > (회화難易度 * ABLUP_DIFFICULTY(20))
+SIF (LOCAL / 2 + 회화EXP * 20 / 회화보정) > (회화난이도 * ABLUP_DIFFICULTY(20))
 	CALL ABLUP_RISE(TARGET, 20)
 
 
@@ -451,21 +451,21 @@ SIF (LOCAL / 2 + 회화EXP * 20 / 회화보정) > (회화難易度 * ABLUP_DIFFI
 ;애무ABL
 ;-------------------------------------------------
 @ABLUP_21T
-#DIM 애무難易度
+#DIM 애무난이도
 #DIM 애무EXP
 #DIM 애무보정
 
-;애무難易度設定
-애무難易度 = POWER(2, ABL:애무) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;애무난이도 설정
+애무난이도 = POWER(2, ABL:애무) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;애무EXP취득
 애무EXP = EXP:수음경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:애무 * 2 - 1 - CFLAG:죠교레벨)
 애무보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;애무달성判定
+;애무달성판정
 LOCAL = CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ - CUP:MASTER:억울
-SIF (LOCAL / 3 + 애무EXP * 20 / 애무보정) > (애무難易度 * ABLUP_DIFFICULTY(21))
+SIF (LOCAL / 3 + 애무EXP * 20 / 애무보정) > (애무난이도 * ABLUP_DIFFICULTY(21))
 	CALL ABLUP_RISE(TARGET, 21)
 
 
@@ -473,20 +473,20 @@ SIF (LOCAL / 3 + 애무EXP * 20 / 애무보정) > (애무難易度 * ABLUP_DIFFI
 ;도구ABL
 ;-------------------------------------------------
 @ABLUP_22T
-#DIM 도구難易度
+#DIM 도구난이도
 #DIM 도구EXP
 #DIM 도구보정
 
-;도구難易度設定
-도구難易度 = POWER(2, ABL:도구) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;도구난이도 설정
+도구난이도 = POWER(2, ABL:도구) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;도구EXP취득
 도구EXP = EXP:도구사용경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:도구 * 2 - 1 - CFLAG:죠교레벨)
 도구보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;도구달성判定
-SIF (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ - CUP:MASTER:불쾌 + 도구EXP * 20 / 도구보정) > (도구難易度 * ABLUP_DIFFICULTY(22))
+;도구달성판정
+SIF (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ - CUP:MASTER:불쾌 + 도구EXP * 20 / 도구보정) > (도구난이도 * ABLUP_DIFFICULTY(22))
 	CALL ABLUP_RISE(TARGET, 22)
 
 
@@ -494,65 +494,65 @@ SIF (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌�
 ;성교ABL
 ;-------------------------------------------------
 @ABLUP_23T
-#DIM 성교難易度
+#DIM 성교난이도
 #DIM 성교EXP
 #DIM 성교보정
 
-;성교難易度設定
-성교難易度 = POWER(2, ABL:성교) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;성교난이도 설정
+성교난이도 = POWER(2, ABL:성교) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;성교EXP취득
 성교EXP = EXP:성교경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:성교 * 2 - 1 - CFLAG:죠교레벨)
 성교보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;성교달성判定
+;성교달성판정
 LOCAL = CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:욕정 + CUP:MASTER:공순 - CUP:MASTER:공포 - CUP:MASTER:억울
-SIF (LOCAL / 3 + 성교EXP * 20 / 성교보정) > (성교難易度 * ABLUP_DIFFICULTY(23))
+SIF (LOCAL / 3 + 성교EXP * 20 / 성교보정) > (성교난이도 * ABLUP_DIFFICULTY(23))
 	CALL ABLUP_RISE(TARGET, 23)
 
 
 ;-------------------------------------------------
 ;수치ABL
-;『恥ずかしがらせる能力』
+;『부끄러워하게 하는 능력』
 ;-------------------------------------------------
 @ABLUP_24T
-#DIM 수치難易度
+#DIM 수치난이도
 #DIM 수치EXP
 #DIM 수치보정
 
-;수치難易度設定
-수치難易度 = POWER(2, ABL:수치) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;수치난이도 설정
+수치난이도 = POWER(2, ABL:수치) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;수치EXP취득
 수치EXP = EXP:MASTER:노출경험 + EXP:MASTER:치욕쾌락경험 * 2
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:수치 * 2 - 1 - CFLAG:죠교레벨)
 수치보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;수치달성判定
-SIF (CUP:MASTER:욕정 + CUP:MASTER:치정 - CUP:MASTER:억울 + 수치EXP * 20 / 수치보정) > (수치難易度 * ABLUP_DIFFICULTY(24))
+;수치달성판정
+SIF (CUP:MASTER:욕정 + CUP:MASTER:치정 - CUP:MASTER:억울 + 수치EXP * 20 / 수치보정) > (수치난이도 * ABLUP_DIFFICULTY(24))
 	CALL ABLUP_RISE(TARGET, 24)
 
 
 ;-------------------------------------------------
 ;봉사ABL
-;『봉사시킨다能力』
+;『봉사시킨다능력』
 ;-------------------------------------------------
 @ABLUP_25T
-#DIM 봉사難易度
+#DIM 봉사난이도
 #DIM 봉사EXP
 #DIM 봉사보정
 
-;봉사難易度設定
-봉사難易度 = POWER(2, ABL:봉사) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;봉사난이도 설정
+봉사난이도 = POWER(2, ABL:봉사) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;봉사EXP취득
 봉사EXP = EXP:MASTER:구음경험 + EXP:MASTER:수음경험 + EXP:MASTER:봉사쾌락경험 * 2 + EXP:MASTER:절정시킨경험 * 3 + EXP:MASTER:애정경험 * 4
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:봉사 * 2 - 1 - CFLAG:죠교레벨)
 봉사보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;봉사달성判定
-SIF (CUP:MASTER:굴복 + CUP:MASTER:공순 - CUP:MASTER:반항 + 봉사EXP * 10 / 봉사보정) > (봉사難易度 * ABLUP_DIFFICULTY(25))
+;봉사달성판정
+SIF (CUP:MASTER:굴복 + CUP:MASTER:공순 - CUP:MASTER:반항 + 봉사EXP * 10 / 봉사보정) > (봉사난이도 * ABLUP_DIFFICULTY(25))
 	CALL ABLUP_RISE(TARGET, 25)
 
 
@@ -560,20 +560,20 @@ SIF (CUP:MASTER:굴복 + CUP:MASTER:공순 - CUP:MASTER:반항 + 봉사EXP * 10 
 ;가학ABL
 ;-------------------------------------------------
 @ABLUP_26T
-#DIM 가학難易度
+#DIM 가학난이도
 #DIM 가학EXP
 #DIM 가학보정
 
-;가학難易度設定
-가학難易度 = POWER(2, ABL:가학) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;가학난이도 설정
+가학난이도 = POWER(2, ABL:가학) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;가학EXP취득
 가학EXP = EXP:MASTER:긴박경험 + EXP:MASTER:고통쾌락경험 * 2 + EXP:MASTER:Ｖ확장경험 * 4 + EXP:MASTER:Ａ확장경험 * 4
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:가학 * 2 - 1 - CFLAG:죠교레벨)
 가학보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;가학달성判定
-SIF (CUP:MASTER:고통 + CUP:MASTER:불쾌 - CUP:MASTER:반항 + 가학EXP * 10 / 가학보정) > (가학難易度 * ABLUP_DIFFICULTY(26))
+;가학달성판정
+SIF (CUP:MASTER:고통 + CUP:MASTER:불쾌 - CUP:MASTER:반항 + 가학EXP * 10 / 가학보정) > (가학난이도 * ABLUP_DIFFICULTY(26))
 	CALL ABLUP_RISE(TARGET, 26)
 
 
@@ -581,20 +581,20 @@ SIF (CUP:MASTER:고통 + CUP:MASTER:불쾌 - CUP:MASTER:반항 + 가학EXP * 10 
 ;이상ABL
 ;-------------------------------------------------
 @ABLUP_27T
-#DIM 이상難易度
+#DIM 이상난이도
 #DIM 이상EXP
 #DIM 이상보정
 
-;이상難易度設定
-이상難易度 = POWER(2, ABL:이상) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
+;이상난이도 설정
+이상난이도 = POWER(2, ABL:이상) * (100 - TALENT:습득빠름 * 20 + TALENT:습득느림 * 20)
 ;이상EXP취득
 이상EXP = EXP:MASTER:이상경험
-;죠교레벨が不발しているとEXP보정を減らす(1Lvにつき1/2)
+;죠교레벨가 불발 하고 있으면 EXP보정를 줄인다(1 Lv에 대해 1/2)
 LOCAL = (CFLAG:죠교레벨 >= 20) ? 0 # (ABL:이상 * 2 - 1 - CFLAG:죠교레벨)
 이상보정 = POWER(2, LOCAL < 0 ? 0 # LOCAL)
 
-;이상달성判定
-SIF (SOURCE:MASTER:이탈 + 이상EXP * 20 / 이상보정) > (이상難易度 * ABLUP_DIFFICULTY(27))
+;이상달성판정
+SIF (SOURCE:MASTER:이탈 + 이상EXP * 20 / 이상보정) > (이상난이도 * ABLUP_DIFFICULTY(27))
 	CALL ABLUP_RISE(TARGET, 27)
 
 
@@ -602,7 +602,7 @@ SIF (SOURCE:MASTER:이탈 + 이상EXP * 20 / 이상보정) > (이상難易度 * 
 ;사역ABL
 ;-------------------------------------------------
 @ABLUP_28T
-;사역ABLは上昇しない(暫定)
+;사역ABL는 상승하지 않는다(잠정)
 
 
 @ABLUP_RISE(대상, ARG)

@@ -1,28 +1,28 @@
 ﻿;-------------------------------------------------
-;スプリットインプット関数@INPUT_SPLIT
-;数値の入力待ちをします。引数に含まれない数字を選んだら自動的に入力待ちをし直します
-;有効な数字が入力당했다らそれをRESULTへ返して戻ります
+;스프릿트인풋트 함수@INPUT_SPLIT
+;수치의 입력 대기를 합니다. 인수에 포함되지 않는 숫자를 선택하면 자동적으로 입력 대기를 다시 합니다
+;유효한 숫자가 입력당했다등 그것을 RESULT에 돌려주어 돌아옵니다
 ;
-;ARGS		通すボタンの定義
-;ARGS:1		区切り記号
-;ARGS;2		STR型かINT型かの指定。省略했다場合はINT型が可能ならINT型、そうでないならSTR型が作成される。
+;ARGS		통하는 버튼의 정의
+;ARGS:1		단락 기호
+;ARGS;2		STR형이나 INT형인가의 지정. 생략했다경우는 INT형이 가능하면 INT형, 그렇지 않으면 STR형이 작성된다.
 ;-------------------------------------------------
 @INPUT_SPLIT, ARGS, ARGS:1 = "/", ARGS:2
 #LOCALSIZE 1
 #LOCALSSIZE 200
-#DIM 要素数
+#DIM 요소수
 #DIM LINE
 #DIM IS_ONEINPUT
 #DIM IS_INT
-#DIM 元RESULT
-#DIMS 元RESULTS
-元RESULTS = %RESULTS%
-元RESULT = RESULT
+#DIM 원RESULT
+#DIMS 원RESULTS
+원RESULTS = %RESULTS%
+원RESULT = RESULT
 LINE = LINECOUNT
 SPLIT ARGS, ARGS:1, LOCALS
-要素数 = RESULT
+요소수 = RESULT
 IS_ONEINPUT = 1
-FOR LOCAL, 0, 要素数
+FOR LOCAL, 0, 요소수
 	SIF STRLENS(LOCALS:LOCAL) < 2
 		CONTINUE
 	IS_ONEINPUT = 0
@@ -30,7 +30,7 @@ FOR LOCAL, 0, 要素数
 NEXT
 IF ARGS:2 == ""
 	ARGS:2 = INT
-	FOR LOCAL, 0, 要素数
+	FOR LOCAL, 0, 요소수
 		SIF ISNUMERIC(LOCALS:LOCAL)
 			CONTINUE
 		ARGS:2 = STR
@@ -53,11 +53,11 @@ ELSE
 ENDIF
 
 IF ARGS:2 == "STR"
-	SIF FINDELEMENT(LOCALS , ESCAPE(RESULTS), 0, 要素数, 1) >= 0
-		RETURN 元RESULT
+	SIF FINDELEMENT(LOCALS , ESCAPE(RESULTS), 0, 요소수, 1) >= 0
+		RETURN 원RESULT
 ELSE
-	IF FINDELEMENT(LOCALS , TOSTR(RESULT), 0, 要素数, 1) >= 0
-		RESULTS = %元RESULTS%
+	IF FINDELEMENT(LOCALS , TOSTR(RESULT), 0, 요소수, 1) >= 0
+		RESULTS = %원RESULTS%
 		RETURN RESULT
 	ENDIF
 ENDIF

@@ -1,20 +1,20 @@
-﻿;追加処理及びサブ이벤트
+﻿;추가 처리 및 서브이벤트
 
 @EVENTTURNEND
 #PRI
-#DIM 오토모드カウント
+#DIM 오토모드카운트
 IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
 	SKIPDISP 1
 ENDIF
-;最初に回復処理を入れる
+;최초로 회복 처리를 넣는다
 CALL BASE_RECOVERY
 
-;ムラムラ플래그
+;불끈불끈 플래그
 FOR LOCAL, 0, CHARANUM
 	CFLAG:LOCAL:무라무라 += 1
 NEXT
 
-;임신処理
+;임신처리
 FOR LOCAL, 1, CHARANUM
 	CALL PREGNACY_CHECK(LOCAL)
 NEXT
@@ -26,16 +26,16 @@ SIF CFLAG:MASTER:임신
 	CFLAG:MASTER:임신 ++
 CALL MASTER_PREGNACY
 
-;現行版の挙動を見た限りだとCFLAG:TARGET:호의 > 3000では敷居が低すぎる感じなので > 5000に。CFLAG:M호의 > 2000も追加
-;さらにCFLAG:TARGET:아라이멘도 < 0を条件から外してみる@/L
+;현행판의 거동을 본 한계라면 CFLAG:TARGET:호의 > 3000에서는 문턱이 너무 낮은 느낌인 것로> 5000에. CFLAG:M호의 > 2000도 추가
+;한층 더 CFLAG:TARGET:아라이멘도 < 0을 조건으로부터 제외해 본다@/L
 SIF TARGET > 0 && !CFLAG:TARGET:노예목걸이봉인 && CFLAG:TARGET:호의 > 5000 && CFLAG:M호의 > 2000 && TALENT:새드 && !ITEM:노예목걸이
 	CALL SLAVE_COLLAR
 
-;일상(非죠교時)이벤트
+;일상(비죠교시)이벤트
 CALL DAILY_LIFE
 
 ;────────────────────────────────────
-;薬剤のクールダウン
+;약제의 쿨 다운
 ;────────────────────────────────────
 IF TARGET > 0
 	;로션
@@ -46,7 +46,7 @@ IF TARGET > 0
 	FLAG:미약히트 -= FLAG:미약히트 / (5 - TALENT:배합지식 * 3) + GET_TRAINLV(TARGET) * (1 + ABL:욕망) / 3
 	SIF FLAG:미약히트 < 0
 		FLAG:미약히트 = 0
-	;栄養剤
+	;영양제
 	FLAG:영양히트 -= FLAG:영양히트 / (6 - TALENT:배합지식 * 3) + GET_TRAINLV(TARGET) * (2 + TALENT:치료) / 2
 	SIF FLAG:영양히트 < 0
 		FLAG:영양히트 = 0
@@ -56,18 +56,18 @@ IF TARGET > 0
 		FLAG:치료히트 = 0
 ENDIF
 ;────────────────────────────────────
-;いろいろ
+;여러 가지
 ;────────────────────────────────────
 ;CALL EVENTCHECK_M
 ;FLAG:0 = 0
 
-;日時更新
+;일시 갱신
 CALL NEXTTIME
 IF FLAG:오토모드 > 0
 	SKIPDISP 0
-	오토모드カウント++
-	IF FLAG:오토모드 == 오토모드カウント
-		오토모드カウント = 0
+	오토모드카운트++
+	IF FLAG:오토모드 == 오토모드카운트
+		오토모드카운트 = 0
 		BEGIN SHOP
 	ELSE
 		BEGIN TRAIN
@@ -156,7 +156,7 @@ IF !FLAG:임신
 	CFLAG:ARG:임신 = 0
 ENDIF
 
-;아이가짐플래그は両方の임신機能オフ플래그がある場合のみ削除
+;아이가짐플래그는 양쪽 모두의임신기능 오프플래그가 있는 경우만 삭제
 IF !FLAG:임신 && FLAG:노예임신 == 0
 	CFLAG:ARG:아이가짐 = 0
 	CFLAG:MASTER:아이가짐 = 0
@@ -166,14 +166,14 @@ IF !FLAG:임신 && FLAG:노예임신 == 0
 	CFLAG:MASTER:딸 = 0
 ENDIF
 
-;주인님の임신チェック
+;주인님의임신체크
 @MASTER_PREGNACY_CHECK(ARG)
 SIF !FLAG:노예임신
 	RETURN 0
-;コンフィグで애정によって임신率変動を選んでいる場合
+;콘피그로애정에 의해임신율 변동을 선택하고 있는 경우
 IF FLAG:노예임신 == 1
 	CFLAG:ARG:M질정 = CFLAG:ARG:M질정 * MIN(CFLAG:ARG:M호의 + CFLAG:ARG:호의 , 9000) / 10000
-;コンフィグによって애정に関係なく임신を選んでいる場合
+;콘피그에 의해애정에 관계없이임신를 선택하고 있는 경우
 ELSEIF FLAG:노예임신 == 2
 	CFLAG:ARG:M질정 = CFLAG:ARG:M질정 * 7 / 10
 ENDIF
@@ -184,20 +184,20 @@ SIF TALENT:MASTER:임신 || CFLAG:MASTER:임신
 IF RAND:(1 + CFLAG:ARG:M질정 / 10) > RAND:10000 && !CFLAG:MASTER:임신
 	;임신플래그
 	CFLAG:MASTER:임신 = 1
-	;父親のキャラの通し번호を保存
+	;부친의 캐릭터의 안내번호를 보존
 	CFLAG:MASTER:46 = CFLAG:ARG:91
 ENDIF
 
 @MASTER_PREGNACY
-;父親不明の関係で、죠교자が노예（主人公）を임신시켰다場合の구상はまだ書けません。
-;KOJO_EVENT(9)を枠として用意しておきます。
+;부친 불명의 관계로, 죠교자가노예（주인공）를임신시켰다경우의구상는 아직 쓸 수 없습니다.
+;KOJO_EVENT(9)를 테두리로서 준비해 둡니다.
 IF CFLAG:MASTER:임신 == 5
 	DRAWLINE
 ;OriginalString : %CALLNAME:MASTER%의 お腹がわずかに膨らんでいる
 	PRINTFORMW %CALLNAME:MASTER%의 배가 조금 부풀어 오르고 있다
-	;この時点で父親不明
+	;이 시점에서 부친 불명
 ;OriginalString : どうやら임신してしまったようだ･･･
-	PRINTFORMW 아무래도 임신해 버린 것 같다･･･
+	PRINTFORMW 아무래도 임신해 버린 것 같다…
 	TALENT:MASTER:임신 = 1
 	TALENT:MASTER:모유체질 = 1
 	MAXBASE:MASTER:모유 = 10000
@@ -210,7 +210,7 @@ IF TALENT:MASTER:임신
 ;OriginalString : そろそろ生まれそうです
 		PRINTFORMW 이제 태어날 것 같습니다
 	ELSEIF CFLAG:MASTER:임신 >= 16 + RAND:3
-			;父親検索
+			;부친 검색
 			LOCAL:1 = 0
 			FOR LOCAL,1,CHARANUM
 				IF CFLAG:MASTER:46 == CFLAG:LOCAL:91

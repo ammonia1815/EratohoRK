@@ -1,45 +1,45 @@
 ﻿;-------------------------------------------------------------------------------
 ;
-;	TAGPRINT関数群
+;	TAGPRINT 함수군
 ;
 ;===============================================================================
-;	タグを利用했다色・フォント・スタイル・ボタン化자유自在な表示用関数
-;	レイヤー用に作ったけど別にレイヤーじゃなくても使えます
+;	태그를 이용했다색·폰트·스타일·버튼화자유자재인 표시용 함수
+;	레이어용으로 만들었지만 별로 레이어가 아니어도 사용할 수 있습니다
 ;	CALL TAGPRINT(LOCALS)
 ;	CALL TAGPRINTL(LOCALS)
-;	CALL TAGPRINTW(LOCALS)	と直接叩いてね
+;	CALL TAGPRINTW(LOCALS)와 직접 두드려
 ;-------------------------------------------------------------------------------
-;	■区切り文字
-;	  デフォルトで"#"ですがARGS:1で変更が可能なので、見やすいのを使ってください
-;	  以下"#"で説明します
+;	■단락 문자
+;	  디폴트로"#"입니다만 ARGS:1으로 변경이 가능한 것으로, 보기 쉬운 것을 사용해 주세요
+;	  이하"#"로 설명합니다
 ;
-;	  ブロックＡ#← ここ →#ブロックＣ  ※左の例の区切り文字で区切られた部分を1ブロック
+;	  블록Ａ#← 여기 →#블록Ｃ  ※왼쪽의 예의 단락 문자로 단락지어진 부분을 1 블록
 ;
-;	  このブロック内でフォントを変えたり色を変えたりしています
-;	  ブロックは1文字から可能で、1行あたり100ブロックまで使用可能
+;	  이 블록내에서 폰트를 바꾸거나 색을 바꾸거나 하고 있습니다
+;	  블록은 1문자로부터 가능해, 1행 당 100 블록까지 사용 가능
 ;-------------------------------------------------------------------------------
-;	■文字列の仕様はタグ方式
-;	  <COLOR_0xFFFF00><FONT_ＭＳ 明朝><BUTTON_いろは>,いろはにほへと#
-;	  この例では"いろはにほへと"を 赤色・フォント明朝・ボタン値"いろは" で表示します
+;	■캐릭터 라인의 사양은 태그 방식
+;	  <COLOR_0xFFFF00><FONT_나눔명조><BUTTON_이로하>, 색은 로#
+;	  이 예에서는 "색은 로"를 세키색·폰트 내일 아침·버튼치 "이로하"로 표시합니다
 ;
-;	■利用できるタグ
-;		<COLOR_XX>	<色_XX> 			文字列の色を変えて表示、プロパティは16進RGB(追記すれば短縮可能)
-;										もとに戻했다い時は<COLOR><色>等プロパティ無しで宣言
-;		<FONT_XX>	<フォント_XX> 		文字列のフォントを変えて表示、プロパティはフォント名(追記すれば短縮可能)
-;										もとに戻했다い時は<FONT><フォント>等プロパティ無しで宣言
-;		<STYLE_XX>	<スタイル_XX>		文字列のスタイル 0～0x0Fのビット積算 ( 1 = 太字  2 = 斜体  4 = 打ち消し線  8 = 下線 )
-;										もとに戻했다い時は<STYLE><スタイル>等プロパティ無しで宣言
-;		<BUTTON_XX>	<ボタン_XX>			文字列のボタン化、プロパティは返り値(RESULTS)
+;	■이용할 수 있는 태그
+;		<COLOR_XX>	<색_XX> 			캐릭터 라인의 색을 바꾸어 표시, 프롭퍼티는 16진RGB(덧붙여 씀 하면 단축 가능)
+;										기초로려했다 있고 때는<COLOR><색>등 프롭퍼티 없음으로 선언
+;		<FONT_XX>	<폰트 _XX> 		캐릭터 라인의 폰트를 바꾸어 표시, 프롭퍼티는 폰트명(덧붙여 씀 하면 단축 가능)
+;										기초로려했다 있고 때는<FONT><폰트>등 프롭퍼티 없음으로 선언
+;		<STYLE_XX>	<스타일 _XX>		캐릭터 라인의 스타일 0～0 x0F의 비트 적산( 1 =굵은 글씨  2 =이탤릭  4 =부정선  8 =밑줄)
+;										기초로려했다 있고 때는<STYLE><스타일>등 프롭퍼티 없음으로 선언
+;		<BUTTON_XX>	<버튼 _XX>			캐릭터 라인의 버튼화, 프롭퍼티는 돌아가 값(RESULTS)
 ;
-;	・プロパティのXXは文字列、Yは数値
-;	・日英表記を無理やり両対応시켰다ので、同一ブロック内で同時に使わないでね
-;	・タグの順番は適当でOK、当然使わないのは省いてOK
-;	・いろはにほへと,<COLOR_0xFFFF00><FONT_ＭＳ 明朝><BUTTON_いろは>#  こういう形式も可能
-;	  対応시킨다にはSYSTEM_TAGSPLIT.ERBの @TAGSPLIT_TAGEND()関数の返り値を0から1に変えてください
+;	·프롭퍼티의 XX는 캐릭터 라인, Y는 수치
+;	·일영 표기를 억지로 양대응시켰다의 것으로, 동일 블록내에서 동시에 사용하지 말아줘
+;	·태그의 순번은 적당해 OK, 당연 사용하지 않는 것은 생략해 OK
+;	·색은 로,<COLOR_0xFFFF00><FONT_나눔명조><BUTTON_이로하>#  이런 형식도 가능
+;	  대응시킨다에는 SYSTEM_TAGSPLIT.ERB의 @TAGSPLIT_TAGEND() 함수의 돌아가 값을 0에서 1으로 바꾸어 주세요
 ;-------------------------------------------------------------------------------
-;	■色とフォントは短縮表記が可能
-;	  <色_赤>とか<FONT_明朝>とかやりたいならこのファイルの下部にある
-;	  AUTOSETCOLOR/FONTに追加してご利用ねがいます
+;	■색과 폰트는 단축 표기가 가능
+;	  <색_세키>라든지<FONT_내일 아침>이라든지 하고 싶으면 이 파일의 하부에 있다
+;	  AUTOSETCOLOR/FONT에 추가해 이용이군요가 있습니다
 ;===============================================================================
 @TAGPRINT(ARGS, ARGS:1)
 #LOCALSIZE 4
@@ -48,33 +48,33 @@
 SIF ARGS == ""
 	RETURN RESULT
 VARSET LOCAL
-; RESULT退避
+; RESULT 퇴피
 LOCAL = RESULT, RESULT:1, RESULT:2
-; 区切り文字をセット
+; 단락 문자를 세트
 CALL SET_NEST_SEPARATOR(ARGS:1)
-; ブロックごとに分割
+; 블록 마다 분할
 SPLIT ARGS, NEST_SEPARATOR, TAGPRINT_NEST
-; 1ブロックずつ
+; 1 블록씩
 FOR LCOUNT , 0 , RESULT
-	; 空なら何もしない
+	; 하늘이라면 아무것도 하지 않는다
 	SIF TAGPRINT_NEST:LCOUNT == ""
 		CONTINUE
-	; 文字列セット
+	; 캐릭터 라인 세트
 	LOCALS = %TAGSPLIT_ONE(TAGPRINT_NEST:LCOUNT)%
-	; 色タグ
-	LOCALS:1 = %TAGSPLIT_ONE(,"COLOR") + TAGSPLIT_ONE(,"色")%
+	; 색태그
+	LOCALS:1 = %TAGSPLIT_ONE(,"COLOR") + TAGSPLIT_ONE(,"색")%
 	SIF LOCALS:1 != ""
 		CALL AUTOSETCOLOR( LOCALS:1 )
-	; フォントタグ
-	LOCALS:1 = %TAGSPLIT_ONE(,"FONT") + TAGSPLIT_ONE(,"フォント")%
+	; 폰트 태그
+	LOCALS:1 = %TAGSPLIT_ONE(,"FONT") + TAGSPLIT_ONE(,"폰트")%
 	SIF LOCALS:1 != ""
 		CALL AUTOSETFONT( LOCALS:1 )
-	; スタイルタグ
-	LOCALS:1 = %TAGSPLIT_ONE(,"STYLE") + TAGSPLIT_ONE(,"スタイル")%
+	; 스타일 태그
+	LOCALS:1 = %TAGSPLIT_ONE(,"STYLE") + TAGSPLIT_ONE(,"스타일")%
 	SIF LOCALS:1 != ""
 		CALL AUTOSETSTYLE( LOCALS:1 )
-	; ボタンタグ
-	LOCALS:1 = %TAGSPLIT_ONE(,"BUTTON") + TAGSPLIT_ONE(,"ボタン")%
+	; 버튼 태그
+	LOCALS:1 = %TAGSPLIT_ONE(,"BUTTON") + TAGSPLIT_ONE(,"버튼")%
 	IF LOCALS:1 != ""
 ;OriginalString : LOCALS, LOCALS:1
 		PRINTBUTTON LOCALS, LOCALS:1
@@ -83,7 +83,7 @@ FOR LCOUNT , 0 , RESULT
 		PRINTFORM %LOCALS%
 	ENDIF
 	CALL AUTOSETCOLOR_SYS(-1)
-	CALL AUTOSETFONT( "RESET" )		;	重さの5割以上はこいつだぁぁぁぁ
+	CALL AUTOSETFONT( "RESET" )		;	무게의 5할 이상은 이 녀석이다아
 	CALL AUTOSETSTYLE( "RESET" )
 NEXT
 RESULT = LOCAL, LOCAL:1, LOCAL:2
@@ -109,13 +109,13 @@ ENDIF
 RETURN RESULT
 
 ;-------------------------------------------------------------------------------
-;	TAGPRINTで使用했다小関数
+;	TAGPRINT로 사용했다오제키수
 ;-------------------------------------------------------------------------------
 ;	AUTOSETCOLOR(ARGS) 
-;	ARGSに放り込んだ文字列を解釈してSETCOLOR、RESETで色を戻す。
+;	ARGS에 던져 넣은 캐릭터 라인을 해석해 SETCOLOR, RESET로 색을 되돌린다.
 ;-------------------------------------------------------------------------------
 ;	AUTOSETFONT(ARGS)
-;	ARGSに放り込んだ文字列を解釈してSETFONT、RESETでフォント戻す。
+;	ARGS에 던져 넣은 캐릭터 라인을 해석해 SETFONT, RESET로 폰트 되돌린다.
 ;-------------------------------------------------------------------------------
 ;===============================================================================
 @AUTOSETCOLOR(ARGS = "RESET")
@@ -125,17 +125,17 @@ IF ISNUMERIC(ARGS)
 	CALL AUTOSETCOLOR_SYS(TOINT(ARGS))
 ELSE
 	SELECTCASE ARGS
-		CASE "","RESET","COLOR","色"		; 初期化
+		CASE "","RESET","COLOR","색"		; 초기화
 			CALL AUTOSETCOLOR_SYS(-1)
-		CASE "빨강"							; --- "빨강"とかやりたい場合こんな感じで追加すべし  ---
+		CASE "빨강"							; --- "빨강"라든지 하고 싶은 경우 이런 느낌으로 추가 할 것  ---
 			CALL AUTOSETCOLOR_SYS(0xFF0000)
-		CASE "緑"
+		CASE "초록"
 			CALL AUTOSETCOLOR_SYS(0x00FF00)
-		CASE "青"
+		CASE "파랑"
 			CALL AUTOSETCOLOR_SYS(0x0000FF)
-		CASE "黄"
+		CASE "노랑"
 			CALL AUTOSETCOLOR_SYS(0xFFFF00)
-		CASE "水"
+		CASE "수"
 			CALL AUTOSETCOLOR_SYS(0x00FFFF)
 		CASE "유카리"
 			CALL AUTOSETCOLOR_SYS(0xFF00FF)
@@ -148,13 +148,13 @@ RETURN RESULT
 #DIM LCOLOR,1
 #LOCALSIZE 1
 SELECTCASE ARG
-	CASE 0 TO 0xFFFFFF						; 現在色退避했다上で変更
+	CASE 0 TO 0xFFFFFF						; 현재색퇴피했다상에서 변경
 		LCOLOR = GETCOLOR()
 		SETCOLOR ARG
 		LOCAL = 1
-	CASE -1									; 引数無しで戻す
+	CASE -1									; 인수 없음으로 되돌린다
 		IF LOCAL == 1
-			SIF LCOLOR == GETDEFBGCOLOR()	; 万が一最初に-1で呼んでしまった場合真っ黒になるため避けておく
+			SIF LCOLOR == GETDEFBGCOLOR()	; 만일 최초로-1으로 불러 버렸을 경우 시커멓게 되기 (위해)때문에 피해 둔다
 				LCOLOR = GETDEFCOLOR()
 			;SIF GETCOLOR() != LCOLOR
 				SETCOLOR LCOLOR
@@ -169,8 +169,8 @@ ENDSELECT
 #LOCALSIZE 2
 #DIMS LFONTS,1
 LOCAL = RESULT
-IF GROUPMATCH(ARGS, "","RESET","FONT","フォント")
-	; 変更されてないなら即돌아가기
+IF GROUPMATCH(ARGS, "","RESET","FONT","폰트")
+	; 변경되어 있지 않으면 즉돌아가기
 	IF LOCAL:1 == 0
 		RETURN LOCAL
 	ELSE
@@ -181,11 +181,11 @@ IF GROUPMATCH(ARGS, "","RESET","FONT","フォント")
 ELSE
 	$RESTART
 	SELECTCASE ARGS
-		CASE "ゴシック"						; 短縮시켰다い場合こんなかんじで追加すべし
-			ARGS = "ＭＳ ゴシック"
+		CASE "고딕"						; 단축시켰다 있고 경우 이런 느끼고로 추가 할 것
+			ARGS = "나눔바른고딕"
 			GOTO RESTART
-		CASE "明朝"
-			ARGS = "ＭＳ 明朝"
+		CASE "내일 아침"
+			ARGS = "나눔명조"
 			GOTO RESTART
 		CASEELSE
 			IF CHKFONT(ARGS)
@@ -204,7 +204,7 @@ RETURN LOCAL
 #LOCALSIZE 2
 #DIM LSTYLE,1
 LOCAL = RESULT
-IF GROUPMATCH(ARGS,"","RESET","STYLE","スタイル")
+IF GROUPMATCH(ARGS,"","RESET","STYLE","스타일")
 	IF LOCAL:1 == 0
 		RETURN LOCAL
 	ELSE

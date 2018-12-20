@@ -1,34 +1,34 @@
 ﻿;-------------------------------------------------
-;코이시구상 ANIMATION系関数
+;코이시구상 ANIMATION계 함수
 ;-------------------------------------------------
-;・ぱにめーしょん的なノリの独自関数(?)
-;・ぱにめーしょん拡張？ こにめーしょん？ よくわからない
-;・ぱにめーしょんのコンフィグは参照している
+;·에 째─실마리응적인 김의 독자 함수(?)
+;·에 째─실마리응확장? 와에 째─실마리응? 잘 모른다
+;·에 째─실마리응의 콘피그는 참조하고 있다
 ;-------------------------------------------------
 
 ;-------------------------------------------------
-;関数名:K64_LIGHT
-;概　要:電球関数
-;引　数:なし
-;戻り値:なし(多分RESULT保護)
-;코이시ちゃんと言えば電球。電球表示するよ！ ﾋﾟｺｰﾝ
-;適当な作り。割と손抜き。具体的には左端にしか出てこない辺り
+;함수명:K64_LIGHT
+;개  요점:전구 함수
+;인  수:없음
+;반환값:없음(아마 RESULT 보호)
+;코이시 분명하게 말하면 전구. 전구 표시한다! 피콘
+;적당한 만들기. 생각보다는손빼기. 구체적으로는 좌단에 밖에 나오지 않는 근처
 ;-------------------------------------------------
 @K64_LIGHT
 #LOCALSIZE 2
 #LOCALSSIZE 1
 ;　　　　　 |
 ;　　＼　　__　　／
-;　　＿　（ｍ）　＿
-;　　　　　|ミ|
-;　　 ／ 　｀´　 ＼
+;　　＿  （m）  ＿
+;　　　　　|미|
+;　　 ／   ｀′   ＼
 LOCAL:0 = CURRENTREDRAW()
 LOCAL:1 = GETCOLOR()
 LOCALS:0 = %GETFONT()%
-SETFONT CHKFONT("ＭＳ Ｐゴシック") ? "ＭＳ Ｐゴシック" # LOCALS:0
+SETFONT CHKFONT("나눔고딕") ? "나눔고딕" # LOCALS:0
 REDRAW 0
-IF ANIME_CONFIG("FLASH")	;発光可。何か違う気もする
-	;ズレを予防。表示しない部分は背景色(PRINT)、表示する場所をデフォルト色(PRINTD)で描画
+IF ANIME_CONFIG("FLASH")	;발광가능. 뭔가 틀리다는 느낌도 든다
+	;엇갈림을 예방. 표시하지 않는 부분은 키 경치(PRINT), 표시하는 장소를 디폴트색(PRINTD)으로 묘화
 	SETCOLOR GETBGCOLOR()
 	PRINTL       |
 ;OriginalString : 　　＼　　
@@ -39,20 +39,20 @@ IF ANIME_CONFIG("FLASH")	;発光可。何か違う気もする
 ;OriginalString : 　　＿　
 	PRINT   ＿ 
 ;OriginalString : （ｍ）
-	PRINTD （ｍ）
+	PRINTD （m）
 	PRINTL  ＿
 ;OriginalString : 　　　　　|ミ|
 	PRINTDL      |미|
 ;OriginalString : 　　 ／ 　
 	PRINT    ／  
 ;OriginalString : ｀´
-	PRINTD ｀´
+	PRINTD ｀′
 	PRINTL   ＼
 	REDRAW 2
 	TWAIT 700, 0
 	CLEARLINE 5
 ENDIF
-;発光する部分を黄色(PRINT)、発光しない部分をデフォルト色(PRINTD)で描画
+;발광하는 부분을 황색(PRINT), 발광하지 않는 부분을 디폴트색(PRINTD)으로 묘화
 SETCOLOR 0xFFFF99
 PRINTL       |
 ;OriginalString : 　　＼　　
@@ -65,7 +65,7 @@ PRINT   ＿
 ;OriginalString : （
 PRINTD （
 ;OriginalString : ｍ
-PRINT ｍ
+PRINT m
 ;OriginalString : ）
 PRINTD ）
 PRINTL  ＿
@@ -74,7 +74,7 @@ PRINTDL      |미|
 ;OriginalString : 　　 ／ 　
 PRINT    ／  
 ;OriginalString : ｀´
-PRINTD ｀´
+PRINTD ｀′
 PRINTL   ＼
 REDRAW LOCAL:0
 SETFONT LOCALS:0
@@ -84,48 +84,48 @@ RETURN RESULT
 
 
 ;-------------------------------------------------
-;関数名:K64_SHOPWAIT
-;概　要:ボーナス취득時にそれっぽいWAITをかけてみる関数
-;引　数:ARGS:0…表示文字列(少女○○中とか)
-;　　　 ARGS:1…[省略可]使用するフォント。省略했다場合はHG創英ﾌﾟﾚｾﾞﾝｽEB
-;戻り値:なし(多分RESULT保護)
-;備　考:HG創英ﾌﾟﾚｾﾞﾝｽEBはWindows標準フォントではないので、あれば使う感じで
-;　　　 OfficeやらStarSuiteやら入れてるなら有るんじゃないかな、多分…
+;함수명:K64_SHOPWAIT
+;개  요점:보너스취득시에 그것 같은 WAIT를 걸쳐 보는 함수
+;인  수:ARGS:0… 표시 캐릭터 라인(소녀 00중이라든지)
+;　　　 ARGS:1…[생략가능]사용하는 폰트. 생략했다경우는 HG창영존재 EB
+;반환값:없음(아마 RESULT 보호)
+;비  고:HG창영존재 EB는 Windows 표준 폰트는 아니기 때문에, 있으면 사용하는 느낌으로
+;　　　 Office든지 StarSuite든지 넣고 있다면 있는 것이 아닐까, 아마…
 ;-------------------------------------------------
-@K64_SHOPWAIT(ARGS:0, ARGS:1 = "HG創英ﾌﾟﾚｾﾞﾝｽEB")
+@K64_SHOPWAIT(ARGS:0, ARGS:1 = "HG창영존재 EB")
 #LOCALSIZE 5
 #LOCALSSIZE 1
-LOCAL:0 = STRLENS(ARGS:0) + 4	;文字列長+"..."+半角スペース分
-;元の設定保持
+LOCAL:0 = STRLENS(ARGS:0) + 4	;캐릭터 라인장+"..."+반각 스페이스분
+;원의 설정 보유
 LOCAL:1 = CURRENTREDRAW()
 LOCAL:2 = GETCOLOR()
 LOCAL:3 = GETSTYLE()
 LOCALS = %GETFONT()%
 
-;フォント/フォントスタイル設定
+;폰트/폰트 스타일 설정
 IF CHKFONT(ARGS:1)
 	SETFONT ARGS:1
-ELSEIF CHKFONT("ＭＳ 明朝")
-	SETFONT "ＭＳ 明朝"
+ELSEIF CHKFONT("나눔명조")
+	SETFONT "나눔명조"
 	FONTSTYLE 1	;Bold
 ELSE
 	FONTSTYLE 1
 ENDIF
-;右寄せ
+;오른쪽 공격
 ALIGNMENT RIGHT
-;地の文の色に
+;지문의 색에
 RESETCOLOR
 
-;☆REDRAWは調整の余地あり？
-IF ANIME_CONFIG("FULLCUTIN")	;全画面カットイン可
-	;REDRAWでいろいろと制御しないとガクつく
+;☆REDRAW는 조정의 여지 있어?
+IF ANIME_CONFIG("FULLCUTIN")	;전화면 컷 인 가능
+	;REDRAW로 여러가지 제어하지 않다고 가크 붙는다
 	REDRAW 0
 	CALL SAVELINE
 	FOR LOCAL:4, 0, 150
 		PRINTL 
 	NEXT
 	LOCAL:4 = 0
-	IF ANIME_CONFIG("FADE")	;フェード可(とりあえず挙動的にはフェードの亜種かと)
+	IF ANIME_CONFIG("FADE")	;페이드가능(우선 거동적으로는 페이드의 아종일까하고)
 		WHILE 1
 			PRINTFORML %ARGS:0, LOCAL:0, LEFT%
 			REDRAW 2
@@ -135,16 +135,16 @@ IF ANIME_CONFIG("FULLCUTIN")	;全画面カットイン可
 				BREAK
 			CLEARLINE 1
 		WEND
-	ELSE					;フェード不可
+	ELSE					;페이드 불가
 		PRINTFORML %ARGS:0%... 
 		REDRAW 2
 		TWAIT 1500, 0
 	ENDIF
 	CALL RETURNLINE
-ELSE							;全画面カットイン不可
+ELSE							;전화면 컷 인 불가
 	PRINTL 
 	PRINTL 
-	IF ANIME_CONFIG("FADE")	;フェード可
+	IF ANIME_CONFIG("FADE")	;페이드가능
 		WHILE 1
 			PRINTFORML %ARGS:0, LOCAL:0, LEFT%
 			REDRAW 2
@@ -154,7 +154,7 @@ ELSE							;全画面カットイン不可
 				BREAK
 			CLEARLINE 1
 		WEND
-	ELSE					;フェード不可
+	ELSE					;페이드 불가
 		PRINTFORML %ARGS:0%... 
 		REDRAW 2
 		TWAIT 1500, 0
@@ -162,7 +162,7 @@ ELSE							;全画面カットイン不可
 	PRINTL 
 	PRINTL 
 ENDIF
-;元の設定に戻す
+;원의 설정에 되돌린다
 REDRAW LOCAL:1
 SETCOLOR LOCAL:2
 ALIGNMENT LEFT

@@ -1,18 +1,18 @@
-﻿;플래그説明
-;KFLAG:1	関数間貫通汎用플래그。主に行為と反応のランダム文合わせ。
-;KFLAG:2	대요정の本気度。素質변화이벤트用の플래그。
-;KFLAG:3	エンディング플래그。
+﻿;플래그설명
+;KFLAG:1	함수간 관통 범용플래그. 주로 행위와 반응의 랜덤문 맞추어라.
+;KFLAG:2	대요정의 진심도. 소질변화이벤트용의플래그.
+;KFLAG:3	엔딩플래그.
 
 
 @INITIATION_K4
-;죠교開始時に初期化する為に呼び出される関数。主に一時変数の初期化が行われる。
+;죠교개시시에 초기화하기 위해서 불려 가는 함수. 주로 일시 변수의 초기화를 한다.
 ;지금 기분을 묻다
 KFLAG:100 = 8
 CFLAG:1000 = 0
 ;자신에게의 마음을 묻다
 KFLAG:101 = 8
 CFLAG:1001 = 0
-;성에 관한 이야기를 하다
+;성에 관한 이야기를 함
 KFLAG:102 = 8
 CFLAG:1002 = 0
 ;키스
@@ -20,7 +20,7 @@ KFLAG:115 = 8
 CFLAG:1015 = 0
 
 @CLOSETRAIN_K4
-;죠교終了時に呼び出される。
+;죠교종료시에 불려 간다.
 CFLAG:1000 = 0
 CFLAG:1001 = 0
 CFLAG:1002 = 0
@@ -30,9 +30,9 @@ TALENT:겁쟁이 = 1
 TALENT:얌전한 = 1
 
 @DECIDEACTCHECK_K4
-;죠교主の행동決定後に呼び出される関数。죠교主の行為に応じて、행동ごとに指定당했다変数を操作し、행동禁止플래그をON/OFFする。
+;죠교주의행동결정 후에 불려 가는 함수. 죠교주의 행위에 응해, 행동 마다 지정당했다변수를 조작해, 행동금지플래그를 ON/OFF 한다.
 
-;지금 기분을 묻다の빈도をチェック
+;지금 기분을 묻다의빈도를 체크
 IF TFLAG:90 == 0
 	KFLAG:100 -= 5
 ELSEIF TFLAG:80 == 0 && CFLAG:1000 == 0
@@ -50,7 +50,7 @@ ELSEIF KFLAG:100 < 1
 	CFLAG:1000 = 100
 ENDIF
 
-;자신에게의 마음을 묻다の빈도をチェック
+;자신에게의 마음을 묻다의빈도를 체크
 IF TFLAG:90 == 1
 	KFLAG:101 -= 5
 ELSEIF TFLAG:80 == 0 && CFLAG:1000 == 0
@@ -68,7 +68,7 @@ ELSEIF KFLAG:101 < 1
 	CFLAG:1001 = 100
 ENDIF
 
-;성에 관한 이야기를 하다の빈도をチェック
+;성에 관한 이야기를 하다의빈도를 체크
 IF TFLAG:90 == 2
 	KFLAG:102 -= 5
 ELSEIF TFLAG:80 == 0 && CFLAG:1000 == 0
@@ -86,9 +86,9 @@ ELSEIF KFLAG:102 < 1
 	CFLAG:1002 = 100
 ENDIF
 
-;키스の빈도チェック
+;키스의빈도체크
 IF TFLAG:90 == 15
-	;호감도2000未満での키스は割と貴重
+	;호감도 2000 미만에서의키스는 생각보다는 귀중
 	IF FAVOR(0, 2000)
 		KFLAG:115 -= 5
 	ENDIF
@@ -102,7 +102,7 @@ ELSEIF KFLAG:115 < 1
 ENDIF
 
 @ACTIVATION_K4
-;十分な체력と기력が노예죠교자共に保証されているときに、素質[겁쟁이][얌전한]を失う
+;충분한체력와기력가노예죠교자 모두 보증되고 있을 때, 소질[겁쟁이][얌전한]를 잃는다
 PRINTL  
 IF RAND:3 == 0
 	PRINTFORMDW 대요정은 의욕에 넘쳐 있다……
@@ -121,14 +121,14 @@ ELSE
 ENDIF
 IF FIRSTTIME(1000)
 	PRINTL  
-	PRINTFORMDW ※일시적으로 조교자가 소질[겁장이][얌전하다](을)를 잃습니다（이후 이 문장은 표시되지 않습니다）
+	PRINTFORMDW ※일시적으로 조교자가 소질[겁쟁이][얌전함]를 잃습니다（이후 이 문장은 표시되지 않습니다）
 ENDIF
 TALENT:겁쟁이 = 0
 TALENT:얌전한 = 0
 PRINTL  
 
 @CALMING_K4
-;お互いの内どちらかでも체력、기력がヤバくなってきたら、[겁쟁이][얌전한]を得て省エネ모드に入る
+;서로의 안어느 쪽인지에서도체력, 기력가 위험해져 오면,[겁쟁이][얌전한]를 얻어 에너지 절약모드에 들어간다
 PRINTL  
 IF (BASE:0 * 100) / MAXBASE:0 < 25
 	PRINTFORMDW 대요정은 소모하고 있다……조금 침착하기로 한 것 같다……
@@ -149,16 +149,16 @@ ELSE
 ENDIF
 IF FIRSTTIME(1001)
 	PRINTL  
-	PRINTFORMDW ※일시적으로 잃고 있던 조교자의 소질,[겁장이][얌전하다]하지만 복귀합니다（이후 이 문장은 표시되지 않습니다）
+	PRINTFORMDW ※일시적으로 잃고 있던 조교자의 소질,[겁쟁이][얌전함]하지만 복귀합니다（이후 이 문장은 표시되지 않습니다）
 ENDIF
 TALENT:겁쟁이 = 1
 TALENT:얌전한 = 1
 PRINTL  
 
 @FADEIO(ARG = 4, ARGS = "VOID", ARGS:1 = "VOID", ARGS:2 = "VOID", ARGS:3 = "VOID", ARGS:4 = "VOID", ARGS:5 = "VOID", ARGS:6 = "VOID", ARGS:7 = "VOID", ARGS:8 = "VOID", ARGS:9 = "VOID", ARGS:10 = "VOID", ARGS:11 = "VOID", ARGS:12 = "VOID", ARGS:13 = "VOID", ARGS:14 = "VOID", ARGS:15 = "VOID", ARGS:16 = "VOID", ARGS:17 = "VOID", ARGS:18 = "VOID", ARGS:19 = "VOID", ARGS:20 = "VOID", ARGS:21 = "VOID", ARGS:22 = "VOID", ARGS:23 = "VOID", ARGS:24 = "VOID", ARGS:25 = "VOID", ARGS:26 = "VOID", ARGS:27 = "VOID", ARGS:28 = "VOID", ARGS:29 = "VOID")
-;指定당했다文字列をフェードインしてフェードアウトし、行を削除する。
-;色は設定당했다ものを用いる
-;引数はフェードインと一緒
+;지정당했다캐릭터 라인을 페이드 인 해 페이드 아웃 해, 행을 삭제한다.
+;색은 설정당했다의 것을 이용한다
+;인수는 페이드 인과 함께
 ;OriginalString : 인ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7, ARGS:8, ARGS:9, ARGS:10, ARGS:11, ARGS:12, ARGS:13, ARGS:14, ARGS:15, ARGS:16, ARGS:17, ARGS:18, ARGS:19, ARGS:20, ARGS:21, ARGS:22, ARGS:23, ARGS:24, ARGS:25, ARGS:26, ARGS:27, ARGS:28, ARGS:29)
 CALL FADEIN(ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7, ARGS:8, ARGS:9, ARGS:10, ARGS:11, ARGS:12, ARGS:13, ARGS:14, ARGS:15, ARGS:16, ARGS:17, ARGS:18, ARGS:19, ARGS:20, ARGS:21, ARGS:22, ARGS:23, ARGS:24, ARGS:25, ARGS:26, ARGS:27, ARGS:28, ARGS:29)
 CLEARLINE 1
@@ -167,18 +167,18 @@ CALL FADEOUT(ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7, 
 CLEARLINE 1
 
 @FADEIOD(ARG = 4, ARGS = "VOID", ARGS:1 = "VOID", ARGS:2 = "VOID", ARGS:3 = "VOID", ARGS:4 = "VOID", ARGS:5 = "VOID", ARGS:6 = "VOID", ARGS:7 = "VOID", ARGS:8 = "VOID", ARGS:9 = "VOID", ARGS:10 = "VOID", ARGS:11 = "VOID", ARGS:12 = "VOID", ARGS:13 = "VOID", ARGS:14 = "VOID", ARGS:15 = "VOID", ARGS:16 = "VOID", ARGS:17 = "VOID", ARGS:18 = "VOID", ARGS:19 = "VOID", ARGS:20 = "VOID", ARGS:21 = "VOID", ARGS:22 = "VOID", ARGS:23 = "VOID", ARGS:24 = "VOID", ARGS:25 = "VOID", ARGS:26 = "VOID", ARGS:27 = "VOID", ARGS:28 = "VOID", ARGS:29 = "VOID")
-;設定당했다文字列をフェードインしてフェードアウトし、行を削除する。
-;色はデフォルトの色を用いる
-;引数はフェードインと一緒
+;설정당했다캐릭터 라인을 페이드 인 해 페이드 아웃 해, 행을 삭제한다.
+;색은 디폴트의 색을 이용한다
+;인수는 페이드 인과 함께
 LOCAL = GETCOLOR()
 SETCOLOR GETDEFCOLOR()
 CALL FADEIO(ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7, ARGS:8, ARGS:9, ARGS:10, ARGS:11, ARGS:12, ARGS:13, ARGS:14, ARGS:15, ARGS:16, ARGS:17, ARGS:18, ARGS:19, ARGS:20, ARGS:21, ARGS:22, ARGS:23, ARGS:24, ARGS:25, ARGS:26, ARGS:27, ARGS:28, ARGS:29)
 SETCOLOR LOCAL
 
 @FADEIND(ARG = 4, ARGS = "VOID", ARGS:1 = "VOID", ARGS:2 = "VOID", ARGS:3 = "VOID", ARGS:4 = "VOID", ARGS:5 = "VOID", ARGS:6 = "VOID", ARGS:7 = "VOID", ARGS:8 = "VOID", ARGS:9 = "VOID", ARGS:10 = "VOID", ARGS:11 = "VOID", ARGS:12 = "VOID", ARGS:13 = "VOID", ARGS:14 = "VOID", ARGS:15 = "VOID", ARGS:16 = "VOID", ARGS:17 = "VOID", ARGS:18 = "VOID", ARGS:19 = "VOID", ARGS:20 = "VOID", ARGS:21 = "VOID", ARGS:22 = "VOID", ARGS:23 = "VOID", ARGS:24 = "VOID", ARGS:25 = "VOID", ARGS:26 = "VOID", ARGS:27 = "VOID", ARGS:28 = "VOID", ARGS:29 = "VOID")
-;設定당했다文字列をフェードインする。
-;色はデフォルトの色を用いる
-;引数はフェードインと一緒
+;설정당했다캐릭터 라인을 페이드 인 한다.
+;색은 디폴트의 색을 이용한다
+;인수는 페이드 인과 함께
 LOCAL = GETCOLOR()
 SETCOLOR GETDEFCOLOR()
 ;OriginalString : 인ARG, ARGS, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7, ARGS:8, ARGS:9, ARGS:10, ARGS:11, ARGS:12, ARGS:13, ARGS:14, ARGS:15, ARGS:16, ARGS:17, ARGS:18, ARGS:19, ARGS:20, ARGS:21, ARGS:22, ARGS:23, ARGS:24, ARGS:25, ARGS:26, ARGS:27, ARGS:28, ARGS:29)

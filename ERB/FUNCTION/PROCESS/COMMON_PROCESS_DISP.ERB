@@ -1,21 +1,21 @@
 ﻿;-------------------------------------------------
-;汎用関数置き場
-;表示フロー、計算処理などを切り出했다もの。
-;または内部処理的な関数
+;범용 함수 두는 곳
+;표시 플로우, 계산 처리 따위를 잘라 출했다의.
+;또는 내부 처리적인 함수
 ;-------------------------------------------------
 
 ;-------------------------------------------------
-;表示関連
+;표시 관련
 ;-------------------------------------------------
 
 ;-------------------------------------------------
-;日付エフェクトの表示フロー
+;일자 효과의 표시 플로우
 ;-------------------------------------------------
 @DAY_EFFECT
 REDRAW 0
-SETFONT "ＭＳ 明朝"
+SETFONT "나눔명조"
 FONTSTYLE 3
-;낮夜のエフェクト（右クリックでも描画するため、ぱにめーしょんを迂回してコンフィグ参照）
+;낮밤의 효과（오른쪽 클릭에서도 묘화 하기 위해(때문), 에 째─실마리응을 우회 해 콘피그 참조）
 IF !GETBIT(GLOBAL, 52)
 	IF TIME
 		SETBGCOLOR 0, 0, 30
@@ -26,20 +26,20 @@ ENDIF
 ;OriginalString : 2(40, 17, @"%TOKANJI(FLAG:일수+1)%일째――","　","　",@"　　　　　　　　――\@ TIME ? 밤 # 낮\@。")
 CALL FULLCUTIN2(40, 17, @"%TOKANJI(FLAG:일수+1)%일째――"," "," ",@"        ――\@ TIME ? 밤 # 낮\@")
 FONTSTYLE 0
-SETFONT "ＭＳ ゴシック"
+SETFONT "나눔바른고딕"
 REDRAW 1
 RETURN RESULT
 
 ;-------------------------------------------------
-;関数名:HTML_BASE
-;概　要:BASE表示用関数
-;引　数:ARGS …BASEの名前
-;　　　 ARG:0…キャラ등록번호
-;       ARG:1…表示するBASE
-;       ARG:2…BARの長さ(省略했다場合32)
-;       ARG:3…真ならBASEの値を0以上に보정する
-;              (省略했다場合、보정しない)
-;戻り値:なし
+;함수명:HTML_BASE
+;개  요점:BASE 표시용 함수
+;인  수:ARGS …BASE의 이름
+;　　　 ARG:0… 캐릭터등록번호
+;       ARG:1… 표시하는 BASE
+;       ARG:2…BAR의 길이(생략했다경우 32)
+;       ARG:3… 진이라면 BASE의 값을 0이상으로보정 한다
+;              (생략했다경우, 보정 하지 않는다)
+;반환값:없음
 ;-------------------------------------------------
 @HTML_BASE(ARGS, ARG:0, ARG:1, ARG:2 = 32, ARG:3)
 #FUNCTIONS
@@ -47,42 +47,42 @@ RETURN RESULT
 #LOCALSSIZE 1
 #DIM BAR_COLOR,2
 LOCALS '= ""
-;BASEによる色の指定
-;BAR_COLORに色を代入
+;BASE에 의한 색의 지정
+;BAR_COLOR에 색을 대입
 SELECTCASE ARG:1
-	;赤：체력・초조함
+	;세키:체력·초조함
 	CASE 0, 7
 		BAR_COLOR = 0xC07070
 		BAR_COLOR:1 = 0x502020
-	;青：이성
+	;파랑:이성
 	CASE 5
 		BAR_COLOR = 0x7070C0
 		BAR_COLOR:1 = 0x202050
-	;緑：기력
+	;초록:기력
 	CASE 1
 		BAR_COLOR = 0x70C070
-		;저항불능の죠교대상の場合、赤緑
+		;저항불능의죠교대상의 경우, 세키초록
 		SIF ARG == MASTER && TFLAG:저항불능
 			BAR_COLOR = 0xC0A040
 		BAR_COLOR:1 = 0x205020
-	;유카리：흥미
+	;유카리:흥미
 	CASE 6
 		BAR_COLOR = 0xC070C0
 		BAR_COLOR:1 = 0x502050
-	;黄：소변
+	;노랑:소변
 	CASE 4
 		BAR_COLOR = 0xC0C070
 		BAR_COLOR:1 = 0x505020
-	;青緑：만족
+	;청록색:만족
 	CASE 8
 		BAR_COLOR = 0x70C0C0
 		BAR_COLOR:1 = 0x205050
-	;白：모유・사정
+	;흰색:모유·사정
 	CASEELSE
 		BAR_COLOR = 0xC0C0C0
 		BAR_COLOR:1 = 0x202020
 ENDSELECT
-;BASE名表示
+;BASE명 표시
 LOCALS += ARGS
 LOCAL:0 = ARG:3 ? MAX(BASE:(ARG:0):(ARG:1), 0) # BASE:(ARG:0):(ARG:1)
 LOCAL:1 = MAXBASE:(ARG:0):(ARG:1)
@@ -90,15 +90,15 @@ LOCALS += LAYER_RECTBAR(LOCAL, LOCAL:1, ARG:2 / 2, BAR_COLOR, BAR_COLOR:1, , , 3
 LOCALS += @"({LOCAL:0, 5}/{LOCAL:1, 5})　"
 RETURNF LOCALS
 ;-------------------------------------------------
-;関数名:PRINT_BASE
-;概　要:BASE表示用関数
-;引　数:ARGS …BASEの名前
-;　　　 ARG:0…キャラ등록번호
-;       ARG:1…表示するBASE
-;       ARG:2…BARの長さ(省略했다場合32)
-;       ARG:3…真ならBASEの値を0以上に보정する
-;              (省略했다場合、보정しない)
-;戻り値:なし
+;함수명:PRINT_BASE
+;개  요점:BASE 표시용 함수
+;인  수:ARGS …BASE의 이름
+;　　　 ARG:0… 캐릭터등록번호
+;       ARG:1… 표시하는 BASE
+;       ARG:2…BAR의 길이(생략했다경우 32)
+;       ARG:3… 진이라면 BASE의 값을 0이상으로보정 한다
+;              (생략했다경우, 보정 하지 않는다)
+;반환값:없음
 ;-------------------------------------------------
 @PRINT_BASE (ARGS, ARG:0, ARG:1, ARG:2 = 32, ARG:3)
 HTML_PRINT HTML_BASE(ARGS, ARG:0, ARG:1, ARG:2, ARG:3)
@@ -113,13 +113,13 @@ WAIT
 
 
 ;-------------------------------------------------
-;関数名:CLOTHE_SHOW
-;概　要:탈의애니메ーション関数
-;引　数:ARG:0…キャラ등록번호(MASTERかTARGET。省略했다り妙な数値が入るとTARGET)
-;　　　:ARG:1…省略すると탈의。正にすると着衣。
-;備　考:통상関数
-;保存しておいた服装と現在の服装の差異を見て、脱いだり着たり했다部位をフェード表示する
-;もうちょっと効率的な組み方ができる気がするけど、早朝で頭回ってないので汎用化せずにやっちゃおう・・・
+;함수명:CLOTHE_SHOW
+;개  요점:탈의애니메─숀 함수
+;인  수:ARG:0… 캐릭터등록번호(MASTER나 TARGET. 생략했다묘한 수치가 들어가면 TARGET)
+;　　　:ARG:1… 생략 하면탈의. 정말로 하면 착의.
+;비  고:통상함수
+;보존해 둔 복장과 현재의 복장의 차이를 봐, 벗거나 입거나했다부위를 페이드 표시한다
+;좀 더 효율적인 짜는 방법이 할 수 있을 생각이 들지만, 이른 아침에 머리 돌지 않기 때문에 범용화하지 않고 해 버리자…
 ;-------------------------------------------------
 @CLOTHE_SHOW(ARG:0 = -1, ARG:1)
 #LOCALSIZE 20
@@ -133,7 +133,7 @@ VARSET GREEN
 VARSET BLUE
 VARSET LOCAL
 
-;非表示の場合
+;비표시의 경우
 IF !ANIME_CONFIG("USER3")
 	CALL SHOW_EQUIP_3(1+(ARG == MASTER))
 	PRINTL
@@ -144,11 +144,11 @@ ENDIF
 LOCAL:10 = CURRENTREDRAW()
 REDRAW 0
 
-;デフォルト色でなくてはならない
+;디폴트색이 아니면 안 된다
 RESETCOLOR
 PRICOLOR = GETCOLOR()
 
-;RGBそれぞれのベース値、減少値を各色:0と1に代入
+;RGB 각각의 베이스치, 감소치를 각 색:0으로 1에 대입
 RED = GETRED()
 GREEN = GETGREEN()
 BLUE = GETBLUE()
@@ -158,15 +158,15 @@ BLUE:1 = MAX(1, (BLUE-GETBLUE(0x0000))/4)
 
 SIF ARG != MASTER
 	ARG = TARGET
-;脱いだ・着た位置をLOCALに保存
+;벗은·입은 위치를 LOCAL에 보존
 FOR LCOUNT, 0, 10
 	LOCAL:LCOUNT = CLOTHE_SAVE(ARG, LCOUNT)
 NEXT
 
-;탈의の場合
+;탈의의 경우
 IF !ARG:1
-	;脱ぐ前の복장을 表示し、脱いだ位置はその着衣の文字数をLOCALに入れる
-	PRINTFORMD %CALLNAME:ARG%의 의상：
+	;벗기 전의복장을 표시해, 벗은 위치는 그 착의의 문자수를 LOCAL에 넣는다
+	PRINTFORMD %CALLNAME:ARG%의 의상:
 	;전신겉옷
 	IF TEQUIP:ARG:전신겉옷
 		PRINTFORMD [%DRESS(ARG)%]
@@ -232,7 +232,7 @@ IF !ARG:1
 		BLUE = MAX(0, BLUE-BLUE:1)
 		SETCOLOR RED, GREEN, BLUE
 		CLEARLINE 2
-		PRINTFORMD %CALLNAME:ARG%의 의상：
+		PRINTFORMD %CALLNAME:ARG%의 의상:
 		;전신겉옷
 		IF TEQUIP:ARG:전신겉옷
 			PRINTFORMD [%DRESS(ARG)%]
@@ -287,7 +287,7 @@ IF !ARG:1
 	NEXT
 	FOR LCOUNT, 0, MAXARRAY(LOCAL)/2
 		CLEARLINE 2
-		PRINTFORMD %CALLNAME:ARG%의 의상：
+		PRINTFORMD %CALLNAME:ARG%의 의상:
 		;전신겉옷
 		IF TEQUIP:ARG:전신겉옷
 			PRINTFORMD [%DRESS(ARG)%]
@@ -348,10 +348,10 @@ IF !ARG:1
 		PRINTL
 		TWAIT 100, 0
 	NEXT
-;着衣の場合
+;착의의 경우
 ELSE
-	;着る前の복장을 表示し、脱いだ位置はその着衣の文字数をLOCALに入れる
-	PRINTFORMD %CALLNAME:ARG%의 의상：
+	;입기 전의복장을 표시해, 벗은 위치는 그 착의의 문자수를 LOCAL에 넣는다
+	PRINTFORMD %CALLNAME:ARG%의 의상:
 	;전신겉옷
 	IF LOCAL:6
 		LOCAL:6 = STRLENS(@"[%DRESS(ARG)%]")
@@ -405,7 +405,7 @@ ELSE
 	TWAIT 100, 0
 	FOR LCOUNT, 0, MAXARRAY(LOCAL)/2
 		CLEARLINE 2
-		PRINTFORMD %CALLNAME:ARG%의 의상：
+		PRINTFORMD %CALLNAME:ARG%의 의상:
 		;전신겉옷
 		IF LOCAL:6
 			PRINTFORM %" "*MIN(LCOUNT*2, LOCAL:6)%
@@ -468,7 +468,7 @@ ELSE
 		BLUE = MIN(GETBLUE(PRICOLOR), BLUE+BLUE:1)
 		SETCOLOR RED, GREEN, BLUE
 		CLEARLINE 2
-		PRINTFORMD %CALLNAME:ARG%의 의상：
+		PRINTFORMD %CALLNAME:ARG%의 의상:
 		;전신겉옷
 		IF LOCAL:6
 			PRINTFORM [%DRESS(ARG)%]
@@ -529,8 +529,8 @@ ELSE
 	NEXT
 ENDIF
 CLEARLINE 2
-;結果、現在の服装
-PRINTFORMD %CALLNAME:ARG%의 의상：
+;결과, 현재의 복장
+PRINTFORMD %CALLNAME:ARG%의 의상:
 ;전신겉옷
 IF TEQUIP:ARG:전신겉옷 
 	PRINTFORMD [%DRESS(ARG)%]
@@ -570,12 +570,12 @@ RESETCOLOR
 
 
 ;-------------------------------------------------
-;関数名:POSE_SHOW
-;概　要:자세변화애니메ーション関数
-;引　数:
-;備　考:통상関数
-;保存しておいた服装と現在の服装の差異を見て、脱いだり着たり했다部位をフェード表示する
-;もうちょっと効率的な組み方ができる気がするけど、早朝で頭回ってないので汎用化せずにやっちゃおう・・・
+;함수명:POSE_SHOW
+;개  요점:자세변화애니메─숀 함수
+;인  수:
+;비  고:통상함수
+;보존해 둔 복장과 현재의 복장의 차이를 봐, 벗거나 입거나했다부위를 페이드 표시한다
+;좀 더 효율적인 짜는 방법이 할 수 있을 생각이 들지만, 이른 아침에 머리 돌지 않기 때문에 범용화하지 않고 해 버리자…
 ;-------------------------------------------------
 @POSE_SHOW
 #LOCALSIZE 20
@@ -585,9 +585,9 @@ RESETCOLOR
 #DIM GREEN,2
 #DIM BLUE,2
 #DIMS M전회의자세, 1
-#DIMS M今回の자세, 1
+#DIMS M이번자세, 1
 #DIMS T전회의자세, 1
-#DIMS T今回の자세, 1
+#DIMS T이번자세, 1
 VARSET RED
 VARSET GREEN
 VARSET BLUE
@@ -597,17 +597,17 @@ VARSET LOCAL
 ;죠교대상
 SELECTCASE TCVAR:MASTER:자세
 	CASE 1
-		M今回の자세 = 누움
+		M이번자세 = 누움
 	CASE 2
-		M今回の자세 = 앉아있다
+		M이번자세 = 앉아있다
 	CASE 3
-		M今回の자세 = 네발로 엎드림
+		M이번자세 = 네발로 엎드림
 	CASE 4
-		M今回の자세 = 직립
+		M이번자세 = 직립
 	CASE 10
-		M今回の자세 = 무릎으로 서있다
+		M이번자세 = 무릎으로 서있다
 	CASEELSE
-		M今回の자세 = 편하게 하고있다
+		M이번자세 = 편하게 하고있다
 ENDSELECT
 SELECTCASE TCVAR:MASTER:전회의자세
 	CASE 1
@@ -623,22 +623,22 @@ SELECTCASE TCVAR:MASTER:전회의자세
 	CASEELSE
 		M전회의자세 = 편하게 하고있다
 ENDSELECT
-;主人
+;주인
 SELECTCASE TCVAR:MASTER:위치상하
 	CASE 1
-		T今回の자세 = %CALLNAME:MASTER%의 위
+		T이번자세 = %CALLNAME:MASTER%의 위
 	CASE 2
-		T今回の자세 = %CALLNAME:MASTER%의 아래
+		T이번자세 = %CALLNAME:MASTER%의 아래
 	CASEELSE
 		SELECTCASE TCVAR:MASTER:위치전후
 			CASE 1
-				T今回の자세 = %CALLNAME:MASTER%의 정면
+				T이번자세 = %CALLNAME:MASTER%의 정면
 			CASE 2
-				T今回の자세 = %CALLNAME:MASTER%의 배후
+				T이번자세 = %CALLNAME:MASTER%의 배후
 			CASE 3
-				T今回の자세 = %CALLNAME:MASTER%에 등을 돌리고 있다
+				T이번자세 = %CALLNAME:MASTER%에 등을 돌리고 있다
 			CASEELSE
-				T今回の자세 = %CALLNAME:MASTER%를 관찰
+				T이번자세 = %CALLNAME:MASTER%를 관찰
 		ENDSELECT
 ENDSELECT
 SELECTCASE TCVAR:MASTER:전회의위치상하
@@ -659,9 +659,9 @@ SELECTCASE TCVAR:MASTER:전회의위치상하
 		ENDSELECT
 ENDSELECT
 
-;非表示の場合
+;비표시의 경우
 IF !ANIME_CONFIG("USER3")
-	PRINTFORMDL 현재의 자세：[%CALLNAME:MASTER%：%M今回の자세%][%CALLNAME%：%T今回の자세%]
+	PRINTFORMDL 현재의 자세:[%CALLNAME:MASTER%:%M이번자세%][%CALLNAME%:%T이번자세%]
 	PRINTL
 	RETURN 0
 ENDIF
@@ -669,11 +669,11 @@ ENDIF
 LOCAL:12 = CURRENTREDRAW()
 REDRAW 0
 
-;デフォルト色でなくてはならない
+;디폴트색이 아니면 안 된다
 RESETCOLOR
 PRICOLOR = GETCOLOR()
 
-;RGBそれぞれのベース値、減少値を各色:0と1に代入
+;RGB 각각의 베이스치, 감소치를 각 색:0으로 1에 대입
 RED = GETRED()
 GREEN = GETGREEN()
 BLUE = GETBLUE()
@@ -681,41 +681,41 @@ RED:1 = MAX(1, (RED-GETRED(0x0000))/4)
 GREEN:1 = MAX(1, (GREEN-GETGREEN(0x0000))/4)
 BLUE:1 = MAX(1, (BLUE-GETBLUE(0x0000))/4)
 
-;もとの자세を表示する
-PRINTFORMDL 현재의 자세：[%CALLNAME:MASTER%：%M전회의자세%][%CALLNAME%：%T전회의자세%]
+;원래의자세를 표시한다
+PRINTFORMDL 현재의 자세:[%CALLNAME:MASTER%:%M전회의자세%][%CALLNAME%:%T전회의자세%]
 PRINTL 
 
-;자세の변화があるかないかをLOCAL:0~1
-;변화했다文字数をLOCAL:10~11に保存する
-IF M전회의자세 != M今回の자세
+;자세의변화가 있는지 없는지를 LOCAL:0~1
+;변화했다문자수를 LOCAL:10~11에 보존한다
+IF M전회의자세 != M이번자세
 	LOCAL:0 = 1
-	LOCAL:10 = STRLENS(M今回の자세)-STRLENS(M전회의자세)
+	LOCAL:10 = STRLENS(M이번자세)-STRLENS(M전회의자세)
 ENDIF
-IF T전회의자세 != T今回の자세
+IF T전회의자세 != T이번자세
 	LOCAL:1 = 1
-	LOCAL:11 = STRLENS(T今回の자세)-STRLENS(T전회의자세)
+	LOCAL:11 = STRLENS(T이번자세)-STRLENS(T전회의자세)
 ENDIF
-;どちらも変わっていないなら돌아가기。念のため
+;어느쪽이나 변함없으면돌아가기. 만약을 위해
 IF !LOCAL:0 && !LOCAL:1
 	RETURN 0
 ENDIF
 TWAIT 300, 0
 
-;변화のあった部位をフェードアウト시킨다
+;변화가 있던 부위를 페이드 아웃시킨다
 FOR LCOUNT, 0, 4
 	RED = MAX(0, RED-RED:1)
 	GREEN = MAX(0, GREEN-GREEN:1)
 	BLUE = MAX(0, BLUE-BLUE:1)
 	SETCOLOR RED, GREEN, BLUE
 	CLEARLINE 2
-	PRINTFORMD 현재의 자세：[%CALLNAME:MASTER%：
+	PRINTFORMD 현재의 자세:[%CALLNAME:MASTER%:
 	;죠교대상
 	IF LOCAL:0
 		PRINTFORM %M전회의자세%
 	ELSE
 		PRINTFORMD %M전회의자세%
 	ENDIF
-	PRINTFORMD ][%CALLNAME%：
+	PRINTFORMD ][%CALLNAME%:
 	;죠교자
 	IF LOCAL:1
 		PRINTFORM %T전회의자세%
@@ -726,26 +726,26 @@ FOR LCOUNT, 0, 4
 	PRINTL
 	TWAIT 100, 0
 NEXT
-;枠の成型
+;범위의 성형
 FOR LCOUNT, 0, MAX(ABS(LOCAL:10), ABS(LOCAL:11))
 	CLEARLINE 2
-	PRINTFORMD 현재의 자세：[%CALLNAME:MASTER%：
+	PRINTFORMD 현재의 자세:[%CALLNAME:MASTER%:
 	;죠교대상
 	IF !LOCAL:0
-		PRINTFORMD %M今回の자세%
+		PRINTFORMD %M이번자세%
 	ELSEIF ABS(LOCAL:10) <= LCOUNT
-		PRINTFORMD %" "*(STRLENS(M今回の자세))%
+		PRINTFORMD %" "*(STRLENS(M이번자세))%
 	ELSEIF LOCAL:10 < 0
 		PRINTFORMD %" "*(STRLENS(M전회의자세)-LCOUNT-1)%
 	ELSE
 		PRINTFORMD %" "*(STRLENS(M전회의자세)+LCOUNT+1)%
 	ENDIF
-	PRINTFORMD ][%CALLNAME%：
+	PRINTFORMD ][%CALLNAME%:
 	;죠교자
 	IF !LOCAL:1
-		PRINTFORMD %T今回の자세%
+		PRINTFORMD %T이번자세%
 	ELSEIF ABS(LOCAL:11) <= LCOUNT
-		PRINTFORMD %" "*(STRLENS(T今回の자세))%
+		PRINTFORMD %" "*(STRLENS(T이번자세))%
 	ELSEIF LOCAL:11 < 0
 		PRINTFORMD %" "*(STRLENS(T전회의자세)-LCOUNT-1)%
 	ELSE
@@ -755,7 +755,7 @@ FOR LCOUNT, 0, MAX(ABS(LOCAL:10), ABS(LOCAL:11))
 	PRINTL
 	TWAIT 100, 0
 NEXT
-;今回の자세を表示
+;이번자세를 표시
 SETCOLOR 0x000000
 RED = GETRED()
 GREEN = GETGREEN()
@@ -766,35 +766,35 @@ FOR LCOUNT, 0, 4
 	BLUE = MIN(GETBLUE(PRICOLOR), BLUE+BLUE:1)
 	SETCOLOR RED, GREEN, BLUE
 	CLEARLINE 2
-	PRINTFORMD 현재의 자세：[%CALLNAME:MASTER%：
+	PRINTFORMD 현재의 자세:[%CALLNAME:MASTER%:
 	;죠교대상
 	IF LOCAL:0
-		PRINTFORM %M今回の자세%
+		PRINTFORM %M이번자세%
 	ELSE
-		PRINTFORMD %M今回の자세%
+		PRINTFORMD %M이번자세%
 	ENDIF
-	PRINTFORMD ][%CALLNAME%：
+	PRINTFORMD ][%CALLNAME%:
 	;죠교자
 	IF LOCAL:1
-		PRINTFORM %T今回の자세%
+		PRINTFORM %T이번자세%
 	ELSE
-		PRINTFORMD %T今回の자세%
+		PRINTFORMD %T이번자세%
 	ENDIF
 	PRINTDL ]
 	PRINTL
 	TWAIT 100, 0
 NEXT
 CLEARLINE 2
-;結果、現在の자세
-PRINTFORMDL 현재의 자세：[%CALLNAME:MASTER%：%M今回の자세%][%CALLNAME%：%T今回の자세%]
+;결과, 현재의자세
+PRINTFORMDL 현재의 자세:[%CALLNAME:MASTER%:%M이번자세%][%CALLNAME%:%T이번자세%]
 REDRAW LOCAL:12
 PRINTW
 RESETCOLOR
 
 ;--------------------------------------------------
-;３クリック대기@WAIT_3
-;文字列引数はバー記号。省略すると「…」
-;文字列引数1はフッタ。「。」とかいれればいいとおもうの
+;3클릭대기@WAIT_3
+;캐릭터 라인 인수는 바 기호. 생략 하면 「…」
+;캐릭터 라인 인수 1은 footer. 「.」든지 넣으면 좋다고 생각해
 ;--------------------------------------------------
 @WAIT_3(ARGS = "…", ARGS:1)
 PRINTL  
@@ -803,7 +803,7 @@ PRINTFORMDW 　%ARGS*2+ARGS:1%
 PRINTFORMDW 　%ARGS+ARGS:1%
 PRINTL  
 
-;WAIT_3のTWAIT版
+;WAIT_3의 TWAIT판
 @TWAIT_3(ARGS = "…", ARGS:1)
 PRINTL
 PRINTFORMDL 　%ARGS*3+ARGS:1%
@@ -816,12 +816,12 @@ PRINTL
 
 ;--------------------------------------------------
 ;WAIT3_ZWEI
-;ARGは省略可。偽にすると間の空行なし
-;文字列引数はバー記号。省略すると「・」
-;文字列引数1はフッタ。使わない気はする
-;基本的にDIGEST、またはOP/ED等でALIGNMENT CENTER時での使用を想定
+;ARG는 생략가능. 가짜로 하면 사이의 공행 없음
+;캐릭터 라인 인수는 바 기호. 생략 하면 「·」
+;캐릭터 라인 인수 1은 footer. 사용하지 않는 생각은 든다
+;기본적으로 DIGEST, 또는 OP/ED등으로 ALIGNMENT CENTER시에서의 사용을 상정
 ;--------------------------------------------------
-@WAIT3_ZWEI(ARG = 1, ARGS = "・", ARGS:1)
+@WAIT3_ZWEI(ARG = 1, ARGS = "·", ARGS:1)
 PRINTL
 FONTSTYLE 1
 PRINTFORMDW %ARGS + ARGS:1%
@@ -834,8 +834,8 @@ PRINTFORMDW %ARGS + ARGS:1%
 FONTSTYLE 0
 PRINTL
 
-;WAIT_3_ZWEIのTWAIT版
-@TWAIT3_ZWEI(ARG = 1, ARGS = "・", ARGS:1)
+;WAIT_3_ZWEI의 TWAIT판
+@TWAIT3_ZWEI(ARG = 1, ARGS = "·", ARGS:1)
 PRINTL
 FONTSTYLE 1
 PRINTFORMDL %ARGS + ARGS:1%
@@ -853,8 +853,8 @@ PRINTL
 
 ;--------------------------------------------------
 ;TWAIT1
-;文字列引数はバー記号。省略すると「―」
-;文字列引数1はフッタ。省略すると「。」
+;캐릭터 라인 인수는 바 기호. 생략 하면 「-」
+;캐릭터 라인 인수 1은 footer. 생략 하면 「.」
 ;--------------------------------------------------
 @TWAIT1(ARGS = "―", ARGS:1 = "。")
 PRINTL
@@ -865,10 +865,10 @@ PRINTL
 
 
 ;-------------------------------------------------------------------------------
-;	KOMEIJI_FUNCTIONS由来関数群は最新の関数と差し替えられま했다。
-;	最新の関数はKOMEIJI_FUNCTIONSフォルダにあります。
+;	KOMEIJI_FUNCTIONS 유래 함수군은 최신의 함수와 교환했다.
+;	최신의 함수는 KOMEIJI_FUNCTIONS 폴더에 있습니다.
 ;	
-;	PRINT_CR系			→	HTMLPRINT系を使用してください
-;	PRINT_HEART系		→	HTMLPRINT系を使用してください
-;	PRINT_RAINBOW系		→	新しいPRINT_RAINBOW系を使用してください
+;	PRINT_CR계			→	HTMLPRINT계를 사용해 주세요
+;	PRINT_HEART계		→	HTMLPRINT계를 사용해 주세요
+;	PRINT_RAINBOW계		→	새로운 PRINT_RAINBOW계를 사용해 주세요
 ;-------------------------------------------------------------------------------
