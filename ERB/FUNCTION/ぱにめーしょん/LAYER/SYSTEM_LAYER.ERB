@@ -1,58 +1,58 @@
 ﻿;===============================================================================
 ;
-;	LAYER関連関数群
+;	LAYER 관련 함수군
 ;
 ;===============================================================================
-;	文字列を狙った座標に、指定했다色とフォントで、ボタン化も可能で、
-;	何枚でも破綻なく重ねられて、そこそこ重い関数
+;	캐릭터 라인을 노린 좌표에, 지정했다색과 폰트로, 버튼화도 가능해,
+;	몇매에서도 파탄없이 거듭할 수 있어, 적당히 무거운 함수
 ;-------------------------------------------------------------------------------
-;	例：	CALL LAYER_INIT, "`"
-;			CALL LAYER_SET, @"あ`<font color='#ff0000'>な</font>`<font face='ＭＳ 明朝'>た</font>`",Y,X
-;			CALL LAYER_PRINT,0,40
+;	예:	CALL LAYER_INIT, "`"
+;			CALL LAYER_SET, @"아`<font color='#ff0000'></font>`<font face='나눔명조'></font>`", Y, X
+;			CALL LAYER_PRINT, 0, 40
 ;
-;	この例だとX,Y座標のところに"당신"("な"は赤色で"た"は明朝で)表示される
-;	レイヤ機能がメインなのでかなり重ねられる(座標がかぶっても大丈夫)
-;	とりあえずY行は50行、Xのブロック数は100まで対応、同名のERH参照のこと。
+;	이 예라면 X, Y좌표의 곳에"당신"(""는 세키색으로 ""는 내일 아침에) 표시된다
+;	레이어 기능이 메인인 것으로 꽤 거듭할 수 있다(좌표가 써도 괜찮아)
+;	우선 Y행은 50행, X의 블록수는 100까지 대응, 동명의 ERH 참조의 일.
 ;
-;	表示は次の関数 LAYER_PRINTを使う
-;	例：	CALL LAYER_PRINT,開始行,終了行
+;	표시는 다음의 함수 LAYER_PRINT를 사용한다
+;	예:	CALL LAYER_PRINT, 개시행, 종료행
 ;-------------------------------------------------------------------------------
-;	■偉大なるN鳥さん作成のSET_PICTURE  の改変版です
+;	■위대한 N새씨작성의 SET_PICTURE  의 개변판입니다
 ;
-;	■SET_PICTURE関数実行後		→	なにこれすげぇ…(驚愕)
-;	　SET_PICTURE.ERB開いてみて	→	なにこれすげぇ…(困惑)
+;	■SET_PICTURE 함수 실행 후		→	뭐야 이것 굉장하다…(경악)
+;	  SET_PICTURE.ERB 열어 봐	→	뭐야 이것 굉장하다…(곤혹)
 ;
-;	■文字列の仕様はHTML_PRINT方式に変更  →  高速化
+;	■캐릭터 라인의 사양은 HTML_PRINT 방식으로 변경  →  고속화
 
-;	■注意
-;	　レイヤーで重ねるときには、同じ一つのネストの中に
-;	　タグで区切られた本文が複数入ることのないように工夫してください
-;	　分割했다際、内部的に一つのネストの中に複数同じタグが生成されてしまった場合
-;	　重ねたときに破綻します（以下NEST_SEPARATOR = ` )
-;														  ↓本文1      ↓本文2
-;	　	具体例：	<button value='A'><font color='red'>うんこ</red>もれそう</button>`
+;	■주의
+;	  레이어에서 거듭할 때는, 같은 하나의 네스트안에
+;	  태그로 단락지어진 본문이 복수 들어갈리가 없게 궁리해 주세요
+;	  분할했다때, 내부적으로 하나의 네스트안에 복수 같은 태그가 생성되어 버렸을 경우
+;	  거듭했을 때에 파탄합니다（이하 NEST_SEPARATOR = ` )
+;														  ↓본문 1      ↓본문 2
+;	  	구체적인 예:	<button value='A'><font color='red'>똥</red>누락 그렇게</button>`
 ;
-;	　上の例の場合、重ねるときの文字列分割時、内部的には無理やりこう解釈する
-;	　退避するTAG = <button value='A'><font color='red'>【HTML】</red>【HTML】</button>`
-;	　TOPLAINTEXT = うんこもれそう
-;	　さらに合成で、
-;	　<button value='A'><font color='red'>うんこもれそう</red>うんこもれそう</button>`
+;	  상의 예의 경우, 거듭할 때의 캐릭터 라인 분할시, 내부적으로는 억지로 이렇게 해석한다
+;	  퇴피하는 TAG = <button value='A'><font color='red'>【HTML】</red>【HTML】</button>`
+;	  TOPLAINTEXT =똥누락 그렇게
+;	  한층 더 합성으로,
+;	  <button value='A'><font color='red'>똥누락 그렇게</red>똥누락 그렇게</button>`
 ;
-;	　同じネストの中に本文が二重になっているので合成했다時に多重化し、
-;	　文字数も代入時は全角*7の14で、返り値は倍の28と正常ではなくなるので破綻
+;	  같은 네스트안에 본문이 이중이 되어 있으므로 합성했다시에 다중화해,
+;	  문자수도 대입시는 전각*7의 14로, 돌아가 값은 배의 28으로 정상적인 것은 없어지므로 파탄
 ;
-;	　	正解例：	<button value='A'><font color='red'>うんこ</red></button>`<button value='A'>もれそう</button>`
+;	  	정답예:	<button value='A'><font color='red'>똥</red></button>`<button value='A'>누락 그렇게</button>`
 ;
-;	　重ねることを考えないなら솔직に一番上の例で通るのでそのままどうぞ
-;	　問題が発生するのはあくまで重ねたときに分割合成が発生했다場合のみで候
+;	  거듭하는 것을 생각하지 않으면솔직에 맨 위의 예로 통과하므로 그대로 받아 주세요
+;	  문제가 발생하는 것은 어디까지나 거듭했을 때에 분할 합성이 발생했다경우만으로 문안 드림
 ;
-;	■当然ライセンスフリー
+;	■당연히 라이센스 프리
 ;
 ;===============================================================================
 ;
 ;	Edit	Date			Author					Reason
-;	001		201X/XX/XX		Crow					新規作成
-;	001		2014/07/05		Ｎ鳥					<img><shape>機能に対応
+;	001		201 X/XX/XX		Crow					신규 작성
+;	001		2014/07/05		Ｎ새					<img><shape>기능에 대응
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
 ;
@@ -60,15 +60,15 @@
 ;-------------------------------------------------------------------------------
 ;	LAYER_INIT
 ;-------------------------------------------------------------------------------
-;	LAYER_SETで保存されているログを削除し、区切り文字を設定する関数
-;	実はLAYER_SETに引数を何も入れないでCALLすることでここに来るが
-;	区切り文字は ` になる。変更했다い場合は面倒がらずに直接よぼう
+;	LAYER_SET로 보존되고 있는 로그를 삭제해, 단락 문자를 설정하는 함수
+;	실은 LAYER_SET에 인수를 아무것도 넣지 말고 CALL 하는 것으로 여기에 오지만
+;	단락 문자는` 이 된다. 변경했다 있고 경우는 귀찮음 무늬 하지않고서 직접 부르자
 ;
-;	実際のところ区切り文字で例外なくぶった切るんで、デフォルトのままか
-;	二文字使うなり、マルチバイト文字使うなり、うにこーど使うなりで
-;	行中に出現する可能性のある文字は避けたほうが無難
-;	デフォルトの ` はSHIFT+@で出るんで楽なうえ、
-;	構文解釈の意味でも本文に使うにも用途が無いのでオススメ
+;	실제의 곳단락 문자로 예외없이 내리 자르기 때문에, 디폴트인 채인가
+;	2문자 사용하든지, 멀티 아르바이트 문자 사용하든지, 게개─사용하든지로
+;	행중에 출현할 가능성이 있는 문자는 피하는 편이 무난
+;	디폴트의 것` 은 SHIFT+@로 나오기 때문에 편한데다가,
+;	구문 해석의 의미에서도 본문에 사용하기에도 용도가 없기 때문에 추천
 ;
 ;===============================================================================
 @LAYER_INIT, ARGS = "`" , ARG = 0 , ARG:1 = -1
@@ -81,9 +81,9 @@ RETURN RESULT
 ;-------------------------------------------------------------------------------
 ;	LAYER_SET
 ;-------------------------------------------------------------------------------
-;	レイヤにセット、使い方は上記
+;	레이어에 세트, 사용법은 상기
 ;===============================================================================
-;		    入力,	  Y行,  表示座標X
+;		    입력,	  Y행,   표시 좌표 X
 @LAYER_SET , ARGS , ARG = 0 , XPOINT = -1
 #LOCALSIZE 3
 #LOCALSSIZE 10
@@ -91,23 +91,23 @@ RETURN RESULT
 #DIMS L_RESULTS , 10
 #DIM LCOUNT , 2
 
-#DIM XPOINT,1			; X指定座標    
-#DIM XCOUNT,1			; それまでの文字数のX座標
-#DIM INSSTRLEN,1		; それまでの文字列数の総数
-#DIM NOWSTRLEN,1		; 今回の文字列数
+#DIM XPOINT,1			; X지정 좌표    
+#DIM XCOUNT,1			; 그것까지의 문자수의 X좌표
+#DIM INSSTRLEN,1		; 그것까지의 캐릭터 라인수의 총수
+#DIM NOWSTRLEN,1		; 이번 캐릭터 라인수
 
-#DIM BLOCKNUM,1			; ブロック数
-#DIM FIRSTBLOCK,1		; 分割開始するブロック位置
-#DIM LASTBLOCK,1		; 分割終了するブロック位置
+#DIM BLOCKNUM,1			; 블록수
+#DIM FIRSTBLOCK,1		; 분할 개시하는 블록 위치
+#DIM LASTBLOCK,1		; 분할 종료하는 블록 위치
 
-#DIMS NOWBLK,1			; 現在のブロック
-#DIMS LFTSTR,2			; 分割삽입する際の左側の文字列
-#DIMS NOWSTR,1			; 現在の文字列
-#DIMS RGTSTR,2			; 分割삽입する際の右側の文字列
-#DIMS NOWBLKPROP,1		; 分割時のブロック属性の일시퇴피場所
+#DIMS NOWBLK,1			; 현재의 블록
+#DIMS LFTSTR,2			; 분할삽입 할 때의 좌측의 캐릭터 라인
+#DIMS NOWSTR,1			; 현재의 캐릭터 라인
+#DIMS RGTSTR,2			; 분할삽입 할 때의 우측의 캐릭터 라인
+#DIMS NOWBLKPROP,1		; 분할시의 블록 속성의일시퇴피장소
 
-#DIM CUTLFT,1			; LFTSTRの分割まで何文字？
-#DIM CUTRGT,1			; RGTSTRの分割まで何文字？
+#DIM CUTLFT,1			; LFTSTR의 분할까지 무슨 문자?
+#DIM CUTRGT,1			; RGTSTR의 분할까지 무슨 문자?
 
 LOCAL = RESULT
 
@@ -115,39 +115,39 @@ IF ARGS == "" && ARG == 0 && XPOINT == -1
 	CALL LAYER_INIT
 	RETURN LOCAL
 ENDIF
-; 区切り記号の삽입
+; 단락 기호의삽입
 ARGS += NEST_SEPARATOR
-;imgとshapeは問答無用でNEST_SEPARATERを使って別ブロックへ隔離
+;img와 shape는 문답 무용으로 NEST_SEPARATER를 사용해 별블록에 격리
 ARGS '= REPLACE(ARGS , "(<img.+?>)" , NEST_SEPARATOR + "$1" + NEST_SEPARATOR)
 ARGS '= REPLACE(ARGS , "(<shape.+?>)" , NEST_SEPARATOR + "$1" + NEST_SEPARATOR)
 
-;NEST_SEPARATERが二つ以上重なって空になっているブロックは削除
+;NEST_SEPARATER가 2개 이상 겹쳐 비우고 있는 블록은 삭제
 ARGS '= REPLACE(ARGS ,  NEST_SEPARATOR + "+" , NEST_SEPARATOR)
 
-; XPOINTの指定がない = ログ指定行の末尾に直接追加
+; XPOINT의 지정이 없다 =로그 지정행의 말미에 직접 추가
 IF XPOINT == -1
 	LAYER_LOG:ARG += ARGS
-; XPOINTの指定があるよ
+; XPOINT의 지정이 있어
 ELSE
-	; XPOINTの指定はあるがログは空  = XPOINTまで半スペを放り込んで追加
+	; XPOINT의 지정은 있지만 로그는 하늘  = XPOINT까지 반스페를 던져 넣어 추가
 	IF LAYER_LOG:ARG == ""
 		SIF XPOINT > 0
 			LAYER_LOG:ARG = %" " * XPOINT + NEST_SEPARATOR%
 		LAYER_LOG:ARG += ARGS
 		
-	; XPOINTの指定があってログもすでにある
+	; XPOINT의 지정이 있어 로그도 벌써 있다
 	ELSE
-		; 初期変数設定
+		; 초기 변수 설정
 		FIRSTBLOCK = -1
 		LASTBLOCK = -1
 		XCOUNT = 0
 		LFTSTR =
 		RGTSTR =
-		; LAYER_TMPにARGSをブロックごとに分割して退避
+		; LAYER_TMP에 ARGS를 블록 마다 분할해 퇴피
 		VARSET LAYER_TMP
 		SPLIT ARGS , NEST_SEPARATOR , LAYER_TMP
 		LOCAL:1 = RESULT
-		;----- 全ブロックの文字列部分の文字数総数 --------------------
+		;----- 전블록의 캐릭터 라인 부분의 문자수총수 --------------------
 			INSSTRLEN = 0
 			FOR LCOUNT , 0 , LOCAL:1+1
 				SIF LAYER_TMP:LCOUNT == ""
@@ -155,99 +155,99 @@ ELSE
 				INSSTRLEN += LAYER_STRLENS(LAYER_TMP:LCOUNT)
 			NEXT
 		;-------------------------------------------------------------
-		; LAYER_TMPにログから今回の行をブロックごとに分割して退避
+		; LAYER_TMP에 로그로부터 이번 행을 블록 마다 분할해 퇴피
 		VARSET LAYER_TMP
 		SPLIT LAYER_LOG:ARG , NEST_SEPARATOR , LAYER_TMP
-		;何ブロックあるの？ (1ブロックは確定)
+		;몇 블록 있는 거야? (1 블록은 확정)
 		BLOCKNUM = RESULT
 		
 		FOR LCOUNT, 0, BLOCKNUM + 1
-			; NOWBLKにこのブロックを入れる
+			; NOWBLK에 이 블록을 넣는다
 			NOWBLK = %LAYER_TMP:LCOUNT%
-			; NOWSTRにこのブロックの本文だけを入れる
+			; NOWSTR에 이 블록의 본문만을 넣는다
 			NOWSTR = %HTML_TOPLAINTEXT(NOWBLK)%
-			; このブロックの本文の文字数
+			; 이 블록의 본문의 문자수
 			;NOWSTRLEN = STRLENS(NOWSTR)
 			NOWSTRLEN = LAYER_STRLENS(NOWBLK)
-			; 今回のブロックが空の場合は基本的には飛ばし
+			; 이번 블록이 하늘의 경우는 기본적으로는 날려
 			IF NOWBLK == ""
-				; ブロック分割をしていないのに最終ブロックまできちゃった
+				; 블록 분할을 하고 있지 않는데 최종 블록까지 와 버렸다
 				IF (FIRSTBLOCK == -1) && (LCOUNT == BLOCKNUM)
-					; 空白だがXPOINT指定があるため、XPOINTまでXCOUNT分の半スペで埋める
+					; 공백이지만 XPOINT 지정이 있기 (위해)때문에, XPOINT까지 XCOUNT 분의반스페로 묻는다
 					LFTSTR += @"%" " * (XPOINT - XCOUNT) + NEST_SEPARATOR%"
 				ENDIF
 				CONTINUE
 			ENDIF
 
-		; ---- 分割ブロック未確定 ----------------------------------------------
+		; ---- 분할 블록 미확정 ----------------------------------------------
 			IF FIRSTBLOCK == -1
-				;これまでの文字列の文字数+今回の文字列の長さがXPOINTよりも長い場合、そのブロックの途中から삽입を開始する
+				;이것까지의 캐릭터 라인의 문자수+이번 캐릭터 라인의 길이가 XPOINT보다 긴 경우, 그 블록의 도중부터삽입를 개시한다
 				IF ( XCOUNT + NOWSTRLEN ) > XPOINT
-					;分割する位置を特定
+					;분할하는 위치를 특정
 					CUTRGT = ( XPOINT - XCOUNT )
 					FIRSTBLOCK = LCOUNT
 
-					; CUTRGT+INSSTRLENの長さが今回の文字列の長さより小さい場合、このブロックで完結する
+					; CUTRGT+INSSTRLEN의 길이가 이번 캐릭터 라인의 길이보다 작은 경우, 이 블록으로 완결한다
 					IF ( CUTRGT + INSSTRLEN ) <= NOWSTRLEN
 						CUTLFT = CUTRGT + INSSTRLEN
 						LASTBLOCK = LCOUNT
 
 
-						; ---- 当該ブロックの文字列を二つに分割 ----------------
-							;imgの場合とshapeの場合とそうでない場合で分岐
+						; ---- 해당 블록의 캐릭터 라인을 2개로 분할 ----------------
+							;img의 경우와 shape의 경우와 그렇지 않은 경우로 분기
 							IF STRFIND(NOWBLK , "<shape") > -1
-								;図形内への삽입処理
-								;この場合、1タグで単独のブロックを形成しているはず
-								;paramの中身を취득する
+								;도형내에의삽입처리
+								;이 경우, 1 태그로 단독의 블록을 형성하고 있을 것
+								;param의 내용을취득 한다
 								SPLIT NOWBLK , "param='" , LOCALS
 								SPLIT LOCALS:1 , "'" , LOCALS
 								IF STRFIND(LOCALS , ",") > -1
-									;LOCALSを更に分ける
+									;LOCALS를 더욱 나눈다
 									SPLIT LOCALS , "," , L_RESULTS
-									;分けた後の幅を決定し、LOCALS:1～2とLOCAL:1～2に入れる
+									;나눈 후의 폭을 결정해, LOCALS:1～2로 LOCAL:1～2에 넣는다
 									LOCALS:1 '= TOSTR(CUTRGT * 50) , TOSTR((NOWSTRLEN - CUTLFT) * 50)
 									LOCAL:1 = TOINT(LOCALS:1) , TOINT(LOCALS:2)
-									;他の要素(X,Y,width)と合流
+									;다른 요소(X, Y, width)와 합류
 									LOCALS:1 = %L_RESULTS%,%L_RESULTS:1%,%LOCALS:1%,%L_RESULTS:3%
 									LOCALS:2 = %L_RESULTS%,%L_RESULTS:1%,%LOCALS:2%,%L_RESULTS:3%
 								ELSE
-									;分けた後の幅を決定し、LOCALS:1～2とLOCAL:1～2に入れる
+									;나눈 후의 폭을 결정해, LOCALS:1～2로 LOCAL:1～2에 넣는다
 									LOCALS:1 '= TOSTR(CUTRGT * 50) , TOSTR((NOWSTRLEN - CUTLFT) * 50)
 									LOCAL:1 = TOINT(LOCALS:1) , TOINT(LOCALS:2)
 								ENDIF
-								;NOWBLKのparam部分の要素をLOCALS:1とLOCALS:2に置換して左右に分ける
+								;NOWBLK의 param 부분의 요소를 LOCALS:1으로 LOCALS:2에 치환해 좌우로 나눈다
 								LFTSTR += REPLACE(NOWBLK , "(param=').+?(')" , "$1" + " " + LOCALS:1 + "$2") + NEST_SEPARATOR
 								SIF LOCAL:2 > 0
 									RGTSTR '= REPLACE(NOWBLK , "(param=').+?(')" , "$1" + " " + LOCALS:2 + "$2") + NEST_SEPARATOR
 							ELSEIF STRFIND(NOWBLK , "<img") > -1
-								;画像内への삽입処理
-								;画像は全て2文字分として扱うので、この場合画像を丸ごと上書きする2文字分か半分だけ上書きする1文字分
-								;1文字分の場合だけ、前か頭に半スぺを入れる
+								;화상내에의삽입처리
+								;화상은 모두 2문자분으로서 취급하므로, 이 경우 화상을 통째로 덧쓰기하는 2문자분이나 반만큼 덧쓰기하는 1문자분
+								;1문자분의 경우만, 전이나 머리에 반스를 넣는다
 								SIF CUTRGT == 1
 									LFTSTR += " " + NEST_SEPARATOR
 								SIF CUTRGT == 0 && INSSTRLEN == 1
 									RGTSTR '= " " + NEST_SEPARATOR
 							ELSE
 									
-								;フォントや色の情報を保存
+								;폰트나 색의 정보를 보존
 								NOWBLKPROP = %HTML_TOTAGTEXT(NOWBLK)%
 								
-								;통상のタグ文の삽입処理
-								; 左側は0～CUTRGTまで
+								;통상의 태그문의삽입처리
+								; 좌측은 0～CUTRGT까지
 								LFTSTR:1 = %SUBSTRING(NOWSTR , 0 , CUTRGT)%
-								; 全角文字の途中から削ろうと했다際、ズレ防止のために左側の最後の一文字を半スペに変換する
+								; 전각 문자의 도중부터 깎으려고했다때, 엇갈림 방지를 위해서(때문에) 좌측의 마지막 1문자를 반스페로 변환한다
 								SIF STRLENS(LFTSTR:1) > CUTRGT
 									LFTSTR:1 = %SUBSTRING(LFTSTR:1 , 0 , STRLENS(LFTSTR:1) - 2) + " "% 
-								; 退避했다フォントや色の情報を戻す
+								; 퇴피했다폰트나 색의 정보를 되돌린다
 								SIF LFTSTR:1 != "" && NOWBLKPROP != ""
 									LFTSTR:1 = %HTML_SETTAGTEXT(LFTSTR:1 , NOWBLKPROP)%
 
-								; 右側はCUTLFT～文字列の最後まで
+								; 우측은 CUTLFT～캐릭터 라인의 끝까지
 								RGTSTR:1 = %SUBSTRING(NOWSTR , CUTLFT)%
-								; 全角文字の途中までを削ろうと했다際、ズレ防止のために右側の最初の一文字を半スペに変換する
+								; 전각 문자의 도중까지를 깎으려고했다때, 엇갈림 방지를 위해서(때문에) 우측의 최초의 1문자를 반스페로 변환한다
 								SIF NOWSTRLEN > CUTLFT + STRLENS(RGTSTR:1)
 									RGTSTR:1 = %" " + SUBSTRING(RGTSTR:1, 0 , STRLENS(RGTSTR:1))% 
-								; 退避했다フォントや色の情報を戻す
+								; 퇴피했다폰트나 색의 정보를 되돌린다
 								SIF RGTSTR:1 != "" && NOWBLKPROP != ""
 									RGTSTR:1 = %HTML_SETTAGTEXT(RGTSTR:1 , NOWBLKPROP)%
 
@@ -256,43 +256,43 @@ ELSE
 							ENDIF
 						; ------------------------------------------------------
 
-					; そうでなければ終了位置を探す為に続ける
+					; 그렇지 않으면 종료 위치를 찾기 위해서(때문에) 계속한다
 					ELSE
 						CUTLFT = INSSTRLEN - (NOWSTRLEN - CUTRGT)
 						XCOUNT += NOWSTRLEN
 						
-						;imgの場合とshapeの場合とそうでない場合で分岐
+						;img의 경우와 shape의 경우와 그렇지 않은 경우로 분기
 						IF STRFIND(NOWBLK , "<shape") > -1
-							;図形内への삽입処理
-							;この場合、1タグで単独のブロックを形成しているはず
-							;paramの中身を취득する
+							;도형내에의삽입처리
+							;이 경우, 1 태그로 단독의 블록을 형성하고 있을 것
+							;param의 내용을취득 한다
 							SPLIT NOWBLK , "param='" , LOCALS
 							SPLIT LOCALS:1 , "'" , LOCALS
 							IF STRFIND(LOCALS , ",") > -1
-								;LOCALSを更に分ける
+								;LOCALS를 더욱 나눈다
 								SPLIT LOCALS , "," , L_RESULTS
-								;分けた後の幅を決定し、LOCALS:1に入れる
+								;나눈 후의 폭을 결정해, LOCALS:1에 넣는다
 								LOCALS:1 '= TOSTR(CUTRGT * 50)
-								;他の要素(X,Y,width)と合流
+								;다른 요소(X, Y, width)와 합류
 								LOCALS:1 = %L_RESULTS%,%L_RESULTS:1%,%LOCALS:1%,%L_RESULTS:3%
 							ELSE
-								;分けた後の幅を決定し、LOCALS:1に入れる
+								;나눈 후의 폭을 결정해, LOCALS:1에 넣는다
 								LOCALS:1 '= TOSTR(CUTRGT * 50)
 							ENDIF
-							;NOWBLKのparam部分の要素をLOCALS:1とLOCALS:2に置換して左右に分ける
+							;NOWBLK의 param 부분의 요소를 LOCALS:1으로 LOCALS:2에 치환해 좌우로 나눈다
 							LFTSTR += REPLACE(NOWBLK , "(param=').+?(')" , "$1" + " " + LOCALS:1 + "$2") + NEST_SEPARATOR
 						ELSEIF STRFIND(NOWBLK , "<img") > -1
-							;画像内への삽입処理
-							;画像は全て2文字分として扱うので、この場合画像を丸ごと上書きする2文字分か半分だけ上書きする1文字分
-							;1文字分の場合だけ、前か頭に半スぺを入れる
+							;화상내에의삽입처리
+							;화상은 모두 2문자분으로서 취급하므로, 이 경우 화상을 통째로 덧쓰기하는 2문자분이나 반만큼 덧쓰기하는 1문자분
+							;1문자분의 경우만, 전이나 머리에 반스를 넣는다
 							SIF CUTRGT == 1
 								LFTSTR += " " + NEST_SEPARATOR
 						ELSE
 						
-							; CUTRGTより右の文字列は削る
+							; CUTRGT보다 오른쪽의 캐릭터 라인은 깎는다
 							NOWSTR = %SUBSTRING(NOWSTR , 0 , CUTRGT)%
 							NOWSTRLEN = STRLENS(NOWSTR)
-							; 全角文字の途中から削ろうと했다際、ズレ防止のために左側の最後の一文字を半スペに変換する
+							; 전각 문자의 도중부터 깎으려고했다때, 엇갈림 방지를 위해서(때문에) 좌측의 마지막 1문자를 반스페로 변환한다
 							IF NOWSTRLEN > CUTRGT
 								NOWSTR = %SUBSTRING(NOWSTR , 0 , NOWSTRLEN - 2) + " "%
 								XCOUNT -= 1
@@ -306,55 +306,55 @@ ELSE
 						ENDIF
 					ENDIF
 
-				; XPOINTまで届かなかった場合、XPOINT-XCOUNT分の空白を追加
+				; XPOINT까지 닿지 않았던 경우, XPOINT-XCOUNT 분의 공백을 추가
 				ELSEIF LCOUNT == BLOCKNUM
 					LFTSTR += @"%" " * (XPOINT - XCOUNT) + NEST_SEPARATOR%"
-				;まだ開始ブロックを見つけていない場合は次のブロックへ
+				;아직 개시 블록을 찾아내지 않은 경우는 다음의 블록에
 				ELSE
 					XCOUNT += NOWSTRLEN
 					LFTSTR += NOWBLK + NEST_SEPARATOR
 				ENDIF
-		; ---- 分割終了ブロック未確定-------------------------------------------
+		; ---- 분할 종료 블록 미확정-------------------------------------------
 			ELSEIF LASTBLOCK == -1
-				; CUTLFTがこの文字列の長さ以下でないと削れないJK
+				; CUTLFT가 이 캐릭터 라인의 길이 이하가 아니면 깎을 수 없는 JK
 				IF CUTLFT <= NOWSTRLEN
 					LASTBLOCK = LCOUNT
 					
-					;imgの場合とshapeの場合とそうでない場合で分岐
+					;img의 경우와 shape의 경우와 그렇지 않은 경우로 분기
 					IF STRFIND(NOWBLK , "<shape") > -1
-						;図形内への삽입処理
-						;この場合、1タグで単独のブロックを形成しているはず
-						;paramの中身を취득する
+						;도형내에의삽입처리
+						;이 경우, 1 태그로 단독의 블록을 형성하고 있을 것
+						;param의 내용을취득 한다
 						SPLIT NOWBLK , "param='" , LOCALS
 						SPLIT LOCALS:1 , "'" , LOCALS
 						IF STRFIND(LOCALS , ",") > -1
-							;LOCALSを更に分ける
+							;LOCALS를 더욱 나눈다
 							SPLIT LOCALS , "," , L_RESULTS
-							;分けた後の幅を決定し、LOCALS:1～2とLOCAL:1～2に入れる
+							;나눈 후의 폭을 결정해, LOCALS:1～2로 LOCAL:1～2에 넣는다
 							LOCALS:2 '= TOSTR((NOWSTRLEN - CUTLFT) * 50)
-							;他の要素(X,Y,width)と合流
+							;다른 요소(X, Y, width)와 합류
 							LOCALS:2 = %L_RESULTS%,%L_RESULTS:1%,%LOCALS:2%,%L_RESULTS:3%
 						ELSE
-							;分けた後の幅を決定し、LOCALS:1～2とLOCAL:1～2に入れる
+							;나눈 후의 폭을 결정해, LOCALS:1～2로 LOCAL:1～2에 넣는다
 							LOCALS:2 '= TOSTR((NOWSTRLEN - CUTLFT) * 50)
 						ENDIF
 						RGTSTR '= REPLACE(NOWBLK , "(param=').+?(')" , "$1" + " " + LOCALS:2 + "$2") + NEST_SEPARATOR
 					ELSEIF STRFIND(NOWBLK , "<img") > -1
-						;画像内への삽입処理
-						;画像は全て2文字分として扱うので、この場合画像を丸ごと上書きする2文字分か半分だけ上書きする1文字分
-						;1文字分の場合だけ、前か頭に半スぺを入れる
+						;화상내에의삽입처리
+						;화상은 모두 2문자분으로서 취급하므로, 이 경우 화상을 통째로 덧쓰기하는 2문자분이나 반만큼 덧쓰기하는 1문자분
+						;1문자분의 경우만, 전이나 머리에 반스를 넣는다
 						SIF CUTRGT == 0 && INSSTRLEN == 1
 							RGTSTR '= " " + NEST_SEPARATOR
 					ELSE
 					
 						
-						; CUTLFTよりも左を削る
+						; CUTLFT보다 왼쪽을 깎는다
 						NOWSTR = %SUBSTRING(NOWSTR , CUTLFT)%
 						NOWSTRLEN = STRLENS(NOWSTR)
-						; 全角文字の途中までを削ろうと했다際、ズレ防止のために右側の最初の一文字を半スペに変換する
+						; 전각 문자의 도중까지를 깎으려고했다때, 엇갈림 방지를 위해서(때문에) 우측의 최초의 1문자를 반스페로 변환한다
 						SIF STRLENS(HTML_TOPLAINTEXT(NOWBLK)) > CUTLFT + NOWSTRLEN
 							NOWSTR = %" " + SUBSTRING( NOWSTR, 0, NOWSTRLEN )% 
-						; RGTSTRに今回削ったものを代入
+						; RGTSTR에 이번 깎은 것을 대입
 						NOWBLKPROP = %HTML_TOTAGTEXT(NOWBLK)%
 						IF NOWBLKPROP != "" && NOWSTR != ""
 							RGTSTR = %HTML_SETTAGTEXT(NOWSTR, NOWBLKPROP) + NEST_SEPARATOR%
@@ -362,13 +362,13 @@ ELSE
 							RGTSTR = %NOWSTR + NEST_SEPARATOR%
 						ENDIF
 					ENDIF
-				; CUTLFTを丸める
+				; CUTLFT를 말다
 				ELSE
 					CUTLFT -= NOWSTRLEN
 				ENDIF
-		; ---- 削らない --------------------------------------------------------
+		; ---- 깎지 않는 --------------------------------------------------------
 			ELSE
-				;後はRGTSTRに残りを追加していく
+				;뒤는 RGTSTR에 나머지를 추가해 나간다
 				RGTSTR += NOWBLK + NEST_SEPARATOR
 			ENDIF
 		NEXT
@@ -382,16 +382,16 @@ RETURN LOCAL
 ;-------------------------------------------------------------------------------
 ;	LAYER_PRINT
 ;-------------------------------------------------------------------------------
-;	例：	CALL LAYER_PRINT, 0, 40
+;	예:	CALL LAYER_PRINT, 0, 40
 ;
-;	0行目から40行目までLAYER_SETでセット당했다レイヤを重ねて表示시킨다
+;	0행째부터 40행째까지 LAYER_SET로 세트당했다레이어를 거듭해 표시시킨다
 ;===============================================================================
-;			表示開始行	終了行
+;			표시 개시행 종료행
 @LAYER_PRINT, ARG = 0, ARG:1 = -1
 #LOCALSIZE 2
 #LOCALSSIZE 1
 LOCAL:1 = RESULT
-; 終了行が未指定の場合、ログのうち何行まで文字列が入っているかを취득
+; 종료행이 미지정의 경우, 로그중몇행까지 캐릭터 라인이 들어가 있을까를취득
 IF ARG:1 == -1
 	FOR LOCAL, 0, VARSIZE("LAYER_LOG")
 		SIF LAYER_LOG:LOCAL != ""
@@ -399,7 +399,7 @@ IF ARG:1 == -1
 	NEXT
 	ARG:1 += 1
 ENDIF
-; 各行ごと
+; 각 행마다
 FOR LOCAL , ARG , (ARG + ARG:1)
 	LOCALS = %REPLACE(LAYER_LOG:LOCAL,NEST_SEPARATOR,"")%
 	IF LOCALS != ""
@@ -412,13 +412,13 @@ NEXT
 RETURN LOCAL:1
 
 ;-------------------------------------------------------------------------------
-;	カラーバーのLAYER対応版
+;	칼라바의 LAYER 대응판
 ;-------------------------------------------------------------------------------
-;	例  %LAYER_CBAR(BASE:0,MAXBASE:0,10,UNICODE(0x2584),UNICODE(0x2584),GETCOLOR(),0x404040)%
+;	예  %LAYER_CBAR(BASE:0, MAXBASE:0, 10, UNICODE(0 x2584), UNICODE(0 x2584), GETCOLOR(), 0 x404040)%
 ;===============================================================================
-;	引数は頭三つはBARとほぼ一緒 + ARGSで描写文字の変更が可能(指定しない場合はBARと同じ仕様)
-;	ただし、前後の[]は省かれます
-;	ARG:3 = バーの色(0xFFFFFF形式で指定)  ARG:4 = バーの背景色(0xFFFFFF形式で指定)
+;	인수는 머리 3개는 BAR와 거의 함께 + ARGS로 묘사 문자의 변경이 가능(지정하지 않는 경우는 BAR와 같은 사양)
+;	다만, 전후의 것[]은 생략해집니다
+;	ARG:3 =바의 색(0 xFFFFFF 형식에서 지정)  ARG:4 =바의 키 경치(0 xFFFFFF 형식에서 지정)
 @LAYER_CBAR(ARG, ARG:1, ARG:2, ARGS = "*", ARGS:1 = ".", ARG:3 = 0xC0C0C0, ARG:4 = 0x404040)
 #FUNCTIONS
 #LOCALSIZE 3
@@ -428,12 +428,12 @@ VARSET LOCALS
 LOCAL:1 = ARG * ARG:2 / ARG:1
 FOR LOCAL, 1, ARG:2 + 1
 	IF LOCAL:1 >= LOCAL
-		; 最初の一度のみ色変えるよ플래그1
+		; 최초의 한 번만색 바꾸어플래그 1
 		SIF !GETBIT(LOCAL:2, 1)
 			SETBIT LOCAL:2, 1
 		LOCALS:0 += ARGS
 	ELSE
-		; 最初の一度のみ色変えるよ플래그2
+		; 최초의 한 번만색 바꾸어플래그 2
 		SIF !GETBIT(LOCAL:2, 2)
 			SETBIT LOCAL:2, 2
 		LOCALS:1 += ARGS:1
@@ -454,13 +454,13 @@ RETURN RESULT
 RETURNF ARGS * (STRLENS(DRAWLINESTR) / STRLENS(ARGS))
 
 ;-------------------------------------------------------------------------------
-;	カラーバーのRECT対応版
+;	칼라바의 RECT 대응판
 ;-------------------------------------------------------------------------------
-;	例  %LAYER_CBAR(BASE:0,MAXBASE:0,10,UNICODE(0x2584),UNICODE(0x2584),GETCOLOR(),0x404040)%
+;	예  %LAYER_CBAR(BASE:0, MAXBASE:0, 10, UNICODE(0 x2584), UNICODE(0 x2584), GETCOLOR(), 0 x404040)%
 ;===============================================================================
-;	引数は頭三つはBARとほぼ一緒 + ARGSで描写文字の変更が可能(指定しない場合はBARと同じ仕様)
-;	ただし、前後の[]は省かれます
-;	ARG:3 = バーの色(0xFFFFFF形式で指定)  ARG:4 = バーの背景色(0xFFFFFF形式で指定)
+;	인수는 머리 3개는 BAR와 거의 함께 + ARGS로 묘사 문자의 변경이 가능(지정하지 않는 경우는 BAR와 같은 사양)
+;	다만, 전후의 것[]은 생략해집니다
+;	ARG:3 =바의 색(0 xFFFFFF 형식에서 지정)  ARG:4 =바의 키 경치(0 xFFFFFF 형식에서 지정)
 ;-------------------------------------------------------------------------------
 @LAYER_RECTBAR(ARG, ARG:1, MAX_LENGTH, COLOR = 0xC0C0C0, COLOR:1 = 0x404040, BCOLOR = -1, BCOLOR:1 = -1, HEIGHT = 100, L_X = 0, L_Y = -1)
 #FUNCTIONS
@@ -480,7 +480,7 @@ SIF BCOLOR == -1
 	BCOLOR = GETBGCOLOR()
 SIF BCOLOR:1 == -1
 	BCOLOR:1 = GETBGCOLOR()
-;中央に揃える
+;중앙에 가지런히 한다
 SIF L_Y == -1
 	L_Y = (100 - HEIGHT) / 2
 COLORS '= "#" + CONVERT(COLOR,16)
@@ -508,19 +508,19 @@ RETURNF LOCALS + LOCALS:1
 
 ;	LAYER_STRLENS
 ;-------------------------------------------------------------------------------
-;	ARGSに渡당했다文字列がHTML_PRINT上で何文字使うかをカウントする
-;	ただし、imgは2文字として扱い、shapeはフォント幅50%毎に半角1文字としてカウントする
+;	ARGS에 도당했다캐릭터 라인이 HTML_PRINT상에서 무슨 문자 사용할까를 카운트 한다
+;	다만, img는 2문자로서 취급해, shape는 폰트폭 50% 마다 반각 1문자로서 카운트 한다
 ;===============================================================================
-;				表示開始行	終了行
+;				표시 개시행 종료행
 @LAYER_STRLENS, ARGS
 #FUNCTION
 #DIM INSSTRLEN
 #LOCALSIZE 2
 #LOCALSSIZE 3
 SWAP LOCAL:1 , RESULT
-;平文の文字数をカウント
+;평문의 문자수를 카운트
 INSSTRLEN = STRLENS( HTML_TOPLAINTEXT(ARGS))
-;img・shapeの文字数をカウント
+;img·shape의 문자수를 카운트
 HTML_TAGSPLIT ARGS
 FOR LOCAL , 0 , RESULT
 	IF STRFIND(RESULTS:LOCAL , "<img") > -1
@@ -546,13 +546,13 @@ RETURNF INSSTRLEN
 ;-------------------------------------------------------------------------------
 ;	LAYER_REFRESH
 ;-------------------------------------------------------------------------------
-;	例：	CALL LAYER_REFRESH, 0, 40
+;	예:	CALL LAYER_REFRESH, 0, 40
 ;
-;	G_LINEに記憶당했다行数まで画面を一度消し、
-;	指定당했다行数までLAYER_SETでセット당했다レイヤを重ねて表示させ、
-;	WAITANYKEYで入力受付상태にする
+;	G_LINE에 기억당했다행수까지 화면을 한 번 지워,
+;	지정당했다행수까지 LAYER_SET로 세트당했다레이어를 거듭해 표시시켜,
+;	WAITANYKEY로 입력 접수상태로 한다
 ;===============================================================================
-;				表示開始行	終了行
+;				표시 개시행 종료행
 @LAYER_REFRESH, ARG = 0, ARG:1 = -1
 #LOCALSIZE 2
 #LOCALSSIZE 1

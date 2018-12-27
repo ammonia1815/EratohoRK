@@ -1,22 +1,22 @@
-﻿;애무系リアクションコマンド群
+﻿;애무계 리액션 커맨드군
 ;────────────────────────────────────
-;070,가게해줘！
+;070, 가게해줘!
 ;────────────────────────────────────
 @COM70
-;이탈SOURCE減少
+;이탈SOURCE 감소
 TIMES SOURCE:MASTER:이탈 , 0.70
-;트라우마化減速
+;트라우마화 감속
 TIMES SOURCE:MASTER:트라우마 , 0.80
-;굴종、달성、열락SOURCE増加
+;굴종, 달성, 열락SOURCE 증가
 SOURCE:MASTER:굴종 += 50 + (MARK:MASTER:쾌락각인 + 1) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) * CFLAG:MASTER:죠교레벨 / 200
 SOURCE:MASTER:달성 += 100 + (CFLAG:MASTER:죠교레벨 + 5) * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ) / 100
 SOURCE:MASTER:열락 += 100 + SOURCE:MASTER:쾌Ｃ / 25 + SOURCE:MASTER:쾌Ｖ / 25 + SOURCE:MASTER:쾌Ａ / 25 + SOURCE:MASTER:쾌Ｂ / 25
-;보정値初期化
+;보정치 초기화
 VARSET LOCAL
-;素質보정値設定
+;소질보정치 설정
 LOCAL = (CFLAG:호의 / 500) + TALENT:색정적 - TALENT:청초 + TALENT:헌신적 - TALENT:수동적
 LOCAL = LIMIT(LOCAL, 1, 5)
-;가학보정値設定
+;가학보정치 설정
 ;3<=(LOCAL:1)<=8
 SIF TALENT:새드
 	LOCAL:1 += 1
@@ -30,12 +30,12 @@ ENDIF
 SIF TALENT:마음씨착한
 	LOCAL:1 -= 1
 LOCAL:1 += 5
-;素質によって애태움終了
+;소질에 의해애태움종료
 IF RAND:LOCAL > 0
 	TCVAR:MASTER:애태움도 = 1
-	;가학보정によって애태움延長
+	;가학보정에 의해애태움연장
 	IF RAND:(LOCAL:1) >= RAND:5
-		;기교によって期間決定
+		;기교에 의해 기간 결정
 		LOCAL:2 = ABL:기교 / 5 + 2
 		SIF LOCAL:2 > 4
 			LOCAL:2 = 4
@@ -43,21 +43,21 @@ IF RAND:LOCAL > 0
 	ENDIF
 ENDIF
 IF TCVAR:MASTER:애태움도 == 1
-	;派生：가게해줘あげる
+	;파생:가게해줘 준다
 	TFLAG:REACT파생 = 1
 ELSEIF TCVAR:MASTER:애태움도 > 1
-	;派生：가게해줘あげない
+	;파생:가게해줘 주지 않는다
 	TFLAG:REACT파생 = 2
 ELSE
-	;派生：「ふーん」
+	;파생:「흐음」
 	TFLAG:REACT파생 = 0
 ENDIF
-;가게해줘상태へ移行
+;가게해줘상태에 이행
 TCVAR:MASTER:가게해줘거동제어용 = 1
-;COM分類
-CALL SET_COMGRO("受け入れる")
-;COM印象
-CALL SET_COMIMP("好印象大")
+;COM 분류
+CALL SET_COMGRO("받아들인다")
+;COM 인상
+CALL SET_COMIMP("좋은인상")
 ;의존도변화
 CALL ADD_DEPEND(+10, +6)
 RETURN 1

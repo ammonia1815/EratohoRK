@@ -1,5 +1,5 @@
 ﻿;────────────────────────────────────
-;ボーナス취득のメニュー。ボーナスの種類と필요ポイントは仮の設定です
+;보너스취득의 메뉴. 보너스의 종류와필요포인트는 가짜의 설정입니다
 ;────────────────────────────────────
 @BONUS_GAIN
 #DIM DAYONCE = -1
@@ -20,42 +20,42 @@ VARSET TALENT_SIZE
 DRAWLINE
 PRINTFORML %CALLNAME:MASTER%(을)를 %CALLNAME:TARGET%이(가) 조교중
 SIF ASSI:1 >= 0
-	PRINTFORML 　(조수１：%CALLNAME:(ASSI:1)%)　\@ ASSI:2 >= 0 ? (조수２：%CALLNAME:(ASSI:2)%) # \@
+	PRINTFORML   (조수 1:%CALLNAME:(ASSI:1)%)　\@ ASSI:2 >= 0 ? (조수 2:%CALLNAME:(ASSI:2)%) # \@
 PRINTFORML [LV {CFLAG:TARGET:0}　EXP {CFLAG:TARGET:1}/{CFLAG:TARGET:4}　NEXT {CFLAG:TARGET:4-CFLAG:TARGET:1}]
 PRINTFORML (나머지 마력 {CFLAG:마력})
 
 ;────────────────────────────────────
-;これまで취득했다ボーナスの表示
-;処理がほぼSQRのままで、表示情報が不발していたので処理変更。微調整@revkoishi(14/05/26)
+;이것까지취득했다보너스의 표시
+;처리가 거의 SQR인 채로, 표시 정보가 불발 하고 있었으므로 처리 변경. 미조정@revkoishi(14/05/26)
 LINE_WIDTH = WIDTH()
 
-;追加죠교자
-PRINTFORM \@ FLAG:추가조교자수 ? 追加당했다죠교자：{FLAG:11,2}인\n # \@
+;추가죠교자
+PRINTFORM \@ FLAG:추가조교자수 ? 추가당했다죠교자:{FLAG:11,2}인\n # \@
 
-;도구。基本的な処理はステータスの素質分類表示と同じです
-;似通った処理なのでもう少し頭使えば関数化できそうな気もするけど、今ならもっと賢いやり方があるかも
-FOR LOCAL:0, 0, 50	;分類ループ
+;도구. 기본적인 처리는 스테이터스의 소질 분류표시와 같습니다
+;닮은 처리인 것으로 좀 더 머리 사용하면 함수화할 수 있을 것 같은 생각도 들지만, 지금이라면 좀 더 영리한 방식이 있을지도
+FOR LOCAL:0, 0, 50	;분류 루프
 	SIF ITEM:(LOCAL:0)
 		ITEM_LIST:ITEM_TYPE(LOCAL:0):(ITEM_SIZE:ITEM_TYPE(LOCAL:0)++) = LOCAL:0
 NEXT
 IF VARSIZE("ITEM_SIZE") - MATCH(ITEM_SIZE, 0)
 	PRINTFORML -- □ 취득한 도구 □ \@ ITEM:커스텀도구 ? (성도구커스텀) %"-" * (LINE_WIDTH - 43)% # %"-" * (LINE_WIDTH - 22)% \@
 	FOR LOCAL:0, 1, 4
-		IF ITEM_SIZE:(LOCAL:0)	;その分類の도구が無ければ飛ばす
-			;도구分類名を表示
-			PRINTFORM %ITEM_TYPENAME(LOCAL:0), 8, RIGHT%：
-			LOCAL:2 = 10	;桁位置(↑表示後の位置)
-			FOR LOCAL:1, 0, ITEM_SIZE:(LOCAL:0)	;その分類の도구所持数分ループ
-				;도구名を취득([도구名] )
+		IF ITEM_SIZE:(LOCAL:0)	;그 만큼류의도구가 없으면 날린다
+			;도구분류명을 표시
+			PRINTFORM %ITEM_TYPENAME(LOCAL:0), 8, RIGHT%:
+			LOCAL:2 = 10	;자리수 위치(↑표시 후의 위치)
+			FOR LOCAL:1, 0, ITEM_SIZE:(LOCAL:0)	;그 만큼류의도구소지 몇분 루프
+				;도구명을취득([도구명] )
 				LOCALS:0 = [%GET_ITEMNAME(ITEM_LIST:(LOCAL:0):(LOCAL:1))%]%" "%
-				LOCAL:3 = STRLENS(LOCALS:0)	;↑の文字数(도구名+[]+スペース)
-				LOCAL:2 += LOCAL:3			;桁位置加算
-				IF LOCAL:2 > LINE_WIDTH		;このまま表示すると途中改行されそうな場合は改行処理を行う
-					;改行処理(折り返し、行頭インデント、桁位置再計算)
+				LOCAL:3 = STRLENS(LOCALS:0)	;↑의 문자수(도구명+[]+스페이스)
+				LOCAL:2 += LOCAL:3			;자리수 위치 가산
+				IF LOCAL:2 > LINE_WIDTH		;이대로 표시하면 도중 개행될 것 같은 경우는 개행 처리를 실시한다
+					;개행 처리(되풀이해, 줄머리 인덴트, 자리수 위치 재계산)
 					PRINTFORM \n          
 					LOCAL:2 = 10 + LOCAL:3
 				ENDIF
-				;도구名の表示
+				;도구명의 표시
 				IF GROUPMATCH(ITEM_LIST:(LOCAL:0):(LOCAL:1), 1, 11, 12, 13, 14) && ITEM:커스텀도구
 					CALL PRINT_RAINBOW(LOCALS:0, , , RAND:12)
 				ELSE
@@ -67,22 +67,22 @@ IF VARSIZE("ITEM_SIZE") - MATCH(ITEM_SIZE, 0)
 	NEXT
 ENDIF
 
-;素質の表示。上と大体同じ…だったのだけれどちょっと魔が差했다
+;소질의 표시. 위와 대개 같음… 이었던 것이지만 조금 마가 차이했다
 FOR LOCAL:0, 0, VARSIZE("TALENT_TBL")
 	SIF (TALENT:TARGET:(TALENT_TBL:(LOCAL:0)) ^^ CSVTALENT(NO:TARGET, TALENT_TBL:(LOCAL:0))) && TALENT_TYPE(TALENT_TBL:(LOCAL:0))
 		TALENT_LIST:TALENT_TYPE(TALENT_TBL:(LOCAL:0)):(TALENT_SIZE:TALENT_TYPE(TALENT_TBL:(LOCAL:0))++) = TALENT_TBL:(LOCAL:0)
 NEXT
 IF VARSIZE("TALENT_SIZE") - MATCH(TALENT_SIZE, 0)
-	LOCAL:4 = GETCOLOR()	;現在の表示色を保持
+	LOCAL:4 = GETCOLOR()	;현재의 표시색을 보유
 {
 ;OriginalString : ("-- □ 変動했다素質 □ (凡例：" + HTMLFONT("[<I> 취득素質 </I>] ", , 0x60FFFF) + 
-	CALL HTMLPRINTL("-- □ 변동했다소질 □ (범례：" + HTMLFONT("[<I> 취득소질 </I>] ", , 0x60FFFF) + 
-                    HTMLFONT("[<I> 消去素質 </I>]", , 0x606060) + @") %"-" * (LINE_WIDTH - 56)%")
+	CALL HTMLPRINTL("-- □ 변동했다소질 □ (범례:" + HTMLFONT("[<I> 취득소질 </I>] ", , 0x60FFFF) + 
+                    HTMLFONT("[<I> 소거 소질 </I>]", , 0x606060) + @") %"-" * (LINE_WIDTH - 56)%")
 }
-	IF FLAG:소질표시방법	;素質分類表示。ここでやる意味があるのかどうか…とりあえずユーザフレンドリ重点(謎)
+	IF FLAG:소질표시방법	;소질 분류표시. 여기서 하는 의미가 있는지 어떤지… 우선 유저 프렌들리 중점(수수께끼)
 		FOR LOCAL:0, 1, 8
 			IF TALENT_SIZE:(LOCAL:0)
-				PRINTFORM %TALENT_TYPENAME(LOCAL:0), 8, RIGHT%：
+				PRINTFORM %TALENT_TYPENAME(LOCAL:0), 8, RIGHT%:
 				LOCAL:2 = 10
 				FOR LOCAL:1, 0, TALENT_SIZE:(LOCAL:0)
 					LOCALS:0 = [%GET_TALENTNAME(TARGET, TALENT_LIST:(LOCAL:0):(LOCAL:1))%]%" "%
@@ -99,7 +99,7 @@ IF VARSIZE("TALENT_SIZE") - MATCH(TALENT_SIZE, 0)
 				PRINTL 
 			ENDIF
 		NEXT
-	ELSE					;素質번호順表示
+	ELSE					;소질번호 순서 표시
 		LOCAL:2 = 0
 		FOR LOCAL:0, 0, VARSIZE("TALENT_TBL")
 			IF (TALENT:TARGET:(TALENT_TBL:(LOCAL:0)) ^^ CSVTALENT(NO:TARGET, TALENT_TBL:(LOCAL:0))) && TALENT_TYPE(TALENT_TBL:(LOCAL:0))
@@ -120,14 +120,14 @@ IF VARSIZE("TALENT_SIZE") - MATCH(TALENT_SIZE, 0)
 ENDIF
 
 ;────────────────────────────────────
-;ボーナスメニューの表示
-;名前の余白分
+;보너스 메뉴의 표시
+;이름의 여백분
 LOCAL = MAX(8 - STRLENSU(CALLNAME:TARGET), 0)
 DRAWLINE
 
-;一日一回のみ表示
+;하루 1회만 표시
 IF DAYONCE != DAY
-	;이벤트구상：마력使用前
+	;이벤트구상:마력사용전
 	CALL KOJO_EVENT(110, 0)
 	CALL VOIDLINE_IF(RESULT)
 	DAYONCE = DAY
@@ -135,7 +135,7 @@ ENDIF
 
 PRINTFORML %CALLNAME:TARGET%(은)는, %CALLNAME:MASTER%(으)로부터 정제 한 마력을 사용해…
 PRINTL [ 0] 이제 되었다
-;召喚は주인님限定
+;소환은주인님한정
 SIF TALENT:주인님
 	PRINTFORML [ 1] 새로운 조교자를 소환한다　　　　　　　　　　　　 마력1000
 SELECTCASE ABL:기교
@@ -145,9 +145,9 @@ SELECTCASE ABL:기교
 		PRINTFORML [--] 조교 기교는 벌써 최고다
 	CASEELSE
 		PRINTFORML [ 2] 조교 기교를 높인다　　　　　　　　　　　　　　　 마력{RIZE_ABL_V(0), 4} 요LV{RIZE_ABL_V(1)}
-	;試験的に마력で買える기교上限をなくしてみる
-	;世の中마력だよ
-	;PRINTFORML [--] 죠교기교は実践で高めるしかないだろう
+	;시험적으로마력에서 살 수 있는기교상한을 없애 본다
+	;세상마력야
+	;PRINTFORML [--] 죠교기교는 실천으로 높일 수 밖에 없을 것이다
 ENDSELECT
 PRINTL [ 3] 지식을 습득한다
 PRINTL [ 4] 기능을 취득한다
@@ -155,7 +155,7 @@ IF FLAG:모드 != 1 || FLAG:디버그 || !(FLAG:AI자유도&1)
 	PRINTL [ 5] 외계의 성 도구를 연성 한다
 	PRINTL [ 6] 고문도구를 연성 한다
 ENDIF
-PRINTFORML \@ ITEM:9 ? [--] 도구는 이미 커스텀됬다 # [10] 도구를 커스터마이징한다　　　　　　　　　　　　 마력3000  要[%TALENTNAME:59%] \@
+PRINTFORML \@ ITEM:9 ? [--] 도구는 이미 커스텀됬다 # [10] 도구를 커스터마이징한다　　　　　　　　　　　　 마력 3000  요점[%TALENTNAME:59%] \@
 SIF !TALENT:남자
 	PRINTFORML [11] \@ TALENT:후타나리 ? 양성화 의식을 취소　 # 양성화 의식을 한다 \@　　　　　　　　　　　　　　 마력7000
 SIF !TALENT:남자
@@ -167,7 +167,7 @@ SIF TALENT:MASTER:남자 || TALENT:MASTER:후타나리
 DRAWLINE
 
 ;────────────────────────────────────
-;入力処理
+;입력 처리
 $INPUT_LOOP
 INPUT
 SELECTCASE RESULT
@@ -186,45 +186,45 @@ SELECTCASE RESULT
 		SIF RESULT
 			RETURN 0
 	CASE 2
-		;기교上昇に挑戦
+		;기교상승에 도전
 		CALL RIZE_ABL
 		LOCAL = RESULT:1
 		SELECTCASE RESULT
-			;成功時
+			;성공시
 			CASE 0
-				CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 죠교기교を<{ABL:기교+1}>に上げて하시겠습니까？",1,1,1)
+				CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 죠교기교를<{ABL:기교+1}>에 올려하시겠습니까?",1,1,1)
 				CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 				IF RESULT == 1
-					;마력を消費
+					;마력를 소비
 					CFLAG:마력 -= LOCAL
-					;기교を上昇
+					;기교를 상승
 					ABL:기교++
-					;이벤트구상：죠교기교アップ
+					;이벤트구상:죠교기교업
 					CALL KOJO_EVENT(110, 1)
 					CALL VOIDLINE_IF(RESULT)
-					;地の文表示
+					;지문 표시
 					PRINTFORMW %CALLNAME:TARGET%의 조교 기교는<{ABL:기교}>(이)가 되었습니다
 				ENDIF
-			;마력不발時
+			;마력불발시
 			CASE 1
-				REUSELASTLINE 마력이 부족한 것 같다…(마력{LOCAL}が필요)
+				REUSELASTLINE 마력이 부족한 것 같다…(마력{LOCAL}가필요)
 				GOTO INPUT_LOOP
-			;죠교레벨不발時
+			;죠교레벨불발시
 			CASE 2
-				REUSELASTLINE 기교を上げるには、もう少し경험を積む필요があるだろう…(죠교LV{RIZE_ABL_V(1)}が필요)
+				REUSELASTLINE 기교를 올리려면, 좀 더경험를 쌓는필요가 있을 것이다…(죠교LV{RIZE_ABL_V(1)}가필요)
 				GOTO INPUT_LOOP
-			;기교上限時
+			;기교상한시
 			CASE 3
-				REUSELASTLINE これ以上기교は上げられない
+				REUSELASTLINE 더 이상기교는 올려지지 않다
 				GOTO INPUT_LOOP
-			;その他の問題
+			;그 외의 문제
 			CASEELSE
 				$FAILED
 				CLEARLINE 1
 				GOTO INPUT_LOOP
 		ENDSELECT
 	CASE 3
-		;이벤트구상：지식を得る前
+		;이벤트구상:지식를 얻기 전
 		CALL KOJO_EVENT(110, 2)
 		PRINTFORML %CALLNAME%(은)는 마력을 사용해 새로운 지식을 얻기로 했다…
 		PRINTL [ 0] - 그만둔다
@@ -242,59 +242,59 @@ SELECTCASE RESULT
 				IF 0
 				ELSEIF RESULT == 1
 					LOCALS:0 = 배합지식
-					LOCALS:1 = 薬を正しく扱うには、もう少し경험を積む필요があるだろう…
+					LOCALS:1 = 약을 올바르게 취급하려면, 좀 더경험를 쌓는필요가 있을 것이다…
 					LOCAL = 3
 				ELSEIF RESULT == 2
 					LOCALS:0 = 매혹
-					LOCALS:1 = 매혹の能力を得るには、もう少し경험を積む필요があるだろう…
+					LOCALS:1 = 매혹의 능력을 얻으려면, 좀 더경험를 쌓는필요가 있을 것이다…
 					LOCAL = 4
 				ELSEIF RESULT == 3
 					LOCALS:0 = 금단의지식
-					LOCALS:1 = 금단의지식を紐解くには、もう少し경험を積む필요があるだろう…
+					LOCALS:1 = 금단의지식를 끈 풀려면, 좀 더경험를 쌓는필요가 있을 것이다…
 					LOCAL = 5
 				ELSEIF RESULT == 4
 					LOCALS:0 = 도구능숙
-					LOCALS:1 = 外界の性具を巧く使うには、まだ경험이 부족한 것 같다…
+					LOCALS:1 = 외계의 성구를 능숙하게 사용하려면, 아직경험이 부족한 것 같다…
 					LOCAL = 6
 				ELSEIF RESULT == 5
 					LOCALS:0 = 촬영기능
-					LOCALS:1 = カメラを巧く使うには、もう少し경험を積む필요があるだろう…
+					LOCALS:1 = 카메라를 능숙하게 사용하려면, 좀 더경험를 쌓는필요가 있을 것이다…
 					LOCAL = 37
 				ENDIF
 				IF TALENT:LOCALS
 					CLEARLINE 1
 					GOTO INPUT_LOOP_SKILL
 				ENDIF
-				;技能취득に挑戦
+				;기능취득에 도전
 				CALL GAIN_TALENT(LOCALS)
 				LOCAL:1 = RESULT:1
 				SELECTCASE RESULT
-					;成功時
+					;성공시
 					CASE 0
-						CALL PRINT_DIALOG(@"%CALLNAME:TARGET%が素質[%LOCALS%]を취득します。하시겠습니까？",1,1,1)
+						CALL PRINT_DIALOG(@"%CALLNAME:TARGET%가 소질[%LOCALS%]를취득 합니다. 하시겠습니까?",1,1,1)
 						CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 						IF RESULT == 1
-							;마력を消費
+							;마력를 소비
 							CFLAG:마력 -= LOCAL:1
-							;技能を취득
+							;기능을취득
 							TALENT:LOCALS ^= 1
-							;이벤트구상：지식취득
+							;이벤트구상:지식취득
 							CALL KOJO_EVENT(110, LOCAL)
 							CALL VOIDLINE_IF(RESULT)
-							;地の文表示
+							;지문 표시
 							PRINTFORMW %CALLNAME%(은)는 [%LOCALS%](을)를 취득했습니다
 						ENDIF
-					;마력不발時
+					;마력불발시
 					CASE 1
 						CLEARLINE 1
-						REUSELASTLINE 마력이 부족한 것 같다…(마력{LOCAL:1}が필요)
+						REUSELASTLINE 마력이 부족한 것 같다…(마력{LOCAL:1}가필요)
 						GOTO INPUT_LOOP_SKILL
-					;죠교레벨不발時
+					;죠교레벨불발시
 					CASE 2
 						CLEARLINE 1
-						REUSELASTLINE %LOCALS:1%(죠교LV{GAIN_TALENT_V(LOCALS, 1)}が필요)
+						REUSELASTLINE %LOCALS:1%(죠교LV{GAIN_TALENT_V(LOCALS, 1)}가필요)
 						GOTO INPUT_LOOP_SKILL
-					;その他の問題
+					;그 외의 문제
 					CASEELSE
 						CLEARLINE 1
 						GOTO INPUT_LOOP_SKILL
@@ -304,7 +304,7 @@ SELECTCASE RESULT
 				GOTO INPUT_LOOP_SKILL
 		ENDSELECT
 	CASE 4
-		;이벤트구상：技術を得る前
+		;이벤트구상:기술을 얻기 전
 		CALL KOJO_EVENT(110, 7)
 		PRINTFORML %CALLNAME%(은)는 마력을 사용해 새로운 기술을 얻기로 했다…
 		PRINTL [ 0] - 그만둔다
@@ -324,83 +324,83 @@ SELECTCASE RESULT
 				IF 0
 				ELSEIF RESULT == 1
 					LOCALS:0 = 혀기술
-					LOCALS:1 = 人外の혀기술に至るには、まだ경험이 부족한 것 같다…
+					LOCALS:1 = 인간세상 밖의혀기술에 이르려면, 아직경험이 부족한 것 같다…
 					LOCAL = 8
 				ELSEIF RESULT == 2
 					LOCALS:0 = 손가락기술
-					LOCALS:1 = 指先を繊細に使うには、まだ경험이 부족한 것 같다…
+					LOCALS:1 = 손가락끝을 섬세하게 사용하려면, 아직경험이 부족한 것 같다…
 					LOCAL = 9
 				ELSEIF RESULT == 3
 					LOCALS:0 = 허리기술
-					LOCALS:1 = 허리기술を極めるには、まだ경험이 부족한 것 같다…
+					LOCALS:1 = 허리기술를 다하려면, 아직경험이 부족한 것 같다…
 					LOCAL = 39
 				ELSEIF RESULT == 4
 					LOCALS:0 = 긴박능숙
-					LOCALS:1 = 구속術の極意に至るには、まだ경험이 부족한 것 같다…
+					LOCALS:1 = 구속 방법의 비법에 이르려면, 아직경험이 부족한 것 같다…
 					LOCAL = 10
 				ELSEIF RESULT == 5
 					LOCALS:0 = 새드
 					IF TALENT:새드
-						LOCALS:1 = 가학趣味をやめるにしても、まだ少々遊び발りない…
+						LOCALS:1 = 가학취미를 그만두는 것으로 해도, 아직 조금 놀이발리나 있고…
 					ELSE
-						LOCALS:1 = サディストとなるには、もっと虐げる悦びを知る필요があるだろう…
+						LOCALS:1 = 새디스트가 되려면, 좀 더 학대하는 기쁨을 아는필요가 있을 것이다…
 					ENDIF
 					LOCAL = 11
 				ELSEIF RESULT == 6
 					LOCALS:0 = 착의플레이선호
 					IF TALENT:착의플레이선호
-						LOCALS:1 = 着衣플레이をやめるにも、少し物발りない気がする…
+						LOCALS:1 = 착의플레이를 그만두기에도, 조금 물건발리나 있고 생각이 든다…
 					ELSE
-						LOCALS:1 = 着衣플레이に走る前に、통상の行為をもっと重ねたほうが良いだろう…
+						LOCALS:1 = 착의플레이에 달리기 전에, 통상의 행위를 좀 더 거듭하는 편이 좋을 것이다…
 					ENDIF
 					LOCAL = 38
 				ELSEIF RESULT == 7
 					LOCALS:0 = 더러움무시
-					LOCALS:1 = 汚れを無視できるようになるには、もっと行為に慣れなくてはいけないだろう…
+					LOCALS:1 = 더러움을 무시할 수 있게 되려면, 좀 더 행위에 익숙하지 않으면 안 될 것이다…
 					LOCAL = 12
 				ENDIF
 				IF TALENT:LOCALS && LOCALS != "새드" && LOCALS != "착의플레이선호"
 					CLEARLINE 1
 					GOTO INPUT_LOOP_SKILL2
 				ENDIF
-				;技能취득に挑戦
+				;기능취득에 도전
 				CALL GAIN_TALENT(LOCALS)
 				LOCAL:1 = RESULT:1
 				SELECTCASE RESULT
-					;成功時
+					;성공시
 					CASE 0
 						IF TALENT:LOCALS
-							CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 素質[%LOCALS%]を消去します。하시겠습니까？",1,1,1)
+							CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 소질[%LOCALS%]를 소거합니다. 하시겠습니까?",1,1,1)
 						ELSE
-							CALL PRINT_DIALOG(@"%CALLNAME:TARGET%が素質[%LOCALS%]を취득します。하시겠습니까？",1,1,1)
+							CALL PRINT_DIALOG(@"%CALLNAME:TARGET%가 소질[%LOCALS%]를취득 합니다. 하시겠습니까?",1,1,1)
 						ENDIF
 						CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 						IF RESULT == 1
-							;마력を消費
+							;마력를 소비
 							CFLAG:마력 -= LOCAL:1
-							;技能を취득
+							;기능을취득
 							TALENT:LOCALS ^= 1
-							;이벤트구상：技能취득
+							;이벤트구상:기능취득
 							CALL KOJO_EVENT(110, LOCAL)
 							CALL VOIDLINE_IF(RESULT)
-							;地の文表示
+							;지문 표시
 							IF !TALENT:LOCALS
 								PRINTFORMW %CALLNAME%(은)는 [%LOCALS%](은)는 아니게 되었습니다
 							ELSE
 								PRINTFORMW %CALLNAME%(은)는 [%LOCALS%](을)를 취득했습니다
 							ENDIF
 						ENDIF
-					;마력不발時
+					;마력불발시
 					CASE 1
 						CLEARLINE 1
-						REUSELASTLINE 마력이 부족한 것 같다…(마력{LOCAL:1}が필요)
+						REUSELASTLINE 마력이 부족한 것 같다…(마력{LOCAL:1}가필요)
 						GOTO INPUT_LOOP_SKILL2
-					;죠교레벨不발時
+					;죠교레벨불발시
 					CASE 2
 						CLEARLINE 1
-						REUSELASTLINE %LOCALS:1%(죠교LV{GAIN_TALENT_V(LOCALS, 1)}が필요)
+						REUSELASTLINE %LOCALS:1%(죠교LV{GAIN_TALENT_V(LOCALS, 1)}가필요)
 						GOTO INPUT_LOOP_SKILL2
-					;その他の問題
+					;그 외의 문제
 					CASEELSE
 						CLEARLINE 1
 						GOTO INPUT_LOOP_SKILL2
@@ -410,7 +410,7 @@ SELECTCASE RESULT
 				GOTO INPUT_LOOP_SKILL2
 		ENDSELECT
 	CASE 5
-		;이벤트구상：アイテム錬成前
+		;이벤트구상: 아이템 연성전
 		CALL KOJO_EVENT(110, 13)
 		PRINTFORML %CALLNAME%(은)는 마력을 사용해 외계의 성 도구를 만들기로 했다…
 		PRINTL [ 0] - 그만둔다
@@ -576,7 +576,7 @@ SELECTCASE RESULT
 				GOTO INPUT_LOOP_ITEM1
 		ENDSELECT
 	CASE 6
-		;이벤트구상：責め具錬成前
+		;이벤트구상:고문도구 연성전
 		CALL KOJO_EVENT(110, 22)
 		PRINTFORML %CALLNAME%(은)는 마력을 사용해 고문도구를 만들기로 했다…
 		PRINTL [ 0] - 그만둔다
@@ -767,10 +767,10 @@ SELECTCASE RESULT
 			GOTO FAILED_BY_MP
 		ELSEIF !TALENT:도구능숙
 			CLEARLINE 1
-			REUSELASTLINE 外界の性具をカスタマイズできるだけの지식をまだ持っていない…
+			REUSELASTLINE 외계의 성구를 커스터마이즈 가능한 한의지식를 아직 가지고 있지 않다…
 			GOTO INPUT_LOOP
 		ENDIF
-		CALL PRINT_DIALOG(@"성도구의 성능을 향상시킵니다。하시겠습니까？",1,1,1)
+		CALL PRINT_DIALOG(@"성도구의 성능을 향상시킵니다. 하시겠습니까?",1,1,1)
 		CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 		IF RESULT == 1
 			CFLAG:마력 -= 2000
@@ -785,18 +785,18 @@ SELECTCASE RESULT
 		SIF CFLAG:마력 < 7000
 			GOTO FAILED_BY_MP
 		IF TALENT:후타나리
-			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 [후타나리]を消去します。하시겠습니까？",1,1,1)
+			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 [후타나리]를 소거합니다. 하시겠습니까?",1,1,1)
 		ELSE
-			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%(을)를 [후타나리]로 합니다。하시겠습니까？",1,1,1)
+			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%를 [후타나리]로 합니다. 하시겠습니까?",1,1,1)
 		ENDIF
 		CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 		IF RESULT == 1
 			CFLAG:마력 -= 7000
 			TALENT:후타나리 = !TALENT:후타나리
-			;동정かどうか
+			;동정인가 어떤가
 			TALENT:동정 = !CFLAG:동정상실된 && TALENT:후타나리
-			;사정ゲージの初期化
-			;初期化関数を統一@これみ
+			;사정게이지의 초기화
+			;초기화 함수를 통일@이것 보고
 			CALL BASE_SETUP_PENIS(TARGET)
 			CALL KOJO_EVENT(110, 33)
 			CALL VOIDLINE_IF(RESULT)
@@ -808,9 +808,9 @@ SELECTCASE RESULT
 		SIF CFLAG:마력 < 5000
 			GOTO FAILED_BY_MP
 		IF TALENT:빈유
-			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 가슴を人並みのサイズにします。하시겠습니까？",1,1,1)
+			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 가슴를 남들 수준의 사이즈로 합니다. 하시겠습니까?",1,1,1)
 		ELSE
-			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%(을)를 [거유]로 합니다。하시겠습니까？",1,1,1)
+			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%를 [거유]로 합니다. 하시겠습니까?",1,1,1)
 		ENDIF
 		CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 		IF RESULT == 1
@@ -819,7 +819,7 @@ SELECTCASE RESULT
 			TALENT:빈유 = 0
 			CALL KOJO_EVENT(110, 34)
 			CALL VOIDLINE_IF(RESULT)
-			PRINTFORMW %CALLNAME:TARGET%(은)는 \@ TALENT:거유 ? 거유 # 普通のおっぱい \@(이)가 되었습니다
+			PRINTFORMW %CALLNAME:TARGET%(은)는 \@ TALENT:거유 ? 거유 # 보통 젖가슴 \@(이)가 되었습니다
 		ENDIF
 	CASE 13
 		SIF TALENT:남자 || TALENT:빈유
@@ -827,9 +827,9 @@ SELECTCASE RESULT
 		SIF CFLAG:마력 < 1000
 			GOTO FAILED_BY_MP
 		IF TALENT:거유
-			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 가슴を人並みのサイズにします。하시겠습니까？",1,1,1)
+			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%의 가슴를 남들 수준의 사이즈로 합니다. 하시겠습니까?",1,1,1)
 		ELSE
-			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%(을)를 [빈유]로 합니다。하시겠습니까？",1,1,1)
+			CALL PRINT_DIALOG(@"%CALLNAME:TARGET%를 [빈유]로 합니다. 하시겠습니까?",1,1,1)
 		ENDIF
 		CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 		IF RESULT == 1
@@ -838,14 +838,14 @@ SELECTCASE RESULT
 			TALENT:거유 = 0
 			CALL KOJO_EVENT(110, 35)
 			CALL VOIDLINE_IF(RESULT)
-			PRINTFORMW %CALLNAME:TARGET%(은)는 \@ TALENT:빈유 ? 빈유 # 普通のおっぱい \@(이)가 되었습니다
+			PRINTFORMW %CALLNAME:TARGET%(은)는 \@ TALENT:빈유 ? 빈유 # 보통 젖가슴 \@(이)가 되었습니다
 		ENDIF
 	CASE 16
 		SIF MAXBASE:MASTER:사정 < 2500 + CFLAG:MASTER:정력한계 * 500
 			GOTO FAILED
 		SIF CFLAG:마력 < (MAXBASE:MASTER:사정 - 2500 - CFLAG:MASTER:정력한계 * 500) / 500 * 1000 + 1000
 			GOTO FAILED_BY_MP
-		CALL PRINT_DIALOG(@"%CALLNAME:MASTER%의 정력한계가 상승합니다。하시겠습니까？",1,1,0)
+		CALL PRINT_DIALOG(@"%CALLNAME:MASTER%의 정력한계가 상승합니다. 하시겠습니까?",1,1,0)
 		CALL PRINT_DIALOG(@"※정력이 상승 가능한 최대치가 증가합니다。",0,1,0)
 		CALL PRINT_DIALOG(@"  정력수치 자체는 향후 조교로 단련해야 합니다。",0,1,1)
 		CALL PRINT_CHOICE(,"예",1,"아니오",2,)
@@ -863,78 +863,78 @@ RESTART
 
 
 ;────────────────────────────────────
-;すでに취득했다ボーナスを新しい죠교자に適用
+;벌써취득했다보너스를 새로운죠교자에 적용
 ;────────────────────────────────────
 @BONUS_APPLY
 
 ;────────────────────────────────────
-;기교上昇処理
-;返り値 = 0:成功 1:마력不발 2:죠교레벨不발 3:기교上限
+;기교상승 처리
+;돌아가 값 = 0:성공 1:마력불발 2:죠교레벨불발 3:기교상한
 ;────────────────────────────────────
 @RIZE_ABL
 
-;마력消費量을반환
+;마력소비량을반환
 RESULT:1 = RIZE_ABL_V(0)
-;기교上限を判定
+;기교상한을 판정
 SIF ABL:기교 >= 99
 	RETURN 3
-;마력不발を判定
+;마력불발를 판정
 SIF CFLAG:마력 < RIZE_ABL_V(0)
 	RETURN 1
-;죠교레벨を判定
+;죠교레벨를 판정
 SIF CFLAG:죠교레벨 < RIZE_ABL_V(1)
 	RETURN 2
 RETURN 0
 
 ;-------------------------------------
-;기교上昇所要마력・죠교레벨
-;どちらの条件も満た했다場合のみ기교上昇が可能
+;기교상승 소요마력·죠교레벨
+;어느 쪽의 조건도 만했다경우만기교상승이 가능
 ;ARG = 0:마력 1:죠교레벨
 ;-------------------------------------
 @RIZE_ABL_V(ARG)
 #FUNCTION
 IF ARG == 0
-	;所要마력
-	;0→1:100 1→2:300 2→3:1000 3→4:3000 4→5:10000 ……
+	;소요마력
+	;0→1:100 1→2:300 2→3:1000 3→4:3000 4→5:10000……
 	LOCAL = POWER(10, 2 + ABL:기교 / 2)
 	SIF ABL:기교 % 2
 		LOCAL *= 3
 	RETURNF LOCAL
 ELSE
-	;所要レベル
-	;0→1:0 1→2:1 2→3:4 3→4:9 4→5:16 ……
+	;소요 레벨
+	;0→1:0 1→2:1 2→3:4 3→4:9 4→5:16……
 	RETURNF ABL:기교 * ABL:기교
 ENDIF
 
 ;────────────────────────────────────
-;技能취득・放棄処理
-;返り値 = 0:成功 1:마력不발 2:죠교레벨不발
+;기능취득·방폐 처리
+;돌아가 값 = 0:성공 1:마력불발 2:죠교레벨불발
 ;────────────────────────────────────
 @GAIN_TALENT(ARGS)
 
-;마력消費量을반환
+;마력소비량을반환
 RESULT:1 = GAIN_TALENT_V(ARGS, 0)
-;마력不발を判定
+;마력불발를 판정
 SIF CFLAG:마력 < GAIN_TALENT_V(ARGS, 0)
 	RETURN 1
-;죠교레벨を判定
+;죠교레벨를 판정
 SIF CFLAG:죠교레벨 < GAIN_TALENT_V(ARGS, 1)
 	RETURN 2
 RETURN 0
 
 ;-------------------------------------
-;技能취득・放棄 所要마력・죠교레벨
-;どちらの条件も満た했다場合のみ技能취득・放棄が可能
+;기능취득·방폐 소요마력·죠교레벨
+;어느 쪽의 조건도 만했다경우만 기능취득·방폐가 가능
 ;ARG = 0:마력 1:죠교레벨
 ;-------------------------------------
 @GAIN_TALENT_V(ARGS, ARG)
 #FUNCTION
 
-;디버그用
-;마력消費免除
+;디버그용
+;마력소비 면제
 ;SIF ARG == 0
 ;	RETURNF 0
-;죠교레벨無視
+;죠교레벨무시
 ;SIF ARG != 0
 ;	RETURNF 0
 

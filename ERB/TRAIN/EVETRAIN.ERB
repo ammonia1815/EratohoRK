@@ -1,19 +1,19 @@
 ﻿;────────────────────────────────────
-;죠교開始の処理
+;죠교개시의 처리
 ;────────────────────────────────────
 @EVENTTRAIN
 #DIM LCOUNT
-#DIM 可能만족보数
+#DIM 가능만족보수
 
-;(죠교자別)죠교횟수加算
+;(죠교자별)죠교횟수가산
 CFLAG:죠교횟수++
 
-;죠교開始直前に마력消費処理をはさむ(샌드박스のみ、指定時)
+;죠교개시 직전에마력소비 처리를 끼운다(샌드박스만, 지정시)
 SIF FLAG:모드 == 1 && FLAG:AI자유도
 	CALL MANAGE_MP
 
 FLAG:조교중 = 1
-;의상をInitialize
+;의상를 Initialize
 TEQUIP:MASTER:악세서리 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:악세서리 # 0
 TEQUIP:MASTER:신발안       = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:신발안 # 0
 TEQUIP:MASTER:하반신속옷 = CFLAG:MASTER:의상 < 2 ? EQUIP:MASTER:하반신속옷 # 0
@@ -34,14 +34,14 @@ TEQUIP:상반신겉옷 = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:상반신겉옷 
 TEQUIP:전신겉옷   = CFLAG:TARGET:의상 < 1 ? EQUIP:TARGET:전신겉옷 # 0
 TEQUIP:코스프레   = CFLAG:TARGET:의상 == 3 ? EQUIP:TARGET:코스프레 # 0
 
-;-1に初期化するTFLAGをリセット
+;-1에 초기화하는 TFLAG를 리셋트
 TFLAG:전ACT = -1
 TFLAG:전REACT분류 = -1
 TFLAG:ACT분류예약 = -1
 CVARSET TCVAR, GETNUM(TCVAR, "행동예약"), -1
 TCVAR:금일만족보너스 = -1
 
-;조교중に用いるCFLAGをリセット
+;조교중에 이용하는 CFLAG를 리셋트
 FOR LOCAL, 30, 34
 	CVARSET CFLAG, LOCAL, 50
 NEXT
@@ -49,14 +49,14 @@ FOR LOCAL, 250, 260
 	CVARSET CFLAG, LOCAL
 NEXT
 TFLAG:가능한COM수 = 0
-;절정関連のリセット
+;절정관련의 리셋트
 FOR LCOUNT, 0, CHARANUM
 	VARSET EX:LCOUNT:0
 	VARSET NOWEX:LCOUNT:0
 	VARSET TCVAR:LCOUNT:0, 0, 70, 100
 NEXT
 
-;자세関連
+;자세관련
 CVARSET TCVAR, GETNUM(TCVAR,           "자세")
 CVARSET TCVAR, GETNUM(TCVAR,     "전회의자세")
 CVARSET TCVAR, GETNUM(TCVAR,       "위치전후")
@@ -64,45 +64,45 @@ CVARSET TCVAR, GETNUM(TCVAR, "전회의위치전후")
 CVARSET TCVAR, GETNUM(TCVAR,       "위치상하")
 CVARSET TCVAR, GETNUM(TCVAR, "전회의위치상하")
 
-;現在の아라이멘도=平時아라이멘도
+;현재의아라이멘도=평시아라이멘도
 CFLAG:평상시 = LIMIT(CFLAG:평상시, -999, 999)
 CFLAG:아라이멘도 = CFLAG:평상시 / 10
-;노예목걸이装備中
+;노예목걸이장비중
 SIF TEQUIP:MASTER:노예목걸이 == 1
 	CFLAG:아라이멘도 = -99
 
-;開始時の죠교자の사정ゲージが0になっていたので、ここで修正
+;개시시의죠교자의사정게이지가 0이 되어 있었으므로, 여기서 수정
 BASE:사정 = MAXBASE:사정
-;소변ゲージの設定
+;소변게이지의 설정
 BASE:MASTER:소변 = 0
 MAXBASE:MASTER:소변 = 10000 - TALENT:MASTER:조루 * 5000 + TALENT:MASTER:싫증 * 5000
-;まだ解消してない피폐を죠교フェースに反応
+;아직 해소하고 있지 않는피폐를죠교페이스에 반응
 TFLAG:조교자소모도 = CFLAG:소모
 TFLAG:소모도 = CFLAG:MASTER:소모
 
 TCVAR:MASTER:발기도 = 1000 * (BASE:MASTER:사정 + 5000) * (MAXBASE:MASTER:이성 - BASE:MASTER:이성) / ((MAXBASE:MASTER:사정 + 5000) * MAXBASE:MASTER:이성)
 
-;長期보정値用初期化処理
+;장기보정치용 초기화 처리
 CALL ACT_M_RESEARCH_L(0)
 
-CALLF _UNEXTRACTION(MASTER, 1, 0)	;안빼고상태遅延判定플래그初期化@revkoishi(14/07/15)
+CALLF _UNEXTRACTION(MASTER, 1, 0)	;안빼고상태지연 판정플래그초기화@revkoishi(14/07/15)
 
 ;────────────────────────────────────
-;今回の방침
+;이번방침
 ;────────────────────────────────────
-;선택可能な대만족보너스がいくつあるか
-可能만족보数 = 0
+;선택 가능한대만족보너스가 몇개 있을까
+가능만족보수 = 0
 FOR LCOUNT, 0, 12
 	SIF SATISBONUS_ABLE(LCOUNT)
-		可能만족보数++
+		가능만족보수++
 NEXT
 
 
-;ご褒美があったときは방침変更を飛ばすように
-IF (!CFLAG:만족보 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5 && CFLAG:죠교레벨 > 4) || !可能만족보数
-	;お尻をいじめてみようかな処理？
-	;なんだこれ意味わからん…Ａ감각上がるほど出にくくなるの？
-	;暫定残し
+;포상이 있었을 때는방침변경을 날리도록(듯이)
+IF (!CFLAG:만족보 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5 && CFLAG:죠교레벨 > 4) || !가능만족보수
+	;엉덩이를 괴롭혀 볼까처리?
+	;야 이것 의미 모르는…Ａ감각 오를수록 나오기 어려워지는 거야?
+	;잠정 잔재
 	SELECTCASE ABL:MASTER:Ａ감각
 		CASE 0
 			TFLAG:금일의방침 = !RAND:3
@@ -115,7 +115,7 @@ IF (!CFLAG:만족보 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5 && CFLAG:�
 		CASE 4
 			TFLAG:금일의방침 = !RAND:12
 	ENDSELECT
-	;確率でいつもどおりでない방침をとるように
+	;확률로 언제나 대로가 아닌방침를 취하도록(듯이)
 	IF !RAND:5
 		LOCAL = RAND:4
 		IF BASE:MASTER:체력 < 2 * MAXBASE:MASTER:체력 / 3 && LOCAL == 0
@@ -124,16 +124,16 @@ IF (!CFLAG:만족보 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5 && CFLAG:�
 			TFLAG:금일의방침 = 3
 		ELSEIF ITEM:개목걸이  && LOCAL == 2
 			TFLAG:금일의방침 = 6
-		;ELSEIF GETBIT(FLAG:60,0)  && LOCAL == 3
+		;ELSEIF GETBIT(FLAG:60, 0)  && LOCAL == 3
 		;	TFLAG:금일의방침 = 9
-		;징계・は반발依存に했다いが仕様がさだまっていないので後回し
+		;징계·은반발의존에했다겉껍데기 사양이 정해지지 않기 때문에 뒷전
 		;ELSEIF RAND:((2 + MARK:반항각인) * (TALENT:새드 + 1)) > RAND:30
 		;	TFLAG:금일의방침 = 2
 		ENDIF
 	ENDIF
 ENDIF
 
-;죠교開始구상
+;죠교개시구상
 DRAWLINE
 RESULT = 0
 IF CFLAG:소모 > 5
@@ -145,12 +145,12 @@ ELSE
 ENDIF
 
 LOCAL = 0
-IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일의방침 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5
+IF 가능만족보수 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일의방침 && CFLAG:소모 <= 5 && CFLAG:MASTER:소모 <= 5
 	SKIPDISP 0
 	PRINTL
 	CALL PRINT_RAINBOW2W(@"★★%CALLNAME:TARGET%님 대만족 보너스★★", 30)
 	PRINTL
-	;오토모드の際の処理
+	;오토모드때의 처리
 	IF FLAG:오토모드 > 0
 		LOCAL = FLAG:우선대만족보너스 % 100
 		SIF LOCAL == 12
@@ -159,17 +159,17 @@ IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일
 			LOCAL = FLAG:우선대만족보너스 / 100
 		SIF !LOCAL:2 && LOCAL == 7
 			LOCAL = FLAG:우선대만족보너스 / 100
-		;選んだものが実行できない場合
+		;선택한 것을 실행 할 수 없는 경우
 		IF !SATISBONUS_ABLE(LOCAL)
 			FOR LCOUNT, 0, 20
 				SIF SATISBONUS_ABLE(LCOUNT)
 					LOCAL = LCOUNT
 			NEXT
 		ENDIF
-		PRINTFORMW %AUTO_SPLIT("언제나처럼/항문을괴롭혀/징계해/격렬하게/응석부리게/망가질때까지/밖에서해/임신해/쉬게/抱かれたい/봉사하게/かわいがって/ランダム", "/", LOCAL)%(을)를 선택했습니다
+		PRINTFORMW %AUTO_SPLIT("언제나처럼/항문을괴롭혀/징계해/격렬하게/응석부리게/망가질때까지/밖에서해/임신해/쉬게/안기고 싶은/봉사하게/귀여워해/랜덤", "/", LOCAL)%(을)를 선택했습니다
 		RESULT = LOCAL
 		LOCAL = 0
-	;통상の処理
+	;통상의 처리
 	;OriginalString : (@"%HTMLBUTTON("[ 0] - 언제나처럼", "0", "통상")%")
 	;OriginalString : (@"%HTMLBUTTON("[ 1] - 항문을 괴롭혀", "1", @"\@ 
 	ELSE
@@ -186,7 +186,7 @@ IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일
 			}
 		;OriginalString : (@"%HTMLBUTTON("[ 2] - 징계해", "2", "징계・플래그が立つ")%")
 		SIF SATISBONUS_ABLE(2)
-			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 2] - 징계해", "2", "징계・플래그를 킨다")%")
+			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 2] - 징계해", "2", "징계·플래그를 킨다")%")
 		;OriginalString : (@"%HTMLBUTTON("[ 3] - 격렬하게", "3", "도구+ 봉사+ 가학++")%")
 		SIF SATISBONUS_ABLE(3)
 			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 3] - 격렬하게", "3", "도구+ 봉사+ 가학++")%")
@@ -208,18 +208,18 @@ IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일
 		;OriginalString : (@"%HTMLBUTTON(@"[ 9] - %CALLNAME%님에게 안기게", "9", "성교++")%")
 		;OriginalString : (@"%HTMLBUTTON(@"[10] - %CALLNAME%님을 봉사하게", "10", "봉사++")%")
 		;OriginalString : (@"%HTMLBUTTON(@"[11] - 귀여워해", "11", @"회화+ 애무++\@ 
-		;호의+호감도10000以上、죠교자が임신できる
+		;호의+호감도 10000 이상, 죠교자가임신 할 수 있다
 		SIF SATISBONUS_ABLE(7)
 			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 7] - %CALLNAME%님을 임신시키게", "7", "성봉++")%")
 		SIF SATISBONUS_ABLE(8)
 			CALL HTMLPRINTL(@"%HTMLBUTTON("[ 8] - 쉬게", "8", "휴식하고 죠교를 건너뛴다")%")
-		;호의+호감도10000以上
+		;호의+호감도 10000 이상
 		SIF SATISBONUS_ABLE(9)
 			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[ 9] - %CALLNAME%님에게 안기게", "9", "성교++")%")
-		;반항각인なしかつM호의1000以上
+		;반항각인없음 또한 M호의 1000 이상
 		SIF SATISBONUS_ABLE(10)
 			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[10] - %CALLNAME%님을 봉사하게", "10", "봉사++")%")
-		;호의2000, M호의1000が필요
+		;호의 2000, M호의 1000가필요
 		SIF SATISBONUS_ABLE(11)
 			{
 			CALL HTMLPRINTL(@"%HTMLBUTTON(@"[11] - 귀여워해", "11", @"회화+ 애무++\@ 
@@ -239,9 +239,9 @@ IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일
 		CASE 0
 		;항문
 		CASE 1
-		;징계・
+		;징계·
 		CASE 2
-			TFLAG:징계・플래그 = 1
+			TFLAG:징계·플래그 = 1
 		;하드
 		CASE 3
 		;노닥노닥
@@ -255,16 +255,16 @@ IF 可能만족보数 && CFLAG:만족보 && CFLAG:호의 > 1000 && !TFLAG:금일
 		CASE 7
 		;휴식
 		CASE 8
-		;抱いて
+		;안아
 		CASE 9
-		;ご봉사
+		;봉사
 		CASE 10
 		;귀여워해
 		CASE 11
 	ENDSELECT
 	TFLAG:금일의방침 = RESULT
 	TCVAR:금일만족보너스 = RESULT
-	;ここでリセットされると금일의방침箇所での参照に使えないのでコメントアウト
+	;여기서 리셋트 되면금일의방침개소에서의 참조에 사용할 수 없기 때문에 comment out
 	;CFLAG:만족보 = 0
 	PRINTL
 	CALL KOJO_EVENT(16, 1)
@@ -282,7 +282,7 @@ IF !LOCAL && TFLAG:금일의방침
 	CALL VOIDLINE_IF(RESULT)
 ENDIF
 
-;방침決定後の地の文
+;방침결정 후의 지문
 SELECTCASE POLICY("금일")
 	CASE "통상"
 	CASE "항문"
@@ -290,7 +290,7 @@ SELECTCASE POLICY("금일")
 		PRINTFORMW %CALLNAME:TARGET%은(는) 이번엔 %CALLNAME:MASTER%의 \@ CFLAG:만족보 
 		? 요청을 듣고、 # \@항문을 개발하기로 했다…
 		}
-	CASE "징계・"
+	CASE "징계·"
 		{
 		PRINTFORMW %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%의 \@ CFLAG:만족보 
 		? 요청을 듣고、 # \@징계하기로 했다…
@@ -302,42 +302,42 @@ SELECTCASE POLICY("금일")
 		}
 	CASE "노닥노닥"
 		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 손짓 해, 상냥하게 껴안았다… 
-	CASE "이상"     ;嗜虐と정욕と言っても要するに이상系というだけなんで微妙な気はする
+	CASE "이상"     ;기학과정욕라고 말해도 요컨데이상계라고 하는 것만으로 미묘한 생각은 든다
 		PRINTFORMW %CALLNAME:TARGET%(은)는 기학과 정욕에 미친 눈으로 %CALLNAME:MASTER%(을)를 응시해 왔다…
 	CASE "야외"
 		PRINTFORMW %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 목걸이를 붙이게 하면, 외출의 준비를 시작했다…
-	;以下、ご褒美でしか出ない
+	;이하, 포상으로 밖에 나오지 않는다
 	CASE "애만들기"
 		PRINTFORMW %CALLNAME:TARGET%(은)는 아이를 임신하는걸 기대하며 %CALLNAME:MASTER%에 바짝 다가오고는 왔다…
 	CASE "휴식"
-		;휴식。INFO.ERBに処理を移動
-	CASE "抱いて"
+		;휴식. INFO.ERB에 처리를 이동
+	CASE "안아"
 		{
 		PRINTFORMW %CALLNAME:TARGET%(은)는 지금부터 안기는 것에의 기대에 뜨겁게 달아오른 %CALLNAME:MASTER%(을)를 \@ 
 		!TALENT:새드 ? 부드럽게 # \@ 안아왔다…
 		}
-	CASE "ご봉사"
+	CASE "봉사"
 		PRINTFORMW %CALLNAME:TARGET%(은)는 기특한 제의에 만족한 미소를 띄우면서, %CALLNAME:MASTER%(을)를 부르며 그 머리를 상냥하게 어루만졌다…
 	CASE "귀여워해"
 		PRINTFORMW %CALLNAME:TARGET%(은)는 미소지으면서 %CALLNAME:MASTER%에 가까워져, 살그머니 입맞춤했다…
 ENDSELECT
 
-;금일의방침地の文を抜けてからリセット
+;금일의방침지문을 빠지고 나서 리셋트
 CFLAG:만족보 = 0
 
 IF FLAG:오토모드 > 0 && FLAG:오토모드표시설정 == 1
 	CALL SHOW_AUTOMODE_UPCHECK, 1
 	SKIPDISP 0
 	DRAWLINE
-	PRINTFORML {FLAG:연수+1}년{FLAG:일수+1}일째(%GET_TIME()%) %GET_SEASON()% %GET_DAY()%의 행 　남편님：%CALLNAME:1%
+	PRINTFORML {FLAG:연수+1}년{FLAG:일수+1}일째(%GET_TIME()%) %GET_SEASON()% %GET_DAY()%의 행   남편님:%CALLNAME:1%
 	DRAWLINE
 	SKIPDISP 1
 ENDIF
 
-;대만족보너스の可否
+;대만족보너스의 가부
 @SATISBONUS_ABLE(ARG)
 #FUNCTION
-;대만족보너스自体が봉인されていれば0을반환
+;대만족보너스자체가봉인 되고 있으면 0을반환
 SIF CFLAG:대만족보너스봉인
 	RETURNF 0
 SELECTCASE ARG
@@ -371,28 +371,28 @@ SELECTCASE ARG
 	CASE 10
 		SIF !(!MARK:반항각인 && CFLAG:M호의 >= 1000)
 			RETURNF 0
-	;かわいがって
+	;귀여워해
 	CASE 11
 		SIF !(CFLAG:호의 >= 2000 && CFLAG:M호의 >= 1000)
 			RETURNF 0
 	[SKIPSTART]
-	実装する場合はペニバンと排他にすべきか？
-	というか今更別枠でやる意味は薄い。やるなら방침[9]と統合して内部で分ける方がいいかな
-	;孕ませて
+	실장하는 경우는 페니반과 배타에 해야 하는가?
+	그렇다고 할까 이제 와서 별도 기준으로 하는 의미는 적다. 한다면방침[9]으로 통합해 내부에서 나누는 편이 좋을까
+	;임신하게 해
 	CASE 12
-		SIF !(CFLAG:M호의 + CFLAG:호의 >= 10000 && !TALENT:MASTER:임신 && FLAG:죠교대상임신 && !TALENT:MASTER:남자 && TALENT:후타나리)
+		SIF ! (CFLAG:M호의 + CFLAG:호의 >= 10000 && ! TALENT:MASTER:임신 && FLAG:죠교대상임신 && ! TALENT:MASTER:남자 && TALENT:후타나리)
 			RETURN 0
 	[SKIPEND]
-	;未定義
+	;미정도리
 	CASEELSE
 		RETURNF 0
 ENDSELECT
-;個別に봉인されていなければ
+;개별적으로봉인되어 있지 않으면
 RETURNF !CFLAG:(1200+ARG)
 
 
 ;────────────────────────────────────
-;汚れのリセット
+;더러움의 리셋트
 ;────────────────────────────────────
 @STAIN_RESET
 RESET_STAIN MASTER

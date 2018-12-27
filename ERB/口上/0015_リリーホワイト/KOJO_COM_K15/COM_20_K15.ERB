@@ -1,43 +1,43 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 ;
-;		릴리 화이트구상 성교系汎用リアクション구상ファイル
+;		릴리 화이트구상 성교계 범용 리액션구상파일
 ;
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
 ;=====================================================================
-;성교系反応 COM20番台
+;성교계 반응 COM20 접수대
 ;=====================================================================
-;・ACT분류:성교/성봉, ACT:파이즈리한다/성기마찰한다等がトリガーとなって発生
+;·ACT분류:성교/성봉, ACT:파이즈리한다/성기마찰한다등이 트리거가 되어 발생
 ;-------------------------------------------------
-;とりあえずMENUMATCH(TFLAG:ACT, "성교")（성교）MENUMATCH(TFLAG:ACT, "성봉")（성교봉사）TFLAG:ACT == 16（스마타시킨다）TFLAG:ACT == 17（파이즈리한다）で
-;すべて網羅する事は可能ではある。TFLAG:ACTとTEQUIPでさらにシチュエーションを絞る事も出来る。
-;ここでより条件を細かく絞って各シチュエーションを描写するか、REACTで個別に行うかはまぁお好み次第でってところ。
-;個人的には細かいことやるならREACTでやる事をお勧めする。
+;우선 MENUMATCH(TFLAG:ACT, "성교")（성교）MENUMATCH(TFLAG:ACT, "성봉")（성교봉사）TFLAG:ACT == 16（스마타시킨다）TFLAG:ACT == 17（파이즈리한다）로
+;모두 망라하는 일은 가능한 것이긴 하다. TFLAG:ACT와 TEQUIP로 한층 더 시추에이션을 짜는 일도 할 수 있다.
+;여기서보다 조건을 세세하게 짜 각 시추에이션을 묘사하는지, REACT로 개별적으로 실시할까는 아무튼 기호 나름으로라는 곳.
+;개인적으로는 세세한 일 한다면 REACT로 하는 일을 추천한다.
 ;-------------------------------------------------
-;v1.53で스마타시킨다、파이즈리한다、ACT분류:성교を追加
-;既存部分はACT분류:성교봉사に
+;v1. 53으로스마타시킨다, 파이즈리한다, ACT분류:성교를 추가
+;기존 부분은 ACT분류:성교봉사에
 ;-------------------------------------------------
 
 ;──────────────────────────────────
 ;COM20, 허리를 흔든다
 ;──────────────────────────────────
-;・主導権(SEX_INITIATIVE)によって内容が異なるCOM
+;·주도권(SEX_INITIATIVE)에 의해 내용이 다른 COM
 ;-------------------------------------------------
-;・ACT분류が성교봉사、ACT:기승위の場合は主導権は죠교대상(SEX_INITIATIVE(MASTER))
-;・REACT분류:적극적으로 한다
-;・의존도변화(+5, +3)
+;·ACT분류가성교봉사, ACT:기승위의 경우는 주도권은죠교대상(SEX_INITIATIVE(MASTER))
+;·REACT분류:적극적으로 한다
+;·의존도변화(+5, +3)
 ;-------------------------------------------------
-;・ACT분류が성교、ACT:역강간/성기마찰한다/파이즈리한다の場合は主導権は죠교자
-;・※성기마찰한다/파이즈리한다はSEX_INITIATIVE(TARGET)では参照できない
-;・REACT분류:受け入れる
-;・의존도변화(+4, +8)
+;·ACT분류가성교, ACT:역강간/성기마찰한다/파이즈리한다의 경우는 주도권은죠교자
+;·※성기마찰한다/파이즈리한다는 SEX_INITIATIVE(TARGET)에서는 참조 할 수 없다
+;·REACT분류:받아들인다
+;·의존도변화(+4, +8)
 ;-------------------------------------------------
-;・REACT인상:好印象大
+;·REACT인상:좋은인상
 ;-------------------------------------------------
-;・애태움中は実行不可
-;・ACT:파이즈리한다の場合、죠교자が빈유だと弾かれる
+;·애태움중은 실행 불가
+;·ACT:파이즈리한다의 경우, 죠교자가빈유라고 튕겨진다
 ;-------------------------------------------------
-;선택可能な条件…
+;선택 가능한 조건…
 ;ACT분류:애무
 ;	ACT:성기마찰한다/파이즈리한다
 ;ACT분류:성교
@@ -45,34 +45,34 @@
 ;ACT분류:성봉
 ;	ACT:정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다/항문섹스시킨다/역강간
 ;-------------------------------------------------
-;・REACT파생なし
+;·REACT파생없음
 ;-------------------------------------------------
 ;=================================================
 @KOJO_COM_K15_20
 ;=================================================
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;貝あわせ/스마타する
+;조개 우려라/스마타 한다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
-	;ここは刻んでもよさそう
+IF 구상기입체크(100) && IS_NOWACTNAME("성기마찰한다")
+	;여기는 새겨도 좋은 것 같다
 	;=================================================
 	;가버려
 	;=================================================
-	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
-		;애태움도によって分岐
+	IF 구상기입체크(100) && TCVAR:MASTER:가버려
+		;애태움도에 의해 분기
 		SELECTCASE TCVAR:MASTER:애태움도
 			;CASE IS > 1
-				;애태움中はREACT16に移設。そもそも애태움中はCOMABLEで弾かれるのでｗ
-			;애태움終了
+				;애태움중은 REACT16에 이전. 원래애태움중은 COMABLE로 튕겨지므로w
+			;애태움종료
 			CASE 1
 				IF AFFECTION("상사상애") && PERCENT(65)
 ;OriginalString : 「はぁっ、あっあぅ！ すごいっほんとにシてるみたいですっ
-					PRINTFORM 「후앗, 앗아우！ 굉장해, 정말로 하는 것 같아요
+					PRINTFORM 「후앗, 앗아우! 굉장해, 정말로 하는 것 같아요
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
 ;OriginalString : 「あっ、んんっ！ もっと腰振ってっ……すりすりしてくださいっ
-					PRINTFORM 「앗, 응응！ 좀 더 허리 털어……부비부비 해주세요
+					PRINTFORM 「앗, 응응! 좀 더 허리 털어…… 부비부비 해주세요
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
@@ -87,15 +87,15 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 ;OriginalString : リリーは膣粘膜の擦れる快感に酔いしれ、自らも腰を激しく振りたてた…
 					PRINTFORMDW 릴리는 질점막이 스치는 쾌감에 만취해 스스로도 허리를 격렬하게 세웠다…
 				ENDIF
-			;애태움無し
+			;애태움없음
 			CASEELSE
 				IF AFFECTION("상사상애") && PERCENT(75)
-					;ACT파생が스마타
+					;ACT파생가스마타
 					IF TFLAG:ACT파생 == 1
 ;OriginalString : 「見えるかな……ほら、んぅ…すりすり気持ちいね……」
 						PRINTFORMW 「보일까요……자, 응…부비부비 기분조아요……」
 ;OriginalString : 「イキたいの？ なら……もっとちゃんと腰振らなきゃダメですよ
-						PRINTFORM 「가고 싶은거야？ 그러면……좀 더 확실히 허리 움직이지 않으면 안되어요
+						PRINTFORM 「가고 싶은거야? 그러면…… 좀 더 확실히 허리 움직이지 않으면 안되어요
 						CALL HEARTCB
 ;OriginalString : 」
 						PRINTFORMW 」
@@ -103,7 +103,7 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 						PRINTL  
 ;OriginalString : ぷっくりと充血했다陰唇が剛直を撫であげる感触に、%CALLNAME:MASTER%は腰の動きをさらに加速시켰다……
 						PRINTFORMDW 볼록하게 충혈한 음순이 강직을 어루만지는 감촉에, %CALLNAME:MASTER%(은)는 허리의 움직임을 한층 더 가속시켰다……
-					;その他
+					;그 외
 					ELSE
 ;OriginalString : 「すりすり気持ちいね……んぅ、あっ%RAND_SPLIT("んぅ/ひぁ/ああ゛/ん")%っ
 						PRINTFORMW 「부비부비 기분죠아……응, 앗%RAND_SPLIT("응우/히아/아″/응")%
@@ -117,14 +117,14 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 						PRINTFORMW 」
 					ENDIF
 				ELSE
-					;ACT파생が스마타
+					;ACT파생가스마타
 					IF TFLAG:ACT파생 == 1
 ;OriginalString : 「%CNAME(MASTER)%にもよく見える様に……ほぉら…%RAND_SPLIT("んぅ/ひぁ/ん")%っ
 						PRINTFORM 「%CNAME(MASTER)%에도 잘 보이도록……자아…%RAND_SPLIT("응우/히아/응")%
 						CALL HEARTCB
 ;OriginalString : 」
 						PRINTFORMW 」
-					;その他
+					;그 외
 					ELSE
 ;OriginalString : 「ねぇ…ほんとに섹스してるみたいだね……」
 						PRINTFORMW 「저기…정말 섹스 하고 있는 것 같아……」
@@ -142,11 +142,11 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 	;=================================================
 	;연속실행
 	;=================================================
-	IF 구상記入チェック(100) && TFLAG:ACT == TFLAG:전ACT
+	IF 구상기입체크(100) && TFLAG:ACT == TFLAG:전ACT
 		;-------------------------------------------------
 		;누움
 		;-------------------------------------------------
-		IF 구상記入チェック(100) && TFLAG:누움
+		IF 구상기입체크(100) && TFLAG:누움
 			IF TALENT:MASTER:남자
 				IF AFFECTION("상사상애") && PERCENT(80)
 ;OriginalString : 「ほら、まだまだやめてあげませんよっ♪」
@@ -161,11 +161,11 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 					PRINTFORMW 」
 				ELSE
 ;OriginalString : 「ねぇ、抵抗しないんですか？　삽입っても無いのに夢中で腰振っちゃって……」
-					PRINTFORMW 「저기, 저항하지 않나요？ 삽입도 없는데 열중해 허리 털어 버려서……」
+					PRINTFORMW 「저기, 저항하지 않나요? 삽입도 없는데 열중해 허리 털어 버려서……」
 ;OriginalString : 「リリーに押し倒されて、おちんちんいじめられて感じちゃってるの？」
-					PRINTFORMW 「릴리에게 밀어 넘어뜨려져, 자지 괴롭힘을 당하고 느껴 버리는거야？」
+					PRINTFORMW 「릴리에게 밀어 넘어뜨려져, 자지 괴롭힘을 당하고 느껴 버리는거야?」
 				ENDIF
-			;남자以外
+			;남자 이외
 			ELSE
 				IF AFFECTION("상사상애") && PERCENT(80)
 ;OriginalString : 「あっ、あぅっ
@@ -195,7 +195,7 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 			RETURN 1
 		ENDIF
 		
-		;누움以外
+		;누움 이외
 		IF AFFECTION("상사상애") && PERCENT(80)
 			CALL QUAKE(4)
 ;OriginalString : 「あっ、はぁっ、あっ、あっ
@@ -227,41 +227,41 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 	ENDIF
 	
 	;-------------------------
-	;その他
+	;그 외
 	;-------------------------
 	;=================================================
-	;その他汎用処理
+	;그 외 범용 처리
 	;=================================================
 	IF TFLAG:누움
-		;죠교대상が하반신속옷を着ている
+		;죠교대상가하반신속옷를 입고 있다
 		IF TEQUIP:MASTER:하반신속옷
-			;죠교대상の성기が노출している
+			;죠교대상의성기가노출 하고 있다
 			IF GETBIT(TEQUIP:착의노출, 2)
 ;OriginalString : 「んぅっもうっ！ このままだと속옷濡れちゃいますね？」
-				PRINTFORMW 「응 이제！ 이대로라면 속옷 젖어버려요？」
+				PRINTFORMW 「응 이제! 이대로라면 속옷 젖어버려요?」
 ;OriginalString : 「あんっ♪ ふふっ、着하며 の方がこーふんしちゃうんですねっ♪」
 				PRINTFORMW 「아응♪ 후후, 입은 채로인 편이 흥분해 버려요♪」
-			;죠교대상の속옷をずらして
+			;죠교대상의속옷를 비켜 놓아
 			ELSE
 ;OriginalString : 「んぅっはぁん♪ ねぇ、お洋服脱がなくてもいいの…？」
-				PRINTFORMW 「응하앙♪ 저기, 옷 벗지 않아도 괜찮은거야…？」
+				PRINTFORMW 「응하앙♪저기, 옷 벗지 않아도 괜찮은거야…?」
 				SELECTCASE RANDCOM(2, 0)
 					CASE 0
 ;OriginalString : 「……こーふんし過ぎて、わかんないかな？ ふふっ♪」
-						PRINTFORMW 「……흥분한 상태라 , 모르는걸까？ 후후♪」
+						PRINTFORMW 「…… 흥분한 상태라, 모르는걸까? 후후♪」
 					CASE 1
 ;OriginalString : 「속옷汚れちゃう……なんて、もう遅いかな？ ふふっ♪」
-						PRINTFORMW 「속옷 더러워져버려……정말, 이미 늦은걸까？ 후후♪」
+						PRINTFORMW 「속옷 더러워져버려…… 정말, 이미 늦은걸까? 후후♪」
 				ENDSELECT
 			ENDIF
-		;穿いてない
+		;입지 않았다
 		ELSE
 ;OriginalString : 「おまたヌルヌルで…んぅっ♪ 気持ちイイね……♪」
 			PRINTFORMW 「또 미끈미끈…응♪ 기분 좋아요……♪」
-			;죠교자が가버려
+			;죠교자가가버려
 			IF TCVAR:TARGET:가버려
 ;OriginalString : 「リリーもっ！ んぅっ、あっ、やぁっっ
-				PRINTFORM 「릴리도！ 응, 앗, 시러엇
+				PRINTFORM 「릴리도! 응, 앗, 시러엇
 				CALL HEARTCB
 ;OriginalString :  もぉっイキそうです……んぅうっ
 				PRINTFORM  또 가버려요……응우읏
@@ -276,11 +276,11 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 				PRINTFORMW 」
 			ENDIF
 		ENDIF
-	;その他
+	;그 외
 	ELSE
 ;OriginalString : 「%RAND_SPLIT("んぅ/はぁ/あ、あ")%っ♪ すごいっ、上손ですよっ♪」
 		PRINTFORMW 「%RAND_SPLIT("응우/하아/아, 아")%♪ 대단햇 , 능숙해요♪」
-		;죠교자が가버려
+		;죠교자가가버려
 		IF TCVAR:TARGET:가버려
 ;OriginalString : 「リリーもイキそうです…あっあぁ♪……そのまま、もっと続けてください
 			PRINTFORM 「릴리도 갈것같아요…앗아아♪……그대로, 좀 더 계속해 주세요
@@ -298,12 +298,12 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("성기마찰한다")
 	RETURN 1
 ENDIF
 
-;구상側で派生させてもいいかも知れない
+;구상측에서 파생시켜도 괜찮을지도 모른다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;파이즈리한다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
-	;애태움終了/無し
+IF 구상기입체크(100) && IS_NOWACTNAME("파이즈리한다")
+	;애태움종료/없음
 	IF TCVAR:MASTER:가버려 && TCVAR:MASTER:애태움도 < 2
 		;RC 0
 		SELECTCASE RANDCOM(4, 10)
@@ -319,7 +319,7 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
 				PRINTFORMDW 릴리는 열중해 허리를 계속 흔드는 %CALLNAME:MASTER%(을)를 사랑하듯이  응시하고 있다……
 			CASE 1
 ;OriginalString : 「おっぱい気持ちイイですか？　感じちゃって…とってもかわいい♪」
-				PRINTFORMW 「젖가슴 기분 좋아요？ 느껴 버려서…매우 귀여워♪」
+				PRINTFORMW 「젖가슴 기분 좋아요? 느껴 버려서… 매우 귀여워♪」
 ;OriginalString : 「リリーが見ててあげますから、このまま精子ぴゅっぴゅしちゃおうね
 				PRINTFORM 「릴리가 보고 있어 줄테니, 이대로 정자 퓻퓻 해버리자
 				CALL HEARTCB
@@ -327,7 +327,7 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
 				PRINTFORMW 」
 			CASE 2
 ;OriginalString : 「んんっ、あっ、あぁっ！！　ん゛ぅ…
-				PRINTFORM 「응응, 앗, 아앗！！ 으응…
+				PRINTFORM 「응응, 앗, 아앗!! 으응…
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -339,36 +339,36 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
 				PRINTFORMDW %CALLNAME:MASTER%도 숨을 거칠게 하며, 절정으로 향해 허리의 움직임을 앞당겨 간다……
 			CASE 3
 ;OriginalString : 「そんなにリリーのお가슴が好きなんですか？ ふふっ♪」
-				PRINTFORMW 「그렇게 릴리의 가슴을 좋아하나요？ 후후♪」
+				PRINTFORMW 「그렇게 릴리의 가슴을 좋아하나요? 후후♪」
 ;OriginalString : 「いいですよ、もっと夢中になって……%CNAME(MASTER)%のせーえきで思いっきり汚してくださいね
 				PRINTFORM 「좋아요, 좀 더 열중해……%CNAME(MASTER)%의 정액으로 마음껏 더럽혀 주세요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 		ENDSELECT
-	;その他
+	;그 외
 	ELSE
-		;죠교자が가버려
+		;죠교자가가버려
 		IF TCVAR:TARGET:가버려
 			IF RAND:2 == 0
 ;OriginalString : 「んぅっ、あぁんっ
 				PRINTFORM 「응읏, 아앙
 				CALL HEARTCB
 ;OriginalString :  おっぱい犯されてるみたいで…ひんっ！！」
-				PRINTFORMW  젖가슴 범해지고 있는 것 같아…히응！！」
+				PRINTFORMW  젖가슴 범해지고 있는 것 같아… 히응!!」
 ;OriginalString : 「すごいっあっぁ！ リリーもおっぱいでイっちゃいますっ
-				PRINTFORM 「대단햇 아앙！ 릴리도 젖가슴으로 가버려요오!
+				PRINTFORM 「대단햇 아앙! 릴리도 젖가슴으로 가버려요오!
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			ELSE
 ;OriginalString : 「んんっ、あっ、あぁっ！！　んっ、ん゛ぅ…
-				PRINTFORM 「응응, 앗, 아앗！！ 응, 으응…
+				PRINTFORM 「응응, 앗, 아앗!! 응, 으응…
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 ;OriginalString : 「やぁっ、んっ！！　お가슴でイっひゃいますっんぁあ
-				PRINTFORM 「시럿, 응！！ 가슴으로 가버려요오 아아
+				PRINTFORM 「시럿, 응!! 가슴으로 가버려요오 아아
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -393,7 +393,7 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
 					PRINTFORMDW %CALLNAME:MASTER%도 숨을 거칠게 하며, 절정으로 향해 허리의 움직임을 앞당겨 간다……
 				CASE 1
 ;OriginalString : 「おっぱい気持ちいですか？ あははっ♪」
-					PRINTFORMW 「젖가슴 기분 좋나요？ 아하하♪」
+					PRINTFORMW 「젖가슴 기분 좋나요? 아하하♪」
 ;OriginalString : 「リリーもっ、んっ♪　なんだか変な気分になってきま했다ぁ
 					PRINTFORM 「릴리도옷 , 응♪ 어쩐지 이상한 기분이 되어 왔어요
 					CALL HEARTCB
@@ -401,7 +401,7 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
 					PRINTFORMW 」
 				CASE 2
 ;OriginalString : 「はっあぁっあっ！！　おっぱいっ気持ちいいですかっ？」
-					PRINTFORMW 「핫아앗앗！！ 젖가슴 기분이 좋아요？」
+					PRINTFORMW 「핫아앗앗!! 젖가슴 기분이 좋아요?」
 ;OriginalString : 「リリーもっ、んぅ♪ 気持ちイイですよっ
 					PRINTFORM 「릴리도옷 , 응♪ 기분 좋아요오
 					CALL HEARTCB
@@ -422,7 +422,7 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
 					PRINTFORMW 」
 				CASE 5
 ;OriginalString : 「むにゅむにゅっ♪　ほらっ、どうですか？」
-					PRINTFORMW 「무뉴무늇♪ 자, 어때요？」
+					PRINTFORMW 「무뉴무늇♪자, 어때요?」
 ;OriginalString : 「本当のせっくすよりも気持よくしてあげますね
 					PRINTFORM 「진짜 섹스보다 기분 좋게 해 줄게요
 					CALL HEARTCB
@@ -435,15 +435,15 @@ IF 구상記入チェック(100) && IS_NOWACTNAME("파이즈리한다")
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;성교(죠교자→죠교대상への삽입)
+;성교(죠교자→죠교대상에의삽입)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성교"), TEQUIP:성교중) > 0
+IF 구상기입체크(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성교"), TEQUIP:성교중) > 0
 	;=================================================
 	;스펭킹
 	;=================================================
-	IF 구상記入チェック(100) && GET_ACTNAME(TFLAG:ACT) == "스펭킹"
+	IF 구상기입체크(100) && GET_ACTNAME(TFLAG:ACT) == "스펭킹"
 ;OriginalString : 「お尻叩かれる度にっ！ 締りが良くなりますねっ♪ えいっ♪」
-		PRINTFORMW 「엉덩이 얻어맞을 때에！ 야무진 곳이 좋아지네요♪ 네 있고♪」
+		PRINTFORMW 「엉덩이 얻어맞을 때에! 야무진 곳이 좋아지네요♪네 있고♪」
 ;OriginalString : 
 		PRINTL
 ;OriginalString : リリーに尻肉を叩かれながらも%CALLNAME:MASTER%は腰を激しく振り続けた
@@ -460,28 +460,28 @@ IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성교"), TE
 		RETURN 1
 	ENDIF
 	
-	;この箇所でやる限りに於いてはTEQUIP:성교중は不要かな？
+	;이 개소에서 하는 한에 있어서는 TEQUIP:성교중는 불필요한가?
 	;=================================================
-	;페니스밴드使用
+	;페니스밴드사용
 	;=================================================
-	;IF 구상記入チェック(0) && !PENIS(TARGET)
+	;IF 구상기입 체크(0) && ! PENIS(TARGET)
 	;ENDIF
 	
-	;下の部分でＡ성교も纏めて処理してるので、ここは使わない気はする
+	;하의 부분에서Ａ성교도 모아 처리하고 있으므로, 여기는 사용하지 않는 생각은 든다
 	;=================================================
 	;항문섹스
 	;=================================================
-	;IF 구상記入チェック(0) && GET_ACTNAME(TFLAG:ACT) == "항문섹스"
+	;IF 구상기입 체크(0) && GET_ACTNAME(TFLAG:ACT) == "항문섹스"
 	;ENDIF
 	
 	;=================================================
 	;가버려
 	;=================================================
-	IF 구상記入チェック(100) && TCVAR:MASTER:가버려
+	IF 구상기입체크(100) && TCVAR:MASTER:가버려
 		SELECTCASE RANDCOM(3, 20)
 			CASE 0
 ;OriginalString : 「イっちゃいそうなんですか？ んっ
-				PRINTFORM 「이있을 것 같습니까？ 응
+				PRINTFORM 「이있을 것 같습니까? 응
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -494,13 +494,13 @@ IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성교"), TE
 ;OriginalString : 「\@ TALENT:MASTER:남자 ? 여자みたいな # 気持ち良さそうな \@声で喘いじゃってますよっ♪」
 				PRINTFORMW 「\@ TALENT:MASTER:남자 ? 여자같은 # 기분 좋은 것 같은 \@소리로 허덕여 버리고 있습니다♪」
 ;OriginalString : 「んぅうっ！ リリーもっ、えっちな声漏れちゃいます
-				PRINTFORM 「！ 릴리도 , 인 소리 누락있습니다
+				PRINTFORM 「! 릴리도, 인 소리 누락있습니다
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			CASE 2
 ;OriginalString : 「リリーのおちんちん美味しいですか？ ひんっ
-				PRINTFORM 「릴리의 자지 맛있습니까？ 히응
+				PRINTFORM 「릴리의 자지 맛있습니까? 히응
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -514,12 +514,12 @@ IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성교"), TE
 	ENDIF
 	
 	;-------------------------
-	;その他
+	;그 외
 	;-------------------------
 	SELECTCASE RANDCOM(4, 22)
 		CASE 0
 ;OriginalString : 「リリーとのせっくす気持ちイイの？」
-			PRINTFORMW 「릴리와의 섹스 기분 좋아요？」
+			PRINTFORMW 「릴리와의 섹스 기분 좋아요?」
 ;OriginalString : 「ふふっ、すっかりおちんちんの虜ですねっ
 			PRINTFORM 「후후, 완전히 자지의 포로군요
 			CALL HEARTCB
@@ -557,10 +557,10 @@ IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성교"), TE
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;성교봉사(죠교대상→죠교자への삽입)
+;성교봉사(죠교대상→죠교자에의삽입)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성봉"), TEQUIP:성교봉사중) > 0
-	;確立で下位に
+IF 구상기입체크(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성봉"), TEQUIP:성교봉사중) > 0
+	;확립으로 하위에
 	IF AFFECTION("상사상애") && PERCENT(70)
 		SELECTCASE RANDCOM(3, 30)
 			CASE 0
@@ -570,20 +570,20 @@ IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성봉"), TE
 ;OriginalString :  」
 				PRINTFORMW  」
 ;OriginalString : 「もっと……もっと%RAND_SPLIT("ぱんぱんして/いじめて")%っ…んん～～～っ
-				PRINTFORM 「 좀 더……좀 더 %RAND_SPLIT("팡팡 해/괴롭혀")%…응응～～～
+				PRINTFORM 「 좀 더……좀 더 %RAND_SPLIT("팡팡 해/괴롭혀")%… 응응～～～
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			CASE 1
 				IF V_SEX(MASTER)
 ;OriginalString : 「っはぁ…あっあぁ…おまんこっ！ すごいのっ
-					PRINTFORM 「읏하아…아앙…보지！ 대단헤엣
+					PRINTFORM 「읏하아… 아앙… 보지! 대단헤엣
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
 				ELSE
 ;OriginalString : 「っはぁ…あっあぁ…お尻っ！ すごいのっ
-					PRINTFORM 「읏하아…아아…엉덩이！ 대단헤엣
+					PRINTFORM 「읏하아… 아아… 엉덩이! 대단헤엣
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
@@ -659,7 +659,7 @@ IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성봉"), TE
 ;OriginalString : 「リリーのお尻の穴……どうですか♪」
 					PRINTFORMW 「릴리의 엉덩이의 구멍……어떻습니까♪」
 ;OriginalString : 「%RAND_SPLIT("あ/んく/んぅ/ひぅ")%っ……もっと%RAND_SPLIT("好きに/無理矢理/激しく/乱暴に")%してもっ、いいんですよっ
-					PRINTFORM 「%RAND_SPLIT("아/응쿠/응우/히우")%……좀 더%RAND_SPLIT("好きに/無理矢理/激しく/乱暴に")%해도 , 좋아요
+					PRINTFORM 「%RAND_SPLIT("아/응쿠/응우/히우")%……좀 더%RAND_SPLIT("를 좋아하게/무리하게/격렬하고/난폭하게")%해도 , 좋아요
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
@@ -667,10 +667,10 @@ IF 구상記入チェック(100) && TRUECHECK(MENUMATCH(TFLAG:ACT, "성봉"), TE
 			CASE 2
 				IF V_SEX(MASTER)
 ;OriginalString : 「%RAND_SPLIT("あ/んく/んぅ/ひぅ")%っ、あぁっ！……リリーのおまんこ……気持ちいいですか？」
-					PRINTFORMW 「%RAND_SPLIT("아/응쿠/응우/히우")%, 아앗！……릴리의 보지……기분이 좋아요？」
+					PRINTFORMW 「%RAND_SPLIT("아/응쿠/응우/히우")%, 아앗! …… 릴리의 보지…… 기분이 좋아요?」
 				ELSE
 ;OriginalString : 「%RAND_SPLIT("あ/んく/んぅ/ひぅ")%っ、あぁっ！……リリーのおしり……気持ちいいですか？」
-					PRINTFORMW 「%RAND_SPLIT("아/응쿠/응우/히우")%, 아！……릴리의 엉덩이……기분이 좋아요？」
+					PRINTFORMW 「%RAND_SPLIT("아/응쿠/응우/히우")%, 아! …… 릴리의 엉덩이…… 기분이 좋아요?」
 				ENDIF
 ;OriginalString : 「そんなに%RAND_SPLIT("とろけた/えっちな/안쓰러운")%顔してっ、夢中で腰を振って……っんぅ
 				PRINTFORM 「그렇게 %RAND_SPLIT("녹은/엣치한/야무지지 못한")%얼굴 해서 , 열중해 허리를 털어……응
@@ -691,16 +691,16 @@ ENDIF
 ;──────────────────────────────────
 ;COM21, 안에 내!
 ;──────────────────────────────────
-;・REACT분류:受け入れる
-;・REACT인상:好印象大
-;・죠교대상이남자の場合は弾かれる
-;・의존도변화(+10, +10)
+;·REACT분류:받아들인다
+;·REACT인상:좋은인상
+;·죠교대상이남자의 경우는 튕겨진다
+;·의존도변화(+10, +10)
 ;-------------------------------------------------
-;선택可能な条件…
+;선택 가능한 조건…
 ;ACT분류:성교
 ;	ACT:정상위/후배위/기승위/대면좌위/배면좌위/항문섹스
 ;-------------------------------------------------
-;・TFLAG:REACT파생(0=Ｖに出して/1=Ａに出して)
+;·TFLAG:REACT파생(0=Ｖ에 내/1=Ａ에 내)
 ;-------------------------------------------------
 ;=================================================
 @KOJO_COM_K15_21
@@ -708,17 +708,17 @@ ENDIF
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 ;COM21, 안에 내!
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100)
+IF 구상기입체크(100)
 	;=================================================
-	;無理を했다행동
+	;무리를했다행동
 	;=================================================
-		;%CALLNAME:MASTER%は%CALLNAME%に犯され、쾌락で心を乱されながら
-		;捨て鉢되었다ように、もう中でいい、中に出してと言った…
-	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
+		;%CALLNAME:MASTER%는%CALLNAME%에 범해져쾌락로 마음을 어지럽혀지면서
+		;자포자기되었다야 게, 이제(벌써) 안으로 좋은, 안에 내고라고 말했다…
+	IF 구상기입체크(100) && GET_COM_RANK() == "무리를했다행동"
 		SELECTCASE RANDCOM(2, 0)
 			CASE 0
 ;OriginalString : 「リリーの%RAND_SPLIT("ざーめん/せーえき")%欲しいの？ くすっ♪」
-				PRINTFORMW 「릴리의 %RAND_SPLIT("정액/정액")%갖고 싶은거야？ 키득♪」
+				PRINTFORMW 「릴리의 %RAND_SPLIT("정액/정액")%갖고 싶은거야? 키득♪」
 ;OriginalString : 「そんなに無理しておねだりしなくても、たっぷり中に出してあげますからね
 				PRINTFORM 「그렇게 무리조르지 않아도, 충분히 안에 내 주니까요
 				CALL HEARTCB
@@ -726,7 +726,7 @@ IF 구상記入チェック(100)
 				PRINTFORMW 」
 			CASE 1
 ;OriginalString : 「ちょっと%RAND_SPLIT("投げやり/自棄")%になってません？ でも、欲しいって言うなっらぁ
-				PRINTFORM 「조금%RAND_SPLIT("던지고 해/자기")%(이)가 되지 않았습니다？ 그렇지만, 갖고 싶다고 말한데 등
+				PRINTFORM 「조금%RAND_SPLIT("던지고 해/자기")%(이)가 되지 않았습니다? 그렇지만, 갖고 싶다고 말한데 등
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -737,26 +737,26 @@ IF 구상記入チェック(100)
 	ENDIF
 	
 	;=================================================
-	;無理のない행동
+	;무리가 없는행동
 	;=================================================
-	IF 구상記入チェック(100) && GET_COM_RANK() == "無理のない행동"
-		;정상위/대면좌위の場合	%CALLNAME:MASTER%は%CALLNAME:TARGET%의 腰を両발でがっちりと抱え、中に出してとささやいた…
+	IF 구상기입체크(100) && GET_COM_RANK() == "무리가 없는행동"
+		;정상위/대면좌위의 경우	%CALLNAME:MASTER%는 %CALLNAME:TARGET%의 허리를 양발로 단단히안아, 안에 내와 속삭였다…
 		IF GROUPMATCH(TEQUIP:성교중, 1, 4)
 ;OriginalString : 「知ってますよっ、これ♪ 『だいしゅきホールド』って言うんですよねっ
 			PRINTFORM 「알고 있어요  , 이것♪ 「정말 죠아 hold」라고 해요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
-		;その他の場合			%CALLNAME:MASTER%は貫かれる快感に溺れて、안에 내!と叫んだ…
+		;그 외의 경우			%CALLNAME:MASTER%는 관철해지는 쾌감에 빠져, 안에 내! 라고 외쳤다…
 		ELSE
 ;OriginalString : 「んぅっ！ そんなにおねだり당했다らっ！ リリーも참다できなくなっちゃいますよっ
-			PRINTFORM 「응읏！ 그렇게 조르기당하면！ 릴리도 참을 수 없어져 버려요
+			PRINTFORM 「응읏! 그렇게 조르기당하면! 릴리도 참을 수 없어져 버려요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
 		ENDIF
 ;OriginalString : 「%RAND_SPLIT("ごほーびに/お望み通りに/アツアツのざーめん")%…た～っぷり\@ TFLAG:REACT파생 == 1 ? おしりの中 # 질내 \@に%RAND_SPLIT("ぴゅっぴゅして/사정して/注いで")%あげるね
-		PRINTFORMW 「%RAND_SPLIT("보상으로/소망 대로/후끈후끈의 정액")%…～\@ TFLAG:REACT파생 == 1 ? おしりの中 # 질내 \@에%RAND_SPLIT("퓻퓻해/사정해/내")%줄게요
+		PRINTFORMW 「%RAND_SPLIT("보상으로/소망 대로/후끈후끈의 정액")%…～\@ TFLAG:REACT파생 == 1 ? 엉덩이안 # 질내 \@에%RAND_SPLIT("퓻퓻해/사정해/내")%줄게요
 		CALL HEARTCB
 ;OriginalString : 」
 		PRINTFORMW 」
@@ -774,20 +774,20 @@ IF 구상記入チェック(100)
 	ENDIF
 	
 	;=================================================
-	;죠교자が가버려
+	;죠교자가가버려
 	;=================================================
-	;IF 구상記入チェック(0) && TCVAR:TARGET:가버려
+	;IF 구상기입 체크(0) && TCVAR:TARGET:가버려
 	;ENDIF
 	
 	;-------------------------
-	;その他
+	;그 외
 	;-------------------------
-		;%CALLNAME:MASTER%は%CALLNAME%に犯される快感と정욕に支配され、
-		;夢心地の表情でどうなってもいい、中に欲しいと叫んだ…
+		;%CALLNAME:MASTER%는%CALLNAME%에 범해지는 쾌감과정욕에 지배되어
+		;황홀한 기분의 표정으로 어떻게 되어도 괜찮은, 안에 갖고 싶다고 외쳤다…
 	SELECTCASE RANDCOM(2, 10)
 		CASE 0
 ;OriginalString : 「ほらぁっ、よく考えなきゃっ♪ リリーのせーえき注がれたら、もう後戻りなんてできなませんよ？」
-			PRINTFORMW 「이봐요, 자주(잘) 생각하지 않으면♪ 릴리의 키-역 흘러 들어가지면(자), 이제 퇴보는 성과 날것 선이야？」
+			PRINTFORMW 「이봐요, 자주(잘) 생각하지 않으면♪릴리의 키-역 흘러 들어가지면, 이제 퇴보는 성과 날것 선이야?」
 ;OriginalString : 「……あぁ、もう『どうなってもいい』んで했다ねっ♪ 」
 			PRINTFORMW 「……아, 이제 「어떻게 되어도 괜찮다」응이었지요♪ 」
 ;OriginalString : 「それじゃ遠慮なく……た～っぷり\@ TFLAG:REACT파생 == 1 ? 肛内 # 질내 \@사정しちゃいますねっ
@@ -797,7 +797,7 @@ IF 구상記入チェック(100)
 			PRINTFORMW 」
 		CASE 1
 ;OriginalString : 「ふふっ、そんなにリリーのせーえき欲しいんですか？」
-			PRINTFORMW 「후후, 그렇게 릴리의 키-역 갖고 싶습니까？」
+			PRINTFORMW 「후후, 그렇게 릴리의 키-역 갖고 싶습니까?」
 ;OriginalString : 「こうしてギュッと抱きしめたら……ほら、もう逃げられませんよ♪」
 			PRINTFORMW 「이렇게 해 군과 꼭 껴안으면(자)……이봐요, 이제 도망가지 않아요♪」
 ;OriginalString : 「おちんちんを\@ TFLAG:REACT파생 == 1 ? おしりの奥に # 子宮입に \@ぐりぐりって押し付けてぇ……あっついせーえき%RAND_SPLIT("びゅーびゅー注ぎ込んで/ぴゅっぴゅして")%あげますねっ
@@ -812,41 +812,41 @@ ENDIF
 ;──────────────────────────────────
 ;COM22, 안에 내면 안돼!
 ;──────────────────────────────────
-;・REACT분류:용서를 빌다
-;・REACT파생1(中に出す)の場合は징계・포인트追加。REACT분류:なし
-;・REACT인상:悪印象小
-;・의존도변화(0, -10)
-;・참다플래그は消滅する
-;・죠교대상이남자の場合は弾かれる
+;·REACT분류:용서를 빌다
+;·REACT파생 1(안에 낸다)의 경우는징계·포인트추가. REACT분류:없음
+;·REACT인상:나쁜인상
+;·의존도변화(0, -10)
+;·참다플래그는 소멸한다
+;·죠교대상이남자의 경우는 튕겨진다
 ;-------------------------------------------------
-;선택可能な条件…
+;선택 가능한 조건…
 ;ACT분류:성교
 ;	ACT:정상위/후배위/기승위/대면좌위/배면좌위/항문섹스
 ;-------------------------------------------------
-;・TFLAG:REACT파생(0=願いを聞いた/1=中に出す)
+;·TFLAG:REACT파생(0=소원을 (들)물은/1=안에 낸다)
 ;-------------------------------------------------
 ;=================================================
 @KOJO_COM_K15_22
 ;=================================================
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;COM22_0, 派生：中に出さない RANDCOM(0)-(9)
+;COM22_0, 파생:중에 내지 않는 RANDCOM(0)-(9)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && !TFLAG:REACT파생
+IF 구상기입체크(100) && !TFLAG:REACT파생
 	;=================================================
-	;無理を했다행동
+	;무리를했다행동
 	;=================================================
-	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
-			;%CALLNAME:MASTER%は恥も外聞も無く%CALLNAME%を求めたい感情を懸命に振り払い、
-			;中だけはだめ、外に出してと叫んだ…
-		;実は적극
+	IF 구상기입체크(100) && GET_COM_RANK() == "무리를했다행동"
+			;%CALLNAME:MASTER%는 수치도 세상소문도 없고%CALLNAME%를 요구하고 싶은 감정을 열심히 뿌리쳐,
+			;중만은 안돼, 밖에 내라고 외쳤다…
+		;실은적극
 		IF COMCOR_POSI()
 ;OriginalString : 「こんなに気持ちいのに、ほんとに嫌なんですか？……くすっ」
-			PRINTFORMW 「이렇게 기분 있고 것에, 정말 싫습니까？……키득」
+			PRINTFORMW 「이렇게 기분 있고 것에, 정말 싫습니까? …… 키득」
 ;OriginalString : 「……いいですよ、참다してあげます♪」
 			PRINTFORMW 「……좋아요, 참아 줍니다♪」
-			;%CALLNAME:MASTER%は%CALLNAME%の분노を買うことを恐れつつも、
-			;種付けされることを恐れ、中はやめて、出しちゃだめと悲痛に叫んだ…
-		;実は嫌
+			;%CALLNAME:MASTER%는%CALLNAME%의분노를 사는 것을 무서워하면서도,
+			;교배되는 것을 무서워해, 안은 그만두어, 내서는 안돼와 비통하게 외쳤다…
+		;실은 싫어
 		ELSE
 ;OriginalString : 「쿠쿡っ……慌てちゃって、可愛いです……」
 			PRINTFORMW 「킥킥……당황해 버려서, 사랑스럽습니다……」
@@ -883,23 +883,23 @@ IF 구상記入チェック(100) && !TFLAG:REACT파생
 	ENDIF
 	
 	;-------------------------
-	;その他
+	;그 외
 	;-------------------------
-		;%CALLNAME:MASTER%は貫かれる快感を耐えながら、안에 내면 안돼!と叫んだ…
+		;%CALLNAME:MASTER%는 관철해지는 쾌감을 참으면서, 안에 내면 안돼! 라고 외쳤다…
 	SELECTCASE RANDCOM(3, 1)
 		CASE 0
 ;OriginalString : 「こんなに締め付けてくるのに、リリーのせーえき欲しくないの？」
-			PRINTFORMW 「이렇게 단단히 조여 오는데, 릴리의 키-역 갖고 싶지 않은거야？」
+			PRINTFORMW 「이렇게 단단히 조여 오는데, 릴리의 키-역 갖고 싶지 않은거야?」
 ;OriginalString : 「ふふっ……『今回は』참다してあげますね♪」
 			PRINTFORMW 「후후……「이번은」참아 주네요♪」
 		CASE 1
 ;OriginalString : 「こんなに気持ちいのに、ほんとに嫌なんですか？……くすっ」
-			PRINTFORMW 「이렇게 기분 있고 것에, 정말 싫습니까？……키득」
+			PRINTFORMW 「이렇게 기분 있고 것에, 정말 싫습니까? …… 키득」
 ;OriginalString : 「……いいですよ、참다してあげます♪」
 			PRINTFORMW 「……좋아요, 참아 줍니다♪」
 		CASE 2
 ;OriginalString : 「へぇ……嫌なのに、なんで腰振ってるんですか？」
-			PRINTFORMW 「에……싫은데, 어째서 허리 텁니까？」
+			PRINTFORMW 「에…… 싫은데, 어째서 허리 텁니까?」
 ;OriginalString : 「참다しないで、솔직になってくださいね♪」
 			PRINTFORMW 「참지 말고, 솔직해져 주세요♪」
 	ENDSELECT
@@ -913,14 +913,14 @@ IF 구상記入チェック(100) && !TFLAG:REACT파생
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;NO9_COM22_ 1, 派生：中に出す RANDCOM(10)-
+;NO9_COM22_ 1, 파생:중에 내는 RANDCOM(10)-
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
+IF 구상기입체크(100) && TFLAG:REACT파생 == 1
 	;=================================================
-	;無理を했다행동
+	;무리를했다행동
 	;=================================================
-	IF 구상記入チェック(100) && GET_COM_RANK() == "無理を했다행동"
-		;実は적극
+	IF 구상기입체크(100) && GET_COM_RANK() == "무리를했다행동"
+		;실은적극
 		IF COMCOR_POSI()
 ;OriginalString : 「だ～めっですよ
 			PRINTFORM 「안～됏 예요
@@ -932,10 +932,10 @@ IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
-		;実は嫌
+		;실은 싫어
 		ELSE
 ;OriginalString : 「そんなこと……言われたらぁ……%RAND_SPLIT("んん/んぅ/あ")%っ！！」
-			PRINTFORMW 「그런 일……말해지면……%RAND_SPLIT("응응/응우/아")%！！」
+			PRINTFORMW 「그런 일……말해지면……%RAND_SPLIT("응응/응우/아")%!!」
 ;OriginalString : 「りりーっ…참다できそうにありませんっ」
 			PRINTFORMW 「릴리도-…참을 수 없어요」
 ;OriginalString : 「%RAND_SPLIT("あはぁ/くぅ/ひぃ")%…あっ……もう……っ…사정しますよっ
@@ -948,7 +948,7 @@ IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
 	ENDIF
 	
 	;-------------------------
-	;その他
+	;그 외
 	;-------------------------
 	SELECTCASE RANDCOM(3, 10)
 		CASE 0
@@ -966,18 +966,18 @@ IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
 ;OriginalString : 」
 			PRINTFORMW 」
 ;OriginalString : 「もぉっ…だめっ！！ リリーのせーえき、ぜんぶっ受け止めてくださいっ
-			PRINTFORM 「도…안돼！！ 릴리의 키-역, 전부받아 들여 주세요
+			PRINTFORM 「도… 안돼!! 릴리의 키-역, 전부받아 들여 주세요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
 		CASE 2
 ;OriginalString : 「んぅ…だめですっ！！ 気持ち良すぎてっ、おちんちん限界ですぅ
-			PRINTFORM 「응…안됩니다！！ 기분 너무 좋아 , 자지 한계입니다
+			PRINTFORM 「응… 안됩니다!! 기분 너무 좋아, 자지 한계입니다
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
 ;OriginalString : 「ねぇっ、사정しちゃうよっ！ \@ A_SEX() ? おしりの # おまんこの \@いちばん奥でっ、リリーの%RAND_SPLIT("せーえき/ざーめん/えっちな遺伝子")%受け止めてくださいっ
-			PRINTFORM 「응 , 사정해버린다！ \@ A_SEX() ? 엉덩이의 # 보지의 \@가장 안쪽에서 , 릴리의 %RAND_SPLIT("정액/자리-째응/엣치한 유전자")%받아 들여 주세요
+			PRINTFORM 「응, 사정해버린다!  \@ A_SEX() ? 엉덩이의 # 보지의 \@가장 안쪽에서 , 릴리의 %RAND_SPLIT("정액/자리-째응/엣치한 유전자")%받아 들여 주세요
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
@@ -987,7 +987,7 @@ IF 구상記入チェック(100) && TFLAG:REACT파생 == 1
 ;OriginalString : リリーが吐精に向けてスパートをかけると、どちらともなく甲高い喘ぎ声が漏れ始める
 	PRINTFORMDL 릴리가 토정을 향해 스파트를 걸치면, 어느 쪽과도 없고 날카로운 허덕여 소리가 새기 시작한다
 ;OriginalString : 乱暴に媚肉を%RAND_SPLIT("擦り上げられ/掻き回され")%、%CALLNAME:MASTER%의 \@ A_SEX() ? 恥穴 # 膣壁 \@は反射的に剛直を絞めあげてしまう……
-	PRINTFORMDL 난폭하게 미육을%RAND_SPLIT("켜지고/휘저어지고")%, %CALLNAME:MASTER%의 \@ A_SEX() ? 恥穴 # 膣壁 \@(은)는 반사적으로 강직을 매어 버린다……
+	PRINTFORMDL 난폭하게 미육을%RAND_SPLIT("켜지고/휘저어지고")%, %CALLNAME:MASTER%의 \@ A_SEX() ? 치혈 # 질벽 \@(은)는 반사적으로 강직을 매어 버린다……
 	RETURN 1
 ENDIF
 

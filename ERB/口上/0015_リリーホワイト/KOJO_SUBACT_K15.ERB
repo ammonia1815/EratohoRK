@@ -1,172 +1,172 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 ;
-;	[릴리 화이트]구상 탈의・追加アクション구상ファイル
+;	[릴리 화이트]구상 탈의? 추가 액션구상파일
 ;
-;	죠교자が죠교指示以外に行う행동のファイル
+;	죠교자가죠교지시 이외에 실시하는행동의 파일
 ;
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
-;//暫定仕様@/L
+;//잠정사? @/L
 
 ;────────────────────────────────────
-;탈의アクション구상
+;탈의액션구상
 ;────────────────────────────────────
-;・죠교자アクションの前に강제탈의や자주탈의が発生했다ときに表示
-;・この구상の時点ではまだTEQUIPは更新されていない
-;・初回分岐は「初めて見た/見せた」とは限らない。
-;　ショップメニューで脱がせたことがあるかもしれないし、죠교の流れで完全に脱がせずに노출だけしている場合もある。
-;　もしかすると조수だったときに見たことがあるかもしれない。そういう意味では簡易的なものである。
-;　厳密な意味での「初見」플래그を用意するかどうかは要望次第ということで。
+;? 죠교자액션의 앞에강제탈의나자주탈의가? 생했다때에 표시
+;? 이구상의 시점에서는 아직 TEQUIP는 갱신되어 있지 않다
+;? 첫회 분기는 「처음 보았다/보였다」란 할 수 없다.
+;  숍메뉴? 그래서? 하지만 키연이 있을지도 모르고, 죠교의 흐름으로 완전하게? 하지만 하지 않고 노출만 하고 있는 경우도 있다.
+;  어쩌면조수였던 때에 본 적이 있을지도 모른다. 그러한 의미에서는 간이적인 것이다.
+;  ? 조밀한 의미에서의 「초견」플래그를 준비할지 어떨지는 요망하는 대로라고 하는 일로.
 ;-------------------------------------------------
 @KOJO_DATUI_K15
 ;-------------------------------------------------
-;関連変数…
-;강제탈의：TFLAG:102　자주탈의：TFLAG:103
-;=(-1, 강제탈의に抵抗、1, 겉옷、2, 하반신겉옷、3, 上衣、4, 상반신全部、5, 하반신全部、
-;　6, 악세서리ー、7, 악세서리ー以外全て、8, 전라まで、9, 속옷だけ)
+;? 련?? …
+;강제탈의:TFLAG:102  자주탈의:TFLAG:103
+;=(-1, 강제탈의에 저항, 1, 겉옷, 2, 하반신겉옷, 3, 웃도리, 4, 상반신전부, 5, 하반신전부,
+;  6, 악세서리? , 7, 악세서리? 이외 모두, 8, 전라까지, 9, 속옷만)
 ;-------------------------------------------------
 ;○릴리 화이트○
-;전신겉옷	;원피스（上下別ではないので注意）
+;전신겉옷	;원피스（상하별로는 않기 때문에 주의）
 ;상반신속옷	;브래지어
 ;하반신속옷	;드로와즈
 ;신발안		;양말
 ;악세서리	;－
 
 ;（양말탈의）
-;　→원피스탈의（ブラ＆パンツ見せ）
-;　　→上or속옷탈의（まんまんorおっぱい見せ）
-;　　　→上or속옷탈의（전라見せ）
+;  →원피스탈의（브라＆팬츠 보이고）
+;　　→상or속옷탈의（그대로응or젖가슴 보이고）
+;　　　→상or속옷탈의（전라 보이고）
 ;　　　　→（양말탈의）
-;원피스を着하며 パンツ탈의（あんまりない？）
-;　→（양말탈의）
-;　　→원피스탈의（まんまん見せ）
-;　　　→ブラ탈의（전라見せ）
+;원피스를 벌하며 팬츠탈의（그다지 없어? ）
+;  →（양말탈의）
+;　　→원피스탈의（그대로응 보이고）
+;　　　→브라탈의（전라 보이고）
 ;　　　　　→（양말탈의）
 
 ;전신겉옷탈의（P탈의/）
-;P탈의（B탈의/겉옷着衣/）
+;P탈의（B탈의/겉옷착의/）
 ;B탈의（P탈의/）
-;一気に전라に（相손が전라/）（신발안着衣/）
-;一緒に脱ぐ（전라に/）
-;강제탈의（成功/失敗）（自分は脱ぐ（전라/））
-;신발안탈의（전라に/）
+;1? 에전라에（상손가전라/）（신발안착의/）
+;1? 에? （전라에/）
+;강제탈의（성공/실패）（자신은? （전라/））
+;신발안탈의（전라에/）
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의に抵抗당했다 FIRSTDATUI(0)
+;강제탈의에 저항당했다 FIRSTDATUI(0)
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 < 0
+IF 구상기입체크(100) && TFLAG:강제탈의 < 0
 	;=================================================
-	;自分は脱いだ
+	;자신은? 있고다
 	;=================================================
-	IF 구상記入チェック(100) && TFLAG:자주탈의
+	IF 구상기입체크(100) && TFLAG:자주탈의
 		IF RAND:2 == 0
 ;OriginalString : 「恥ずかしい%RAND_SPLIT("の/んですか")%？」
-			PRINTFORMW 「부끄럽다%RAND_SPLIT("노/응입니까")%？」
+			PRINTFORMW 「부끄러%RAND_SPLIT("워/운거야")%?」
 		ELSE
-;OriginalString : 「お洋服脱がない%RAND_SPLIT("の/んですか")%？」
-			PRINTFORMW 「양복 벗지 않는다%RAND_SPLIT("노/응입니까")%？」
+;OriginalString : 「お洋服?がない%RAND_SPLIT("の/んですか")%？」
+			PRINTFORMW 「옷 벗지 않는%RAND_SPLIT("거야/건가요")%?」
 		ENDIF
-;OriginalString : 「それじゃ、リリーだけでも%RAND_SPLIT("脱いじ/準備しち")%ゃ%RAND_SPLIT("うね/いますね/おうかな")%っ♪」
-			PRINTFORMW 「그러면, 릴리만으로도%RAND_SPLIT("탈유지/준비 7")%%RAND_SPLIT("うね/いますね/おうかな")%♪」
+;OriginalString : 「それじゃ、リリ?だけでも%RAND_SPLIT("?いじ/準備しち")%ゃ%RAND_SPLIT("うね/いますね/おうかな")%っ♪」
+			PRINTFORMW 「그러면, 릴리만으로 %RAND_SPLIT("탈유지/준비 7")%%RAND_SPLIT("밭이랑/있네요/왕일까")%♪」
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
+	IF 구상기입체크(100)
 		IF RAND:2 == 0
 ;OriginalString : 「恥ずかしい%RAND_SPLIT("の/んですか")%？」
-			PRINTFORMW 「부끄럽다%RAND_SPLIT("노/응입니까")%？」
+			PRINTFORMW 「부끄러%RAND_SPLIT("워/운거야")%?」
 		ELSE
-;OriginalString : 「お洋服脱がない%RAND_SPLIT("の/んですか")%？」
-			PRINTFORMW 「양복 벗지 않는다%RAND_SPLIT("노/응입니까")%？」
+;OriginalString : 「お洋服?がない%RAND_SPLIT("の/んですか")%？」
+			PRINTFORMW 「옷 벗지 않는%RAND_SPLIT("거야/건가요")%?」
 		ENDIF
 		IF RAND:2 == 0
-;OriginalString : 「でも、脱がなきゃお洋服汚れちゃいますよ？」
-			PRINTFORMW 「 그렇지만, 벗지 않으면 양복 더러운있어요？」
+;OriginalString : 「でも、?がなきゃお洋服汚れちゃいますよ？」
+			PRINTFORMW 「그렇지만, 벗지 않으면 옷 더러워져요?」
 		ELSE
 ;OriginalString : 「それとも、着하며 %RAND_SPLIT("が好きなんですか/えっち했다いの")%？　ふふっ♪」
-			PRINTFORMW 「그렇지 않으면, 입은 채로%RAND_SPLIT("하지만 좋아합니까/엣치했다있고의")%？　후후♪」
+			PRINTFORMW 「그렇지 않으면, 입은 채로%RAND_SPLIT("가 좋나요/엣치한가요")%?   후후♪」
 		ENDIF
 		RETURN 1
 	ENDIF
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;二人とも何か脱いだ FIRSTDATUI(10)
+;두 사람 모두 무엇인가? 있고다 FIRSTDATUI(10)
 ;------------------------------------------------
-;・主に섹스系행동の予備動作で発生する
-;・원피스탈의ならこの時点で「ブラ・パンツ見せ」は死ぬ？
-;・양말ならまだ可能性も
+;? 주로섹스계행동의 예비 동작으로? 생한다
+;? 원피스탈의라면 이 시점에서 「브라? 팬츠 보이고」는 죽어?
+;? 양말라면 아직 가능성도
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 > 0 && TFLAG:자주탈의 && !IS_NOWASSIACTNAME(, "탈의")
+IF 구상기입체크(100) && TFLAG:강제탈의 > 0 && TFLAG:자주탈의 && !IS_NOWASSIACTNAME(, "탈의")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && FIRSTDATUI(10)
+	IF 구상기입체크(100) && FIRSTDATUI(10)
 ;OriginalString : 「…………ふふっ♪」
 		PRINTFORMW 「…………후후♪」
 ;OriginalString : 「お互い無言だと、逆にドキドキしちゃいますね…」
-		PRINTFORMW 「 서로 무언이라고, 반대로 두근두근 있네요…」
+		PRINTFORMW 「서로 말없지만, 반대로 두근두근 하네요…」
 ;OriginalString : 「ほら、お洋服貸してください？」
-		PRINTFORMW 「이봐요, 양복 빌려 주세요？」
-;OriginalString : 「皺にならないように、ちゃんと畳んでおきますね♪」
-		PRINTFORMW 「주름이 되지 않게, 분명하게 정리해 두네요♪」
+		PRINTFORMW 「저기요, 옷 건네 주세요?」
+;OriginalString : 「皺にならないように、ちゃんと?んでおきますね♪」
+		PRINTFORMW 「주름이 되지 않게, 분명하게 정리해 둘게요♪」
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;죠교자が[정욕]かつ전라되었다
+	;죠교자가[정욕]또한전라되었다
 	;=================================================
-	IF 구상記入チェック(100) && T_COND("정욕") && ZENRACHECK(0)
-		;주인님임신中！！
+	IF 구상기입체크(100) && T_COND("정욕") && ZENRACHECK(0)
+		;주인님임신중!!
 		IF TALENT:TARGET:임신 == 1
-;OriginalString : %RAND_SPLIT("ぽっこと膨らんだ妊婦腹/なだらかな丸みを帯びた腹")%にそっと손を添え、最後の一枚に指をかける…
-			PRINTFORMDW %RAND_SPLIT("일 부풀어 오른 임산부배/완만한 둥그스름을 띤 배")%에 살그머니 손을 더해 마지막 한 장에 손가락을 건다…
-;OriginalString : 「うんしょっ……えへへっ、全部脱いじゃいま했다…」
-			PRINTFORMW 「응 실마리……네에에 , 전부 벗어 버렸습니다…」
-		;임신してないよ！
+;OriginalString : %RAND_SPLIT("ぽっこと膨らんだ妊婦腹/なだらかな丸みを?びた腹")%にそっと손を添え、最後の一枚に指をかける…
+			PRINTFORMDW %RAND_SPLIT("볼록 부풀어 오른 임산부배/완만한 둥그스름을 띤 배")%에 살그머니 손을 더해 마지막 한 장에 손가락을 건다…
+;OriginalString : 「うんしょっ……えへへっ、全部?いじゃいま했다…」
+			PRINTFORMW 「응차앗……에헤헤 , 전부 벗어 버렸어요…」
+		;임신 하고 있지 않아!
 		ELSE
-;OriginalString : 「%RAND_SPLIT("うんしょ/よいしょ")%っ%RAND_SPLIT("と/")%……えへへっ、全部脱いじゃいま했다…」
-			PRINTFORMW 「%RAND_SPLIT("영차/영차")%%RAND_SPLIT("と/")%……네에에 , 전부 벗어 버렸습니다…」
+;OriginalString : 「%RAND_SPLIT("うんしょ/よいしょ")%っ%RAND_SPLIT("と/")%……えへへっ、全部?いじゃいま했다…」
+			PRINTFORMW 「%RAND_SPLIT("영차/영차")%%RAND_SPLIT("와/")%……에헤헤 , 전부 벗어 버렸어요…」
 		ENDIF
 		IF RAND:2 == 0
-;OriginalString : 「リリーの%RAND_SPLIT("ドキドキ/興奮")%、伝わるかな？」
-			PRINTFORMW 「릴리의 %RAND_SPLIT("두근두근/흥분")%, 전해질까？」
+;OriginalString : 「リリ?の%RAND_SPLIT("ドキドキ/興奮")%、?わるかな？」
+			PRINTFORMW 「릴리의 %RAND_SPLIT("두근두근/흥분")%, 전해질까?」
 		ELSE
-;OriginalString : 「リリーの%RAND_SPLIT("恥ずかしい/えっちな")%ところ…全部見せてあげるね♪」
-			PRINTFORMW 「릴리의 %RAND_SPLIT("부끄럽다/엣치한")%곳…전부 보여 주는군♪」
+;OriginalString : 「リリ?の%RAND_SPLIT("恥ずかしい/えっちな")%ところ…全部見せてあげるね♪」
+			PRINTFORMW 「릴리의 %RAND_SPLIT("부끄러운/엣치한")%곳…전부 보여 줄게♪」
 		ENDIF
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
+	IF 구상기입체크(100)
 		IF FAVOR(1000, 1000)
 			IF RAND:2 == 0
 ;OriginalString : 「恥ずかしいけど…%RAND_SPLIT("ふふ/")%」
 				PRINTFORMW 「부끄러운데…%RAND_SPLIT("후후/")%」
-;OriginalString : 「なんだか%RAND_SPLIT("ドキドキ/こーふん")%しちゃ%RAND_SPLIT("いますね/うね")%」
-				PRINTFORMW 「어쩐지%RAND_SPLIT("두근두근/개-응")%합니다%RAND_SPLIT("いますね/うね")%」
+;OriginalString : 「なんだか%RAND_SPLIT("ドキドキ/こ?ふん")%しちゃ%RAND_SPLIT("いますね/うね")%」
+				PRINTFORMW 「어쩐지 %RAND_SPLIT("두근두근/흥분")%하%RAND_SPLIT("고있네요/네요")%」
 			ELSE
-;OriginalString : 「%RAND_SPLIT("お洋服が/")%皺にならないように、ちゃんと畳んでー…%RAND_SPLIT("よし/うん")%っ」
-				PRINTFORMW 「%RAND_SPLIT("양복이/")%주름이 되지 않게, 분명하게 정리해―…%RAND_SPLIT("よし/うん")%」
-;OriginalString : 「%RAND_SPLIT("ほら、おいで/どうですか/えへへ")%…ぎゅってすると、さっきよりも%RAND_SPLIT("ドキドキしちゃう/あったかい/気持ちいい")%ね…♪」
-				PRINTFORMW 「%RAND_SPLIT("이봐요, 와/어떻습니까/에헤헤")%…는 하면, 조금 전보다%RAND_SPLIT("ドキドキしちゃう/あったかい/気持ちいい")%그런데…♪」
+;OriginalString : 「%RAND_SPLIT("お洋服が/")%皺にならないように、ちゃんと?んで?…%RAND_SPLIT("よし/うん")%っ」
+				PRINTFORMW 「%RAND_SPLIT("양복이/")%주름이 되지 않게, 분명하게 정리해―…%RAND_SPLIT("요시/응")%」
+;OriginalString : 「%RAND_SPLIT("ほら、おいで/どうですか/えへへ")%…ぎゅってすると、さっきよりも%RAND_SPLIT("ドキドキしちゃう/あったかい/?持ちいい")%ね…♪」
+				PRINTFORMW 「%RAND_SPLIT("자, 와요/어때요/에헤헤")%…꼬옥 하면, 조금 전보다 %RAND_SPLIT("두근두근해요/따뜻해요/기분좋아요")%…♪」
 			ENDIF
 		ELSE
 			IF RAND:2 == 0
 ;OriginalString : 「着하며 もいいですけど…」
 				PRINTFORMW 「입은 채로도 좋지만…」
-;OriginalString : 「やっぱりリリーは%RAND_SPLIT("こっちの/당신の体温が感じられる")%方が好きですね…%RAND_SPLIT("ふふ/えへへ")%♪」
-				PRINTFORMW 「역시 릴리는%RAND_SPLIT("여기의/당신의 체온이 느껴진다")%(분)편을 좋아하네요…%RAND_SPLIT("ふふ/えへへ")%♪」
+;OriginalString : 「やっぱりリリ?は%RAND_SPLIT("こっちの/당신の??が感じられる")%方が好きですね…%RAND_SPLIT("ふふ/えへへ")%♪」
+				PRINTFORMW 「역시 릴리는 %RAND_SPLIT("여기의/당신의 체온이 느껴진다")%(분)편을 좋아하네요…%RAND_SPLIT("후후/에헤헤")%♪」
 			ELSE
 ;OriginalString : 「準備はいいですか？」
-				PRINTFORMW 「준비는 좋습니까？」
+				PRINTFORMW 「준비는 됐나요?」
 ;OriginalString : 「それじゃ%RAND_SPLIT("そろそろ/さっそく")%始めちゃいましょか」
-				PRINTFORMW 「그러면%RAND_SPLIT("슬슬/즉시")%초있을까요」
+				PRINTFORMW 「그러면 %RAND_SPLIT("슬슬/즉시")% 시작할까요」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -174,54 +174,54 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 > 0 && TFLAG:자주탈의
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;자주탈의・악세서리ーのみ FIRSTDATUI(20)
+;자주탈의? 악세서리? 마셔 FIRSTDATUI(20)
 ;------------------------------------------------
-;・양말を脱ぐ
+;? 양말를? 구
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:자주탈의 == 6 && !IS_NOWASSIACTNAME(, "탈의")
+IF 구상기입체크(100) && TFLAG:자주탈의 == 6 && !IS_NOWASSIACTNAME(, "탈의")
 	;=================================================
-	;전라되었다（脱ぐ前は신발안以外裸とかそういう感じ）
+	;전라되었다（? 전은신발안 이외 알몸이라든지 그러한 느낌）
 	;=================================================
-	IF 구상記入チェック(100) && TFLAG:자주탈의 && ZENRACHECK(0)
+	IF 구상기입체크(100) && TFLAG:자주탈의 && ZENRACHECK(0)
 		IF RAND:2 == 0
 ;OriginalString : 「신발안だけっていうのもなんだか違和感がありますもんね」
 			PRINTFORMW 「양말만이라고 하는 것도 어쩐지 위화감이 있는 걸」
-;OriginalString : リリーが양말のつま先を摘み、引っ張る度に、
+;OriginalString : リリ?が양말のつま先を摘み、引っ張る度に、
 			PRINTFORMDW 릴리가 삭스의 발끝을 타, 이끌 때에,
-;OriginalString : Ｍ字に閉じた太ももの奥で幼い割れ目がチラチラと見え隠れしている…
-			PRINTFORMDW Ｍ글자에 덮은 허벅지의 안쪽에서 어린 균열이 치라치라궴 보일듯 말듯 하고 있다…
+;OriginalString : Ｍ字に閉じた太ももの?で幼い割れ目がチラチラと見え?れしている…
+			PRINTFORMDW Ｍ글자로 벌린 허벅지의 안쪽에서 어린 균열이 치라치라 보일듯 말듯 하고 있다…
 ;OriginalString : 「……あれ？　もしかして、전라に신발안だけの方が興奮する人ですか？」
-			PRINTFORMW 「……어？ 혹시, 전라에 양말만의 (분)편이 흥분하는 사람입니까？」
-;OriginalString : 「%RAND_SPLIT("ふふっ/ふーん")%…でも今回はおあずけですよっ」
-			PRINTFORMW 「%RAND_SPLIT("후훗/흐음")%…그렇지만 이번은 맡기고예요 」
-;OriginalString : 「はいっ、もう脱いじゃいま했다もんねっ♪　えへへっ♪」
-			PRINTFORMW 「네, 이제 벗어 버렸습니다 것이군요♪ 네에에♪」
+			PRINTFORMW 「…… 어라? 혹시, 전라에 양말만인 쪽이 흥분하는 사람인가요?」
+;OriginalString : 「%RAND_SPLIT("ふふっ/ふ?ん")%…でも今回はおあずけですよっ」
+			PRINTFORMW 「%RAND_SPLIT("후훗/흐음")%…그렇지만 이번은 맡겨주세요 」
+;OriginalString : 「はいっ、もう?いじゃいま했다もんねっ♪　えへへっ♪」
+			PRINTFORMW 「네엣, 벌써 벗어 버린걸요♪ 에헤헷♪」
 		ELSE
-;OriginalString : 「%RAND_SPLIT("えへへ/えっと")%……全部、脱いじゃいま했다ね」
-			PRINTFORMW 「%RAND_SPLIT("에헤헤/엣또")%……전부, 벗어 버렸습니다」
-;OriginalString : 「……발の指が綺麗？　ふふっ、変な褒め方♪」
-			PRINTFORMW 「……다리의 손가락이 기려？ 후후, 이상한 칭찬하는 방법♪」
-;OriginalString : リリーは양말を畳みながら、楽し気にコロコロと笑っている…
-			PRINTFORMDW 릴리는 양말을 접으면서, 락 해 기분에 대굴대굴웃고 있다…
+;OriginalString : 「%RAND_SPLIT("えへへ/えっと")%……全部、?いじゃいま했다ね」
+			PRINTFORMW 「%RAND_SPLIT("에헤헤/엣또")%……전부, 벗어 버렸어요」
+;OriginalString : 「……발の指が綺麗？　ふふっ、?な褒め方♪」
+			PRINTFORMW 「…… 발가락이 예뻐? 후후, 이상한 칭찬이네요♪」
+;OriginalString : リリ?は양말を?みながら、?し?にコロコロと笑っている…
+			PRINTFORMDW 릴리는 양말을 접으면서, 업된 기분에 대굴대굴웃고 있다…
 ;OriginalString : 「%CNAME(MASTER)%に見て欲しいのは、こっち♪」
-			PRINTFORMW 「%CNAME(MASTER)%에 보았으면 좋은 것은, 여기♪」
-;OriginalString : 「ほら、リリーの裸%RAND_SPLIT("、どうですか？/を見て、ちゃんとこーふんしてね♪")%」
-			PRINTFORMW 「이봐요, 릴리의 알몸%RAND_SPLIT(", 어떻습니까？/를 봐, 분명하게 개-분해♪")%」
+			PRINTFORMW 「%CNAME(MASTER)%에게 보았으면 하는 것은, 여기♪」
+;OriginalString : 「ほら、リリ?の裸%RAND_SPLIT("、どうですか？/を見て、ちゃんとこ?ふんしてね♪")%」
+			PRINTFORMW 「봐요, 릴리의 알몸%RAND_SPLIT(", 어떤가요?/을 봐, 분명하게 흥분해♪")%」
 		ENDIF
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
+	IF 구상기입체크(100)
 		IF RAND:2 == 0
-;OriginalString : 「リリーの%RAND_SPLIT("신발안/양말")%、欲しいんですか？」
-			PRINTFORMW 「릴리의 %RAND_SPLIT("신발안/양말")%, 갖고 싶습니까？」
+;OriginalString : 「リリ?の%RAND_SPLIT("신발안/양말")%、欲しいんですか？」
+			PRINTFORMW 「릴리의 %RAND_SPLIT("신발안/양말")%, 갖고 싶나요?」
 ;OriginalString : 「ふふっ、あげませんよっ♪」
 			PRINTFORMW 「후후, 주지 않아요♪」
 		ELSE
-;OriginalString : 「一枚ずつ…次は%RAND_SPLIT("신발안/양말")%を脱ぎますね♪」
+;OriginalString : 「一枚ずつ…次は%RAND_SPLIT("신발안/양말")%を?ぎますね♪」
 			PRINTFORMW 「한 장씩…다음은%RAND_SPLIT("신발안/양말")%(을)를 벗네요♪」
 		ENDIF
 		RETURN 1
@@ -229,47 +229,47 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 == 6 && !IS_NOWASSIACTNAM
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;자주탈의・まんまんうｐ FIRSTDATUI(30)
-;・드로와즈を脱ぐ
+;자주탈의? 만p FIRSTDATUI(30)
+;? 드로와즈를? 구
 ;------------------------------------------------
-;・今回の탈의で성기が見えるよう되었다場合に表示
-;・ぱんつ見せを経由せず一気に脱ぐ場合あり
+;? 이번탈의로성기가 보이도록(듯이)되었다경우에 표시
+;? 팬티 보이고를? 사정 하지 않고 1? 에? 경우 있어
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:자주탈의 && P_DATUICHECK(0) == 3 && !IS_NOWASSIACTNAME(, "탈의")
+IF 구상기입체크(100) && TFLAG:자주탈의 && P_DATUICHECK(0) == 3 && !IS_NOWASSIACTNAME(, "탈의")
 	;=================================================
-	;ちんこうｐ
+	;응 이렇게 p
 	;=================================================
-	IF 구상記入チェック(75) && PENIS(TARGET)
-		;발기도十分
+	IF 구상기입체크(75) && PENIS(TARGET)
+		;발기도 충분히
 		IF TCVAR:TARGET:발기도 >= 1000
 			IF RAND:2 == 0
-;OriginalString : リリーの%RAND_SPLIT("ビンビンに/カチカチに")%발기했다페니스が勢いよく%CALLNAME:MASTER%의 前に%RAND_SPLIT("差し/突き")%出される…
-				PRINTFORMDW 릴리의 %RAND_SPLIT("펄떡펄떡하게/딱딱하게")%발기한 페니스가 힘차게 %CALLNAME:MASTER%의 전에%RAND_SPLIT("差し/突き")%나온다…
+;OriginalString : リリ?の%RAND_SPLIT("ビンビンに/カチカチに")%발기했다페니스が勢いよく%CALLNAME:MASTER%의 前に%RAND_SPLIT("差し/突き")%出される…
+				PRINTFORMDW 릴리의 %RAND_SPLIT("펄떡펄떡하게/딱딱하게")%발기한 페니스가 힘차게 %CALLNAME:MASTER%의 전에%RAND_SPLIT("마주 앉음/찌르기")%나온다…
 			ELSE
-;OriginalString : リリーの%RAND_SPLIT("隆々と鎌首を擡げる/パンパンに張り詰めた/窮屈そうにテントを張っていた")%페니스が勢いよく%CALLNAME:MASTER%의 前に%RAND_SPLIT("差し/突き")%出される…
-				PRINTFORMDW 릴리의 %RAND_SPLIT("융성하게 굽은 목을 쳐든다/팡팡하게 긴장되었다/거북한 것 같게 텐트를 치고 있었다")%페니스가 힘차게 %CALLNAME:MASTER%의 전에%RAND_SPLIT("差し/突き")%나온다…
+;OriginalString : リリ?の%RAND_SPLIT("隆?と鎌首を擡げる/パンパンに張り詰めた/窮屈そうにテントを張っていた")%페니스が勢いよく%CALLNAME:MASTER%의 前に%RAND_SPLIT("差し/突き")%出される…
+				PRINTFORMDW 릴리의 %RAND_SPLIT("융성하게 굽은 목을 쳐든다/팡팡하게 긴장되었다/거북한 것 같게 텐트를 치고 있었다")%페니스가 힘차게 %CALLNAME:MASTER%의 전에%RAND_SPLIT("마주 앉음/찌르기")%나온다…
 			ENDIF
-		;발기도不十分
+		;발기도불충분
 		ELSE
-;OriginalString : %RAND_SPLIT("たっぷりと정액を溜め込んだ/オス臭い発情香を放つ")%リリーの남성기が%CALLNAME:MASTER%의 眼前に%RAND_SPLIT("差し/突き")%出される…
-			PRINTFORMDW %RAND_SPLIT("충분히정액를 모아두었다/수컷 냄새나는 발정향기를 발한다")%릴리의 남성기가 %CALLNAME:MASTER%의 눈앞에%RAND_SPLIT("差し/突き")%나온다…
+;OriginalString : %RAND_SPLIT("たっぷりと정액を溜め?んだ/オス臭い?情香を放つ")%リリ?の남성기が%CALLNAME:MASTER%의 眼前に%RAND_SPLIT("差し/突き")%出される…
+			PRINTFORMDW %RAND_SPLIT("충분히정액를 모아두었다/수컷 냄새나는 발정향기를 발한다")%릴리의 남성기가 %CALLNAME:MASTER%의 눈앞에%RAND_SPLIT("마주 앉음/찌르기")%나온다…
 		ENDIF
-		;후타나리って、죠교完了（2000/2000）くらいでつける印象
+		;후타나리는, 죠교완료（2000/2000）정도로 붙이는 인상
 		IF FAVOR(3000, 3000)
 			IF RAND:2 == 0
-;OriginalString : 「ほら、%CNAME(MASTER)%の大好きなリリーの%RAND_SPLIT("후타나리ちんぽ/おちんちん")%ですよ♪」
+;OriginalString : 「ほら、%CNAME(MASTER)%の大好きなリリ?の%RAND_SPLIT("후타나리ちんぽ/おちんちん")%ですよ♪」
 				PRINTFORMW 「이봐요,%CNAME(MASTER)%의 정말 좋아하는 릴리의 %RAND_SPLIT("후타나리자지/자지")%(이에)예요♪」
-;OriginalString : 「ちゃんとご挨拶、してくださいね
+;OriginalString : 「ちゃんとご??、してくださいね
 				PRINTFORM 「분명하게 인사, 해 주세요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			ELSE
-;OriginalString : 「ほら、大好きなおちんちんにちゃんとご挨拶してくださいね」
+;OriginalString : 「ほら、大好きなおちんちんにちゃんとご??してくださいね」
 				PRINTFORMW 「이봐요, 정말 좋아하는 자지에 분명하게 인사해 주세요」
 ;OriginalString : 「\@ TALENT:MASTER:남자 ? 男の子なのに # 여자同士が好きなのかと思ったら、まさか \@おちんぽの生えた여자が好きだなんて…ふふっ♪」
 				PRINTFORMW 「\@ TALENT:MASTER:남자 ? 사내 아이인데 # 여자같은 종류를 좋아하는 것일까하고 생각하면, 설마 \@가 난 여자 아이를 좋아한다 라고…후후♪」
-;OriginalString : 「おいで…リリーの%RAND_SPLIT("후타나리ちんぽ/デカマラ")%でたっぷり기분좋게 해あげますね
+;OriginalString : 「おいで…リリ?の%RAND_SPLIT("후타나리ちんぽ/デカマラ")%でたっぷり기분좋게 해あげますね
 				PRINTFORM 「와…릴리의 %RAND_SPLIT("후타나리자지/왕자지")%그리고 충분히 기분 좋게 해 주네요
 				CALL HEARTCB
 ;OriginalString : 」
@@ -278,7 +278,7 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && P_DATUICHECK(0) == 3 &
 		ELSE
 			IF RAND:2 == 0
 ;OriginalString : 「なに驚いた顔してるんですか、いい加減慣れてくださいね？」
-				PRINTFORMW 「뭐 놀란 얼굴 합니까, 적당 익숙해져 주세요？」
+				PRINTFORMW 「뭐 놀란 얼굴 합니까, 적당 익숙해져 주세요?」
 ;OriginalString : 「これは%CNAME(MASTER)%が望ん%RAND_SPLIT("だ/で生や했다")%후타나리ちんぽなんですから…うふふっ♪」
 				PRINTFORMW 「이것은%CNAME(MASTER)%하지만 망응%RAND_SPLIT("(이)다/그리고 생이나했다")%이니까…후후♪」
 			ELSE
@@ -292,43 +292,43 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && P_DATUICHECK(0) == 3 &
 	ENDIF
 	
 	;=================================================
-	;すでに가슴が見えてる
-	;パンツ탈의→전라になるor전라양말
+	;벌써가슴가 보이고 있다
+	;팬츠탈의→전라가 되는 or전라양말
 	;=================================================
-	IF 구상記入チェック(100) && B_DATUICHECK(0) == 1
-		;윤활十分
+	IF 구상기입체크(100) && B_DATUICHECK(0) == 1
+		;윤활 충분히
 		IF PALAM:TARGET:윤활 >= 500
 			IF RAND:2 == 0
-;OriginalString : %RAND_SPLIT("愛液でぐっしょりと젖음/股部分に恥ずかしい染みを作った")%드로와즈が『%RAND_SPLIT("ぴちゃり/ぴちゃ/くちゅ")%』と音を立ててリリーの발元に落ちた…
-				PRINTFORMDW %RAND_SPLIT("애액으로 흠뻑젖음/가랑이 부분에 부끄러운 얼룩을 만들었다")%드로워즈가 「%RAND_SPLIT("ぴちゃり/ぴちゃ/くちゅ")%」(와)과 소리를 내 릴리의 발밑에 떨어졌다…
+;OriginalString : %RAND_SPLIT("愛液でぐっしょりと젖음/股部分に恥ずかしい染みを作った")%드로와즈が『%RAND_SPLIT("ぴちゃり/ぴちゃ/くちゅ")%』と音を立ててリリ?の발元に落ちた…
+				PRINTFORMDW %RAND_SPLIT("애액으로 흠뻑젖은/가랑이 부분에 부끄러운 얼룩을 만든")%드로워즈가 「%RAND_SPLIT("찰박/차락/쿠츄")%」 소리를 내 릴리의 발밑에 떨어졌다…
 			ELSE
-;OriginalString : 愛液を吸い込み%RAND_SPLIT("ずっしりと重くなった/ピッタリと恥丘に張り付いた")%드로와즈に指をかけ、ゆっくりと%RAND_SPLIT("見せつける/焦らす")%ように片발ずつ脱いでゆく…
-				PRINTFORMDW 애액을 들이 마셔%RAND_SPLIT("묵직 무거워졌다/딱 치부에 들러붙었다")%드로워즈에 손가락을 걸어 천천히%RAND_SPLIT("見せつける/焦らす")%같게 한쪽 발씩 벗어 간다…
+;OriginalString : 愛液を吸い?み%RAND_SPLIT("ずっしりと重くなった/ピッタリと恥丘に張り付いた")%드로와즈に指をかけ、ゆっくりと%RAND_SPLIT("見せつける/焦らす")%ように片발ずつ?いでゆく…
+				PRINTFORMDW 애액을 들이 마셔 %RAND_SPLIT("묵직 무거워진/딱 치부에 들러붙은")% 드로워즈에 손가락을 걸어 천천히 %RAND_SPLIT("보이/느끼")%도록 한쪽 발씩 벗어 간다…
 			ENDIF
-		;윤활不발
+		;윤활불발
 		ELSE
 			IF RAND:2 == 0
-;OriginalString : リリー%RAND_SPLIT("は恥ずかしそうに白磁の太ももをピタリと閉じたが/の股間にはうっすらと産毛が生えているのみで")%、%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/縦筋一本のまだ幼い")%割れ目を覆い隠すものは何もない…
-				PRINTFORMDW 릴리%RAND_SPLIT("는 부끄러운 듯이 백자의 허벅지를 꼭 닫았지만/의 사타구니에는 희미하게 솜털이 나 있을 뿐으로")%,%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/縦筋一本のまだ幼い")%균열을 덮어 가리는 것은 아무것도 없다…
+;OriginalString : リリ?%RAND_SPLIT("は恥ずかしそうに白磁の太ももをピタリと閉じたが/の股間にはうっすらと産毛が生えているのみで")%、%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/?筋一本のまだ幼い")%割れ目を覆い?すものは何もない…
+				PRINTFORMDW 릴리%RAND_SPLIT("는 부끄러운 듯이 새하얀 허벅지를 꼭 닫았지만/의 사타구니에는 희미하게 솜털이 나 있을 뿐으로")%,%RAND_SPLIT("또렷한/약지 하나로 덮을 정도의/줄 한 가닥의 아직 어린")% 균열을 덮어 가리는 것은 아무것도 없다…
 			ELSE
-;OriginalString : リリーは発情했다雌の匂いを漂わせながら、%CALLNAME:MASTER%의 眼前に%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/肉厚の陰唇に挟まれた")%%RAND_SPLIT("一本筋/縦筋")%を曝け出했다…
-				PRINTFORMDW 릴리는 발정한 암컷의 냄새를 감돌게 하면서, %CALLNAME:MASTER%의 눈앞에%RAND_SPLIT("선명하게했다/새끼 손가락 한 개로 가릴 수 있을 정도의/두툼한 음순에 끼일 수 있었다")%%RAND_SPLIT("一本筋/縦筋")%(을)를 드러냈다…
+;OriginalString : リリ?は?情했다雌の?いを漂わせながら、%CALLNAME:MASTER%의 眼前に%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/肉厚の陰唇に?まれた")%%RAND_SPLIT("一本筋/?筋")%を曝け出했다…
+				PRINTFORMDW 릴리는 발정한 암컷의 냄새를 감돌게 하면서, %CALLNAME:MASTER%의 눈앞에 %RAND_SPLIT("선명한/새끼 손가락 한 개로 가릴 수 있을 정도의/두툼한 음순에 끼인")%%RAND_SPLIT("한줄기/실선")%(을)를 드러냈다…
 			ENDIF
 		ENDIF
 		IF FAVOR(1000, 1000)
 			IF RAND:2 == 0
 ;OriginalString : 「最後の一枚も…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
-				PRINTFORMW 「마지막 한 장도…%RAND_SPLIT("영차/영차")%…와」
-;OriginalString : 「えへへ…リリーの裸、%RAND_SPLIT("いかがですか/どうでしょうか")%
-				PRINTFORM 「네에에…릴리의 알몸,%RAND_SPLIT("어떻습니까/어떨까요")%
+				PRINTFORMW 「마지막 한 장도…%RAND_SPLIT("영차/영차")%…」
+;OriginalString : 「えへへ…リリ?の裸、%RAND_SPLIT("いかがですか/どうでしょうか")%
+				PRINTFORM 「에헤헤…릴리의 알몸,%RAND_SPLIT("어때요/어떨까요")%
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			ELSE
-;OriginalString : 「最後は드로와즈も…%RAND_SPLIT("えへへ/ね/脱ぎ脱ぎしちゃうね")%♪」
-				PRINTFORMW 「최후는 드로워즈도…%RAND_SPLIT("에헤헤/저기/벗어 해 버리네요")%♪」
-;OriginalString : 「リリーの恥ずかしいところ…%CNAME(MASTER)%に全部見て欲しいな
-				PRINTFORM 「릴리의 부끄러운 곳…%CNAME(MASTER)%에 전부 보았으면 좋은데
+;OriginalString : 「最後は드로와즈も…%RAND_SPLIT("えへへ/ね/?ぎ?ぎしちゃうね")%♪」
+				PRINTFORMW 「최후는 드로워즈도…%RAND_SPLIT("에헤헤/예요/벗어 해 버리네요")%♪」
+;OriginalString : 「リリ?の恥ずかしいところ…%CNAME(MASTER)%に全部見て欲しいな
+				PRINTFORM 「릴리의 부끄러운 곳…%CNAME(MASTER)%에게 전부 보이고 싶어요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -337,130 +337,130 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && P_DATUICHECK(0) == 3 &
 			IF RAND:2 == 0
 ;OriginalString : 「それじゃ、%RAND_SPLIT("最後の一枚/드로와즈")%も…」
 				PRINTFORMW 「그러면,%RAND_SPLIT("마지막 한 장/드로와즈")%도…」
-;OriginalString : 「あの、%RAND_SPLIT("じーっと/そんなに")%見られると脱ぎにくいです…%RAND_SPLIT("えっち/もう/")%…」
-				PRINTFORMW 「저,%RAND_SPLIT("가만히/그렇게")%볼 수 있으면 벗기 어렵습니다…%RAND_SPLIT("えっち/もう/")%…」
+;OriginalString : 「あの、%RAND_SPLIT("じ?っと/そんなに")%見られると?ぎにくいです…%RAND_SPLIT("えっち/もう/")%…」
+				PRINTFORMW 「저,%RAND_SPLIT("가만히/그렇게")% 쳐다보면 벗기 어려워요…%RAND_SPLIT("변태/정말/")%…」
 			ELSE
-;OriginalString : 「全部、脱いじゃいますね…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
-				PRINTFORMW 「전부, 탈는 있네요…%RAND_SPLIT("영차/영차")%…와」
-;OriginalString : 「あ、あの……リリーの身体、%RAND_SPLIT("どうでしょうか/こーふんしてくれますか")%…？」
-				PRINTFORMW 「아, 그……릴리의 신체,%RAND_SPLIT("어떨까요/개-분해 주겠습니까")%…？」
+;OriginalString : 「全部、?いじゃいますね…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
+				PRINTFORMW 「전부, 벗었네요…%RAND_SPLIT("영차/영차")%…와」
+;OriginalString : 「あ、あの……リリ?の身?、%RAND_SPLIT("どうでしょうか/こ?ふんしてくれますか")%…？」
+				PRINTFORMW 「아, 그……릴리의 신체,%RAND_SPLIT("어떨까요/흥분해 주셨나요")%…?」
 			ENDIF
 		ENDIF
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
-	;ブラ着用상태or원피스着用で속옷のみ脱ぐ
+	;기타? 조건없음
+	;브라 착용상태or원피스착용으로속옷만? 구
 	;=================================================
-	IF 구상記入チェック(100)
-;OriginalString : 「드로와즈、脱いじゃいますね……%RAND_SPLIT("うんしょ/よいしょ/")%」
-		PRINTFORMW 「드로워즈, 탈는 있네요……%RAND_SPLIT("영차/영차/")%」
+	IF 구상기입체크(100)
+;OriginalString : 「드로와즈、?いじゃいますね……%RAND_SPLIT("うんしょ/よいしょ/")%」
+		PRINTFORMW 「드로워즈, 벗었네요……%RAND_SPLIT("영차/영차/")%」
 ;OriginalString : 「えへへ……%RAND_SPLIT("どうかな/どうでしょうか")%、興奮しちゃいま했다？」
-		PRINTFORMW 「네에에……%RAND_SPLIT("어떨까/어떨까요")%, 흥분해 버렸습니다？」
+		PRINTFORMW 「에헤헤……%RAND_SPLIT("어떨까나/어떨까요")%, 흥분해 버렸나요?」
 		RETURN 1
 	ENDIF
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;자주탈의・おっぱいうｐ FIRSTDATUI(40)
-;・ブラを脱ぐ
+;자주탈의? 말하는 p FIRSTDATUI(40)
+;? 브라를? 구
 ;------------------------------------------------
-;・今回の탈의でおっぱいが見えるよう되었다場合に表示
-;・ブラ見せを経由せず一気に脱ぐ場合あり
+;? 이번탈의로 젖가슴이 보이도록(듯이)되었다경우에 표시
+;? 브라 보이고를? 사정 하지 않고 1? 에? 경우 있어
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:자주탈의 && B_DATUICHECK(0) == 3 && !IS_NOWASSIACTNAME(, "탈의")
+IF 구상기입체크(100) && TFLAG:자주탈의 && B_DATUICHECK(0) == 3 && !IS_NOWASSIACTNAME(, "탈의")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(100) && !TALENT:거유 && FIRSTDATUI(40)
+	IF 구상기입체크(100) && !TALENT:거유 && FIRSTDATUI(40)
 ;OriginalString : 「\@ TALENT:MASTER:남자 ? あの…男の人は大きなお가슴が好きって聞いたことがあるんですけど… # 여자同士なのに、ちょっと照れちゃいますね… \@」
-		PRINTFORMW 「\@ TALENT:MASTER:남자 ? 저…남자는 큰가슴하지만 좋아한다는 것은 (들)물었던 적이 있습니다만… # 여자같은 종류인데, 조금 수줍어 버리네요… \@」
-;OriginalString : 「どうでしょうか…リリーの小さなお가슴でも、こーふんしてくれますか？」
-		PRINTFORMW 「어떨까요…릴리의 작은 가슴에서도, 개-분해 주겠습니까？」
+		PRINTFORMW 「\@ TALENT:MASTER:남자 ? 저…남자는 큰가슴을 좋아한다는 것은 들었던 적이 있지만… # 여자같은 종류인데, 조금 수줍어 버리네요… \@」
+;OriginalString : 「どうでしょうか…リリ?の小さなお가슴でも、こ?ふんしてくれますか？」
+		PRINTFORMW 「어떨까요… 릴리의 작은 가슴에서도, 흥분해 주시겠어요?」
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;すでに성기が見えてる
-	;ブラのみ着衣→전라
-	;死に구상？
+	;벌써성기가 보이고 있다
+	;브라만 착의→전라
+	;죽어구상?
 	;=================================================
-	IF 구상記入チェック(75) && P_DATUICHECK(0) == 1
-		;거유地の文
+	IF 구상기입체크(75) && P_DATUICHECK(0) == 1
+		;거유지문
 		IF TALENT:거유
-;OriginalString : リリーの%RAND_SPLIT("豊かな/たわわに実った/大きく張りのある")%乳房が%RAND_SPLIT("たゆん/ぷるん")%とブラから零れ落ちる
-			PRINTFORMDW 릴리의 %RAND_SPLIT("풍부한/휘어지게 여물었다/크고 탄력 있다")%유방이%RAND_SPLIT("たゆん/ぷるん")%(와)과 브라로부터 흘러넘치고 떨어진다
-		;빈유地の文
+;OriginalString : リリ?の%RAND_SPLIT("豊かな/たわわに?った/大きく張りのある")%乳房が%RAND_SPLIT("たゆん/ぷるん")%とブラから零れ落ちる
+			PRINTFORMDW 릴리의 %RAND_SPLIT("풍부한/휘어지게 여물었다/크고 탄력 있다")%유방이%RAND_SPLIT("응/응")%(와)과 브라로부터 흘러넘치고 떨어진다
+		;빈유지문
 		ELSEIF TALENT:빈유
-;OriginalString : リリーの%RAND_SPLIT("なだらかに膨らんだ乳房/なだらかな双丘の頂点に咲く桜の蕾が/薄く未成熟な乳房")%がブラの下から顔を覗かせる
-			PRINTFORMDW 릴리의 %RAND_SPLIT("완만하게 부풀어 오른 유방/완만한 쌍구의 정점으로 피는 벚꽃의 꽃봉오리가/얇게 미성숙인 유방")%하지만 브라아래로부터 얼굴을 들여다 보게 한다
-		;並乳地の文
+;OriginalString : リリ?の%RAND_SPLIT("なだらかに膨らんだ乳房/なだらかな?丘の頂点に?く?の?が/薄く未成熟な乳房")%がブラの下から顔を?かせる
+			PRINTFORMDW 릴리의 %RAND_SPLIT("완만하게 부풀어 오른 유방/완만한 쌍구의 정점으로 피는 벚꽃의 꽃봉오리가/얇게 미성숙인 유방")%이 브라아래로부터 얼굴을 들여다 보게 한다
+		;? 젖지문
 		ELSE
-;OriginalString : リリーの%RAND_SPLIT("膨らみ始めたツンと張りのある/손のひらに丁度収まる程度の/妖精にしては大きな/ふっくらと柔らかな")%美乳がブラの下から顔を出했다
-			PRINTFORMDW 릴리의 %RAND_SPLIT("부풀어 오르기 시작한 찡 탄력 있다/손의 히등에 꼭 들어가는 정도의/요정으로 해서는 큰/포동포동 부드러운")%미유가 브라아래로부터 얼굴을 내밀었다
+;OriginalString : リリ?の%RAND_SPLIT("膨らみ始めたツンと張りのある/손のひらに丁度?まる程度の/妖精にしては大きな/ふっくらと柔らかな")%美乳がブラの下から顔を出했다
+			PRINTFORMDW 릴리의 %RAND_SPLIT("부풀어 오르기 시작한  탄력 있는/손의 안에 꼭 들어가는 정도의/요정으로 해서는 큰/포동포동 부드러운")%미유가 브라아래로부터 얼굴을 내밀었다
 		ENDIF
 		IF FAVOR(1000, 1000)
 			IF RAND:2 == 0
-;OriginalString : 「%RAND_SPLIT("えへへ/ど、どうでしょうか")%……リリーのおっぱいで、こーふんしてくれますか？」
-				PRINTFORMW 「%RAND_SPLIT("에헤헤/어, 어떨까요")%……릴리의 젖가슴으로, 개-분해 주겠습니까？」
-;OriginalString : 「%RAND_SPLIT("視線が刺さるんですけど/あの、もしよければ")%…%RAND_SPLIT("触って/おしゃぶりして/味わって/ぱふぱふして")%みます？　ふふっ♪」
-				PRINTFORMW 「%RAND_SPLIT("시선이 박힙니다만/저, 만약 좋다면")%…%RAND_SPLIT("触って/おしゃぶりして/味わって/ぱふぱふして")%봅니다？ 후후♪」
+;OriginalString : 「%RAND_SPLIT("えへへ/ど、どうでしょうか")%……リリ?のおっぱいで、こ?ふんしてくれますか？」
+				PRINTFORMW 「%RAND_SPLIT("에헤헤/어, 어떨까요")%…… 릴리의 젖가슴으로, 흥분해 주시겠어요?」
+;OriginalString : 「%RAND_SPLIT("視線が刺さるんですけど/あの、もしよければ")%…%RAND_SPLIT("?って/おしゃぶりして/味わって/ぱふぱふして")%みます？　ふふっ♪」
+				PRINTFORMW 「%RAND_SPLIT("시선이 박힙니다만/저, 만약 좋다면")%…%RAND_SPLIT("만져/손대어/맛/파후파후해")%볼래요? 후후♪」
 			ELSE
-;OriginalString : 「全部、脱いじゃいますね…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
-				PRINTFORMW 「전부, 탈는 있네요…%RAND_SPLIT("영차/영차")%…와」
-;OriginalString : 「あ、あの……リリーの身体、%RAND_SPLIT("どうでしょうか/こーふんしてくれますか")%…？」
-				PRINTFORMW 「아, 그……릴리의 신체,%RAND_SPLIT("어떨까요/개-분해 주겠습니까")%…？」
+;OriginalString : 「全部、?いじゃいますね…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
+				PRINTFORMW 「전부, 벗을게요…%RAND_SPLIT("영차/영차")%…와」
+;OriginalString : 「あ、あの……リリ?の身?、%RAND_SPLIT("どうでしょうか/こ?ふんしてくれますか")%…？」
+				PRINTFORMW 「아, 그……릴리의 신체,%RAND_SPLIT("어떨까요/흥분해 주시겠어요")%…?」
 			ENDIF
 		ELSE
 			IF RAND:2 == 0
 ;OriginalString : 「まだ、ちょっと%RAND_SPLIT("照れちゃいますね/恥ずかしいですね")%…」
-				PRINTFORMW 「 아직, 조금%RAND_SPLIT("수줍어 버리네요/부끄럽네요")%…」
+				PRINTFORMW 「 아직, 조금 %RAND_SPLIT("수줍어 버리네요/부끄럽네요")%…」
 ;OriginalString : 「何て言いましょうか、えっちな事をしてる時とはまた違って…」
-				PRINTFORMW 「뭐라고 말할까요, 인 일을 하고 있는 때와는 또 달라…」
-;OriginalString : 「脱ぐたびに、%RAND_SPLIT("당신を求める気持ちが強くなっていって/これからえっちな事しちゃうんだって/リリーのえっちな心も見透かされていくみたいで")%…」
-				PRINTFORMW 「벗을 때마다,%RAND_SPLIT("당신를 요구하는 기분이 강해져 가/지금부터 엣치한 일 해 버린대/릴리의 엣치한 마음도 간파해져 가는 것 같아")%…」
-;OriginalString : 「なんだか…%RAND_SPLIT("こーふん/ドキドキ")%しちゃうんです…えへへっ」
-				PRINTFORMW 「어쩐지…%RAND_SPLIT("개-응/두근두근")%해 버립니다…네에에 」
+				PRINTFORMW 「뭐라고 말할까요, 야한 일을 하고 있는 때와는 또 달라…」
+;OriginalString : 「?ぐたびに、%RAND_SPLIT("당신を求める?持ちが?くなっていって/これからえっちな事しちゃうんだって/リリ?のえっちな心も見透かされていくみたいで")%…」
+				PRINTFORMW 「벗을 때마다,%RAND_SPLIT("당신를 요구하는 기분이 강해져 가/지금부터 엣치한 일 해 버린다고/릴리의 엣치한 마음도 간파해져 가는 것 같아")%…」
+;OriginalString : 「なんだか…%RAND_SPLIT("こ?ふん/ドキドキ")%しちゃうんです…えへへっ」
+				PRINTFORMW 「어쩐지…%RAND_SPLIT("흥분/두근두근")%해 버려요…에헤헤 」
 			ELSE
 ;OriginalString : 「おっぱい、好きなんですか？　ふふっ、%RAND_SPLIT("なんだか可愛い/赤ちゃんみたい/甘えんぼさんなん")%ですね♪」
-				PRINTFORMW 「젖가슴, 좋아합니까？ 후후,%RAND_SPLIT("왠지 사랑스럽다/아기같다/응석꾸러기씨")%(이)군요♪」
-;OriginalString : 「優しくしてくれるなら…%RAND_SPLIT("揉んで/触って/摘んで/舐めて/吸って/ちゅってして/むにむにってして")%みてもいいんですよ？　ふふっ♪」
-				PRINTFORMW 「상냥하게 해 준다면…%RAND_SPLIT("비비어/손대어/타/빨아/들이마셔/는 해/물렁물렁은 해")%봐도 괜찮아요？　후후♪」
+				PRINTFORMW 「젖가슴, 좋아하나요? 후후,%RAND_SPLIT("왠지 사랑스럽/아기같/응석꾸러기씨")%(이)네요♪」
+;OriginalString : 「優しくしてくれるなら…%RAND_SPLIT("?んで/?って/摘んで/?めて/吸って/ちゅってして/むにむにってして")%みてもいいんですよ？　ふふっ♪」
+				PRINTFORMW 「상냥하게 해 준다면…%RAND_SPLIT("비비어/손대어/타/빨아/들이마셔/해/물렁물렁 해")%봐도 괜찮아요?   후후♪」
 			ENDIF
 		ENDIF
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
-	;パンツを履い하며 、ブラ탈의
+	;기타? 조건없음
+	;팬츠를 리 있고하며, 브라탈의
 	;=================================================
-	IF 구상記入チェック(100)
-		;거유地の文
+	IF 구상기입체크(100)
+		;거유지문
 		IF TALENT:거유
-;OriginalString : リリーの%RAND_SPLIT("豊かな/たわわに実った/大きく張りのある")%乳房が%RAND_SPLIT("たゆん/ぷるん")%とブラから零れ落ちる
-			PRINTFORMDW 릴리의 %RAND_SPLIT("풍부한/휘어지게 여물었다/크고 탄력 있다")%유방이%RAND_SPLIT("たゆん/ぷるん")%(와)과 브라로부터 흘러넘치고 떨어진다
-		;빈유地の文
+;OriginalString : リリ?の%RAND_SPLIT("豊かな/たわわに?った/大きく張りのある")%乳房が%RAND_SPLIT("たゆん/ぷるん")%とブラから零れ落ちる
+			PRINTFORMDW 릴리의 %RAND_SPLIT("풍부한/휘어지게 여물었다/크고 탄력 있다")%유방이%RAND_SPLIT("응/응")%(와)과 브라로부터 흘러넘치고 떨어진다
+		;빈유지문
 		ELSEIF TALENT:빈유
-;OriginalString : リリーの%RAND_SPLIT("なだらかに膨らんだ乳房/なだらかな双丘の頂点に咲く桜の蕾が/薄く未成熟な乳房")%がブラの下から顔を覗かせる
-			PRINTFORMDW 릴리의 %RAND_SPLIT("완만하게 부풀어 오른 유방/완만한 쌍구의 정점으로 피는 벚꽃의 꽃봉오리가/얇게 미성숙인 유방")%하지만 브라아래로부터 얼굴을 들여다 보게 한다
-		;並乳地の文
+;OriginalString : リリ?の%RAND_SPLIT("なだらかに膨らんだ乳房/なだらかな?丘の頂点に?く?の?が/薄く未成熟な乳房")%がブラの下から顔を?かせる
+			PRINTFORMDW 릴리의 %RAND_SPLIT("완만하게 부풀어 오른 유방/완만한 쌍구의 정점으로 피는 벚꽃의 꽃봉오리가/얇게 미성숙인 유방")%이 브라아래로부터 얼굴을 들여다 보게 한다
+		;? 젖지문
 		ELSE
-;OriginalString : リリーの%RAND_SPLIT("膨らみ始めたツンと張りのある/손のひらに丁度収まる程度の/妖精にしては大きな/ふっくらと柔らかな")%美乳がブラの下から顔を出했다
-			PRINTFORMDW 릴리의 %RAND_SPLIT("부풀어 오르기 시작한 찡 탄력 있다/손의 히등에 꼭 들어가는 정도의/요정으로 해서는 큰/포동포동 부드러운")%미유가 브라아래로부터 얼굴을 내밀었다
+;OriginalString : リリ?の%RAND_SPLIT("膨らみ始めたツンと張りのある/손のひらに丁度?まる程度の/妖精にしては大きな/ふっくらと柔らかな")%美乳がブラの下から顔を出했다
+			PRINTFORMDW 릴리의 %RAND_SPLIT("부풀어 오르기 시작한 탄력 있는/손 안에 꼭 들어가는 정도의/요정으로 해서는 큰/포동포동 부드러운")% 미유가 브라아래로부터 얼굴을 내밀었다
 		ENDIF
 		IF FAVOR(1000, 1000)
 			IF RAND:2 == 0
-;OriginalString : 「%RAND_SPLIT("えへへ/ど、どうでしょうか")%……リリーのおっぱいで、こーふんしてくれますか？」
-				PRINTFORMW 「%RAND_SPLIT("에헤헤/어, 어떨까요")%……릴리의 젖가슴으로, 개-분해 주겠습니까？」
-;OriginalString : 「えっと…リリーのでよければ、%RAND_SPLIT("触って/おしゃぶりして/味わって/ぱふぱふして")%みますか？　ふふっ♪」
-				PRINTFORMW 「어와…릴리의 것으로 좋다면,%RAND_SPLIT("손대어/빨아/맛봐/해")%봅니까？　후후♪」
+;OriginalString : 「%RAND_SPLIT("えへへ/ど、どうでしょうか")%……リリ?のおっぱいで、こ?ふんしてくれますか？」
+				PRINTFORMW 「%RAND_SPLIT("에헤헤/어, 어떨까요")%…… 릴리의 젖가슴으로, 흥분해 주시겠어요?」
+;OriginalString : 「えっと…リリ?のでよければ、%RAND_SPLIT("?って/おしゃぶりして/味わって/ぱふぱふして")%みますか？　ふふっ♪」
+				PRINTFORMW 「엣또…릴리의 것으로 좋다면,%RAND_SPLIT("손대어/빨아/맛봐/해")% 볼래요?   후후♪」
 			ELSE
-;OriginalString : 「ほら、%CNAME(MASTER)%の大好きなリリーのおっぱいですよ♪」
-				PRINTFORMW 「이봐요,%CNAME(MASTER)%의 정말 좋아하는 릴리의 젖가슴이에요♪」
-;OriginalString : 「드로와즈を脱ぐ前に…まずはおっぱいで%RAND_SPLIT("楽しみ/気持ちよくなり")%ましょうね
-				PRINTFORM 「드로워즈를 벗기 전에…우선은 젖가슴으로%RAND_SPLIT("즐거움/기분 좋아져")%짊어지는군
+;OriginalString : 「ほら、%CNAME(MASTER)%の大好きなリリ?のおっぱいですよ♪」
+				PRINTFORMW 「자,%CNAME(MASTER)%의 정말 좋아하는 릴리의 젖가슴이에요♪」
+;OriginalString : 「드로와즈を?ぐ前に…まずはおっぱいで%RAND_SPLIT("?しみ/?持ちよくなり")%ましょうね
+				PRINTFORM 「드로워즈를 벗기 전에…우선은 젖가슴으로 %RAND_SPLIT("즐거워져/기분 좋아져")%요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -468,18 +468,18 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && B_DATUICHECK(0) == 3 &
 		ELSE
 			IF RAND:2 == 0
 ;OriginalString : 「まだ、ちょっと%RAND_SPLIT("照れちゃいますね/恥ずかしいですね")%…」
-				PRINTFORMW 「 아직, 조금%RAND_SPLIT("수줍어 버리네요/부끄럽네요")%…」
+				PRINTFORMW 「 아직, 조금 %RAND_SPLIT("수줍어 버리네요/부끄럽네요")%…」
 ;OriginalString : 「何て言いましょうか、えっちな事をしてる時とはまた違って…」
-				PRINTFORMW 「뭐라고 말할까요, 인 일을 하고 있는 때와는 또 달라…」
-;OriginalString : 「脱ぐたびに、%RAND_SPLIT("당신を求める気持ちが強くなっていって/これからえっちな事しちゃうんだって/リリーのえっちな心も見透かされていくみたいで")%…」
+				PRINTFORMW 「뭐라고 말할까요, 야한 일을 하고 있는 때와는 또 달라…」
+;OriginalString : 「?ぐたびに、%RAND_SPLIT("당신を求める?持ちが?くなっていって/これからえっちな事しちゃうんだって/リリ?のえっちな心も見透かされていくみたいで")%…」
 				PRINTFORMW 「벗을 때마다,%RAND_SPLIT("당신를 요구하는 기분이 강해져 가/지금부터 엣치한 일 해 버린대/릴리의 엣치한 마음도 간파해져 가는 것 같아")%…」
-;OriginalString : 「なんだか…%RAND_SPLIT("こーふん/ドキドキ")%しちゃうんです…えへへっ」
-				PRINTFORMW 「어쩐지…%RAND_SPLIT("개-응/두근두근")%해 버립니다…네에에 」
+;OriginalString : 「なんだか…%RAND_SPLIT("こ?ふん/ドキドキ")%しちゃうんです…えへへっ」
+				PRINTFORMW 「어쩐지…%RAND_SPLIT("흥분/두근두근")%해 버립니다…에헤헤 」
 			ELSE
 ;OriginalString : 「おっぱい、好きなんですか？　ふふっ、%RAND_SPLIT("なんだか可愛い/赤ちゃんみたい/甘えんぼさんなん")%ですね♪」
-				PRINTFORMW 「젖가슴, 좋아합니까？ 후후,%RAND_SPLIT("왠지 사랑스럽다/아기같다/응석꾸러기씨")%(이)군요♪」
-;OriginalString : 「優しくしてくれるなら…%RAND_SPLIT("揉んで/触って/摘んで/舐めて/吸って/ちゅってして/むにむにってして")%みてもいいんですよ？　ふふっ♪」
-				PRINTFORMW 「상냥하게 해 준다면…%RAND_SPLIT("비비어/손대어/타/빨아/들이마셔/는 해/물렁물렁은 해")%봐도 괜찮아요？　후후♪」
+				PRINTFORMW 「젖가슴, 좋아합니까? 후후,%RAND_SPLIT("왠지 사랑스럽다/아기같다/응석꾸러기씨")%(이)군요♪」
+;OriginalString : 「優しくしてくれるなら…%RAND_SPLIT("?んで/?って/摘んで/?めて/吸って/ちゅってして/むにむにってして")%みてもいいんですよ？　ふふっ♪」
+				PRINTFORMW 「상냥하게 해 준다면…%RAND_SPLIT("비비어/손대어/타/빨아/들이마셔/해/물렁물렁은 해")%봐도 괜찮아요?   후후♪」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -487,126 +487,126 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && B_DATUICHECK(0) == 3 &
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;자주탈의・ぱんつ見せ FIRSTDATUI(50)
-;자주탈의・ブラ見せ FIRSTDATUI(60)
+;자주탈의? 팬티 보이고 FIRSTDATUI(50)
+;자주탈의? 브라 보이고 FIRSTDATUI(60)
 ;------------------------------------------------
-;・원피스を脱ぐ
-;・まとめます
+;? 원피스를? 구
+;? 정리합니다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:자주탈의 && B_DATUICHECK(0) == 2 && !IS_NOWASSIACTNAME(, "탈의")
+IF 구상기입체크(100) && TFLAG:자주탈의 && B_DATUICHECK(0) == 2 && !IS_NOWASSIACTNAME(, "탈의")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTDATUI(60)
+	IF 구상기입체크(0) && FIRSTDATUI(60)
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;원피스を脱いでブラ＆パンツ見せ
+	;원피스를? 있고로 브라＆팬츠 보이고
 	;=================================================
-	IF 구상記入チェック(100)&& P_DATUICHECK(0) == 2
-		;윤활十分ならパンツ
+	IF 구상기입체크(100)&& P_DATUICHECK(0) == 2
+		;윤활 충분하면 팬츠
 		IF PALAM:TARGET:윤활 >= 500
 			IF RAND:2 == 0
-;OriginalString : リリーの%RAND_SPLIT("白磁の/真っ白な/透き通るように白い/健康的な")%太もも、そして%RAND_SPLIT("愛液でぐっしょりと젖음/股部分に恥ずかしい染みを作った")%드로와즈が露わになる…
-				PRINTFORMDW 릴리의 %RAND_SPLIT("백자의/새하얀/투명하도록(듯이) 희다/건강한")%허벅지, 그리고%RAND_SPLIT("愛液でぐっしょりと젖음/股部分に恥ずかしい染みを作った")%드로워즈가 이슬 악어 된다…
+;OriginalString : リリ?の%RAND_SPLIT("白磁の/?っ白な/透き通るように白い/健康的な")%太もも、そして%RAND_SPLIT("愛液でぐっしょりと젖음/股部分に恥ずかしい染みを作った")%드로와즈が露わになる…
+				PRINTFORMDW 릴리의 %RAND_SPLIT("백자의/새하얀/투명하도록 흰/건강한")% 허벅지, 그리고 %RAND_SPLIT("애액으로 흠뻑 젖은/아래 부분에 부끄러운 얼룩을 만든.")% 드로워즈가 이슬내린다...
 			ELSE
-;OriginalString : 薄손の드로와즈はリリーの愛液を吸い込み、%RAND_SPLIT("股部分に恥ずかしい染みを作っ/ピッタリと恥丘に張り付き幼い割れ目を露わにさせ")%ている…
-				PRINTFORMDW 경상의 드로워즈는 릴리의 애액을 들이 마셔,%RAND_SPLIT("가랑이 부분에 부끄러운 얼룩을 작/딱 치부에 들러붙어 어린 균열을 공공연하게 시키고")%(이)라고 있다…
+;OriginalString : 薄손の드로와즈はリリ?の愛液を吸い?み、%RAND_SPLIT("股部分に恥ずかしい染みを作っ/ピッタリと恥丘に張り付き幼い割れ目を露わにさせ")%ている…
+				PRINTFORMDW 경상의 드로워즈는 릴리의 애액을 들이 마셔,%RAND_SPLIT("가랑이 부분에 부끄러운 얼룩을/딱 치부에 들러붙어 어린 균열을 드러나게")% 하고 있다…
 			ENDIF
-		;윤활不발ならブラ
+		;윤활불발라면 브라
 		ELSE
 			;거유
 			IF TALENT:거유
-;OriginalString : リリーの%RAND_SPLIT("豊かな/たわわに実った/大きく張りのある")%乳房がブラの中%RAND_SPLIT("で窮屈そうに収まって/にみっちりと収まって/から今にも零れ落ちそうにゆっさと揺れて")%いる…
-				PRINTFORMDW 릴리의 %RAND_SPLIT("풍부한/휘어지게 여물었다/크고 탄력 있다")%유방이 브라안%RAND_SPLIT("で窮屈そうに収まって/にみっちりと収まって/から今にも零れ落ちそうにゆっさと揺れて")%있다…
+;OriginalString : リリ?の%RAND_SPLIT("豊かな/たわわに?った/大きく張りのある")%乳房がブラの中%RAND_SPLIT("で窮屈そうに?まって/にみっちりと?まって/から今にも零れ落ちそうにゆっさと?れて")%いる…
+				PRINTFORMDW 릴리의 %RAND_SPLIT("풍부한/휘어지게 여문/크고 탄력 있는")% 유방이 브라안 %RAND_SPLIT("에 구속되어/에 충분히? 기다려/로부터 당장 흘러 떨어져 마을? 라고")%있다…
 			;빈유
 			ELSEIF TALENT:빈유
-;OriginalString : ブラのサイズが大きかったのか、リリーが動く度に%RAND_SPLIT("その無防備な가슴元/ブラの隙間")%からチラチラと%RAND_SPLIT("ピンクの蕾/桜の蕾が/ツンと발기했다乳頭")%が顔を覗かせた…
-				PRINTFORMDW 브라의 사이즈가 컸던 것일까, 릴리가 움직일 때에%RAND_SPLIT("그 무방비인가슴원/브라의 틈새")%(으)로부터 치라치라궴%RAND_SPLIT("ピンクの蕾/桜の蕾が/ツンと발기했다乳頭")%하지만 얼굴을 들여다 보게 했다…
-			;並乳
+;OriginalString : ブラのサイズが大きかったのか、リリ?が動く度に%RAND_SPLIT("その無防備な가슴元/ブラの隙間")%からチラチラと%RAND_SPLIT("ピンクの?/?の?が/ツンと발기했다乳頭")%が顔を?かせた…
+				PRINTFORMDW 브라의 사이즈가 컸던 것일까, 릴리가 움직일 때에 %RAND_SPLIT("그 무방비인 가슴/브라의 틈새")%(으)로부터 치라치라 %RAND_SPLIT("흘러나와/보여져서/유듀가 보여")% 얼굴을 들여다 보게 했다…
+			;? 젖
 			ELSE
-;OriginalString : リリーは%RAND_SPLIT("純白の/レースをあしらった/桜色の/")%可愛らしい속옷を見せつけるように、%CALLNAME:MASTER%의 前でくるりと一回りして見せた…
-				PRINTFORMDW 릴리는%RAND_SPLIT("순백의/레이스를 다루었다/연분홍색의/")%사랑스러운 속옷을 과시하듯이, %CALLNAME:MASTER%의 전으로 휙 한층 해 보였다…
+;OriginalString : リリ?は%RAND_SPLIT("純白の/レ?スをあしらった/?色の/")%可愛らしい속옷を見せつけるように、%CALLNAME:MASTER%의 前でくるりと一回りして見せた…
+				PRINTFORMDW 릴리는 %RAND_SPLIT("순백의/레이스를 다루었다/연분홍색의/")% 사랑스러운 속옷을 과시하듯이, %CALLNAME:MASTER%의 앞으로 휙 해 보였다…
 			ENDIF
 		ENDIF
 
 		IF FAVOR(1000, 1000)
 			IF RAND:2 == 0
-;OriginalString : 「ほら…ゆっくり、一枚ずつ脱いでいきますね……%RAND_SPLIT("うふふ/ふふっ/")%」
-				PRINTFORMW 「이봐요…천천히, 한 장씩 벗어 가네요……%RAND_SPLIT("우후후/후훗/")%」
-;OriginalString : 「%CNAME(MASTER)%の為に可愛い속옷を着て来たんですから、ちゃんと%RAND_SPLIT("こーふんして/ドキドキして/精を溜め込んで")%くださいね
-				PRINTFORM 「%CNAME(MASTER)%(을)를 위해 사랑스러운 속옷을 입고 왔습니까들 , 분명하게%RAND_SPLIT("개-분해/두근두근 해/정령을 모아두어")%주세요
+;OriginalString : 「ほら…ゆっくり、一枚ずつ?いでいきますね……%RAND_SPLIT("うふふ/ふふっ/")%」
+				PRINTFORMW 「자…천천히, 한 장씩 벗어 가네요……%RAND_SPLIT("우후후/후훗/")%」
+;OriginalString : 「%CNAME(MASTER)%の?に可愛い속옷を着て?たんですから、ちゃんと%RAND_SPLIT("こ?ふんして/ドキドキして/精を溜め?んで")%くださいね
+				PRINTFORM 「%CNAME(MASTER)%(을)를 위해 사랑스러운 속옷을 입고 왔으니까 , 분명하게 %RAND_SPLIT("흥분해/두근두근 해/정령을 모아두어")%주세요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			ELSE
-;OriginalString : 「%RAND_SPLIT("あのね/ねぇ/えっとね")%、%RAND_SPLIT("これ新しく買ってみたん/この속옷が今流行ってるみたいなん/一応勝負속옷なん")%ですけど…どうでしょうか？」
-				PRINTFORMW 「%RAND_SPLIT("저기요/저기/글쎄요")%,%RAND_SPLIT("これ新しく買ってみたん/この속옷が今流行ってるみたいなん/一応勝負속옷なん")%이지만…어떨까요？」
+;OriginalString : 「%RAND_SPLIT("あのね/ねぇ/えっとね")%、%RAND_SPLIT("これ新しく買ってみたん/この속옷が今流行ってるみたいなん/一?勝負속옷なん")%ですけど…どうでしょうか？」
+				PRINTFORMW 「%RAND_SPLIT("저기요/저기/글쎄요")%,%RAND_SPLIT("이것 새롭게 사 본/이속옷가 지금 유행비치는 것 같은 응/1? 승부속옷")%이지만… 어떨까요?」
 ;OriginalString : 「もっと%RAND_SPLIT("幼い/えっちな/明るい色の/可愛い/恥ずかしい")%속옷の方が%CNAME(MASTER)%好みだったかな…ふふっ♪」
-				PRINTFORMW 「 좀 더%RAND_SPLIT("어리다/엣치한/밝은 색의/사랑스럽다/부끄럽다")%속옷이%CNAME(MASTER)%기호였는지…후후♪」
+				PRINTFORMW 「 좀 더 %RAND_SPLIT("어리다/엣치한/밝은 색의/사랑스럽다/부끄러운")% 속옷이%CNAME(MASTER)% 기호였는지…후후♪」
 			ENDIF
 		ELSE
 			IF RAND:3 == 0
 ;OriginalString : 「%RAND_SPLIT("えっと/あ、あの")%…どうで%RAND_SPLIT("すか/しょうか")%？」
-				PRINTFORMW 「%RAND_SPLIT("엣또/저, 저")%…어떻게로%RAND_SPLIT("すか/しょうか")%？」
-;OriginalString : 「リリーの속옷姿でも%RAND_SPLIT("ドキドキ/ムラムラ/こーふん")%してくれると嬉しいな♪」
-				PRINTFORMW 「릴리의 속옷 모습에서도%RAND_SPLIT("두근두근/불끈불끈/개-응")%해 주면 기쁜데♪」
+				PRINTFORMW 「%RAND_SPLIT("엣또/저, 저")%…어떤%RAND_SPLIT("가요/걸까")%?」
+;OriginalString : 「リリ?の속옷姿でも%RAND_SPLIT("ドキドキ/ムラムラ/こ?ふん")%してくれると嬉しいな♪」
+				PRINTFORMW 「릴리의 속옷 모습에서도 %RAND_SPLIT("두근두근/불끈불끈/흥분")%해 주면 기쁜데♪」
 			ELSEIF RAND:2 == 0
-;OriginalString : 「%RAND_SPLIT("ふぅ/よいしょ")%…お洋服畳みますから、少し待っててくださいね？」
-				PRINTFORMW 「%RAND_SPLIT("후우/영차")%…양복 접기 때문에, 조금 기다리고 있어 주세요？」
+;OriginalString : 「%RAND_SPLIT("ふぅ/よいしょ")%…お洋服?みますから、少し待っててくださいね？」
+				PRINTFORMW 「%RAND_SPLIT("후우/영차")%… 옷 접어야 하니, 조금 기다리고 있어 주세요?」
 			ELSE
 ;OriginalString : 「ちょっと子供っぽいですか？」
-				PRINTFORMW 「조금 아이 같습니까？」
-;OriginalString : 「%RAND_SPLIT("むぅ/もう/そんな事言われても")%…リリーは可愛い속옷の方が好きなんですもん…」
-				PRINTFORMW 「%RAND_SPLIT("므우/이제(벌써)/그런 일 말해져도")%…릴리는 사랑스러운 속옷을 좋아합니다 것…」
-;OriginalString : 「不満ならもう見せてあげませんからね？」
-				PRINTFORMW 「불만이라면 이제 보여 주지 않기 때문에？」
+				PRINTFORMW 「조금 아이 같나요?」
+;OriginalString : 「%RAND_SPLIT("むぅ/もう/そんな事言われても")%…リリ?は可愛い속옷の方が好きなんですもん…」
+				PRINTFORMW 「%RAND_SPLIT("므우/정말/그런 일 말해져도")%…릴리는 사랑스러운 속옷을 좋아하는걸…」
+;OriginalString : 「不?ならもう見せてあげませんからね？」
+				PRINTFORMW 「불만이라면 이제 보여 주지 않으니까?」
 			ENDIF
 		ENDIF
 		RETURN 1
 	ENDIF
 
 	;=================================================
-	;기타・조건없음
-	;パンツ탈의→원피스탈의のパターン
-	;まんまん見せに吸われる？　順番変えるか…
-	;着衣好きなら可能性も
+	;기타? 조건없음
+	;팬츠탈의→원피스탈의의 파타? 
+	;그대로응 보여에 들이마셔져?   순번? 인가…
+	;착의를 좋아하면 가능성도
 	;=================================================
-	IF 구상記入チェック(100)
-;OriginalString : 「%RAND_SPLIT("あのね/ねぇ/えっとね")%、%RAND_SPLIT("これ新しく買ってみたん/この속옷が今流行ってるみたいなん/一応勝負속옷なん")%ですけど…どうでしょうか？」
-		PRINTFORMW 「%RAND_SPLIT("저기요/저기/글쎄요")%,%RAND_SPLIT("これ新しく買ってみたん/この속옷が今流行ってるみたいなん/一応勝負속옷なん")%이지만…어떨까요？」
+	IF 구상기입체크(100)
+;OriginalString : 「%RAND_SPLIT("あのね/ねぇ/えっとね")%、%RAND_SPLIT("これ新しく買ってみたん/この속옷が今流行ってるみたいなん/一?勝負속옷なん")%ですけど…どうでしょうか？」
+		PRINTFORMW 「%RAND_SPLIT("저기요/저기/글쎄요")%,%RAND_SPLIT("이것 새롭게 사 본/이속옷가 지금 유행비치는 것 같은 응/1? 승부속옷")%이지만… 어떨까요?」
 ;OriginalString : 「もっと%RAND_SPLIT("幼い/えっちな/明るい色の/可愛い/恥ずかしい")%속옷の方が%CNAME(MASTER)%好みだったかな…ふふっ♪」
-		PRINTFORMW 「 좀 더%RAND_SPLIT("어리다/엣치한/밝은 색의/사랑스럽다/부끄럽다")%속옷이%CNAME(MASTER)%기호였는지…후후♪」
+		PRINTFORMW 「 좀 더 %RAND_SPLIT("어리다/엣치한/밝은 색의/사랑스럽다/부끄럽다")%속옷이%CNAME(MASTER)%기호였는지…후후♪」
 		RETURN 1
 	ENDIF
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;자주탈의・전라に FIRSTDATUI(70)
-;・전라まで脱いだ
+;자주탈의? 전라에 FIRSTDATUI(70)
+;? 전라까지? 있고다
 ;------------------------------------------------
-;・「전라まで脱いだ」だけではなく、「今脱いだので전라되었다」という意味
-;・「겉옷しか残っていない상태で겉옷を脱いだ」なども含まれる
+;? 「전라까지? 있고다」만이 아니고, 「지금? 있고라든가로전라되었다」라고 하는 의미
+;? 「겉옷 밖에? 라고 없는상태로겉옷를? 있고다」등도 포함된다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:자주탈의 && ZENRACHECK(0) && !IS_NOWASSIACTNAME(, "탈의")
+IF 구상기입체크(100) && TFLAG:자주탈의 && ZENRACHECK(0) && !IS_NOWASSIACTNAME(, "탈의")
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTDATUI(70)
+	IF 구상기입체크(0) && FIRSTDATUI(70)
 ;OriginalString : 
 		PRINTFORMW 
 		RETURN 1
 	ENDIF
 
 	;=================================================
-	;주인님임신中！！
+	;주인님임신중!!
 	;=================================================
-	IF 구상記入チェック(60) && TALENT:TARGET:임신 == 1
+	IF 구상기입체크(60) && TALENT:TARGET:임신 == 1
 ;OriginalString : 「%RAND_SPLIT("えへへ/ふふっ/どうかな")%…結構お腹も膨らんできたんですよ？」
-		PRINTFORMW 「%RAND_SPLIT("에헤헤/후훗/어떨까")%…상당히 배도 부풀어 올라 왔습니다？」
-;OriginalString : 「ほら、ぎゅってして…リリーの身体が冷えないように、ちゃんと温めてくださいね
-		PRINTFORM 「이봐요, 는 해…릴리의 신체가 차가워지지 않게, 분명하게 따뜻하게 해 주세요
+		PRINTFORMW 「%RAND_SPLIT("에헤헤/후훗/어떨까")%… 상당히 배도 부풀어 올라 왔어요?」
+;OriginalString : 「ほら、ぎゅってして…リリ?の身?が冷えないように、ちゃんと?めてくださいね
+		PRINTFORM 「자, 꼬옥 해…릴리의 신체가 차가워지지 않게, 분명하게 따뜻하게 해 주세요
 		CALL HEARTCB
 ;OriginalString : 」
 		PRINTFORMW 」
@@ -614,54 +614,54 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && ZENRACHECK(0) && !IS_N
 	ENDIF
 
 	;=================================================
-	;기타・조건없음（75％）
+	;기타? 조건없음（75％）
 	;=================================================
-	IF 구상記入チェック(75)
-		;발기도十分
+	IF 구상기입체크(75)
+		;발기도 충분히
 		IF TCVAR:TARGET:발기도 >= 1000
-;OriginalString : %RAND_SPLIT("ビンビンに/カチカチに/腹に触れそうなほど")%발기했다リリー의 페니스が、雄臭いフェロモンを放ちながら%CALLNAME:MASTER%의 前に%RAND_SPLIT("差し/突き")%出される…
-			PRINTFORMDW %RAND_SPLIT("펄떡펄떡하게/딱딱하게/배에 닿을 것 같을 정도")%발기한 릴리의 페니스가, 수컷 수상한 페로몬을 풀어 놓으면서 %CALLNAME:MASTER%의 전에%RAND_SPLIT("差し/突き")%나온다…
-;OriginalString : 「全部脱いじゃいま했다…えへへっ♪」
+;OriginalString : %RAND_SPLIT("ビンビンに/カチカチに/腹に?れそうなほど")%발기했다リリ?의 페니스が、雄臭いフェロモンを放ちながら%CALLNAME:MASTER%의 前に%RAND_SPLIT("差し/突き")%出される…
+			PRINTFORMDW %RAND_SPLIT("펄떡펄떡하게/딱딱하게/배에 닿을 것 같을 정도")%발기한 릴리의 페니스가, 수컷 수상한 페로몬을 풀어 놓으면서 %CALLNAME:MASTER%의 전에%RAND_SPLIT("마주 앉음/찌르기")%나온다…
+;OriginalString : 「全部?いじゃいま했다…えへへっ♪」
 			PRINTFORMW 「전부 벗어 버렸습니다…네에에♪」
-;OriginalString : 「ほら、前に教えま했다よね？……リリーの%RAND_SPLIT("발기ちんちん/후타나리ちんぽ/おちんちん")%に、ちゃんとご挨拶するんですよ
-			PRINTFORM 「이봐요, 전에 가르쳤군요？……릴리의 %RAND_SPLIT("발기자지/후타나리자지/자지")%에, 분명하게 인사합니다
+;OriginalString : 「ほら、前に?えま했다よね？……リリ?の%RAND_SPLIT("발기ちんちん/후타나리ちんぽ/おちんちん")%に、ちゃんとご??するんですよ
+			PRINTFORM 「이봐요, 전에 가르쳤군요? …… 릴리의 %RAND_SPLIT("발기자지/후타나리자지/자지")%에, 분명하게 인사합니다
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
 			RETURN 1
-		;윤활十分ならパンツ
+		;윤활 충분하면 팬츠
 		ELSEIF PALAM:TARGET:윤활 >= 500
 			IF RAND:2 == 0
-;OriginalString : すっかり蕩けきった%RAND_SPLIT("秘裂/蜜壺")%から%RAND_SPLIT("愛液/愛蜜")%がツーと溢れ、リリー발元にいくつもの恥ずかしい染みを作った…
-				PRINTFORMDW 완전히 녹고 잘랐다%RAND_SPLIT("비밀의 틈[秘裂]/밀호[蜜壺]")%(으)로부터%RAND_SPLIT("愛液/愛蜜")%하지만 투와 흘러넘쳐 릴리 발밑에 얼마든지의 부끄러운 얼룩을 만들었다…
-;OriginalString : 「%RAND_SPLIT("うんしょ/よいしょ")%っ%RAND_SPLIT("と/")%……えへへっ、全部脱いじゃいま했다…」
-				PRINTFORMW 「%RAND_SPLIT("영차/영차")%%RAND_SPLIT("と/")%……네에에 , 전부 벗어 버렸습니다…」
+;OriginalString : すっかり蕩けきった%RAND_SPLIT("秘裂/蜜壺")%から%RAND_SPLIT("愛液/愛蜜")%がツ?と溢れ、リリ?발元にいくつもの恥ずかしい染みを作った…
+				PRINTFORMDW 완전히 녹고 잘랐다%RAND_SPLIT("비밀의 틈[비밀의 틈]/밀호[밀호]")%(으)로부터%RAND_SPLIT("애액/애밀")%하지만 투와 흘러넘쳐 릴리 발밑에 얼마든지의 부끄러운 얼룩을 만들었다…
+;OriginalString : 「%RAND_SPLIT("うんしょ/よいしょ")%っ%RAND_SPLIT("と/")%……えへへっ、全部?いじゃいま했다…」
+				PRINTFORMW 「%RAND_SPLIT("영차/영차")%%RAND_SPLIT("와/")%……네에에 , 전부 벗어 버렸습니다…」
 ;OriginalString : 「お漏らししてるみたい…って、恥ずかしい事言わないでくださいっ！！」
-				PRINTFORMW 「흘리고 있는 것 같다…라고, 부끄러운 일 말하지 말아 주세요！！」
-;OriginalString : 「もう……覚悟、してくださいね
+				PRINTFORMW 「흘리고 있는 것 같다… 라고, 부끄러운 일 말하지 말아 주세요!!」
+;OriginalString : 「もう……?悟、してくださいね
 				PRINTFORM 「 이제……각오, 해 주세요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			ELSE
-				;성교경험、당신に生えている
+				;성교경험, 당신에 나 있다
 				IF EXP:TARGET:성교경험 > 80 && PENIS(MASTER)
-;OriginalString : すっかり使い込まれ%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/男根/雄器/陰茎")%の%RAND_SPLIT("カタチを覚え/味を覚え/カタチになっ/虜となっ")%たリリーの%RAND_SPLIT("牝/膣/媚/痴")%肉は、%RAND_SPLIT("物欲しげに薄く입を開き/歓喜の時を期待して/とろとろと")%は했다ない涎を垂らしている…
-					PRINTFORMDW 완전히 유용되고%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/남근/웅기/음경")%의 %RAND_SPLIT("カタチを覚え/味を覚え/カタチになっ/虜となっ")%릴리의 %RAND_SPLIT("암컷/질/아양/바보")%고기는,%RAND_SPLIT("物欲しげに薄く입を開き/歓喜の時を期待して/とろとろと")%상스러운 군침을 늘어뜨리고 있다…
-;OriginalString : 「ほら、リリーの裸…もっとよく見てください……」
+;OriginalString : すっかり使い?まれ%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/男根/雄器/陰?")%の%RAND_SPLIT("カタチを?え/味を?え/カタチになっ/虜となっ")%たリリ?の%RAND_SPLIT("牝/膣/媚/痴")%肉は、%RAND_SPLIT("物欲しげに薄く입を開き/?喜の時を期待して/とろとろと")%は했다ない涎を垂らしている…
+					PRINTFORMDW 완전히 유용되고%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/남근/웅기/음경")%의 %RAND_SPLIT("모양을? 네/맛을? 네/모양에/포로와")%릴리의 %RAND_SPLIT("암컷/질/아양/바보")%고기는,%RAND_SPLIT("갖고 싶어하는 듯이 얇게입를 열어/? 희때를 기대해/녹진녹진")%상스러운 군침을 늘어뜨리고 있다…
+;OriginalString : 「ほら、リリ?の裸…もっとよく見てください……」
 					PRINTFORMW 「이봐요, 릴리의 알몸…좀 더 잘 봐 주세요……」
-;OriginalString : 「%RAND_SPLIT("ココ/おまた/おまんこ/お腹の奥")%がね……%RAND_SPLIT("ドキドキ/キュンキュン/きゅうって/ドクンドクンって")%して、熱くって…」
-					PRINTFORMW 「%RAND_SPLIT("코코/또/보지/뱃속")%하지만……%RAND_SPLIT("ドキドキ/キュンキュン/きゅうって/ドクンドクンって")%해, 뜨거워서…」
+;OriginalString : 「%RAND_SPLIT("ココ/おまた/おまんこ/お腹の?")%がね……%RAND_SPLIT("ドキドキ/キュンキュン/きゅうって/ドクンドクンって")%して、熱くって…」
+					PRINTFORMW 「%RAND_SPLIT("코코/또/보지/뱃속")%하지만……%RAND_SPLIT("두근두근/쿨쿨/꽈악/두근두근은")%해, 뜨거워서…」
 ;OriginalString : 「%CNAME(MASTER)%じゃなきゃ…この疼き、止まらないみたいなんです……
 					PRINTFORM 「%CNAME(MASTER)%(이)가 아니면…이 쑤셔, 멈추지 않는 것 같습니다……
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
 				ELSE
-;OriginalString : すっかり蕩けきった%RAND_SPLIT("秘裂/蜜壺")%から%RAND_SPLIT("愛液/愛蜜")%がツーと溢れ、リリー발元にいくつもの恥ずかしい染みを作った…
-					PRINTFORMDW 완전히 녹고 잘랐다%RAND_SPLIT("비밀의 틈[秘裂]/밀호[蜜壺]")%(으)로부터%RAND_SPLIT("愛液/愛蜜")%하지만 투와 흘러넘쳐 릴리 발밑에 얼마든지의 부끄러운 얼룩을 만들었다…
-;OriginalString : 「%RAND_SPLIT("うんしょ/よいしょ")%っ%RAND_SPLIT("と/")%…全部、脱いじゃいま했다♪」
-					PRINTFORMW 「%RAND_SPLIT("영차/영차")%%RAND_SPLIT("と/")%…전부, 벗어 버렸습니다♪」
+;OriginalString : すっかり蕩けきった%RAND_SPLIT("秘裂/蜜壺")%から%RAND_SPLIT("愛液/愛蜜")%がツ?と溢れ、リリ?발元にいくつもの恥ずかしい染みを作った…
+					PRINTFORMDW 완전히 녹고 잘랐다%RAND_SPLIT("비밀의 틈[비밀의 틈]/밀호[밀호]")%(으)로부터%RAND_SPLIT("애액/애밀")%하지만 투와 흘러넘쳐 릴리 발밑에 얼마든지의 부끄러운 얼룩을 만들었다…
+;OriginalString : 「%RAND_SPLIT("うんしょ/よいしょ")%っ%RAND_SPLIT("と/")%…全部、?いじゃいま했다♪」
+					PRINTFORMW 「%RAND_SPLIT("영차/영차")%%RAND_SPLIT("와/")%…전부, 벗어 버렸습니다♪」
 ;OriginalString : 「%RAND_SPLIT("こんなに濡れちゃってたなんて/これ、まるでお漏らししちゃったみたいで")%…なんだか恥ずかしいですね…えへへっ」
 					PRINTFORMW 「%RAND_SPLIT("이렇게 젖어 버리고 있었다니/이것, 마치 실금 해 버린 것 같아")%…어쩐지 부끄럽네요…네에에 」
 				ENDIF
@@ -671,94 +671,94 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && ZENRACHECK(0) && !IS_N
 	ENDIF
 
 	;=================================================
-	;기타・조건없음
-	;たぶん죠교一発目でここに落ちる
+	;기타? 조건없음
+	;아마죠교 1? 눈으로 여기에 떨어진다
 	;=================================================
-	IF 구상記入チェック(100)
-		;윤활十分、성교경험、당신に生えている
+	IF 구상기입체크(100)
+		;윤활 충분히, 성교경험, 당신에 나 있다
 		IF EXP:TARGET:성교경험 > 80 && PENIS(MASTER) && PALAM:TARGET:윤활 >= 1000
-;OriginalString : すっかり使い込まれ%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/男根/雄器/陰茎")%の%RAND_SPLIT("カタチを覚え/味を覚え/カタチになっ/虜となっ")%たリリーの%RAND_SPLIT("牝/膣/媚/痴")%肉は、%RAND_SPLIT("物欲しげに薄く입を開き/歓喜の時を期待して/とろとろと")%は했다ない涎を垂らしている…
-			PRINTFORMDW 완전히 유용되고%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/남근/웅기/음경")%의 %RAND_SPLIT("カタチを覚え/味を覚え/カタチになっ/虜となっ")%릴리의 %RAND_SPLIT("암컷/질/아양/바보")%고기는,%RAND_SPLIT("物欲しげに薄く입を開き/歓喜の時を期待して/とろとろと")%상스러운 군침을 늘어뜨리고 있다…
-;OriginalString : 「ほら、リリーの裸…もっとよく見てください……」
+;OriginalString : すっかり使い?まれ%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/男根/雄器/陰?")%の%RAND_SPLIT("カタチを?え/味を?え/カタチになっ/虜となっ")%たリリ?の%RAND_SPLIT("牝/膣/媚/痴")%肉は、%RAND_SPLIT("物欲しげに薄く입を開き/?喜の時を期待して/とろとろと")%は했다ない涎を垂らしている…
+			PRINTFORMDW 완전히 유용되고%CALLNAME:MASTER%의 %RAND_SPLIT("페니스/남근/웅기/음경")%의 %RAND_SPLIT("모양을? 네/맛을? 네/모양에/포로와")%릴리의 %RAND_SPLIT("암컷/질/아양/바보")%고기는,%RAND_SPLIT("갖고 싶어하는 듯이 얇게입를 열어/? 희때를 기대해/녹진녹진")%상스러운 군침을 늘어뜨리고 있다…
+;OriginalString : 「ほら、リリ?の裸…もっとよく見てください……」
 			PRINTFORMW 「이봐요, 릴리의 알몸…좀 더 잘 봐 주세요……」
-;OriginalString : 「%RAND_SPLIT("ココ/おまた/おまんこ/お腹の奥")%がね……%RAND_SPLIT("ドキドキ/キュンキュン/きゅうって/ドクンドクンって")%して、熱くって…」
-			PRINTFORMW 「%RAND_SPLIT("코코/또/보지/뱃속")%하지만……%RAND_SPLIT("ドキドキ/キュンキュン/きゅうって/ドクンドクンって")%해, 뜨거워서…」
+;OriginalString : 「%RAND_SPLIT("ココ/おまた/おまんこ/お腹の?")%がね……%RAND_SPLIT("ドキドキ/キュンキュン/きゅうって/ドクンドクンって")%して、熱くって…」
+			PRINTFORMW 「%RAND_SPLIT("코코/또/보지/뱃속")%……%RAND_SPLIT("두근두근/쿨쿨/꽈악/두근두근은")%해, 뜨거워서…」
 ;OriginalString : 「%CNAME(MASTER)%じゃなきゃ…この疼き、止まらないみたいなんです……
-			PRINTFORM 「%CNAME(MASTER)%(이)가 아니면…이 쑤셔, 멈추지 않는 것 같습니다……
+			PRINTFORM 「%CNAME(MASTER)%(이)가 아니면…이 쑤씸, 멈추지 않는 것 같습니다……
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
-		;윤활十分
+		;윤활 충분히
 		ELSEIF PALAM:TARGET:윤활 >= 1000
 			IF RAND:2 == 0
-;OriginalString : %RAND_SPLIT("愛液でぐっしょりと젖음/股部分に恥ずかしい染みを作った")%드로와즈が『%RAND_SPLIT("ぴちゃり/ぴちゃ/くちゅ")%』と音を立ててリリーの발元に落ちた…
-				PRINTFORMDW %RAND_SPLIT("애액으로 흠뻑젖음/가랑이 부분에 부끄러운 얼룩을 만들었다")%드로워즈가 「%RAND_SPLIT("ぴちゃり/ぴちゃ/くちゅ")%」(와)과 소리를 내 릴리의 발밑에 떨어졌다…
+;OriginalString : %RAND_SPLIT("愛液でぐっしょりと젖음/股部分に恥ずかしい染みを作った")%드로와즈が『%RAND_SPLIT("ぴちゃり/ぴちゃ/くちゅ")%』と音を立ててリリ?の발元に落ちた…
+				PRINTFORMDW %RAND_SPLIT("애액으로 흠뻑젖은/가랑이 부분에 부끄러운 얼룩을 만든")% 드로워즈가 「%RAND_SPLIT("//엣취")%」(와)과 소리를 내 릴리의 발밑에 떨어졌다…
 			ELSE
-;OriginalString : 愛液を吸い込み%RAND_SPLIT("ずっしりと重くなった/ピッタリと恥丘に張り付いた")%드로와즈に指をかけ、ゆっくりと%RAND_SPLIT("見せつける/焦らす")%ように片발ずつ脱いでゆく…
-				PRINTFORMDW 애액을 들이 마셔%RAND_SPLIT("묵직 무거워졌다/딱 치부에 들러붙었다")%드로워즈에 손가락을 걸어 천천히%RAND_SPLIT("見せつける/焦らす")%같게 한쪽 발씩 벗어 간다…
+;OriginalString : 愛液を吸い?み%RAND_SPLIT("ずっしりと重くなった/ピッタリと恥丘に張り付いた")%드로와즈に指をかけ、ゆっくりと%RAND_SPLIT("見せつける/焦らす")%ように片발ずつ?いでゆく…
+				PRINTFORMDW 애액을 들이 마셔 %RAND_SPLIT("묵직 무거워졌다/딱 치부에 들러붙은")% 드로워즈에 손가락을 걸어 천천히 %RAND_SPLIT("과시한다/초조하게 한다")%같게 한쪽 발씩 벗어 간다…
 			ENDIF
-		;윤활不발
+		;윤활불발
 		ELSE
 			SELECTCASE RAND:5
 				CASE 0
-;OriginalString : %RAND_SPLIT("ゆっくりと/一枚ずつ/焦らすように")%、リリーの身を包む布地がパサリと音を立てて발元に落ちてゆく……
-					PRINTFORMDW %RAND_SPLIT("천천히/한 장씩/초조하게 하도록(듯이)")%, 릴리의 몸을 싸는 천이 파사리와 소리를 내 발밑에 떨어져 간다……
+;OriginalString : %RAND_SPLIT("ゆっくりと/一枚ずつ/焦らすように")%、リリ?の身を包む布地がパサリと音を立てて발元に落ちてゆく……
+					PRINTFORMDW %RAND_SPLIT("천천히/한 장씩/초조하게 하듯이")%, 릴리의 몸을 싸는 천이 파사리와 소리를 내 발밑에 떨어져 간다……
 				CASE 1
-;OriginalString : ふわふわのローブの下からは、可愛らしいブラと드로와즈に飾られた%RAND_SPLIT("透き通る様に白い肌が/未成熟な少女の肢体が")%……
-					PRINTFORMDW 둥실둥실의 로브아래로부터는, 사랑스러운 브라와 드로워즈에 장식해졌다%RAND_SPLIT("투명한 것처럼 흰 피부가/미성숙인 소녀의 지체가")%……
-;OriginalString : 更に双丘の頂点に咲く桜色の可愛らしい蕾も、%RAND_SPLIT("くっきりと했다綺麗な/小指一本で覆えるほどの幼い")%縦筋も順に露わになってゆく……
-					PRINTFORMDW 더욱 쌍구의 정점으로 피는 연분홍색의 사랑스러운 뇌도,%RAND_SPLIT("선명하게했다예쁜/새끼 손가락 한 개로 가릴 수 있을 정도의 어리다")%수직근도 순서에 이슬 악어 되어 간다……
+;OriginalString : ふわふわのロ?ブの下からは、可愛らしいブラと드로와즈に飾られた%RAND_SPLIT("透き通る?に白い肌が/未成熟な少女の肢?が")%……
+					PRINTFORMDW 둥실둥실한 로브아래로부터는, 사랑스러운 브라와 드로워즈로 장식된 %RAND_SPLIT("투명한 것처럼 흰 피부가/미성숙인 소녀의 지체가")%……
+;OriginalString : 更に?丘の頂点に?く?色の可愛らしい?も、%RAND_SPLIT("くっきりと했다綺麗な/小指一本で覆えるほどの幼い")%?筋も順に露わになってゆく……
+					PRINTFORMDW 더욱 쌍구의 정점으로 피는 연분홍색의 사랑스러운 유두도,%RAND_SPLIT("선명하게 예쁜/새끼 손가락 한 개로 가릴 수 있을 정도의 어린")% 균열도 차례대로 젖어간다……
 				CASE 2
-;OriginalString : リリーの指先が最後に残った白い布に掛かり、ゆっくり%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/縦筋一本のまだ幼い")%割れ目が露わになってゆく…
-					PRINTFORMDW 릴리의 손가락끝이 마지막에 남은 흰 옷감에 걸려, 천천히%RAND_SPLIT("선명하게했다/새끼 손가락 한 개로 가릴 수 있을 정도의/세로선[縱筋] 한 개의 것 아직 어리다")%균열이 이슬 악어 되어 간다…
+;OriginalString : リリ?の指先が最後に?った白い布に掛かり、ゆっくり%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/?筋一本のまだ幼い")%割れ目が露わになってゆく…
+					PRINTFORMDW 릴리의 손가락끝이 마지막에 남은 흰 옷감에 걸려, 천천히%RAND_SPLIT("선명한/새끼 손가락 한 개로 가릴 수 있을 정도의/세로선[종근] 한 개의 아직 어린")%균열이 젖어간다…
 				CASE 3
-;OriginalString : リリー%RAND_SPLIT("は恥ずかしそうに白磁の太ももをピタリと閉じたが/の股間にはうっすらと産毛が生えているのみで")%、%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/縦筋一本のまだ幼い")%割れ目を覆い隠すものは何もない…
-					PRINTFORMDW 릴리%RAND_SPLIT("는 부끄러운 듯이 백자의 허벅지를 꼭 닫았지만/의 사타구니에는 희미하게 솜털이 나 있을 뿐으로")%,%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/縦筋一本のまだ幼い")%균열을 덮어 가리는 것은 아무것도 없다…
+;OriginalString : リリ?%RAND_SPLIT("は恥ずかしそうに白磁の太ももをピタリと閉じたが/の股間にはうっすらと産毛が生えているのみで")%、%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/?筋一本のまだ幼い")%割れ目を覆い?すものは何もない…
+					PRINTFORMDW 릴리%RAND_SPLIT("는 부끄러운 듯이 백자의 허벅지를 꼭 닫았지만/의 사타구니에는 희미하게 솜털이 나 있을 뿐으로")%,%RAND_SPLIT("선명하게했다/새끼 손가락 한 개로 가릴 수 있을 정도의/? 줄기 한 개의 것 아직 어리다")%균열을 덮어 가리는 것은 아무것도 없다…
 				CASE 4
-;OriginalString : リリーは発情했다雌の匂いを漂わせながら、%CALLNAME:MASTER%의 眼前に%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/肉厚の陰唇に挟まれた")%%RAND_SPLIT("一本筋/縦筋")%を曝け出했다…
-					PRINTFORMDW 릴리는 발정한 암컷의 냄새를 감돌게 하면서, %CALLNAME:MASTER%의 눈앞에%RAND_SPLIT("선명하게했다/새끼 손가락 한 개로 가릴 수 있을 정도의/두툼한 음순에 끼일 수 있었다")%%RAND_SPLIT("一本筋/縦筋")%(을)를 드러냈다…
+;OriginalString : リリ?は?情했다雌の?いを漂わせながら、%CALLNAME:MASTER%의 眼前に%RAND_SPLIT("くっきりと했다/小指一本で覆えるほどの/肉厚の陰唇に?まれた")%%RAND_SPLIT("一本筋/?筋")%を曝け出했다…
+					PRINTFORMDW 릴리는 발정한 암컷의 냄새를 감돌게 하면서, %CALLNAME:MASTER%의 눈앞에 %RAND_SPLIT("선명하게했다/새끼 손가락 한 개로 가릴 수 있을 정도의/두툼한 음순에 끼일 수 있었다")%%RAND_SPLIT("한 줄기/? 줄기")%(을)를 드러냈다…
 			ENDSELECT
 		ENDIF
 
-		;セリフ
+		;대사
 		SELECTCASE RAND:6
 			CASE 0
-;OriginalString : 「全部、脱いじゃいますね…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
-				PRINTFORMW 「전부, 탈는 있네요…%RAND_SPLIT("영차/영차")%…와」
-;OriginalString : 「あ、あの……リリーの身体、%RAND_SPLIT("どうでしょうか/こーふんしてくれますか")%…？」
-				PRINTFORMW 「아, 그……릴리의 신체,%RAND_SPLIT("어떨까요/개-분해 주겠습니까")%…？」
+;OriginalString : 「全部、?いじゃいますね…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
+				PRINTFORMW 「전부, 벗을게요…%RAND_SPLIT("영차/영차")%…」
+;OriginalString : 「あ、あの……リリ?の身?、%RAND_SPLIT("どうでしょうか/こ?ふんしてくれますか")%…？」
+				PRINTFORMW 「아, 그……릴리의 신체,%RAND_SPLIT("어떨까요/흥분해 주시겠어요")%…?」
 			CASE 1
 ;OriginalString : 「それじゃ、%RAND_SPLIT("最後の一枚/드로와즈")%も…」
 				PRINTFORMW 「그러면,%RAND_SPLIT("마지막 한 장/드로와즈")%도…」
-;OriginalString : 「あの、%RAND_SPLIT("じーっと/そんなに")%見られると脱ぎにくいです…%RAND_SPLIT("えっち/もう/")%…」
-				PRINTFORMW 「저,%RAND_SPLIT("가만히/그렇게")%볼 수 있으면 벗기 어렵습니다…%RAND_SPLIT("えっち/もう/")%…」
+;OriginalString : 「あの、%RAND_SPLIT("じ?っと/そんなに")%見られると?ぎにくいです…%RAND_SPLIT("えっち/もう/")%…」
+				PRINTFORMW 「저,%RAND_SPLIT("가만히/그렇게")% 보여지면 벗기 어려워요…%RAND_SPLIT("변태/정말/")%…」
 			CASE 2
 ;OriginalString : 「まだ、ちょっと%RAND_SPLIT("照れちゃいますね/恥ずかしいですね")%…」
-				PRINTFORMW 「 아직, 조금%RAND_SPLIT("수줍어 버리네요/부끄럽네요")%…」
+				PRINTFORMW 「 아직, 조금 %RAND_SPLIT("수줍어 버리네요/부끄럽네요")%…」
 ;OriginalString : 「何て言いましょうか、えっちな事をしてる時とはまた違って…」
-				PRINTFORMW 「뭐라고 말할까요, 인 일을 하고 있는 때와는 또 달라…」
-;OriginalString : 「脱ぐたびに、%RAND_SPLIT("당신を求める気持ちが強くなっていって/これからえっちな事しちゃうんだって/リリーのえっちな心も見透かされていくみたいで")%…」
+				PRINTFORMW 「뭐라고 말할까요, 야한 일을 하고 있는 때와는 또 달라…」
+;OriginalString : 「?ぐたびに、%RAND_SPLIT("당신を求める?持ちが?くなっていって/これからえっちな事しちゃうんだって/リリ?のえっちな心も見透かされていくみたいで")%…」
 				PRINTFORMW 「벗을 때마다,%RAND_SPLIT("당신를 요구하는 기분이 강해져 가/지금부터 엣치한 일 해 버린대/릴리의 엣치한 마음도 간파해져 가는 것 같아")%…」
-;OriginalString : 「なんだか…%RAND_SPLIT("こーふん/ドキドキ")%しちゃうんです…えへへっ」
-				PRINTFORMW 「어쩐지…%RAND_SPLIT("개-응/두근두근")%해 버립니다…네에에 」
+;OriginalString : 「なんだか…%RAND_SPLIT("こ?ふん/ドキドキ")%しちゃうんです…えへへっ」
+				PRINTFORMW 「어쩐지…%RAND_SPLIT("흥분/두근두근")%해 버립니다…에헤헤」
 			CASE 3
 ;OriginalString : 「おっぱい、好きなんですか？　ふふっ、%RAND_SPLIT("なんだか可愛い/赤ちゃんみたい/甘えんぼさんなん")%ですね♪」
-				PRINTFORMW 「젖가슴, 좋아합니까？ 후후,%RAND_SPLIT("왠지 사랑스럽다/아기같다/응석꾸러기씨")%(이)군요♪」
-;OriginalString : 「優しくしてくれるなら…%RAND_SPLIT("揉んで/触って/摘んで/舐めて/吸って/ちゅってして/むにむにってして")%みてもいいんですよ？　ふふっ♪」
-				PRINTFORMW 「상냥하게 해 준다면…%RAND_SPLIT("비비어/손대어/타/빨아/들이마셔/는 해/물렁물렁은 해")%봐도 괜찮아요？　후후♪」
+				PRINTFORMW 「젖가슴, 좋아합니까? 후후,%RAND_SPLIT("왠지 사랑스럽다/아기같다/응석꾸러기씨")%(이)군요♪」
+;OriginalString : 「優しくしてくれるなら…%RAND_SPLIT("?んで/?って/摘んで/?めて/吸って/ちゅってして/むにむにってして")%みてもいいんですよ？　ふふっ♪」
+				PRINTFORMW 「상냥하게 해 준다면…%RAND_SPLIT("비비어/손대어/타/빨아/들이마셔/는 해/물렁물렁은 해")%봐도 괜찮아요?   후후♪」
 			CASE 4
 ;OriginalString : 「最後の一枚も…%RAND_SPLIT("うんしょ/よいしょ")%…っと」
-				PRINTFORMW 「마지막 한 장도…%RAND_SPLIT("영차/영차")%…와」
-;OriginalString : 「えへへ…リリーの裸、%RAND_SPLIT("いかがですか/どうでしょうか")%
-				PRINTFORM 「네에에…릴리의 알몸,%RAND_SPLIT("어떻습니까/어떨까요")%
+				PRINTFORMW 「마지막 한 장도…%RAND_SPLIT("영차/영차")%…」
+;OriginalString : 「えへへ…リリ?の裸、%RAND_SPLIT("いかがですか/どうでしょうか")%
+				PRINTFORM 「에헤헤…릴리의 알몸,%RAND_SPLIT("어때요/어떨까요")%
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			CASE 5
-;OriginalString : 「最後は드로와즈も…%RAND_SPLIT("えへへ/ね/脱ぎ脱ぎしちゃうね")%♪」
-				PRINTFORMW 「최후는 드로워즈도…%RAND_SPLIT("에헤헤/저기/벗어 해 버리네요")%♪」
-;OriginalString : 「リリーの恥ずかしいところ…%CNAME(MASTER)%に全部見て欲しいな
-				PRINTFORM 「릴리의 부끄러운 곳…%CNAME(MASTER)%에 전부 보았으면 좋은데
+;OriginalString : 「最後は드로와즈も…%RAND_SPLIT("えへへ/ね/?ぎ?ぎしちゃうね")%♪」
+				PRINTFORMW 「최후는 드로워즈도…%RAND_SPLIT("에헤헤/저기/벗어 버리네요")%♪」
+;OriginalString : 「リリ?の恥ずかしいところ…%CNAME(MASTER)%に全部見て欲しいな
+				PRINTFORM 「릴리의 부끄러운 곳…%CNAME(MASTER)%에게 전부 보였으면 좋겠네에
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -768,53 +768,53 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && ZENRACHECK(0) && !IS_N
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・악세서리ーのみ FIRSTDATUI(80)
+;강제탈의? 악세서리? 마셔 FIRSTDATUI(80)
 ;------------------------------------------------
-;・主に신발안。他には장갑や소매など
-;・脱が했다うちに入らない！となりがちなのでこれだけは部位別テンプレを用意
+;? 주로신발안. 그 밖에장갑나소매 등
+;?? 하지만했다중에 접어들지 않는다! 되기 십상인 것으로 이것만은 부위별 텐프레를 준비
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 == 6
+IF 구상기입체크(100) && TFLAG:강제탈의 == 6
 	;=================================================
 	;전라되었다
 	;=================================================
-	IF 구상記入チェック(100) && ZENRACHECK(1)
+	IF 구상기입체크(100) && ZENRACHECK(1)
 		SELECTCASE RAND:3
 			CASE 0
-;OriginalString : 「ほら、ちゃんと발上げなきゃ脱がせられないですよ」
-				PRINTFORMW 「이봐요, 분명하게 다리 올리지 않으면 벗게 하지 않아요」
-;OriginalString : 「전라신발안なんて間抜けな恰好、%CNAME(MASTER)%も嫌でしょう？　ふふっ♪」
-				PRINTFORMW 「전라 양말은 얼간이인 모양,%CNAME(MASTER)%도 싫겠지요？ 후후♪」
+;OriginalString : 「ほら、ちゃんと발上げなきゃ?がせられないですよ」
+				PRINTFORMW 「저기요, 분명하게 다리 올리지 않으면 벗길수가 없어요」
+;OriginalString : 「전라신발안なんて間?けな恰好、%CNAME(MASTER)%も嫌でしょう？　ふふっ♪」
+				PRINTFORMW 「전라 양말은 얼간이인 모양,%CNAME(MASTER)%도 싫겠죠? 후후♪」
 			CASE 1
-;OriginalString : 「ほら、リリーが신발안脱がせてあげますからね？」
-				PRINTFORMW 「이봐요, 릴리가 양말 벗게 해 주니까요？」
+;OriginalString : 「ほら、リリ?が신발안?がせてあげますからね？」
+				PRINTFORMW 「자, 릴리가 양말 벗게 해 주니까요?」
 ;OriginalString : 「裸に신발안のままじゃ、ヘンタイさんみたいで可哀想ですもんね…ふふっ♪」
-				PRINTFORMW 「알몸에 양말인 채는, 헨타이씨같고 불쌍하네요…후후♪」
+				PRINTFORMW 「알몸에 양말인 채는, 변태씨같고 불쌍하네요…후후♪」
 			CASE 2
 ;OriginalString : 「ほら、もう裸同然なんですから抵抗しないで、ね？」
-				PRINTFORMW 「이봐요, 이제 알몸과 다름없으니까 저항하지 않고, 군요？」
-;OriginalString : 「抵抗すると無理矢理剥いちゃいますよ？」
-				PRINTFORMW 「저항하면 무리하게박있어요？」
+				PRINTFORMW 「자, 이제 알몸과 다름없으니까 저항하지 않고, 네?」
+;OriginalString : 「抵抗すると無理矢理?いちゃいますよ？」
+				PRINTFORMW 「저항하면 무리하게 벗겨버려요?」
 ;OriginalString : 「ん～～っ、はいっ♪　これですっぽんぽんですねっ♪」
-				PRINTFORMW 「응～～, 네♪ 이것입니다 개개군요♪」
+				PRINTFORMW 「응～～, 네엣♪이것으로 끝이네요♪」
 		ENDSELECT
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
+	IF 구상기입체크(100)
 		IF RAND:2 == 0
-;OriginalString : 「ほら、リリーが신발안%RAND_SPLIT("脱いじゃおうか/脱がせちゃうね/脱ぎ脱ぎしましょうね")%♪」
-			PRINTFORMW 「이봐요, 릴리가 양말%RAND_SPLIT("벗어 버릴까/벗게 해 버리네요/벗어 해요")%♪」
-;OriginalString : 「お着替えも\@ TALENT:MASTER:남자 ? お사정 # お食事も \@…ぜーんぶリリーがお世話してあげますからね♪」
+;OriginalString : 「ほら、リリ?が신발안%RAND_SPLIT("?いじゃおうか/?がせちゃうね/?ぎ?ぎしましょうね")%♪」
+			PRINTFORMW 「자, 릴리가 양말 %RAND_SPLIT("벗겨 버릴게요/벗게 해 버리네요/벗길게요")%♪」
+;OriginalString : 「お着替えも\@ TALENT:MASTER:남자 ? お사정 # お食事も \@…ぜ?んぶリリ?がお世話してあげますからね♪」
 			PRINTFORMW 「갈아입음도\@ TALENT:MASTER:남자 ? 오사정 # 식사도 \@…전부 릴리가 돌봐 주니까요♪」
 		ELSE
 ;OriginalString : 「綺麗な%RAND_SPLIT("指/발")%…食べちゃいたいくらい♪」
-			PRINTFORMW 「깨끗한%RAND_SPLIT("손가락/발")%…먹어버릴 싶을 정도♪」
+			PRINTFORMW 「깨끗한 %RAND_SPLIT("손가락/발")%…먹어버리고 싶을 정도♪」
 ;OriginalString : 「そうだ、발裏%RAND_SPLIT("こしょこしょし/くすぐり")%ながら가게해줘あげましょうか？」
-			PRINTFORMW 「그렇다, 발바닥%RAND_SPLIT("고서 고서 해/간질임")%(이)면서 이나 키라고 줄까요？」
-;OriginalString : 「あれ、結構気持いいらしいですよ
+			PRINTFORMW 「그래, 발바닥 %RAND_SPLIT("간질간질하/간질")%(이)면서 가게 해 줄까요?」
+;OriginalString : 「あれ、結構?持いいらしいですよ
 			PRINTFORM 「저것, 상당히 기분 좋은 것 같아요
 			CALL HEARTCB
 ;OriginalString : 」
@@ -825,54 +825,54 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 == 6
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・ちんこ見せろ FIRSTDATUI(90)
+;강제탈의? 고추 보여라 FIRSTDATUI(90)
 ;------------------------------------------------
-;・今回の탈의で남성기が見えるよう되었다場合に表示
-;・ぱんつ見せろを経由せず一気に脱がせる場合あり
-;・전라남자・후타나리はここに落ちる。たぶん一番빈도が多い
+;? 이번탈의로남성기가 보이도록(듯이)되었다경우에 표시
+;? 팬티 보여라를? 사정 하지 않고 1? 에? 하지만 다투는 경우 있어
+;? 전라남자? 후타나리는 여기에 떨어진다. 아마 제일빈도가 많다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 3 && PENIS(MASTER)
+IF 구상기입체크(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 3 && PENIS(MASTER)
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
-		;죠교대상발기도派生
+	IF 구상기입체크(100)
+		;죠교대상발기도파생
 		SELECTCASE TCVAR:MASTER:발기도
 			CASE IS > 1500
-;OriginalString : %RAND_SPLIT("ビンビンに/カチカチに/腹に着きそうなほど")%%RAND_SPLIT("발기했다/いきり立った/反り返った")%雄器がバチンと%RAND_SPLIT("腹を/リリーの頬を")%打ち、更なる쾌락を求めてビクンと跳ねた…
-				PRINTFORMDW %RAND_SPLIT("펄떡펄떡하게/딱딱하게/배에 닿을 것 같을 정도")%%RAND_SPLIT("발기했다/いきり立った/反り返った")%웅기가 바틴과%RAND_SPLIT("배를/릴리의 뺨을")%쳐, 한층 더 쾌락을 추구해 비쿤과 뛰었다…
+;OriginalString : %RAND_SPLIT("ビンビンに/カチカチに/腹に着きそうなほど")%%RAND_SPLIT("발기했다/いきり立った/反り返った")%雄器がバチンと%RAND_SPLIT("腹を/リリ?の?を")%打ち、更なる쾌락を求めてビクンと跳ねた…
+				PRINTFORMDW %RAND_SPLIT("펄떡펄떡하게/딱딱하게/배에 닿을 것 같을 정도")%%RAND_SPLIT("발기한/격분했다/뒤로 젖혔다")% 자지가 바틴 %RAND_SPLIT("배를/릴리의 뺨을")%쳐, 한층 더 쾌락을 추구해 비쿤과 뛰었다…
 			CASE IS > 1000
-;OriginalString : 속옷から顔を出했다%RAND_SPLIT("陰茎/肉竿")%が、リリーに挨拶をする様にビクンと跳ね上がった…
-				PRINTFORMDW 속옷으로부터 얼굴을 내밀었다%RAND_SPLIT("음경/육봉")%하지만, 릴리에 인사를 하는 것처럼 비쿤과 튀었다…
+;OriginalString : 속옷から顔を出했다%RAND_SPLIT("陰?/肉竿")%が、リリ?に??をする?にビクンと跳ね上がった…
+				PRINTFORMDW 속옷으로부터 얼굴을 내민 %RAND_SPLIT("음경/육봉")%이, 릴리에 인사를 하는 것처럼 비쿤과 튀었다…
 			CASEELSE
-;OriginalString : 情けなく속옷を剥かれ、恥ずかしい部分を全てリリーに見られてしまった…
+;OriginalString : 情けなく속옷を?かれ、恥ずかしい部分を全てリリ?に見られてしまった…
 				PRINTFORMDW 한심하게 속옷을 벗겨져 부끄러운 부분을 모두 릴리로 보여져 버렸다…
 		ENDSELECT
 		SELECTCASE RAND:4
 			CASE 0
 ;OriginalString : 「恥ずかしいですか？…ふふっ」
-				PRINTFORMW 「부끄럽습니까？…후후」
+				PRINTFORMW 「부끄럽습니까? … 후후」
 ;OriginalString : 「これから、もっと恥ずかしい事…してあげますからね
 				PRINTFORM 「지금부터, 좀 더 부끄러운 일…해 주니까요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			CASE 1
-;OriginalString : 「ほら、隠했다ら%RAND_SPLIT("メっ/ダメ")%ですよ？」
-				PRINTFORMW 「이봐요, 숨기면(자)%RAND_SPLIT("메/안돼")%(이에)예요？」
-;OriginalString : 「おて손は後ろ…おちんちんはリリーのお顔の前に、ね
-				PRINTFORM 「라고 손은 뒤…자지는 릴리의 얼굴의 전에, 군요
+;OriginalString : 「ほら、?했다ら%RAND_SPLIT("メっ/ダメ")%ですよ？」
+				PRINTFORMW 「이봐요, 숨기면(자)%RAND_SPLIT("땍/안돼")%(이에)예요?」
+;OriginalString : 「おて손は後ろ…おちんちんはリリ?のお顔の前に、ね
+				PRINTFORM 「손은 뒤…자지는 릴리의 얼굴 앞에, 네요
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
 			CASE 2
 ;OriginalString : 「可愛いけど…グロテクス…？」
-				PRINTFORMW 「사랑스러운데…그로테크스…？」
+				PRINTFORMW 「사랑스러운데… 그로테스크…?」
 ;OriginalString : 「何度見ても、飽きないですね…%RAND_SPLIT("ふふっ/えへへっ")%♪」
 				PRINTFORMW 「몇번 봐도, 질리지 않네요…%RAND_SPLIT("후훗/에헤헷")%♪」
 			CASE 3
 ;OriginalString : 「えっちなカタチ、それにとっても臭くって…%RAND_SPLIT("はぁ/んぅ/ふはぁ")%…
-				PRINTFORM 「인 모양, 거기에 매우 수상해서…%RAND_SPLIT("하아/응우/후하아")%…
+				PRINTFORM 「야한 모양, 거기에 매우 수상해서…%RAND_SPLIT("하아/응우/후하아")%…
 				CALL HEARTCB
 ;OriginalString : 」
 				PRINTFORMW 」
@@ -887,33 +887,33 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 3 &
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・まんまん見せろ FIRSTDATUI(100)
+;강제탈의? 그대로응 보여라 FIRSTDATUI(100)
 ;------------------------------------------------
-;・今回の탈의で女성기が見えるよう되었다場合に表示
-;・ぱんつ見せろを経由せず一気に脱がせる場合あり
+;? 이번탈의로 여자성기가 보이도록(듯이)되었다경우에 표시
+;? 팬티 보여라를? 사정 하지 않고 1? 에? 하지만 다투는 경우 있어
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 3 && !TALENT:MASTER:남자
+IF 구상기입체크(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 3 && !TALENT:MASTER:남자
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
-		;윤활十分
+	IF 구상기입체크(100)
+		;윤활 충분히
 		IF PALAM:MASTER:윤활 >= 1000
 ;OriginalString : 「もう%RAND_SPLIT("とろとろ/ぐしゅぐしゅ/ヌルヌル")%になっちゃってますね…」
 			PRINTFORMW 「 이제 %RAND_SPLIT("녹진녹진/주륵주륵/미끈미끈")%(이)가 되어 버리네요…」
-;OriginalString : 「ほら…%RAND_SPLIT("は했다ない/えっちな/イヤラシイ")%%RAND_SPLIT("糸引いちゃって/匂いがし")%ますよ…ふふっ
-			PRINTFORM 「이봐요…%RAND_SPLIT("하했다없다/엣치한/추잡하다")%%RAND_SPLIT("糸引いちゃって/匂いがし")%야…후후
+;OriginalString : 「ほら…%RAND_SPLIT("は했다ない/えっちな/イヤラシイ")%%RAND_SPLIT("?引いちゃって/?いがし")%ますよ…ふふっ
+			PRINTFORM 「이봐요…%RAND_SPLIT("하했다없다/엣치한/추잡하다")%%RAND_SPLIT("? 당겨 버려/? 겉껍데기 해")%야…후후
 			CALL HEARTCB
 ;OriginalString : 」
 			PRINTFORMW 」
 		ELSE
-;OriginalString : 「綺麗な体なんですから、隠してちゃ勿体ないですよ？」
-			PRINTFORMW 「깨끗한 몸이니까, 은폐아까워요？」
+;OriginalString : 「綺麗な?なんですから、?してちゃ勿?ないですよ？」
+			PRINTFORMW 「깨끗한 몸이니까, 은폐아까워요?」
 ;OriginalString : 「ほら、%RAND_SPLIT("えっちな割れ目/ピンクのお肉/可愛いおまんこ")%…もっとよく見せてください…」
 			PRINTFORMW 「이봐요,%RAND_SPLIT("엣치한 균열/핑크의 고기/사랑스러운 보지")%…좀 더 잘 보여 주세요…」
 		ENDIF
-;OriginalString : 「%RAND_SPLIT("大丈夫/安心してね/リリーに任せてね")%、여자の%RAND_SPLIT("えっちなツボ/感じるところ")%は…ちゃ～んと%RAND_SPLIT("知って/わかって/心得て")%ますから
-		PRINTFORM 「%RAND_SPLIT("괜찮아/안심해/릴리에 맡겨")%, 여자 아이의 %RAND_SPLIT("えっちなツボ/感じるところ")%하…～응과%RAND_SPLIT("알아/알아/알아")%로부터
+;OriginalString : 「%RAND_SPLIT("大丈夫/安心してね/リリ?に任せてね")%、여자の%RAND_SPLIT("えっちなツボ/感じるところ")%は…ちゃ～んと%RAND_SPLIT("知って/わかって/心得て")%ますから
+		PRINTFORM 「%RAND_SPLIT("괜찮아/안심해/릴리에 맡겨")%, 여자 아이의 %RAND_SPLIT("엣치한 단지/느끼는 곳")%하…～응과%RAND_SPLIT("알아/알아/알아")%로부터
 		CALL HEARTCB
 ;OriginalString : 」
 		PRINTFORMW 」
@@ -922,35 +922,35 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 3 &
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・おっぱい見せろ FIRSTDATUI(110)
+;강제탈의? 젖가슴 보여라 FIRSTDATUI(110)
 ;------------------------------------------------
-;・今回の탈의でおっぱいが見えるよう되었다場合に表示
-;・ブラ見せろを経由せず一気に脱がせる場合あり
-;・죠교대상이남자だと表示しないので、남자限定구상では書く필요が無い
+;? 이번탈의로 젖가슴이 보이도록(듯이)되었다경우에 표시
+;? 브라 보여라를? 사정 하지 않고 1? 에? 하지만 다투는 경우 있어
+;? 죠교대상이남자라고 표시하지 않기 때문에, 남자한정구상에서는 쓰는필요가 없다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 && B_DATUICHECK(1) == 3 && !TALENT:MASTER:남자
+IF 구상기입체크(100) && TFLAG:강제탈의 && B_DATUICHECK(1) == 3 && !TALENT:MASTER:남자
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
-		;죠교대상が거유
+	IF 구상기입체크(100)
+		;죠교대상가거유
 		IF TALENT:MASTER:거유
 ;OriginalString : 「おっきなおっぱいですね～」
 			PRINTFORMW 「나무인 젖가슴이군요～」
 ;OriginalString : 「搾ったらミルクも出ちゃいそうです♪」
 			PRINTFORMW 「짜면(자) 밀크도 나와버릴 것 같습니다♪」
-		;죠교대상が빈유
+		;죠교대상가빈유
 		ELSEIF TALENT:MASTER:빈유
 ;OriginalString : 「ちっちゃなおっぱい…%RAND_SPLIT("可愛いなぁ/子供みたいですね")%」
 			PRINTFORMW 「작은 젖가슴…%RAND_SPLIT("사랑스러운데/아이같네요")%」
-		;並
+		;?
 		ELSE
-;OriginalString : 「丁度リリーの손のひらに収まるくらい…%RAND_SPLIT("美乳ってやつですね/張りがあって綺麗ですよ")%」
-			PRINTFORMW 「꼭 릴리의 손바닥에 들어갈 정도…%RAND_SPLIT("미유[美乳]라는 녀석이군요/의욕이 있어 예뻐요")%」
+;OriginalString : 「丁度リリ?の손のひらに?まるくらい…%RAND_SPLIT("美乳ってやつですね/張りがあって綺麗ですよ")%」
+			PRINTFORMW 「꼭 릴리의 손바닥에 들어갈 정도…%RAND_SPLIT("미유[미유]라는 녀석이군요/의욕이 있어 예뻐요")%」
 		ENDIF
 
 		IF RAND:2 == 0
-;OriginalString : 「リリーがいっぱい、気持ちよくしてあげますからね
+;OriginalString : 「リリ?がいっぱい、?持ちよくしてあげますからね
 			PRINTFORM 「릴리가 가득, 기분 좋게 해 주니까요
 			CALL HEARTCB
 ;OriginalString : 」
@@ -967,26 +967,26 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 && B_DATUICHECK(1) == 3 &
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・ぱんつ見せろ FIRSTDATUI(120)
+;강제탈의? 팬티 보여라 FIRSTDATUI(120)
 ;------------------------------------------------
-;・今回の탈의で하반신속옷が見えるよう되었다場合に表示
-;・죠교대상が하반신속옷の無いキャラ限定の구상であれば書く필요がない
+;? 이번탈의로하반신속옷가 보이도록(듯이)되었다경우에 표시
+;? 죠교대상가하반신속옷가 없는 캐릭터 한정의구상이면 쓰는필요가 없다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 2
+IF 구상기입체크(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 2
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
-		;죠교대상に페니스あり
+	IF 구상기입체크(100)
+		;죠교대상에페니스 있어
 		IF PENIS(MASTER)
-			;죠교대상발기도派生
+			;죠교대상발기도파생
 			SELECTCASE TCVAR:MASTER:발기도
 				CASE IS > 1500
-;OriginalString : 「%RAND_SPLIT("ふふ/くす/あはは")%っ♪　テント張っちゃって、本当に可愛いんですから♪」
+;OriginalString : 「%RAND_SPLIT("ふふ/くす/あはは")%っ♪　テント張っちゃって、本?に可愛いんですから♪」
 					PRINTFORMW 「%RAND_SPLIT("후후/쿠쿡/아하하")%♪　텐트 쳐 버려서, 정말로 사랑스러우니까♪」
 				CASE IS > 1000
-;OriginalString : 「%RAND_SPLIT("すんすん/すぅ…はぁ/ふんふん")%…%RAND_SPLIT("えっちな/濃厚な/イカ臭い/青臭い/獣みたいな")%%RAND_SPLIT("雄の/せーえきの/オスの/")%匂いでクラクラしちゃいます♪」
-					PRINTFORMW 「%RAND_SPLIT("슝슝/스으…하아/흥흥")%…%RAND_SPLIT("えっちな/濃厚な/イカ臭い/青臭い/獣みたいな")%%RAND_SPLIT("수컷의/정액의/수컷의/")%냄새로 어질 어질있습니다♪」
+;OriginalString : 「%RAND_SPLIT("すんすん/すぅ…はぁ/ふんふん")%…%RAND_SPLIT("えっちな/濃厚な/イカ臭い/?臭い/?みたいな")%%RAND_SPLIT("雄の/せ?えきの/オスの/")%?いでクラクラしちゃいます♪」
+					PRINTFORMW 「%RAND_SPLIT("슝슝/스으…하아/흥흥")%…%RAND_SPLIT("엣치한/농후한/오징어 냄새가 나/? 냄새가 나/? 같은")%%RAND_SPLIT("수컷의/정액의/수컷의/")%냄새로 어질 어질있습니다♪」
 				CASEELSE
 ;OriginalString : 「あと一枚で%RAND_SPLIT("可愛い/당신の")%おちんちんが見れるんですね…ふふっ♪」
 					PRINTFORMW 「나머지 한 장으로%RAND_SPLIT("사랑스럽다/당신노")%자지를 볼 수 있습니다…후후♪」
@@ -994,12 +994,12 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 2
 			SELECTCASE RAND:3
 				CASE 0
 ;OriginalString : 「まずは천 넘어로…じぃ～っくり애태움てあげますねっ
-					PRINTFORM 「우선은 옷감 넘어로…글자～절의 부엌 초조하게 해 주네요
+					PRINTFORM 「우선은 옷감 너머로… 글자～절의 부엌 초조하게 해 주네요
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
 				CASE 1
-;OriginalString : 「おいで…早く脱ぎたくなるように、いっぱい%RAND_SPLIT("애태움て/なでなでして/すりすりして/いじめて")%あげますね
+;OriginalString : 「おいで…早く?ぎたくなるように、いっぱい%RAND_SPLIT("애태움て/なでなでして/すりすりして/いじめて")%あげますね
 					PRINTFORM 「와…빨리 벗고 싶어지도록(듯이), 가득%RAND_SPLIT("애태움라고/스윽스윽 해/부비부비 해/괴롭혀")%주네요
 					CALL HEARTCB
 ;OriginalString : 」
@@ -1007,18 +1007,18 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 2
 				CASE 2
 ;OriginalString : 「ほら、おいで…パンツ越しにおちんちん%RAND_SPLIT("すりすり/シコシコ/なでなで/いい子いい子")%してあげますから…」
 					PRINTFORMW 「이봐요, 와…팬츠 넘어로 자지%RAND_SPLIT("부비부비/쫄깃쫄깃/스윽스윽/좋은 아이 좋은 아이")%해 줄테니까…」
-;OriginalString : 「%RAND_SPLIT("えっちなお汁/ロリコンせーえき/ドロドロのせーし")%、いっぱいぴゅっぴゅしちゃいましょうね
+;OriginalString : 「%RAND_SPLIT("えっちなお汁/ロリコンせ?えき/ドロドロのせ?し")%、いっぱいぴゅっぴゅしちゃいましょうね
 					PRINTFORM 「%RAND_SPLIT("엣치한 국물/로리콘 정액/질척질척 태우고-해")%, 있어요
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
 			ENDSELECT
-		;죠교대상に페니스없음
+		;죠교대상에페니스없음
 		ELSE
-			;윤활十分
+			;윤활 충분히
 			IF PALAM:MASTER:윤활 >= 1000
 ;OriginalString : 「%RAND_SPLIT("あれ/んぅ/ん～")%？　…ねぇ、お股のところに%RAND_SPLIT("えっちな/は했다ない/イヤラシイ/恥ずかしい")%染みができちゃってますよ？」
-				PRINTFORMW 「%RAND_SPLIT(" . 저것/응우/응～")%？　…응, 가랑이의 곳에%RAND_SPLIT("えっちな/は했다ない/イヤラシイ/恥ずかしい")%스며들고가 할 수 있어 버리고 있습니다？」
+				PRINTFORMW 「%RAND_SPLIT(" . 저것/응우/응～")%?   … 응, 가랑이의 곳에%RAND_SPLIT("엣치한/는했다 없다/추잡하다/부끄럽다")%스며들고가 되어져 버리고 있습니다?」
 ;OriginalString : 「期待しちゃってるのかな…ふふっ、可愛いんですから♪」
 				PRINTFORMW 「기대해 버리는 걸까…후후, 사랑스러우니까♪」
 			ELSE
@@ -1027,7 +1027,7 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 2
 			ENDIF
 				IF RAND:2 == 0
 ;OriginalString : 「まずは천 넘어로…じぃ～っくり애태움てあげますねっ
-					PRINTFORM 「우선은 옷감 넘어로…글자～절의 부엌 초조하게 해 주네요
+					PRINTFORM 「우선은 옷감 너머로… 글자～절의 부엌 초조하게 해 주네요
 					CALL HEARTCB
 ;OriginalString : 」
 					PRINTFORMW 」
@@ -1044,81 +1044,81 @@ IF 구상記入チェック(100) && TFLAG:강제탈의 && P_DATUICHECK(1) == 2
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・ブラ見せろ FIRSTDATUI(130)
+;강제탈의? 브라 보여라 FIRSTDATUI(130)
 ;------------------------------------------------
-;・今回の탈의でブラ상반신속옷が見えるよう되었다場合に表示
-;・죠교대상이남자だと表示しないので、남자限定구상では書く필요が無い
-;・죠교대상が상반신속옷の無いキャラ限定の구상であれば書く필요がない
+;? 이번탈의로 브라상반신속옷가 보이도록(듯이)되었다경우에 표시
+;? 죠교대상이남자라고 표시하지 않기 때문에, 남자한정구상에서는 쓰는필요가 없다
+;? 죠교대상가상반신속옷가 없는 캐릭터 한정의구상이면 쓰는필요가 없다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의 && B_DATUICHECK(1) == 2 && !TALENT:MASTER:남자
+IF 구상기입체크(100) && TFLAG:강제탈의 && B_DATUICHECK(1) == 2 && !TALENT:MASTER:남자
 	;=================================================
 	;처음
 	;=================================================
-	IF 구상記入チェック(0) && FIRSTDATUI(130)
+	IF 구상기입체크(0) && FIRSTDATUI(130)
 ;OriginalString : 
 		PRINTFORMW 
 		RETURN 1
 	ENDIF
 	
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
+	IF 구상기입체크(100)
 ;OriginalString : 「可愛い속옷、何着ても似合うって羨ましいです…」
 		PRINTFORMW 「사랑스러운 속옷, 무엇 입어도 어울린다 라고 부럽습니다…」
-;OriginalString : 「…今度一緒に、코스프레えっちしてみますか？　ふふっ♪」
-		PRINTFORMW 「…이번 함께, 코스프레 어 통치해 봅니까？ 후후♪」
+;OriginalString : 「…今度一?に、코스프레えっちしてみますか？　ふふっ♪」
+		PRINTFORMW 「… 이번 함께, 코스프레 어 통치해 봅니까? 후후♪」
 		RETURN 1
 	ENDIF
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・전라に FIRSTDATUI(140)
+;강제탈의? 전라에 FIRSTDATUI(140)
 ;------------------------------------------------
-;・「전라まで剥いだ」だけではなく、「今剥いだので전라되었다」という意味
-;・「겉옷しか残っていない상태で겉옷を剥いだ」なども含まれる
-;・「おっぱい見せろ」～「ぱんつ見せろ」を書いた場合は記入する필요はない（上層の分岐に食われてここまで落ちてこない為）
+;? 「전라까지? 있고다」만이 아니고, 「지금? 있고라든가로전라되었다」라고 하는 의미
+;? 「겉옷 밖에? 라고 없는상태로겉옷를? 있고다」등도 포함된다
+;? 「젖가슴 보여라」～「팬티 보여라」를 썼을 경우는 기입하는필요는 없다（상층의 분기에 먹혀져 여기까지 떨어져 오지 않아? ）
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;IF 구상記入チェック(0) && TFLAG:강제탈의 && ZENRACHECK(1)
+;IF 구상기입 체크(0) && TFLAG:강제탈의 && ZENRACHECK(1)
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-;	IF 구상記入チェック(0)
+;	IF 구상기입 체크(0)
 ;		PRINTFORMW 
 ;		RETURN 1
 ;	ENDIF
 ;ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;자주탈의・何か脱いだ FIRSTDATUI(150)
+;자주탈의? 무엇인가? 있고다 FIRSTDATUI(150)
 ;------------------------------------------------
-;・자위・봉사系の予備動作になりやすい
+;? 자위? 봉사계의 예비 동작이 되기 쉽다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:자주탈의 && !IS_NOWASSIACTNAME(, "탈의")
+IF 구상기입체크(100) && TFLAG:자주탈의 && !IS_NOWASSIACTNAME(, "탈의")
 	;=================================================
-	;기타・조건없음
+	;기타? 조건없음
 	;=================================================
-	IF 구상記入チェック(100)
-		;주인님임신中！！
+	IF 구상기입체크(100)
+		;주인님임신중!!
 		IF TALENT:TARGET:임신 == 1
-;OriginalString : %RAND_SPLIT("ぽっこと膨らんだ妊婦腹/なだらかな丸みを帯びた腹")%にそっと손を添え、ゆっくりと衣服を脱いでいく…
-			PRINTFORMDW %RAND_SPLIT("일 부풀어 오른 임산부배/완만한 둥그스름을 띤 배")%에 살그머니 손을 더해 천천히 의복을 벗어 간다…
-;OriginalString : 「うんしょっ…と。　えへへっ、脱いじゃいま했다…」
-			PRINTFORMW 「응 실마리…(와)과. 네에에 , 벗어 버렸습니다…」
-		;임신してないよ！
+;OriginalString : %RAND_SPLIT("ぽっこと膨らんだ妊婦腹/なだらかな丸みを?びた腹")%にそっと손を添え、ゆっくりと衣服を?いでいく…
+			PRINTFORMDW %RAND_SPLIT("볼록 부풀어 오른 임산부배/완만한 둥그스름을 띤 배")%에 살그머니 손을 더해 천천히 의복을 벗어 간다…
+;OriginalString : 「うんしょっ…と。　えへへっ、?いじゃいま했다…」
+			PRINTFORMW 「응차…. 에헤헷 , 벗어 버렸어요…」
+		;임신 하고 있지 않아!
 		ELSE
-;OriginalString : リリーは%RAND_SPLIT("瑞々しく幼い身体を見せつけるように/당신の視線を誘うように/")%%RAND_SPLIT("ゆっくりと焦らすように/色っぽい仕草で/勢いよく")%衣服を脱いでいく…
-			PRINTFORMDW 릴리는%RAND_SPLIT("신선하고 어린 신체를 과시하도록(듯이)/당신의 시선을 권하도록(듯이)/")%%RAND_SPLIT("ゆっくりと焦らすように/色っぽい仕草で/勢いよく")%의복을 벗어 간다…
+;OriginalString : リリ?は%RAND_SPLIT("瑞?しく幼い身?を見せつけるように/당신の視線を誘うように/")%%RAND_SPLIT("ゆっくりと焦らすように/色っぽい仕草で/勢いよく")%衣服を?いでいく…
+			PRINTFORMDW 릴리는 %RAND_SPLIT("신선하고 어린 신체를 과시하듯이/당신의 시선을 권하듯이/")%%RAND_SPLIT("천천히 초조하게 하도록(듯이)/요염한 행동으로/힘차게")%의복을 벗어 간다…
 			IF RAND:2 == 0
 ;OriginalString : 「恥ずかしいけど…%RAND_SPLIT("ふふ/えへへ/")%…」
 				PRINTFORMW 「부끄러운데…%RAND_SPLIT("후후/에헤헤/")%…」
-;OriginalString : 「なんだか%RAND_SPLIT("ドキドキ/こーふん")%しちゃ%RAND_SPLIT("いますね/うね")%」
-				PRINTFORMW 「어쩐지%RAND_SPLIT("두근두근/개-응")%합니다%RAND_SPLIT("いますね/うね")%」
+;OriginalString : 「なんだか%RAND_SPLIT("ドキドキ/こ?ふん")%しちゃ%RAND_SPLIT("いますね/うね")%」
+				PRINTFORMW 「어쩐지 %RAND_SPLIT("두근두근/흥분")%합니다%RAND_SPLIT("있네요/밭이랑")%」
 			ELSE
-;OriginalString : 「%RAND_SPLIT("お洋服が/")%皺にならないように、ちゃんと畳んでー…%RAND_SPLIT("よし/うん")%っ」
-				PRINTFORMW 「%RAND_SPLIT("양복이/")%주름이 되지 않게, 분명하게 정리해―…%RAND_SPLIT("よし/うん")%」
-;OriginalString : 「%RAND_SPLIT("ほら、おいで/どうですか/えへへ")%…ぎゅってすると、さっきよりも%RAND_SPLIT("ドキドキしちゃう/あったかい/気持ちいい")%ね…♪」
-				PRINTFORMW 「%RAND_SPLIT("이봐요, 와/어떻습니까/에헤헤")%…는 하면, 조금 전보다%RAND_SPLIT("ドキドキしちゃう/あったかい/気持ちいい")%그런데…♪」
+;OriginalString : 「%RAND_SPLIT("お洋服が/")%皺にならないように、ちゃんと?んで?…%RAND_SPLIT("よし/うん")%っ」
+				PRINTFORMW 「%RAND_SPLIT("옷에/")% 주름 생기지 않게, 분명하게 정리해―…%RAND_SPLIT("좋아/응")%」
+;OriginalString : 「%RAND_SPLIT("ほら、おいで/どうですか/えへへ")%…ぎゅってすると、さっきよりも%RAND_SPLIT("ドキドキしちゃう/あったかい/?持ちいい")%ね…♪」
+				PRINTFORMW 「%RAND_SPLIT("자, 와요/어떻습니까/에헤헤")%…꼬옥 하면, 조금 전보다 %RAND_SPLIT("두근두근해요/따뜻해요/기분좋아요")%..♪」
 			ENDIF
 		ENDIF
 		RETURN 1
@@ -1126,13 +1126,13 @@ IF 구상記入チェック(100) && TFLAG:자주탈의 && !IS_NOWASSIACTNAME(, "
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;강제탈의・何か剥いだ FIRSTDATUI(160)
+;강제탈의? 무엇인가? 있고다 FIRSTDATUI(160)
 ;------------------------------------------------
-;・애무系の予備動作になりやすい
+;? 애무계의 예비 동작이 되기 쉽다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(100) && TFLAG:강제탈의
+IF 구상기입체크(100) && TFLAG:강제탈의
 	IF RAND:2 == 0
-;OriginalString : 「%RAND_SPLIT("ほら/さぁさぁ")%、それも脱いじゃいましょうか♪」
+;OriginalString : 「%RAND_SPLIT("ほら/さぁさぁ")%、それも?いじゃいましょうか♪」
 		PRINTFORMW 「%RAND_SPLIT("이봐요/자자")%, 빗나가고도 벗어버릴 짊어질까♪」
 ;OriginalString : 「着하며 だと…えっちなお汁で汚れちゃいますからね
 		PRINTFORM 「입은 채로라면…더 국물로 더러운있으니까요
@@ -1140,46 +1140,46 @@ IF 구상記入チェック(100) && TFLAG:강제탈의
 ;OriginalString : 」
 		PRINTFORMW 」
 	ELSE
-;OriginalString : 「お洋服脱ぎ脱ぎしましょうねぇ♪」
-		PRINTFORMW 「양복 벗어 해요♪」
-;OriginalString : 「%RAND_SPLIT("こら/ほら/えへへぇ/もうっ")%、イヤイヤしても無駄ですからねっ♪」
+;OriginalString : 「お洋服?ぎ?ぎしましょうねぇ♪」
+		PRINTFORMW 「옷 벗어요♪」
+;OriginalString : 「%RAND_SPLIT("こら/ほら/えへへぇ/もうっ")%、イヤイヤしても無?ですからねっ♪」
 		PRINTFORMW 「%RAND_SPLIT("이봐/이봐요/에헤헤에/이제(벌써)")%, 이야이야 해도 쓸데없기 때문에♪」
 	ENDIF
 	RETURN 1
 ENDIF
 
 ;========================================================================
-;追加アクション구상
+;추가 액션구상
 ;========================================================================
-;・죠교자が추가행동を取ったときに汎用的に表示
-;・書く場合、アクション구상の後に続けて違和感のない形で書かれることが望ましい
+;? 죠교자가추가행동를 취했을 때에 범용적으로 표시
+;? 쓰는 경우, 액션구상의 뒤로? 라고 위화감이 없는 형태로 쓰여지는 것이 바람직함
 ;-------------------------------------------------
 ;────────────────────────────────────
 ;EXTRA1, Ｃ애무
 ;────────────────────────────────────
-;・追加で애무または수음を行う
-;・죠교대상に페니스がない場合は애무、ある場合は수음
+;? 추가로애무 또는수음를 실시한다
+;? 죠교대상에페니스가 없는 경우는애무, 어느 경우는수음
 ;-------------------------------------------------
 @KOJO_ACT_EXTRA_K15_1
 ;-------------------------------------------------
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;EXTRA1_0, 애무する
+;EXTRA1_0, 애무 한다
 ;-------------------------------------------------
-;・죠교대상に페니스がない場合
+;? 죠교대상에페니스가 없는 경우
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && !PENIS(MASTER)
+IF 구상기입체크(0) && !PENIS(MASTER)
 ;OriginalString : 追加あくと
 	PRINTFORMW 추가 열리면(자)
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;EXTRA1_1, 수음する
+;EXTRA1_1, 수음 한다
 ;-------------------------------------------------
-;・죠교대상に페니스がある場合
+;? 죠교대상에페니스가 있는 경우
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && PENIS(MASTER)
+IF 구상기입체크(0) && PENIS(MASTER)
 ;OriginalString : 追加あくと
 	PRINTFORMW 추가 열리면(자)
 	RETURN 1
@@ -1188,13 +1188,13 @@ ENDIF
 ;────────────────────────────────────
 ;EXTRA2, Ｖ애무
 ;────────────────────────────────────
-;・追加でヴァッジ애무を行う
-;・죠교대상이남자の場合発生しない
-;・죠교대상が처녀の場合は発生しない
+;? 추가로 바지애무를 실시한다
+;? 죠교대상이남자의 경우? 생하지 않는다
+;? 죠교대상가처녀의 경우는? 생하지 않는다
 ;-------------------------------------------------
 @KOJO_ACT_EXTRA_K15_2
 ;-------------------------------------------------
-IF 구상記入チェック(0)
+IF 구상기입체크(0)
 ;OriginalString : 追加あくと
 	PRINTFORMW 추가 열리면(자)
 	RETURN 1
@@ -1203,11 +1203,11 @@ ENDIF
 ;────────────────────────────────────
 ;EXTRA3, Ａ애무
 ;────────────────────────────────────
-;・追加で항문애무を行う
+;? 추가로항문애무를 실시한다
 ;-------------------------------------------------
 @KOJO_ACT_EXTRA_K15_3
 ;-------------------------------------------------
-IF 구상記入チェック(0)
+IF 구상기입체크(0)
 ;OriginalString : 追加あくと
 	PRINTFORMW 추가 열리면(자)
 	RETURN 1
@@ -1216,11 +1216,11 @@ ENDIF
 ;────────────────────────────────────
 ;EXTRA4, Ｂ애무
 ;────────────────────────────────────
-;・追加で乳首責めを行う
+;? 추가로 유두 고문을 실시한다
 ;-------------------------------------------------
 @KOJO_ACT_EXTRA_K15_4
 ;-------------------------------------------------
-IF 구상記入チェック(0)
+IF 구상기입체크(0)
 ;OriginalString : 追加あくと
 	PRINTFORMW 추가 열리면(자)
 	RETURN 1
@@ -1229,42 +1229,42 @@ ENDIF
 ;────────────────────────────────────
 ;미약등사용구상
 ;────────────────────────────────────
-;・죠교자が미약や로션を使用했다ときに汎用的に表示
-;・「アクション구상」で記入チェックを=2と했다場合は表示されない
-;・書く場合、アクション구상の後に続けて違和感のない形で書かれることが望ましい
+;? 죠교자가미약나로션를 사용했다때에 범용적으로 표시
+;? 「액션구상」로 기입 체크를=2로했다경우는 표시되지 않는다
+;? 쓰는 경우, 액션구상의 뒤로? 라고 위화감이 없는 형태로 쓰여지는 것이 바람직함
 ;-------------------------------------------------
 @KOJO_USE_K15
 ;-------------------------------------------------
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;로션/미약同時使用
+;로션/미약동시 사용
 ;------------------------------------------------
-;・主に성교系コマンドから発生する
+;? 주로성교계 커맨드로부터? 생한다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && GETBIT(TFLAG:미약등사용구상, 0) && GETBIT(TFLAG:미약등사용구상, 1)
+IF 구상기입체크(0) && GETBIT(TFLAG:미약등사용구상, 0) && GETBIT(TFLAG:미약등사용구상, 1)
 ;OriginalString : 
 	PRINTFORMW 
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;로션使用
+;로션사용
 ;------------------------------------------------
-;・玩具・성교系コマンド等から発生する
+;? 완구? 성교계 커맨드등으로부터? 생한다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && GETBIT(TFLAG:미약등사용구상, 0)
+IF 구상기입체크(0) && GETBIT(TFLAG:미약등사용구상, 0)
 ;OriginalString : 
 	PRINTFORMW 
 	RETURN 1
 ENDIF
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;미약使用
+;미약사용
 ;------------------------------------------------
-;・애무系コマンド等から発生する
-;・키스で発生했다場合は입移しとなるため、そのケースは키스のアクション구상内で処理するほうがよい
+;? 애무계 커맨드등으로부터? 생한다
+;? 키스로? 생했다경우는입옮기기가 되기 (위해)때문에, 그 케? 스는키스의 액션구상? 그래서? 리 하는 편이 좋다
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-IF 구상記入チェック(0) && GETBIT(TFLAG:미약등사용구상, 1)
+IF 구상기입체크(0) && GETBIT(TFLAG:미약등사용구상, 1)
 ;OriginalString : 
 	PRINTFORMW 
 	RETURN 1

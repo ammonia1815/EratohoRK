@@ -1,42 +1,42 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 ;
 ;	Module		:AUTO_SPLIT_INT.ERB
-;	Facility	:引数として渡당했다ARGSから、特定の文字列ARGS:1で区切った場合のARG番目の文字列を数字化して返す関数
+;	Facility	:인수로서 도당했다ARGS로부터, 특정의 캐릭터 라인 ARGS:1으로 단락지었을 경우의 ARG 번째의 캐릭터 라인을 숫자화해 돌려주는 함수
 ;
-;	Licence		:ライセンスフリー。
+;	Licence		:라이센스 프리.
 ;
 ;	Modification Data:
 ;
 ;	Edit	Date			Author					Reason
-;	001		2012/09/07		kap 					新規作成
-;	002		2013/02/05		ぱ。					SPLITの修正を利用했다RESULT保護
+;	001		2012/09/07		kap 					신규 작성
+;	002		2013/02/05							SPLIT의 수정을 이용했다RESULT 보호
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 ;
 ;@AUTO_SPLIT
-;ARGS   操作する文字列
-;ARGS:1 ARGSを区切る文字列
-;ARG 　 ARGSを区切った後で、操作する箇所。ARGS:2が指定されている場合、発見했다ARGS:2の場所+ARG番目の文字列을반환。
-;ARGS:2 検索する文字列
+;ARGS   조작하는 캐릭터 라인
+;ARGS:1 ARGS를 단락짓는 캐릭터 라인
+;ARG    ARGS를 단락지은 다음에, 조작하는 개소. ARGS:2가 지정되고 있는 경우, 발견했다ARGS:2의 장소+ARG 번째의 캐릭터 라인을반환.
+;ARGS:2 검색하는 캐릭터 라인
 ;================================================
 @AUTO_SPLIT_INT(ARGS , ARGS:1 = "/" , ARG = 0 , ARGS:2 = "")
 #FUNCTION
 #LOCALSSIZE 200
 #LOCALSIZE 1
 VARSET LOCALS
-;半スペは消す
+;반스페는 지운다
 SPLIT REPLACE(ARGS, " ", "") , ARGS:1 , LOCALS, LOCAL
 IF ARGS:2 != ""
 	LOCAL = FINDELEMENT(LOCALS , ESCAPE(ARGS:2), , , 1)
 	IF LOCAL != -1
 		SIF ARG + LOCAL < 0
-			THROW @"エラー：関数@AUTO_SPLITにて{LOCAL}番目の文字列に%ARGS:2%を発見しま했다が、第三引数{ARG}の指定が不正です。"
+			THROW @"에러:함수@AUTO_SPLIT에서{LOCAL}번째의 캐릭터 라인에%ARGS:2%를 발견 섬했다가, 제 3 인수{ARG}의 지정이 부정합니다."
 		RETURNF TOINT(LOCALS:(LOCAL + ARG))
 	ELSE
 		RETURNF
 	ENDIF
 ELSE
 	SIF ARG < 0
-		THROW @"エラー：関数@AUTO_SPLITの第三引数として{ARG}が渡されま했다"
+		THROW @"에러:함수@AUTO_SPLIT의 제 3 인수로서{ARG}가 도 사라질 수 있는 했다"
 	RETURNF TOINT(LOCALS:ARG)
 ENDIF
 

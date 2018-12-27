@@ -1,43 +1,43 @@
 ﻿;────────────────────────────────────
-;ショップメニューの表示
+;숍 메뉴의 표시
 ;────────────────────────────────────
 @SHOW_SHOP
 CALL VERSION_UP
 
 DRAWLINE
-PRINTFORML {FLAG:연수+1}년 {FLAG:일수+1}일째 (%GET_TIME()%) %GET_SEASON()% %GET_DAY()%요일 　남편님：%CALLNAME:1%
+PRINTFORML {FLAG:연수+1}년 {FLAG:일수+1}일째 (%GET_TIME()%) %GET_SEASON()% %GET_DAY()%요일   남편님:%CALLNAME:1%
 SIF TARGET >= 0
 	PRINTFORML %CALLNAME:MASTER%(을)를 %CALLNAME:TARGET%이(가) 조교중
 SIF ASSI:1 >= 0
-	PRINTFORML （조수１：%CALLNAME:(ASSI:1)%）\@ ASSI:2 >= 0 ? （조수２：%CALLNAME:(ASSI:2)%） # \@
+	PRINTFORML （조수 1:%CALLNAME:(ASSI:1)%）\@ ASSI:2 >= 0 ? （조수 2:%CALLNAME:(ASSI:2)%） # \@
 HTML_PRINT HTML_BASE("체력", MASTER, 0, 16) + HTML_BASE("기력", MASTER, 1, 16)
 SIF TARGET >= 0
 	PRINTFORML (%CALLNAME%의 마력　{CFLAG:마력})
 [SKIPSTART]
-要らないと思うのでコメントアウトしておきます@/L
+필요하지 않다고 생각하므로 comment out 해 둡니다@/L
 IF TARGET >= 0
-	PRINTFORML 【의존도　test판】　(%CALLNAME%의 %CALLNAME:MASTER%에의 의존도：{CFLAG:의존도}　%CALLNAME:MASTER%의 %CALLNAME:(FLAG:주인님)%들에게로의 의존도：{CFLAG:MASTER:의존도})
-	PRINTL 　송곳이 좋은 날짜에서의 수치를, 남편님의 이름·주인공의 성별, 할 수 있으면 대범한 플레이 방침도 붙여
-	PRINTL 　스레 등에 보고하실 수 있으면 다행입니다. 엔딩 분기등에 사용할 예정의 값입니다.
+	PRINTFORML 【의존도  test판】  (%CALLNAME%의 %CALLNAME:MASTER%에의 의존도:{CFLAG:의존도}  %CALLNAME:MASTER%의 %CALLNAME:(FLAG:주인님)%들에게로의 의존도:{CFLAG:MASTER:의존도})
+	PRINTL   송곳이 좋은 날짜에서의 수치를, 남편님의 이름·주인공의 성별, 할 수 있으면 대범한 플레이 방침도 붙여
+	PRINTL   스레 등에 보고하실 수 있으면 다행입니다. 엔딩 분기등에 사용할 예정의 값입니다.
 ENDIF
 [SKIPEND]
 DRAWLINE
-;죠교開始
+;죠교개시
 ;OriginalString : (HTMLAUTOBUTTON("[100] - 조교의 시간이다", "100", "죠교を開始します", , , TARGET >= 0, 
-;CALL HTMLPRINTL(HTMLAUTOBUTTON("[100] - 調教の時間が来た", "100", "調教を開始します", , , TARGET >= 0, 
-;"[---] - 調教者を決めてください", "調教を開始する為には、調教者を決定する必要があります", 0xA0A0A0))
+;CALL HTMLPRINTL(HTMLAUTOBUTTON("[100] - 조교의 시간이 왔다", "100", "조교를 개시합니다", , , TARGET >= 0,  
+;"[---] - 조교자를 결정해 주세요", "조교를 개시하기 위해서는, 조교자를 결정할 필요가 있습니다", 0 xA0A0A0))
 {
 CALL HTMLPRINTL(HTMLAUTOBUTTON("[100] - 조교의 시간이다", "100", "죠교를 개시합니다", , , TARGET >= 0, 
-	"[---] - 죠교자を決めてください", "죠교を開始する為には、죠교자を決定する필요があります", 0xA0A0A0))
+	"[---] - 죠교자를 결정해 주세요", "죠교를 개시하기 위해서는, 죠교자를 결정하는필요가 있습니다", 0xA0A0A0))
 }
-;能力表示
+;능력표시
 ;OriginalString : (HTMLBUTTON("[101] - 능력의 표시", "101", "죠교자と죠교대상の各種경험치等を確認します"))
 CALL HTMLPRINTL(HTMLBUTTON("[101] - 능력의 표시", "101", "죠교자(와)과죠교대상의 각종경험치등을 확인합니다"))
-;마력消費
+;마력소비
 SIF TARGET >= 0
 ;OriginalString : (HTMLBUTTON("[102] - 마력을 소비한다", "102", "마력を使ってアイテムや能力等の취득、新たな죠교자の追加を行います"))
 	CALL HTMLPRINTL(HTMLBUTTON("[102] - 마력을 소비한다", "102", "마력를 사용해 아이템이나 능력등의취득, 새로운죠교자의 추가를 실시합니다"))
-;죠교자切り替え
+;죠교자변환
 SIF CHARANUM > 2
 ;OriginalString : (HTMLBUTTON("[110] - 죠교자/조수를 변경한다", "110", "現在の죠교자/조수を他の죠교자に変更します"))
 	CALL HTMLPRINTL(HTMLBUTTON("[110] - 죠교자/조수를 변경한다", "110", "현재의죠교자/조수를 다른죠교자로 변경합니다"))
@@ -45,10 +45,10 @@ SIF CHARANUM > 2
 SIF TARGET > 0
 ;OriginalString : (HTMLBUTTON("[155] - 의상 설정", "155", "죠교자と죠교대상の의상を設定します"))
 	CALL HTMLPRINTL(HTMLBUTTON("[155] - 의상 설정", "155", "죠교자(와)과죠교대상노의상를 설정합니다"))
-;データベース
+;데이타베이스
 ;OriginalString : (HTMLBUTTON("[177] - 데이터베이스 보기", "177", "各種죠교データを確認します"))
 CALL HTMLPRINTL(HTMLBUTTON("[177] - 데이터베이스 보기", "177", "각종죠교데이터를 확인합니다"))
-;コンフィグ
+;콘피그
 ;OriginalString : (HTMLBUTTON("[178] - 구성", "178", "ゲームの設定を行います"))
 CALL HTMLPRINTL(HTMLBUTTON("[178] - 구성", "178", "게임의 설정을 실시합니다"))
 ;세이브
@@ -58,7 +58,7 @@ CALL HTMLPRINTL(HTMLBUTTON("[200] - 세이브", "200", "현재의 데이터를 �
 ;OriginalString : (HTMLBUTTON("[300] - 로드", "300", "保存했다データを読み込みます"))
 CALL HTMLPRINTL(HTMLBUTTON("[300] - 로드", "300", "보존했다데이터를 읽어들입니다"))
 
-;Emuera디버그모드起動時
+;Emuera디버그모드기동시
 [IF_DEBUG]
 {
 ;OriginalString : (HTMLBUTTON("[777] - 디버그모드" + (FLAG:디버그 ? "를 종료" # ""), "777", 
@@ -67,20 +67,20 @@ CALL HTMLPRINTL(HTMLBUTTON("[300] - 로드", "300", "보존했다데이터를 �
 }
 	IF FLAG:디버그
 		PRINTFORML \n--디버그 커멘드는 간편하게 상황을 바꿀 뿐(만큼)을 위해서(때문에) 만들었으므로,\n이하의 커멘드에 의한 이상은 동작 보장외로 합니다--\n
-		;마력増加
+		;마력증가
 		SIF TARGET >= 0
 ;OriginalString : (HTMLBUTTON("[778] - 마력増加", "778", "죠교자の마력を増やします"))
 			CALL HTMLPRINTL(HTMLBUTTON("[778] - 마력증가", "778", "죠교자노마력를 늘립니다"))
-		;転生の儀式
+		;전생의 의식
 ;OriginalString : (HTMLBUTTON("[779] - 転生の儀式", "779", "플레이ヤーキャラの再設定画面へ進みます"))
 		CALL HTMLPRINTL(HTMLBUTTON("[779] - 전생의 의식", "779", "플레이야캐라의 재설정 화면으로 나아갑니다"))
-		;플래그チェック
+		;플래그체크
 ;OriginalString : (HTMLBUTTON("[780] - 플래그チェック", "780", "CFLAGとFLAGの状況を確認します"))
 		CALL HTMLPRINTL(HTMLBUTTON("[780] - 플래그체크", "780", "CFLAG(와)과FLAG의 상황을 확인합니다"))
 		;오토모드
 ;OriginalString : (HTMLBUTTON("[781] - 오토모드", "781", "죠교대상の행동を自動で行う모드の設定画面を呼び出します"))
 		CALL HTMLPRINTL(HTMLBUTTON("[781] - 오토모드", "781", "죠교대상노행동를 자동으로 실시한다모드의 설정 화면을 호출합니다"))
-		;素質보정確認
+		;소질보정확인
 ;OriginalString : (HTMLBUTTON("[782] - 素質보정確認", "782", "各キャラのコマンド선택경향を確認します"))
 		CALL HTMLPRINTL(HTMLBUTTON("[782] - 소질보정확인", "782", "각 캐릭터의 커맨드선택경향를 확인합니다"))
 	ENDIF
@@ -93,7 +93,7 @@ DRAWLINE
 
 
 ;────────────────────────────────────
-;ショップメニュー
+;숍 메뉴
 ;────────────────────────────────────
 @USERSHOP
 IF RESULT == 100 && TARGET >= 0
@@ -123,11 +123,11 @@ ELSEIF RESULT == 300
 ELSEIF RESULT == 888
 	CALL KOJO_SET
 ENDIF
-;Emuera디버그모드起動時
+;Emuera디버그모드기동시
 [IF_DEBUG]
 	IF 0
 	ELSEIF RESULT == 777
-		PRINTFORML 디버그용의 메세지를 표시\@ FLAG:디버그 ? しない # する \@같게 설정했습니다
+		PRINTFORML 디버그용의 메세지를 표시\@ FLAG:디버그 ? 하지 않는다 # 한다 \@같게 설정했습니다
 		FLAG:디버그 = !FLAG:디버그 ? 1 # 0
 		WAIT
 	ELSEIF RESULT == 778 && FLAG:디버그 && TARGET >= 0
@@ -135,7 +135,7 @@ ENDIF
 		PRINTFORML %CALLNAME%의 마력+10000되었습니다
 		WAIT
 	ELSEIF RESULT == 779 && FLAG:디버그
-		PRINTW 조교 대상（주인공）(을)를 재설정할 수 있습니다
+		PRINTW 조교 대상（주인공）를 재설정할 수 있습니다
 		CALL MASTER_CUSTOM
 		CALL BASE_MASTER_SETUP
 	ELSEIF RESULT == 780 && FLAG:디버그
@@ -149,7 +149,7 @@ ENDIF
 
 
 @KOJO_SET
-PRINTL 캐릭터 말을 어떻게 표시합니까？
+PRINTL 캐릭터 말을 어떻게 표시합니까?
 PRINTL [0] - 표시OFF
 PRINTL [1] - 표시ON　※추천
 $INPUT_LOOP
@@ -167,7 +167,7 @@ FLAG:구상 = RESULT
 PRINTL 
 
 ;────────────────────────────────────
-;죠교자/조수変更
+;죠교자/조수변경
 ;────────────────────────────────────
 @CHANGE_TARGET_ASSI
 #DIM OLD_T, 3
@@ -213,7 +213,7 @@ SELECTCASE RESULT
 		ENDIF
 	CASE 9
 		IF TARGET >= 0
-			;조수1が空の場合、조수2を조수1とする
+			;조수 1가 하늘의 경우, 조수 2를조수 1로 한다
 			SIF ASSI:1 == -1
 				SWAP ASSI:1, ASSI:2
 			CALL CHANGE_TARGET_ASSI_MESSAGE(OLD_T)
@@ -230,54 +230,54 @@ GOTO INPUT_LOOP
 
 NEW_T = TARGET, (ASSI:1), (ASSI:2)
 
-;変更が全く行われていない場合
+;변경이 전혀 행해지지 않은 경우
 IF OLD_T:0 == NEW_T:0 && OLD_T:1 == NEW_T:1 && OLD_T:2 == NEW_T:2
-	;죠교자が주인님の場合
+	;죠교자가주인님의 경우
 	IF TALENT:TARGET:주인님
 		PRINTFORMW %CALLNAME:TARGET%(은)는 이대로 스스로%CALLNAME:MASTER%(을)를 조교하기로 했다…
-	;それ以外
+	;그 이외
 	ELSE
 		PRINTFORMW 이대로%CALLNAME:TARGET%에 %CALLNAME:MASTER%(을)를 조교시키기로 했다…
 	ENDIF
 ENDIF
-;죠교자の変更が行われている場合
+;죠교자의 변경을 하고 있는 경우
 IF OLD_T:0 != NEW_T:0
-	;구상の為に専用変数に交代元・先の등록번호を入れる
+	;구상를 위해서(때문에) 전용 변수에 교대원·선의등록번호를 넣는다
 	SHOP_OLDTARGET = OLD_T:0
 	SHOP_NEWTARGET = NEW_T:0
-	;新죠교자カットイン
+	;신죠교자컷 인
 	PRINTL
 	CALL CHARA_CUTIN(CSTR:10, CSTR:11, CSTR:로마자)
 	PRINTL
-	;一時的にTARGETを旧죠교자に戻す
+	;일시적으로 TARGET를 구죠교자에 되돌린다
 	TARGET = OLD_T:0
-	;旧죠교자구상呼び出し
+	;구죠교자구상호출
 	CALL KOJO_EVENT(102)
-	;주인님→주인님以外への変更
+	;주인님→주인님 이외에의 변경
 	IF TARGET >= 0 && TALENT:TARGET:주인님
 		PRINTFORMW %CALLNAME:TARGET%(은)는 %CALLNAME:SHOP_NEWTARGET%에 %CALLNAME:MASTER%의 조교를 위탁했다…
-	;주인님以外→주인님への変更
+	;주인님 이외→주인님에의 변경
 	ELSEIF TALENT:SHOP_NEWTARGET:주인님
 		PRINTFORMW %CALLNAME:SHOP_NEWTARGET%(은)는 스스로%CALLNAME:MASTER%(을)를 조교하기로 했다…
-	;주인님以外→주인님以外への変更
+	;주인님 이외→주인님 이외에의 변경
 	ELSE
 		PRINTFORMW \@ TARGET >= 0 ? %CALLNAME:TARGET%에 대신해, # \@%CALLNAME:SHOP_NEWTARGET%하지만 %CALLNAME:MASTER%(을)를 조교하게 되었다…
 	ENDIF
-	;TARGETを新죠교자に
+	;TARGET를 신죠교자에
 	TARGET = NEW_T:0
-	;新죠교자구상呼び出し
+	;신죠교자구상호출
 	CALL KOJO_EVENT(102, 1)
 ENDIF
-;新조수全員を調査
+;신조수전원을 조사
 FOR LCOUNT, 1, 3
-	;조수LCOUNTが新規任命者の場合
+	;조수LCOUNT가 신규 임명자의 경우
 	IF FINDLASTELEMENT(OLD_T, NEW_T:LCOUNT, 1) == -1
-		;ASSIに新規任命者を指定
+		;ASSI에 신규 임명자를 지정
 		ASSI = NEW_T:LCOUNT
-		;조수任命구상呼び出し
+		;조수임명구상호출
 		CALL KOJO_EVENT_ASSI(102)
 		CALL VOIDLINE_IF(RESULT)
-		;ASSIを元に戻す
+		;ASSI를 원래대로 되돌린다
 		ASSI = ASSI:1
 	ENDIF
 NEXT
@@ -285,19 +285,19 @@ NEXT
 ;죠교자선택
 @CHANGE_TARGET(ARG)
 LOCALS = 
-LOCALS += "<識別>CHANGE_TARGET"
-LOCALS += "<上部>CHANGE_TARGET_SHOW"
-LOCALS += "<条件>CHANGE_TARGET_REQU"
+LOCALS += "<식별>CHANGE_TARGET"
+LOCALS += "<상부>CHANGE_TARGET_SHOW"
+LOCALS += "<조건>CHANGE_TARGET_REQU"
 LOCALS += "<구상>죠교자"
-LOCALS += ARG ? "<取消>취소不可" # "<取消>돌아가기"
-LOCALS += "<項目>名前/체력・기력/경험치"
+LOCALS += ARG ? "<취소>취소불가" # "<취소>돌아가기"
+LOCALS += "<항목>이름/체력·기력/경험치"
 CALL SELECT_CHARA_LIST(LOCALS)
 SIF RESULT != -1
 	CALL SET_TARGET_ASSI(TARGET, 0, RESULT)
 
 @CHANGE_TARGET_SHOW
 PRINTFORML 현재 \@ TARGET >= 0 ? [{TARGET,2}] %CALLNAME:TARGET%가 조교중 # 조교자는 없습니다 \@
-PRINTL 이번 조교자는 누구입니까？
+PRINTL 이번 조교자는 누구입니까?
 
 @CHANGE_TARGET_REQU(ARG)
 RETURN ARG == 0 ? 0 # 1
@@ -305,13 +305,13 @@ RETURN ARG == 0 ? 0 # 1
 ;조수선택
 @CHANGE_ASSI(ARG)
 LOCALS = 
-LOCALS += "<識別>CHANGE_TARGET"
-LOCALS += @"<上部>CHANGE_ASSI_SHOW_{ARG}"
-LOCALS += "<条件>CHANGE_TARGET_REQU"
+LOCALS += "<식별>CHANGE_TARGET"
+LOCALS += @"<상부>CHANGE_ASSI_SHOW_{ARG}"
+LOCALS += "<조건>CHANGE_TARGET_REQU"
 LOCALS += "<구상>죠교자"
 LOCALS += "<선택>CHANGE_ASSI_CHOI"
-LOCALS += "<取消>돌아가기"
-LOCALS += "<項目>名前/체력・기력/경험치"
+LOCALS += "<취소>돌아가기"
+LOCALS += "<항목>이름/체력·기력/경험치"
 CALL SELECT_CHARA_LIST(LOCALS)
 IF RESULT != -1
 	SIF RESULT == -2
@@ -325,11 +325,11 @@ CALL CHANGE_ASSI_SHOW(1)
 CALL CHANGE_ASSI_SHOW(2)
 @CHANGE_ASSI_SHOW(ARG)
 IF ASSI:1 >= 0
-	PRINTFORML 현재 [{ASSI:1,3}] %CALLNAME:(ASSI:1)%\@ ASSI:2 >= 0 ? 、[{ASSI:2,3}] %CALLNAME:(ASSI:2)% # \@が조수
+	PRINTFORML 현재 [{ASSI:1,3}] %CALLNAME:(ASSI:1)%\@ ASSI:2 >= 0 ? 、[{ASSI:2,3}] %CALLNAME:(ASSI:2)% # \@가조수
 ELSE
 	PRINTL 현재 조수는 없습니다
 ENDIF
-PRINTFORML 이번 조수{ARG}(은)는 누구입니까？
+PRINTFORML 이번 조수{ARG}는 누구입니까?
 PRINTFORML 　[0]「없음」※조수{ARG}(을)를 지정하지 않습니다
 
 @CHANGE_ASSI_CHOI(ARGS)
@@ -339,38 +339,38 @@ IF ARGS == "0"
 ENDIF
 RETURN 1
 
-;죠교자/조수の任命に応じて適宜異動・解任を行う
+;죠교자/조수의 임명에 응해 적당 이동·해임을 실시한다
 @SET_TARGET_ASSI(LREF, ARG, ARG:1)
 #DIM REF LREF,0
-;前任者と役割の交換を行う
+;전임자와 역할의 교환을 실시한다
 LOCAL = LREF:ARG
 IF ARG:1 != -1
 	TARGET = TARGET == ARG:1 ? LOCAL # TARGET
 	ASSI:1 = ASSI:1 == ARG:1 ? LOCAL # ASSI:1
 	ASSI:2 = ASSI:2 == ARG:1 ? LOCAL # ASSI:2
 ENDIF
-;役割の任命を行う
+;역할의 임명을 실시한다
 LREF:ARG = ARG:1
-;ASSIを設定
+;ASSI를 설정
 ASSI = ASSI:1
 
 ;────────────────────────────────────
-;キャラのステータス表示
+;캐릭터의 스테이터스 표시
 ;────────────────────────────────────
 @SHOW_CHARADATA(ARG)
 LOCALS = 
-LOCALS += "<識別>SHOW_CHARADATA"
+LOCALS += "<식별>SHOW_CHARADATA"
 LOCALS += "<구상>죠교자"
-LOCALS += "<取消>돌아가기"
-LOCALS += "<項目>名前/체력・기력/경험치"
+LOCALS += "<취소>돌아가기"
+LOCALS += "<항목>이름/체력·기력/경험치"
 CALL SELECT_CHARA_LIST(LOCALS)
-;돌아가기선택時脱出
+;돌아가기선택시 탈출
 SIF RESULT < 0
 	RETURN 0
 LOCAL = RESULT
-;ステータス表示
+;스테이터스 표시
 CALL PRINT_STATUS(RESULT)
-;再描画
+;재묘화
 RESTART
 
 @SHOW_CHARADATA_PAD
@@ -394,7 +394,7 @@ FOR LOCAL, 0, 4
 	LOCALS = 
 	LOCALS += @" %CALLNAME:LOCAL,16,LEFT% 체력({MAX(BASE:LOCAL:0,0),4}/{MAXBASE:LOCAL:0,4}) "
 	LOCALS += @" [LV {CFLAG:LOCAL:0,2} NEXT {CFLAG:LOCAL:필요경험치 - CFLAG:LOCAL:1,6}]"
-	LOCALS += AUTO_SPLIT("_죠교자_조수１_조수２", "_", LOCAL)
+	LOCALS += AUTO_SPLIT("_죠교자_조수 1_조수 2", "_", LOCAL)
 	SIF TALENT:(L_CHARA:LOCAL):주인님
 		LOCALS += "<주인님>"
 	PRINTBUTTON LOCALS, UNICODE(10000 + LOCAL)
@@ -440,7 +440,7 @@ SELECTCASE RESULT
 		INPUT
 		IF RESULT < 0 || LOCAL <= RESULT
 			CLEARLINE 1
-			REUSELASTLINE FLAGの範囲は(0～{LOCAL-1})です。
+			REUSELASTLINE FLAG의 범위는(0～{LOCAL-1})입니다.
 			GOTO INPUT_LOOP2
 		ENDIF
 		PRINTFORMW FLAG:{RESULT} = {FLAG:RESULT}
@@ -451,7 +451,7 @@ SELECTCASE RESULT
 		INPUT
 		IF RESULT < 0 || CHARANUM <= RESULT
 			CLEARLINE 1
-			REUSELASTLINE 存在しません。
+			REUSELASTLINE 존재하지 않습니다.
 			GOTO INPUT_LOOP3
 		ENDIF
 		LOCAL = RESULT
@@ -463,7 +463,7 @@ SELECTCASE RESULT
 		INPUT
 		IF RESULT < 0 || LOCAL:1 <= RESULT
 			CLEARLINE 1
-			REUSELASTLINE CFLAGの範囲は(0～{LOCAL:1-1})です
+			REUSELASTLINE CFLAG의 범위는(0～{LOCAL:1-1})입니다
 			GOTO INPUT_LOOP4
 		ENDIF
 		PRINTFORMW %CALLNAME:LOCAL%의CFLAG:{RESULT} = {CFLAG:LOCAL:RESULT}
@@ -482,7 +482,7 @@ SELECTCASE RESULT
 		INPUT
 		IF RESULT < 0 || CHARANUM <= RESULT
 			CLEARLINE 1
-			REUSELASTLINE 存在しません。
+			REUSELASTLINE 존재하지 않습니다.
 			GOTO INPUT_LOOP5
 		ENDIF
 		PRINTFORML %CALLNAME:RESULT%의CFLAG일람(값이0의 것은 생략)
@@ -500,7 +500,7 @@ ENDSELECT
 @SET_AUTO
 #DIM SELECT
 #DIM LINE
-#DIMS セット名, 5
+#DIMS 세트명, 5
 #LOCALSSIZE 100
 REDRAW 0
 SELECT = -1
@@ -510,12 +510,12 @@ FOR LOCAL, 0, 5
 	SIF !STRCOUNT(GLOBALS:@"오토모드등록{LOCAL}", "_")
 		GLOBALS:@"오토모드등록{LOCAL}" = 등록{LOCAL}_%GLOBALS:@"오토모드등록{LOCAL}"%
 	SPLIT GLOBALS:@"오토모드등록{LOCAL}", "_", RESULTS
-	セット名:LOCAL = %RESULTS%
+	세트명:LOCAL = %RESULTS%
 NEXT
 SPLIT GLOBALS:@"오토모드등록{FLAG:선택세트}", "_", RESULTS
 SPLIT RESULTS:1, "/", LOCALS
 $START
-;削除コマンド及び이상値のチェック
+;삭제 커맨드 및이상치의 체크
 FOR LOCAL, 0, 100
 	SIF LOCALS:LOCAL == ""
 		CONTINUE
@@ -524,18 +524,18 @@ FOR LOCAL, 0, 100
 	ARRAYREMOVE LOCALS, LOCAL, 1
 	LOCAL--
 NEXT
-;空行の整理
+;공행의 정리
 FOR LOCAL, 0, 100 - MATCH(LOCALS, "")
 	SIF LOCALS:LOCAL != ""
 		CONTINUE
 	ARRAYREMOVE LOCALS, LOCAL, 1
 	LOCAL--
 NEXT
-;新規追加及당했다コマンドのチェック
+;신규 추가급당했다커맨드의 체크
 FOR LOCAL, 0, 100
 	SIF TRAINNAME:LOCAL == ""
 		CONTINUE
-	;仕様上통상선택できると問題があるのでカットしておく
+	;사양상통상선택 할 수 있으면 문제가 있으므로 컷 해 둔다
 	SIF TRAINNAME:LOCAL == "이루는대로"
 		CONTINUE
 	SIF FINDELEMENT(LOCALS, TRAINNAME:LOCAL) >= 0
@@ -547,11 +547,11 @@ DRAWLINE
 PRINTBUTTON @"오토모드<%\@FLAG:오토모드 > 0?ＯＮ#ＯＦＦ\@%>", 1000
 IF FLAG:오토모드 > 0
 	PRINT 　
-	PRINTBUTTON @"경과ターン数<{FLAG:오토모드}>", 1001
+	PRINTBUTTON @"경과턴수<{FLAG:오토모드}>", 1001
 ENDIF
 PRINTL 
 DRAWLINE
-PRINTFORML <%セット名:(FLAG:선택세트)%>
+PRINTFORML <%세트명:(FLAG:선택세트)%>
 FOR LOCAL, 0, 100
 	SIF LOCALS:LOCAL == ""
 		BREAK
@@ -568,7 +568,7 @@ PRINTL <세트>
 FOR LOCAL, 0, 5
 	SIF LOCAL == FLAG:선택세트
 		SETCOLOR 0xC07070
-	PRINTBUTTON @"%"["+セット名:LOCAL+"]",25,LEFT%", 2000 + LOCAL
+	PRINTBUTTON @"%"["+세트명:LOCAL+"]",25,LEFT%", 2000 + LOCAL
 	RESETCOLOR
 	SIF LOCAL % 3 == 2
 		PRINTL 
@@ -605,7 +605,7 @@ PRINT 　
 RESETCOLOR
 SIF FLAG:오토모드표시설정 == 2
 	SETCOLOR 0xC07070
-;PRINTBUTTON "[디버그非表示]", 2032
+;PRINTBUTTON "[디버그비표시]", 2032
 RESETCOLOR
 PRINTL 
 DRAWLINE
@@ -629,17 +629,17 @@ SELECTCASE RESULT
 		INPUTS
 		SIF RESULTS == ""
 			RESULTS = 등록{FLAG:선택세트}
-		セット名:(FLAG:선택세트) = %RESULTS%
+		세트명:(FLAG:선택세트) = %RESULTS%
 	CASE 2011, 999
 		PRINTW 현재세트를 등록합니다
-		GLOBALS:@"오토모드등록{FLAG:선택세트}" = %セット名:(FLAG:선택세트)%_
+		GLOBALS:@"오토모드등록{FLAG:선택세트}" = %세트명:(FLAG:선택세트)%_
 		FOR LOCAL, 0, 100 - MATCH(LOCALS, "")
 			SIF LOCALS:LOCAL == ""
 				BREAK
 			GLOBALS:@"오토모드등록{FLAG:선택세트}" += LOCALS:LOCAL
 			GLOBALS:@"오토모드등록{FLAG:선택세트}" += "/"
 		NEXT
-		;末尾の区切り記号を削る
+		;말미의 단락 기호를 깎는다
 		GLOBALS:@"오토모드등록{FLAG:선택세트}" = %SUBSTRING(GLOBALS:@"오토모드등록{FLAG:선택세트}", 0, STRLENS(GLOBALS:@"오토모드등록{FLAG:선택세트}") - 1)%
 		SAVEGLOBAL
 		IF RESULT == 999
@@ -654,7 +654,7 @@ SELECTCASE RESULT
 		VARSET LOCALS
 	CASE 2021
 		VARSET LOCALS
-		LOCALS += "애정을 담아 한다/허리를 흔든다/가게해줘！/안에 내!/적극적으로 한다/쾌감을 받아들인다/기분좋게 해/상냥하게 응답한다/더 하드하게 해/"
+		LOCALS += "애정을 담아 한다/허리를 흔든다/가게해줘!/안에 내!/적극적으로 한다/쾌감을 받아들인다/기분좋게 해/상냥하게 응답한다/더 하드하게 해/"
 		LOCALS += "소극적으로 한다/용서를 빌다/부끄러워한다/마음 약하게 응답한다/침묵한다/무뚝뚝하게 응답한다/강하게 응답한다/빈정거린다/쾌감을 참는다/"
 		LOCALS += "비명지른다/고통을 참는다/자위를 시작한다/싫어한다/서투르다고 모욕한다/겁없이 웃는다/무서워한다/"
 		LOCALS += "안에 내면 안돼!/거부한다/날뛴다/도구를 제거한다"
@@ -664,7 +664,7 @@ SELECTCASE RESULT
 		LOCALS += "날뛴다/도구를 제거한다/거부한다/안에 내면 안돼!/"
 		LOCALS += "서투르다고 모욕한다/싫어한다/겁없이 웃는다/비명지른다/고통을 참는다/자위를 시작한다/무서워한다/"
 		LOCALS += "소극적으로 한다/용서를 빌다/부끄러워한다/마음 약하게 응답한다/침묵한다/무뚝뚝하게 응답한다/강하게 응답한다/빈정거린다/쾌감을 참는다/"
-		LOCALS += "안에 내!/적극적으로 한다/쾌감을 받아들인다/기분좋게 해/상냥하게 응답한다/더 하드하게 해/애정을 담아 한다/허리를 흔든다/가게해줘！"
+		LOCALS += "안에 내!/적극적으로 한다/쾌감을 받아들인다/기분좋게 해/상냥하게 응답한다/더 하드하게 해/애정을 담아 한다/허리를 흔든다/가게해줘!"
 		SPLIT LOCALS, "/", LOCALS
 	CASE 2030, 2031, 2032
 		FLAG:오토모드표시설정 = RESULT - 2030
@@ -733,7 +733,7 @@ LMASTER = MASTER
 LTARGET = TARGET
 LINENUM = 15, 35
 
-LSEX_OPTION = 性別無視
+LSEX_OPTION = 성별무시
 LMAIDEN_OPTION = 1
 
 VARSET LTALENT_MENU_CRI:0:0
@@ -744,11 +744,11 @@ FOR LOCAL, 0, VARSIZE("TALENT")
 	ADDVOIDCHARA
 	TARGET = CHARANUM - 1
 	TALENT:LOCAL = 1
-	;変数を初期化 ;변수 초기화
+	;변수를 초기화 ;변수 초기화
 	CALL SET_CRI_VAR
 	FOR LOCAL:1, 0, 11
-		;휴식をはじく
-		;사역は処理しない
+		;휴식를 튕긴다
+		;사역는 처리하지 않는다
 		SIF LOCAL:1 == 8 || LOCAL:1 == 9
 			CONTINUE
 		CALL SET_CRI_VAR, MENU(LOCAL:1), 1
@@ -756,12 +756,12 @@ FOR LOCAL, 0, VARSIZE("TALENT")
 	CALL ACT_MENU_TALENT_T
 	VARSET LVAR
 	VARSET RESULT
-	CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+	CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 	FOR LOCAL:1, 0, 20
 		LTALENT_MENU_CRI:LOCAL:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 	NEXT
 	VARSET RESULT
-	CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+	CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 	FOR LOCAL:1, 0, 20
 		LTALENT_MENU_CRI:LOCAL:(LOCAL:1) += RESULT:(LOCAL:1)
 		SIF LTALENT_MENU_CRI:LOCAL:(LOCAL:1)
@@ -776,11 +776,11 @@ FOR LOCAL, 0, VARSIZE("TALENT")
 		ENDCATCH
 		VARSET LVAR
 		VARSET RESULT
-		CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+		CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 		FOR LOCAL:2, 0, 30
 			LTALENT_CRI:LOCAL:(LOCAL:1):(LOCAL:2) += RESULT:(LOCAL:2) * 2
 		NEXT
-		CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+		CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 		FOR LOCAL:2, 0, 30
 			LTALENT_CRI:LOCAL:(LOCAL:1):(LOCAL:2) += RESULT:(LOCAL:2)
 			SIF LTALENT_CRI:LOCAL:(LOCAL:1):(LOCAL:2)
@@ -792,7 +792,7 @@ NEXT
 TARGET= LTARGET
 $START
 DRAWLINE
-LOCALS = 素質解析/キャラクター指定/終了
+LOCALS = 소질 해석/캐릭터 지정/종료
 LOCAL = 0
 WHILE AUTO_SPLIT(LOCALS, "/", LOCAL) != ""
 	PRINTBUTTON "[" + AUTO_SPLIT(LOCALS, "/", LOCAL) +"]", AUTO_SPLIT(LOCALS, "/", LOCAL) 
@@ -801,7 +801,7 @@ WHILE AUTO_SPLIT(LOCALS, "/", LOCAL) != ""
 WEND
 CALL INPUT_SPLIT, LOCALS
 SELECTCASE RESULTS
-	CASE "素質解析"
+	CASE "소질 해석"
 		$START_TALENT
 		LOCALS:1 = 
 		LOCAL:1 = 0
@@ -868,9 +868,9 @@ SELECTCASE RESULTS
 		NEXT
 		WAIT
 		GOTO START_TALENT
-	CASE "キャラクター指定"
+	CASE "캐릭터 지정"
 		$START_CHARA
-		LOCALS:1 = END/죠교자を후타나리にする/性別無視/죠교대상が男/죠교대상が女/죠교대상が후타나리/初体験無視/죠교대상が처녀/호의少/호의中/호의多
+		LOCALS:1 = END/죠교자를후타나리로 한다/성별 무시/죠교대상가 남자/죠교대상가 여자/죠교대상가후타나리/첫체험 무시/죠교대상가처녀/호의소/호의중/호의다
 		DRAWLINE
 		FOR LOCAL, 1, FLAG:Cha총수 + 1
 			LOCALS:1 += "/" + CSVCALLNAME(LOCAL, 0)
@@ -882,7 +882,7 @@ SELECTCASE RESULTS
 			PRINTL 
 		DRAWLINE
 		FOR LOCAL, 0 ,4
-			LTEMPS = %AUTO_SPLIT("性別無視/죠교대상が男/죠교대상が女/죠교대상が후타나리", "/", LOCAL)%
+			LTEMPS = %AUTO_SPLIT("성별 무시/죠교대상가 남자/죠교대상가 여자/죠교대상가후타나리", "/", LOCAL)%
 			SIF LTEMPS == LSEX_OPTION
 				SETCOLOR 0x70C070
 			PRINTBUTTON @"%"[" + LTEMPS + "]", 24, LEFT%", LTEMPS
@@ -895,7 +895,7 @@ SELECTCASE RESULTS
 		PRINTL 
 		DRAWLINE
 		FOR LOCAL, 0 ,2
-			LTEMPS = %AUTO_SPLIT("初体験無視/죠교대상が처녀", "/", LOCAL)%
+			LTEMPS = %AUTO_SPLIT("첫체험 무시/죠교대상가처녀", "/", LOCAL)%
 			SIF GETBIT(LMAIDEN_OPTION, LOCAL)
 				SETCOLOR 0x70C070
 			PRINTBUTTON @"%"[" + LTEMPS + "]", 24, LEFT%", LTEMPS
@@ -903,7 +903,7 @@ SELECTCASE RESULTS
 		NEXT
 		PRINTL 
 		FOR LOCAL, 0 ,3
-			LTEMPS = %AUTO_SPLIT("호의少/호의中/호의多", "/", LOCAL)%
+			LTEMPS = %AUTO_SPLIT("호의소/호의중/호의다", "/", LOCAL)%
 			SIF LFAVOR_OPTION == LOCAL
 				SETCOLOR 0x70C070
 			PRINTBUTTON @"%"[" + LTEMPS + "]", 24, LEFT%", LTEMPS
@@ -916,22 +916,22 @@ SELECTCASE RESULTS
 		CALL INPUT_SPLIT, LOCALS:1
 		SIF RESULTS == "END"
 			GOTO START
-		IF GROUPMATCH(RESULTS, "性別無視", "죠교대상が男", "죠교대상が女", "죠교대상が후타나리")
+		IF GROUPMATCH(RESULTS, "성별 무시", "죠교대상가 남자", "죠교대상가 여자", "죠교대상가후타나리")
 			LSEX_OPTION = %RESULTS%
 			GOTO START_CHARA
 		ENDIF
-		IF GROUPMATCH(RESULTS, "죠교자を후타나리にする", "初体験無視", "죠교대상が처녀", "호의少", "호의中", "호의多")
-			SIF RESULTS == "죠교자を후타나리にする"
+		IF GROUPMATCH(RESULTS, "죠교자를후타나리로 한다", "첫체험 무시", "죠교대상가처녀", "호의소", "호의중", "호의다")
+			SIF RESULTS == "죠교자를후타나리로 한다"
 				INVERTBIT LFUTANARI_OPTION, 0
-			SIF RESULTS == "初体験無視"
+			SIF RESULTS == "첫체험 무시"
 				INVERTBIT LMAIDEN_OPTION, 0
-			SIF RESULTS == "죠교대상が처녀"
+			SIF RESULTS == "죠교대상가처녀"
 				INVERTBIT LMAIDEN_OPTION, 1
-			SIF RESULTS == "호의少"
+			SIF RESULTS == "호의소"
 				LFAVOR_OPTION = 0
-			SIF RESULTS == "호의中"
+			SIF RESULTS == "호의중"
 				LFAVOR_OPTION = 1
-			SIF RESULTS == "호의多"
+			SIF RESULTS == "호의다"
 				LFAVOR_OPTION = 2
 			GOTO START_CHARA
 		ENDIF
@@ -944,9 +944,9 @@ SELECTCASE RESULTS
 		TARGET = CHARANUM - 1
 		ADDVOIDCHARA
 		MASTER = CHARANUM - 1
-		SIF LSEX_OPTION == "죠교대상が男"
+		SIF LSEX_OPTION == "죠교대상가 남자"
 			TALENT:MASTER:남자 = 1
-		SIF LSEX_OPTION == "죠교대상が후타나리"
+		SIF LSEX_OPTION == "죠교대상가후타나리"
 			TALENT:MASTER:후타나리 = 1
 		SIF LFUTANARI_OPTION
 			TALENT:후타나리 = 1
@@ -955,11 +955,11 @@ SELECTCASE RESULTS
 		CFLAG:호의 = LFAVOR_OPTION * 1000
 		DRAWLINE
 		PRINTFORML 　%CALLNAME:TARGET%
-		;変数を初期化 ;변수 초기화
+		;변수를 초기화 ;변수 초기화
 		CALL SET_CRI_VAR
 		FOR LOCAL:1, 0, 11
-			;휴식をはじく
-			;사역は処理しない
+			;휴식를 튕긴다
+			;사역는 처리하지 않는다
 			SIF LOCAL:1 == 8 || LOCAL:1 == 9
 				CONTINUE
 			CALL SET_CRI_VAR, MENU(LOCAL:1), 1
@@ -972,50 +972,50 @@ SELECTCASE RESULTS
 		VARSET RESULT
 		VARSET LSEX_CRI
 		VARSET LMAIDEN_CRI
-		IF LSEX_OPTION != "性別無視"
-			CALL CHA_CRI_VAR, "性別"
+		IF LSEX_OPTION != "성별 무시"
+			CALL CHA_CRI_VAR, "성별"
 			CALL ACT_MENU_SEX
-			CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+			CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 			FOR LOCAL:1, 0, 30
 				LSEX_CRI:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 			NEXT
-			CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+			CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 			FOR LOCAL:1, 0, 30
 				LSEX_CRI:(LOCAL:1) += RESULT:(LOCAL:1)
 			NEXT
 		ENDIF
 		IF !GETBIT(LMAIDEN_OPTION, 0)
 			VARSET RESULT
-			CALL CHA_CRI_VAR, "죠교자が처녀"
+			CALL CHA_CRI_VAR, "죠교자가처녀"
 			CALL ACT_MENU_MAIDEN_T
-			CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+			CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 			FOR LOCAL:1, 0, 30
 				LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 			NEXT
-			CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+			CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 			FOR LOCAL:1, 0, 30
 				LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1)
 			NEXT
 			VARSET RESULT
-			CALL CHA_CRI_VAR, "죠교대상が처녀"
+			CALL CHA_CRI_VAR, "죠교대상가처녀"
 			CALL ACT_MENU_MAIDEN_M
-			CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+			CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 			FOR LOCAL:1, 0, 30
 				LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 			NEXT
-			CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+			CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 			FOR LOCAL:1, 0, 30
 				LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1)
 			NEXT
 		ENDIF
-		CALL CHA_CRI_VAR, "素質"
+		CALL CHA_CRI_VAR, "소질"
 		VARSET RESULT
 		CALL ACT_MENU_TALENT_T
-		CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+		CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 		FOR LOCAL:1, 0, 30
 			LVAR:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 		NEXT
-		CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+		CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 		FOR LOCAL:1, 0, 30
 			LVAR:(LOCAL:1) += RESULT:(LOCAL:1)
 		NEXT
@@ -1061,7 +1061,7 @@ SELECTCASE RESULTS
 		IF MATCH(LMAIDEN_CRI, 0) != VARSIZE("LMAIDEN_CRI")
 			SIF LOCAL:3++ == 0
 				DRAWLINE
-			PRINTFORM %"初体験보정", 16, LEFT%
+			PRINTFORM %"첫체험보정", 16, LEFT%
 			FOR LOCAL:2, 0, 30
 				SIF !LMAIDEN_CRI:(LOCAL:2)
 					CONTINUE
@@ -1075,7 +1075,7 @@ SELECTCASE RESULTS
 		IF MATCH(LSEX_CRI, 0) != VARSIZE("LSEX_CRI")
 			SIF LOCAL:3++ == 0
 				DRAWLINE
-			PRINTFORM %"性別보정", 16, LEFT%
+			PRINTFORM %"성별보정", 16, LEFT%
 			FOR LOCAL:2, 0, 30
 				SIF !LSEX_CRI:(LOCAL:2)
 					CONTINUE
@@ -1098,9 +1098,9 @@ SELECTCASE RESULTS
 				LTEMPS += "/" + TALENTNAME:(LOCAL:2) + "_" + TOSTR(LTEMP)
 			NEXT
 			SIF LMAIDEN_CRI:(LOCAL:1)
-				LTEMPS += "/" + "初体験보정" + "_" + TOSTR(LMAIDEN_CRI:(LOCAL:1))
+				LTEMPS += "/" + "첫체험보정" + "_" + TOSTR(LMAIDEN_CRI:(LOCAL:1))
 			SIF LSEX_CRI:(LOCAL:1)
-				LTEMPS += "/" + "性別보정" + "_" + TOSTR(LSEX_CRI:(LOCAL:1))
+				LTEMPS += "/" + "성별보정" + "_" + TOSTR(LSEX_CRI:(LOCAL:1))
 			SIF LTEMPS == ""
 				CONTINUE
 			SIF LOCAL:3++ == 0
@@ -1127,54 +1127,54 @@ SELECTCASE RESULTS
 			VARSET LMAIDEN_CRI
 			VARSET RESULT
 			IF !GETBIT(LMAIDEN_OPTION, 0)
-				CALL CHA_CRI_VAR, "죠교대상が처녀"
+				CALL CHA_CRI_VAR, "죠교대상가처녀"
 				TRYCCALLFORM ACT_ACTM{LOCAL}_MAIDEN_M
-					CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+					CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 					FOR LOCAL:1, 0, 30
 						LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 					NEXT
-					CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+					CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 					FOR LOCAL:1, 0, 30
 						LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1)
 					NEXT
 				CATCH
 				ENDCATCH
-				CALL CHA_CRI_VAR, "죠교자が처녀"
+				CALL CHA_CRI_VAR, "죠교자가처녀"
 				TRYCCALLFORM ACT_ACTM{LOCAL}_MAIDEN_T
-					CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+					CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 					FOR LOCAL:1, 0, 30
 						LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 					NEXT
-					CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+					CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 					FOR LOCAL:1, 0, 30
 						LMAIDEN_CRI:(LOCAL:1) += RESULT:(LOCAL:1)
 					NEXT
 				CATCH
 				ENDCATCH
 			ENDIF
-			IF LSEX_OPTION != "性別無視"
-				CALL CHA_CRI_VAR, "性別"
+			IF LSEX_OPTION != "성별 무시"
+				CALL CHA_CRI_VAR, "성별"
 				TRYCCALLFORM ACT_ACTM{LOCAL}_GENDER_T
-					CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+					CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 					FOR LOCAL:1, 0, 30
 						LSEX_CRI:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 					NEXT
-					CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+					CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 					FOR LOCAL:1, 0, 30
 						LSEX_CRI:(LOCAL:1) += RESULT:(LOCAL:1)
 					NEXT
 				CATCH
 				ENDCATCH
 			ENDIF
-			CALL CHA_CRI_VAR, "素質"
+			CALL CHA_CRI_VAR, "소질"
 			TRYCCALLFORM ACT_ACTM{LOCAL}_TALENT_T
 			CATCH
 			ENDCATCH
-			CALLF VARIABLE_OF_CRI, "GET", "固定累計"
+			CALLF VARIABLE_OF_CRI, "GET", "고정 누계"
 			FOR LOCAL:1, 0, 30
 				LVAR:(LOCAL:1) += RESULT:(LOCAL:1) * 2
 			NEXT
-			CALLF VARIABLE_OF_CRI, "GET", "変動累計"
+			CALLF VARIABLE_OF_CRI, "GET", "변동 누계"
 			FOR LOCAL:1, 0, 30
 				LVAR:(LOCAL:1) += RESULT:(LOCAL:1)
 			NEXT
@@ -1224,7 +1224,7 @@ SELECTCASE RESULTS
 			IF MATCH(LMAIDEN_CRI, 0) != VARSIZE("LMAIDEN_CRI")
 				SIF LOCAL:3++ == 0
 					DRAWLINE
-				PRINTFORM %"初体験보정", 16, LEFT%
+				PRINTFORM %"첫체험보정", 16, LEFT%
 				FOR LOCAL:2, 0, 30
 					SIF !LMAIDEN_CRI:(LOCAL:2)
 						CONTINUE
@@ -1238,7 +1238,7 @@ SELECTCASE RESULTS
 			IF MATCH(LSEX_CRI, 0) != VARSIZE("LSEX_CRI")
 				SIF LOCAL:3++ == 0
 					DRAWLINE
-				PRINTFORM %"性別보정", 16, LEFT%
+				PRINTFORM %"성별보정", 16, LEFT%
 				FOR LOCAL:2, 0, 30
 					SIF !LSEX_CRI:(LOCAL:2)
 						CONTINUE
@@ -1261,9 +1261,9 @@ SELECTCASE RESULTS
 					LTEMPS += "/" + TALENTNAME:(LOCAL:2) + "_" + TOSTR(LTEMP)
 				NEXT
 				SIF LMAIDEN_CRI:(LOCAL:1)
-					LTEMPS += "/" + "初体験보정" + "_" + TOSTR(LMAIDEN_CRI:(LOCAL:1))
+					LTEMPS += "/" + "첫체험보정" + "_" + TOSTR(LMAIDEN_CRI:(LOCAL:1))
 				SIF LSEX_CRI:(LOCAL:1)
-					LTEMPS += "/" + "性別보정" + "_" + TOSTR(LSEX_CRI:(LOCAL:1))
+					LTEMPS += "/" + "성별보정" + "_" + TOSTR(LSEX_CRI:(LOCAL:1))
 				SIF LTEMPS == ""
 					CONTINUE
 				PRINTFORM %GET_ACTABBNAME(ACTM_NUM(LOCAL, LOCAL:1)), 16, LEFT%
@@ -1285,7 +1285,7 @@ SELECTCASE RESULTS
 			DELCHARA CHARANUM -  1
 		WEND
 		GOTO START_CHARA
-	CASE "終了"
+	CASE "종료"
 		TARGET = LTARGET
 		MASTER = LMASTER
 		WHILE CHARANUM > LCHARANUM
@@ -1294,14 +1294,14 @@ SELECTCASE RESULTS
 		RETURN 1
 ENDSELECT
 ;────────────────────────────────────
-;세이브インフォ		→SYSTEM_DATAMENU.ERBにて代替
+;세이브인포메이션		→SYSTEM_DATAMENU.ERB에서 대체
 ;────────────────────────────────────
 ;@SAVEINFO
-;PUTFORM {DAY+1}日目%GET_TIME()% \@ TARGET >= 0 ? %CALLNAME:TARGET%が%CALLNAME:MASTER%を조교중 # \@
+;PUTFORM {DAY+1}일째%GET_TIME()% \@ TARGET >= 0? %CALLNAME:TARGET%가 %CALLNAME:MASTER%를조교중 # \@
 
 
 ;────────────────────────────────────
-;バージョンアップ
+;버전 업
 ;────────────────────────────────────
 @VERSION_UP
 

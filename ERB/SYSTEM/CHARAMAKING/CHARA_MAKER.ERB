@@ -1,17 +1,17 @@
-﻿;キャラメイキング　byぱ。
-;まず유카리さんの質問に答えて性別と体格を決定。
-;その後、ランダムに選ばれた１０人からの質問コーナーがはじまります
-;返答に応じて素質が決まります。
+﻿;캐릭터 메이킹  by.
+;우선유카리씨의 질문에 답해 성별과 체격을 결정.
+;그 후, 랜덤으로 선택된 10명으로부터의 질문 코너가 시작합니다
+;대답에 응해 소질이 정해집니다.
 @CHARA_MAKER
 #LOCALSIZE 200
 #DIM LCOUNT, 2
 #DIM REROOL, 1
 #DIM LITTLE_CHECK, 1
-;コンダクターとして유카리を追加。조수に指定（イメージ的なものです）
+;지휘자로서유카리를 추가. 조수로 지정（이미지적인 것입니다）
 ADDCHARA 22
 ASSI = CHARANUM-1
 
-;세이브당했다キャラがいれば読む
+;세이브당했다캐릭터가 있으면 읽는다
 IF MATCH(GLOBALS, "", 0, 5) < 5
 	$MAKE_OR_LORD
 	PRINTFORMDL [0] 캐릭터의 작성
@@ -43,19 +43,19 @@ CALL CHARA_CUTIN(CSTR:ASSI:10, CSTR:ASSI:11, CSTR:ASSI:로마자)
 PRINTL 
 PRINTFORMW 「저의 이름은 알고 있을 거라고 생각하니 생략하겠어요.」
 PRINTFORMW 「이 앞은 환상이라고 부르기엔 조금 저속하고 몽매한 세계」
-PRINTFORMW 「자, 준비는 되었나요？」
+PRINTFORMW 「자, 준비는 되었나요?」
 PRINTL 
-CALL BGM_CUTIN("二つの世界")
+CALL BGM_CUTIN("2개의 세계")
 PRINTFORMW 「――환상에 빠져들 준비를. 자,」
 
-;性別の決定
+;성별의 결정
 PRINTL 
-PRINTFORML 「우선은 제가 질문 하지요. 이 세계에서의 당신의 성별은？」
-PRINTFORMW 「정기가 흘러넘치는 남성？　용모도 화려한 여성？　그렇지 않으면……」
+PRINTFORML 「우선은 제가 질문 하지요. 이 세계에서의 당신의 성별은?」
+PRINTFORMW 「정기가 흘러넘치는 남성?   용모도 화려한 여성?   그렇지 않으면……」
 PRINTL 
 PRINTFORMDL [0] 남성
 PRINTFORMDL [1] 여성
-PRINTFORMDL [2] 「그렇지 않으면……？」
+PRINTFORMDL [2] 「그렇지 않으면……?」
 CALL INPUTINTD(0, 1, 2)
 SELECTCASE RESULT
 	CASE 0
@@ -64,20 +64,20 @@ SELECTCASE RESULT
 	CASE 1
 		PRINTFORMW 「여성, 이군요. …후훗, 괜찮아요. 그것도 또, 하나의 재미군요」
 	CASE 2
-		PRINTFORML 「선택할 수 없군요？ 후후, 제멋대로에 욕심쟁이인 당신이라도, 이곳은 상냥하게 받아들여요」
+		PRINTFORML 「선택할 수 없군요? 후후, 제멋대로에 욕심쟁이인 당신이라도, 이곳은 상냥하게 받아들여요」
 		PRINTFORMW 「자, 이제 돌아갈 수 없어요. 괜찮아요, 성의 경계는 원래 있거나 없거나니까요」
 		TALENT:MASTER:후타나리 = 1
 ENDSELECT
 
-;体格の決定
+;체격의 결정
 PRINTFORMW 「그럼, 다음으로 넘어갈까요」
 PRINTL 
-PRINTFORMW 「당신의 성은 정해졌어요. 다음은, 당신은 어떤 체격을 하고 있나요？」
+PRINTFORMW 「당신의 성은 정해졌어요. 다음은, 당신은 어떤 체격을 하고 있나요?」
 IF TALENT:MASTER:남자
-	PRINTFORML 「극히 평범한 남자？　혹은 장신의 미남일까요」
-	PRINTFORMW 「혹시……관례도 아직인 어린 아이, 일지도 모르겠네요？」
+	PRINTFORML 「극히 평범한 남자?   혹은 장신의 미남일까요」
+	PRINTFORMW 「혹시…… 관례도 아직인 어린 아이, 일지도 모르겠네요?」
 ELSE
-	PRINTFORML 「평범한 아가씨도 괜찮아요. 아니면, 남자 뺨치는 장신의 미녀？」
+	PRINTFORML 「평범한 아가씨도 괜찮아요. 아니면, 남자 뺨치는 장신의 미녀?」
 	PRINTFORMW 「세상도 모르는 어린 소녀…도 좋지만, 상냥하게 대해 줄거라고는 생각 되지 않네요」
 ENDIF
 PRINTL 
@@ -93,8 +93,8 @@ SELECTCASE RESULT
 	CASE 1
 		PRINTFORML 「젊고 싱싱한 육체… 우후훗」
 		PRINTFORMW 「더럽혀져도 매력을 잃지 않는, 이상한 것이지요」
-		;後で参照するために、작은체형を=2とする
-		;この場合、能力や素質の判定は幼い扱いで行われるが、작은체형自体は最後に消える
+		;다음에 참조하기 위해서, 작은체형를=2로 한다
+		;이 경우, 능력이나 소질의 판정은 어린 취급으로 행해지지만, 작은체형자체는 마지막에 사라진다
 		TALENT:MASTER:작은체형 = 2
 		LITTLE_CHECK = 1
 	CASE 2
@@ -110,13 +110,13 @@ SELECTCASE RESULT
 ENDSELECT
 
 
-;남자でなければ、おっぱいの決定
+;남자가 아니면, 젖가슴의 결정
 IF !TALENT:MASTER:남자
 	PRINTL 
 	PRINTFORML 「그렇게 말하면, 당신의 여성의 상징…예, 그래요. 유방」
-	PRINTFORMW 「요컨데, 가슴의 크기에요. 얼마나 되나요？」
+	PRINTFORMW 「요컨데, 가슴의 크기에요. 얼마나 되나요?」
 	PRINTL 
-	PRINTFORMDL [0] 작은 것이 나쁩니까？
+	PRINTFORMDL [0] 작은 것이 나쁩니까?
 	PRINTFORMDL [1] 보통 정도입니다
 	PRINTFORMDL [2] 크다고 자주 듣습니다
 	CALL INPUTINTD(0, 1, 2)
@@ -132,8 +132,8 @@ IF !TALENT:MASTER:남자
 			PRINTFORMW 「보통이라는 거군요. 누구에게나 귀여움 받을 것 같네요, 후후후」
 		CASE 2
 			IF TALENT:MASTER:작은체형
-				PRINTFORML 「그 체격에 크다구요？ …남자를 좋아하는, 약삭빠른 신체」
-				PRINTFORMW 「수컷을 위해 태어난 것 같은, 천박한 신체… 후후, 기분 나빴나요？」
+				PRINTFORML 「그 체격에 크다구요? … 남자를 좋아하는, 약삭빠른 신체」
+				PRINTFORMW 「수컷을 위해 태어난 것 같은, 천박한 신체… 후후, 기분 나빴나요?」
 			ELSE
 				PRINTFORMW 「풍족하군요. 원수가 되지 않는다면, 좋겠네요. 후후」
 			ENDIF
@@ -141,46 +141,46 @@ IF !TALENT:MASTER:남자
 	ENDSELECT
 ENDIF
 
-;名前の決定
+;이름의 결정
 PRINTL 
 PRINTFORMW 「꽤나, 당신를 알 수 있었습니다. 하나 더, 중요한 것을 듣겠어요」
 PRINTL 
-PRINTFORML 「중요하지만 간단한 것이에요. 당신을, 뭐라고 부르지요？」
+PRINTFORML 「중요하지만 간단한 것이에요. 당신을, 뭐라고 부르지요?」
 PRINTFORMW 「이름이라도 좋고… 이름을 대지 않는다면, 그저 당신이라고 부르면 되겠네요」
 PRINTL 
 PRINTFORMDL [0] 이름을 자칭한다
 PRINTFORMDL [1] 자칭하지 않는다
 CALL INPUTINTD(0, 1)
 IF !RESULT
-	PRINTFORMW 「당신의 이름은…？」
-	;文字列入力なのでカラーを戻す
+	PRINTFORMW 「당신의 이름은…?」
+	;캐릭터 라인 입력인 것으로 칼라를 되돌린다
 	RESETCOLOR
-	REUSELASTLINE ※名前を入力してください
+	REUSELASTLINE ※이름을 입력해 주세요
 	$NAME_ENTRY
 	INPUTS
 	IF STRLENS(RESULTS) > 16
 		CLEARLINE 1
-		REUSELASTLINE ※名前が長すぎます！
+		REUSELASTLINE ※이름이 너무 깁니다!
 		GOTO NAME_ENTRY
 	ELSEIF RESULTS == ""
 		CLEARLINE 1
-		REUSELASTLINE ※名前を入力してください
+		REUSELASTLINE ※이름을 입력해 주세요
 		GOTO NAME_ENTRY
 	ELSE
-		PRINTFORML 「%RESULTS%」(으)로 좋습니까？
+		PRINTFORML 「%RESULTS%」로 좋습니까?
 		PRINTL 
 		PRINTL [0] 네
 		PRINTL [1] 아니오
 		PRINTL [2] 자칭하는 것을 그만둔다
 		CALL INPUTINT(0, 1, 2)
 		IF RESULT == 1
-			REUSELASTLINE ※名前を入力してください
+			REUSELASTLINE ※이름을 입력해 주세요
 			GOTO NAME_ENTRY
 		ELSEIF RESULT == 0
 			NAME:MASTER = %RESULTS%
 			CALL KOJO_COLOR(ASSI)
 			PRINTFORMW 「%NAME:MASTER%씨라고 하군요. 알겠습니다」
-			PRINTFORMW 「부를 때도, 이름 그대로 「%NAME:MASTER%」,로 괜찮나요？」
+			PRINTFORMW 「부를 때도, 이름 그대로 「%NAME:MASTER%」, 로 괜찮나요?」
 			PRINTL 
 ;OriginalString : [0] いいです
 			PRINTDL [0] 좋습니다
@@ -189,21 +189,21 @@ IF !RESULT
 			CALL INPUTINTD(0, 1)
 			IF RESULT == 1
 				PRINTFORMW 「좋지 않다면, 뭐라고 하는 부르면 좋을지 가르쳐 주세요」
-				;文字列入力なのでカラーを戻す
+				;캐릭터 라인 입력인 것으로 칼라를 되돌린다
 				RESETCOLOR
 				REUSELASTLINE ※호칭을 입력해주세요
 				$CALLNAME_ENTRY
 				INPUTS
 				IF STRLENS(RESULTS) > 12
 					CLEARLINE 1
-					REUSELASTLINE ※呼び名が長すぎます！
+					REUSELASTLINE ※통칭이 너무 깁니다!
 					GOTO CALLNAME_ENTRY
 				ELSEIF RESULTS == ""
 					CLEARLINE 1
 					REUSELASTLINE ※호칭을 입력해주세요
 					GOTO CALLNAME_ENTRY
 				ELSE
-					PRINTFORML 「%RESULTS%」(으)로 좋습니까？
+					PRINTFORML 「%RESULTS%」로 좋습니까?
 					PRINTL 
 					PRINTL [0] 네
 					PRINTL [1] 아니오
@@ -221,18 +221,18 @@ IF !RESULT
 				PRINTFORMW 「그러면, %CALLNAME:MASTER%(이)라고 부르도록 하죠」
 			ENDIF
 		ELSE
-			PRINTFORML 「어머나, 역시 이름을 밝히지 않는다고요？」
+			PRINTFORML 「어머나, 역시 이름을 밝히지 않는다고요?」
 			PRINTFORMW 「그래요. 현명하고 소심, 애완동물에게는 의외로 많은 기질이죠」
 		ENDIF
 	ENDIF
 ELSE
 	PRINTFORML 「…이름을 댈 생각은 없나보군요. 알겠어요」
-	PRINTFORMW 「후후, 경계하고 있는건가요？　그게 아니면, 부끄러운가요？」
+	PRINTFORMW 「후후, 경계하고 있는건가요?   그게 아니면, 부끄러운가요?」
 ENDIF
 PRINTFORMW 「인연이 있을지는 모르겠지만」
 PRINTFORMW 「잘 부탁해요, 「%CALLNAME:MASTER%」」
 
-;성격決定は全キャラから１０人を選んで質問される
+;성격결정은 전캐릭터로부터 10명을 선택해 질문받는다
 PRINTL 
 PRINTFORML 「자 그럼. 슬슬 잘 시간이군요」
 PRINTFORMW 「예, 꿈을 꾸는거예요. 그 꿈에서 당신은, 열 개의 방을 지날 거에요」
@@ -250,11 +250,11 @@ PRINTW ……
 PRINTW …
 PRINTL 
 $CHARAMAKE_REROLL
-;数値をリセット
+;수치를 리셋트
 VARSET LOCAL
-CALLF CM_PROF("リセット")
-;１０人回して呼ぶ。FLAG:8は당신以外のキャラ総数
-;LOCAL:キャラ번호が真だとすでに呼ばれた扱い
+CALLF CM_PROF("리셋트")
+;10인 돌려 부른다. FLAG:8은당신 이외의 캐릭터 총수
+;LOCAL:캐릭터번호가 진이라고 벌써 불린 취급
 FOR LCOUNT, 0, 10
 	$CHARAMAKE_LOOP
 	ADDCHARA RAND:(FLAG:Cha총수+1)
@@ -276,19 +276,19 @@ FOR LCOUNT, 0, 10
 	PRINTL 
 	DELCHARA TARGET
 NEXT
-;素質決定
+;소질 결정
 FOR LCOUNT, 0, 150
 	TRYCALLFORM CM_SET_TALENT_{LCOUNT}
 NEXT
-;경험決定
+;경험결정
 FOR LCOUNT, 0, 100
 	TRYCALLFORM CM_SET_EXP_{LCOUNT}
 NEXT
-;能力決定
+;능력 결정
 FOR LCOUNT, 0, 30
 	TRYCALLFORM CM_SET_ABL_{LCOUNT}
 NEXT
-;少女判定に使った작은체형の削除
+;소녀 판정에 사용한작은체형의 삭제
 TALENT:MASTER:작은체형 %= 2
 RESETCOLOR
 PRINTL 
@@ -300,12 +300,12 @@ PRINTDW ……
 PRINTDW …
 PRINTL 
 
-;主人公のゲージをセットアップ、MASTERCUSTOM.ERBに格納
+;주인공의 게이지를 셋업, MASTERCUSTOM.ERB에 격납
 CALL BASE_MASTER_SETUP
 
 
 CALL PRINTSTATE_CHARAMAKE(MASTER)
-CALL PRINT_DIALOG("이 캐릭터를 저장할까요？", 1, 1, 1)
+CALL PRINT_DIALOG("이 캐릭터를 저장할까요?", 1, 1, 1)
 PRINTL [0] 네
 PRINTL [1] 아니오
 CALL INPUTINT(0, 1)
@@ -314,11 +314,11 @@ IF !RESULT
 ENDIF
 
 CALL KOJO_COLOR(ASSI)
-PRINTFORMW 「후후, 좋은 꿈 꾸셨나요？」
+PRINTFORMW 「후후, 좋은 꿈 꾸셨나요?」
 PRINTL 
 CALL CHARA_CUTIN(CSTR:ASSI:10, CSTR:ASSI:11, CSTR:ASSI:로마자)
 PRINTL 
-PRINTFORMW 「헤에, %CALLNAME:MASTER%(은)는 이런 인물이군요. 맞나요？」
+PRINTFORMW 「헤에, %CALLNAME:MASTER%는 이런 인물이군요. 맞나요?」
 PRINTL 
 ;OriginalString : [0] これでいい
 PRINTDL [0] 이걸로 좋다
@@ -326,7 +326,7 @@ PRINTDL [0] 이걸로 좋다
 PRINTDL [1] 뭔가 잘못됐어
 CALL INPUTINTD(0, 1)
 IF RESULT == 1
-	PRINTFORMW 「어머나？　그렇다면, 한 번 더 꿈을 꾸실까요」
+	PRINTFORMW 「어머나?   그렇다면, 한 번 더 꿈을 꾸실까요」
 	PRINTFORMW 「고치는 것은 흉한 일이지만」
 	PRINTFORMW 「후후후, 어차피 농락당한다면, 이상적인 자신이 좋은 것도 알지요」
 	PRINTL 
@@ -340,10 +340,10 @@ IF RESULT == 1
 ;OriginalString : …
 	PRINTW …
 	PRINTL 
-	;新たに당신を追加する
+	;새롭게당신를 추가한다
 	ADDCHARA 0
 	TARGET = CHARANUM-1
-	;決定済みの要素をコピー
+	;결정 끝난 요소를 카피
 	NAME = %NAME:MASTER%
 	CALLNAME = %CALLNAME:MASTER%
 	TALENT:남자 = TALENT:MASTER:남자
@@ -363,90 +363,90 @@ IF RESULT == 1
 	GOTO CHARAMAKE_REROLL
 ENDIF
 PRINTFORMW 「그러면, 제가 주는 마지막 선택입니다」
-PRINTFORMW 「이 세계에서의 당신의 운명을 쥐고 있는――주인님은, 어느 분이신가요？」
+PRINTFORMW 「이 세계에서의 당신의 운명을 쥐고 있는─주인님은, 어느 분이신가요?」
 PRINTL 
 RESETCOLOR
 DELCHARA ASSI
 ASSI = -1
 
-;関連関数。성격値の受け皿など
-;引数0は加算、引数1は代入（省略すると代入しない）
+;관련 함수. 성격치의 받침접시 따위
+;인수 0은 가산, 인수 1은 대입（생략 하면 대입하지 않는다）
 
-;성격値セッター
+;성격치 셋타
 @CM_PROF(ARGS, ARG, ARG:1 = -100)
 #FUNCTION
 #LOCALSIZE 100
 #DIM PROFNUM, 1
-;PROFNUMのセット
+;PROFNUM세트
 SELECTCASE ARGS
-	CASE "攻撃"
+	CASE "공격"
 		PROFNUM = 0
-	CASE "被虐"
+	CASE "피학"
 		PROFNUM = 1
-	CASE "솔직さ"
+	CASE "솔직야"
 		PROFNUM = 2
-	CASE "プライド"
+	CASE "프라이드"
 		PROFNUM = 3
-	CASE "衝動"
+	CASE "충동"
 		PROFNUM = 4
 	CASE "호기심"
 		PROFNUM = 5
 	CASE "수치"
 		PROFNUM = 6
-	CASE "楽観"
+	CASE "낙관"
 		PROFNUM = 7
-	CASE "知性"
+	CASE "지성"
 		PROFNUM = 8
-	CASE "倒錯"
+	CASE "도착"
 		PROFNUM = 9
-	CASE "同性愛"
+	CASE "동성애"
 		PROFNUM = 10
-	CASE "潔癖"
+	CASE "결벽"
 		PROFNUM = 11
-	CASE "モラル"
+	CASE "모랄"
 		PROFNUM = 12
-	CASE "神経質"
+	CASE "신경질"
 		PROFNUM = 13
-	CASE "Ｃ好き"
+	CASE "Ｃ를 좋아하는 사람"
 		PROFNUM = 50
-	CASE "Ｖ好き"
+	CASE "Ｖ를 좋아하는 사람"
 		PROFNUM = 51
-	CASE "Ａ好き"
+	CASE "Ａ를 좋아하는 사람"
 		PROFNUM = 52
-	CASE "Ｂ好き"
+	CASE "Ｂ를 좋아하는 사람"
 		PROFNUM = 53
-	CASE "リセット"
+	CASE "리셋트"
 		VARSET LOCAL
 		RETURNF 0
 	CASEELSE
 		RETURNF 0
 ENDSELECT
 
-;代入
+;대입
 IF ARG:1 != -100
 	LOCAL:PROFNUM = ARG:1
-;加算
+;가산
 ELSE
 	LOCAL:PROFNUM += ARG
 ENDIF
 RETURNF LOCAL:PROFNUM
 
-;성격値から素質判定値を取り出す関数
-;성격値に偏りを持たせたい場合、二度指定すればいい
+;성격치로부터 소질 판정치를 꺼내는 함수
+;성격치에 편향을 갖게하고 싶은 경우, 두 번 지정하면 된다
 @CM_TALENT_MAKE(ARGS, ARGS:1, ARGS:2, ARGS:3, ARGS:4, ARGS:5, ARGS:6, ARGS:7, ARGS:8, ARGS:9, ARGS:10, ARGS:11, ARGS:12, ARGS:13, ARGS:14, ARGS:15, ARGS:16, ARGS:17, ARGS:18, ARGS:19)
 #FUNCTION
 #DIM LCOUNT, 1
 VARSET LOCAL
 FOR LCOUNT, 0, 20
-	;分母加算
+	;분모 가산
 	LOCAL:1++
-	;逆　という字が入っていると성격値の分引く
-	IF STRFIND(ARGS:LCOUNT, "逆") >= 0
-		LOCAL -= CM_PROF(REPLACE(ARGS:LCOUNT, "逆",""))
+	;역  라고 하는 글자가 들어가 있으면성격치의 할인구
+	IF STRFIND(ARGS:LCOUNT, "역") >= 0
+		LOCAL -= CM_PROF(REPLACE(ARGS:LCOUNT, "역",""))
 	ELSEIF ARGS:LCOUNT != ""
 		LOCAL += CM_PROF(ARGS:LCOUNT)
 	ELSE
-		;引数が空なら分母を戻す
+		;인수가 하늘이라면 분모를 되돌린다
 		LOCAL:1--
 	ENDIF
 NEXT
