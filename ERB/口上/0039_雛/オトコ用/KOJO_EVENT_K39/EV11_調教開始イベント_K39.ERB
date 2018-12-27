@@ -275,14 +275,14 @@ IF INRANGE(ARG, 1, 2)
 	ELSE
 		IF GET_KFLAG_K39("상사상애", (FLAG:주인님))
 ;OriginalString : 「疲れてるのに無理する事なんてないのよ?」
-			PRINTFORMW 「지친 채로 무리해서는 안 된다고요?」
+			PRINTFORMW 「지친 채로 무리해서는 안 된다고?」
 ;OriginalString : 「금일はゆっくり休んで」
-			PRINTFORMW 「오늘은 느긋하게 쉬세요.」
+			PRINTFORMW 「오늘은 느긋하게 쉬어.」
 		ELSE
 ;OriginalString : 「大分疲れが溜まってるみたいですね?」
 			PRINTFORMW 「상당히 피로가 쌓인 것 같네요?」
 ;OriginalString : 「いいですよ,금일はやめておきましょう」
-			PRINTFORMW 「괜찮아요, 오늘은 그만둡시다.」
+			PRINTFORMW 「괜찮아요, 오늘은 그만 두도록 할테니.」
 		ENDIF
 	ENDIF
 	RETURN 1
@@ -376,7 +376,7 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 ;OriginalString : 「私の事,厄神様って呼ぶのはもうやめて」
 		PRINTFORMW 「저를, 액신님이라고 부르는 건 이제 그만둬 주세요.」
 ;OriginalString : 「これからは%CALLNAME:TARGET%と呼んでください。いいですね?　約束ですよ♪」
-		PRINTFORMW 「이제부터는, %CALLNAME:TARGET%라고 불러 줘. 알겠지? 약속이야♪」
+		PRINTFORMW 「앞으로는, %CALLNAME:TARGET%라고 불러 줘. 알겠지? 약속이야♪」
 ;OriginalString : 
 		PRINTL
 		CALL BGM_CUTIN("神々の祈り", 1)
@@ -412,8 +412,8 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 ;OriginalString : 
 		PRINTL
 		;ツールチップ楽しい
-		CALL HTMLPRINTDL(@"%HTMLBUTTON("[0]", "0", "루트Ａ")% 원래있던 세계에 미련이 남았다…")
-		CALL HTMLPRINTDL(@"%HTMLBUTTON("[1]", "1", "루트Ｂ")% 가능하다면, 이 땅에서 함께…")
+		CALL HTMLPRINTDL(@"%HTMLBUTTON("[0] 원래있던 세계에 미련이 남았다…", "0", "루트Ａ")%")
+		CALL HTMLPRINTDL(@"%HTMLBUTTON("[1] 가능하다면, 이 땅에서 함께…", "1", "루트Ｂ")%")
 
 		;@INPUTINTD
 		;==========
@@ -497,13 +497,13 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 	IF GET_KFLAG_K39("상사상애")
 		SELECTCASE RANDEVENT(2, 0)
 			CASE 0
-				CALL HTMLPRINTL(@"「정말, 그렇게 초조해 하지 마.%LOCALS:0%」")
+				CALL HTMLPRINTL(@"「정말, 그렇게 초조해 하지 마%LOCALS:0%」")
 ;OriginalString : 「%CNAME(MASTER, TARGET)%となら私はいつでもＯＫよ?　クスクス」
 				PRINTFORMW 「%CNAME(MASTER, TARGET)%이라면 나는 언제라도 OK라고? 쿡쿡」
 			CASEELSE
 ;OriginalString : 「うふっ,もう待ちきれないんでしょ?」
 				PRINTFORML 「후훗, 더는 못 기다리겠지?」
-				CALL HTMLPRINTW(@"「괜찮아, 나도 같은 기분이니까.%LOCALS:0%」")
+				CALL HTMLPRINTW(@"「괜찮아, 나도 같은 기분이니까%LOCALS:0%」")
 		ENDSELECT
 	ENDIF
 	;エンディングを경과했다ら弾く
@@ -512,7 +512,7 @@ IF AFFECTION("상사상애", (FLAG:주인님)) && TALENT:TARGET:주인님
 ;OriginalString : %CALLNAME%は\@ 
 		PRINTFORMDW %CALLNAME%는 \@ 
 		RAND:2 
-		? 웃음이 넘치는 얼굴로, %CALLNAME:MASTER%의 손을 잡았다. 
+		? 웃음이 넘치는 얼굴로, %CALLNAME:MASTER%의 손을 잡았다
 		# 미소를 지은 채이긴 하나, 그 표정엔 희미한 그늘이 드리워져 있었다\@…
 		}
 	RETURN 1
@@ -620,19 +620,14 @@ IF AFFECTION("익애")
 		CASE 0
 ;OriginalString : 「では始めましょう」
 			PRINTFORML 「그럼 시작합시다.」
-			CALL HTMLPRINTW(@"「저 이래뵈도, 기대하고 있었어요.%LOCALS:0%」")
+			CALL HTMLPRINTW(@"「저 이래뵈도, 기대하고 있었어요%LOCALS:0%」")
 		CASE 1
 ;OriginalString : 「금일はどんな事しましょうか?」
 			PRINTFORMW 「오늘은 어떤 일을 할까요?」
-			CALL HTMLPRINTW(@"「후훗, 기대되네요.%LOCALS:0%」")
+			CALL HTMLPRINTW(@"「후훗, 기대되네요%LOCALS:0%」")
 	ENDSELECT
-	{
 ;OriginalString : %CALLNAME:TARGET%は笑顔%RAND_SPLIT(
-	PRINTFORMW %CALLNAME:TARGET%는 웃는 얼굴%RAND_SPLIT(
-	"로 당신의 손을 잡았다/" + 
-	"로 있었지만, 왠지 모를 쓸쓸함이 감돌고 있었다/" + 
-	"을 가장하고 있지만, 그 모습은 어딘가 슬퍼 보였다")%…
-	}
+	PRINTFORMW %CALLNAME:TARGET%는 웃는 얼굴%RAND_SPLIT("로 당신의 손을 잡았다/로 있었지만, 왠지 모를 쓸쓸함이 감돌고 있었다/을 가장하고 있지만, 그 모습은 어딘가 슬퍼 보였다")%…
 	RETURN 1
 ENDIF
 
@@ -687,19 +682,9 @@ IF TALENT:TARGET:주인님
 
 	;汎用処理
 	;========
-	{
 ;OriginalString : 「%RAND_SPLIT(
-	PRINTFORMW 「%RAND_SPLIT(
-	"그렇게 긴장하지 않아도 괜찮아요/" + 
-	"걱정하실 필요는 없어요/" + 
-	"좀 더 마음을 편하게 해 주세요")%.」
-	}
-	{
+	PRINTFORMW 「%RAND_SPLIT("그렇게 긴장하지 않아도 괜찮아요/걱정하실 필요는 없어요/좀 더 마음을 편하게 해 주세요")%.」
 ;OriginalString : 「%RAND_SPLIT(
-	PRINTFORMW 「%RAND_SPLIT(
-	@"모든 건, %CNAME(MASTER, TARGET)%의 액을 쫓아내기 위함이니까요/" + 
-	@"이건 %CNAME(MASTER, TARGET)%을 위함이기도 하니까요/" +
-	"나쁘게는 하지 않을테니까요")%.」
-	}
+	PRINTFORMW 「%RAND_SPLIT(@"모든 건, %CNAME(MASTER, TARGET)%의 액을 쫓아내기 위함이니까요/이건 %CNAME(MASTER, TARGET)%을 위함이기도 하니까요/나쁘게는 하지 않을테니까요")%.」
 	RETURN 1
 ENDIF
