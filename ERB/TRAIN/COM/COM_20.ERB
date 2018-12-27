@@ -1,83 +1,83 @@
 ﻿;────────────────────────────────────
-;020,허리를 흔든다（쾌ＣＶＡ보정、열락、달성）
+;020, 허리를 흔든다（쾌ＣＶＡ보정, 열락, 달성）
 ;────────────────────────────────────
 @COM20
-;自分が責める側の場合（성교봉사、기승위等で腰を使って感じ시킨다）
+;자신이 탓하는 측의 경우（성교봉사, 기승위등으로 허리를 사용하는 느낌시킨다）
 IF SEX_INITIATIVE(MASTER)
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("적극적으로 한다")
-	;달성SOURCE増加
+	;달성SOURCE 증가
 	SOURCE:MASTER:달성 += (CFLAG:MASTER:죠교레벨 + 5) * (GET_ABL(MASTER, "봉사정신") + 50) + (GET_ABL(MASTER, "기교") + 50) * 20 / 100
 	;의존도변화
 	CALL ADD_DEPEND(+5, +3)
-;自分が責められる側の場合（역강간、성교系等で迎え腰を使って快感をむさぼる、파이즈리や스마타で快感を求める）
+;자신이 탓할 수 있는 측의 경우（역강간, 성교계등으로 마중허리를 사용해 쾌감을 탐내는, 파이즈리나스마타로 쾌감을 추구한다）
 ELSE
-	;COM分類
-	CALL SET_COMGRO("受け入れる")
-	;열락SOURCE増加
+	;COM 분류
+	CALL SET_COMGRO("받아들인다")
+	;열락SOURCE 증가
 	SOURCE:MASTER:열락 += 250 + SOURCE:MASTER:쾌Ｃ / 3 + SOURCE:MASTER:쾌Ｖ / 3 + SOURCE:MASTER:쾌Ａ / 3 + (CFLAG:MASTER:죠교레벨 + 1) * (GET_ABL(MASTER, "기교") + 10) * 1
 	;의존도변화
 	CALL ADD_DEPEND(+4, +8)
 ENDIF
-;COM印象
-CALL SET_COMIMP("好印象大")
-;참다플래그解消
+;COM 인상
+CALL SET_COMIMP("좋은인상")
+;참다플래그해소
 TCVAR:MASTER:참다 = 0
 RETURN 1
 
 ;────────────────────────────────────
-;021,안에 내!（달성、열락、적극적으로 한다）
+;021, 안에 내! （달성, 열락, 적극적으로 한다）
 ;────────────────────────────────────
 @COM21
 LOCAL = (CFLAG:M호의 - 500) / 20
 LOCAL = LIMIT(LOCAL, 1, 200)
-;달성SOURCE増加
+;달성SOURCE 증가
 SOURCE:MASTER:달성 += 100 + LOCAL * (SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ) / 1000
-;열락SOURCE増加
+;열락SOURCE 증가
 IF TEQUIP:성교중 == 6
 	SOURCE:MASTER:열락 += 100 + SOURCE:MASTER:쾌Ａ / 4 + SOURCE:쾌Ｃ / 3 + (CFLAG:MASTER:죠교레벨 + 1) * (GET_ABL(MASTER, "기교") + 10) * CFLAG:M호의 / 1500
 ELSE
 	SOURCE:MASTER:열락 += 250 + SOURCE:MASTER:쾌Ｖ / 2 + SOURCE:쾌Ｃ / 3 + (CFLAG:MASTER:죠교레벨 + 1) * (GET_ABL(MASTER, "기교") + 10) * CFLAG:M호의 / 1000
 ENDIF
-;죠교대상이남자もしくはＡ성교중
+;죠교대상이남자 혹은Ａ성교중
 IF TALENT:MASTER:남자 || TEQUIP:성교중 == 6
-	;派生：Ａに出して
+	;파생:Ａ에 내
 	TFLAG:REACT파생 = 1
 ELSE
-	;派生：Ｖに出して
+	;파생:Ｖ에 내
 	TFLAG:REACT파생 = 0
 ENDIF
-;COM分類
-CALL SET_COMGRO("受け入れる")
-;COM印象
-CALL SET_COMIMP("好印象大")
-;참다플래그解消
+;COM 분류
+CALL SET_COMGRO("받아들인다")
+;COM 인상
+CALL SET_COMIMP("좋은인상")
+;참다플래그해소
 TCVAR:MASTER:참다 = 0
 ;의존도변화
 CALL ADD_DEPEND(+10, +10)
 RETURN 1
 
 ;────────────────────────────────────
-;022,안에 내면 안돼!（반항、공포、애원、징계・포인트）
+;022, 안에 내면 안돼! （반항, 공포, 애원, 징계·포인트）
 ;────────────────────────────────────
 @COM22
-;반항、공포SOURCE増加
+;반항, 공포SOURCE 증가
 SOURCE:MASTER:반항 += 300 + (MARK:반항각인 + 5) * 50
 SOURCE:MASTER:공포 += (100 + SOURCE:MASTER:쾌Ｖ / 2 + SOURCE:MASTER:쾌Ａ / 10) * (MARK:MASTER:트라우마 + 10) / 10
-;願いを聞き入れるかのチェック。かなりアバウト
+;소원을 들어줄까의 체크. 꽤 어바웃
 IF BASE:만족 / 100 + CFLAG:아라이멘도 / 10 + (CFLAG:M호의 - 500) / 100 > BASE:초조함 / 100 + RAND:5
-	;COM分類
+	;COM 분류
 	CALL SET_COMGRO("용서를 빌다")
-	;派生：中に出さない
+	;파생:중에 내지 않는다
 	TFLAG:REACT파생 = 0
 ELSE
-	;징계・포인트加算
-	TFLAG:징계・포인트 += 1 + RAND:3 + BASE:초조함 / 200
-	;派生：中に出す
+	;징계·포인트가산
+	TFLAG:징계·포인트 += 1 + RAND:3 + BASE:초조함 / 200
+	;파생:중에 낸다
 	TFLAG:REACT파생 = 1
 ENDIF
-;COM印象
-CALL SET_COMIMP("悪印象小")
+;COM 인상
+CALL SET_COMIMP("나쁜인상")
 ;의존도변화
 CALL ADD_DEPEND(0, -10)
 RETURN 1

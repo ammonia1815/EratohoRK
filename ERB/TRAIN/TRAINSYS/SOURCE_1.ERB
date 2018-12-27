@@ -1,43 +1,43 @@
 ﻿;────────────────────────────────────
-;죠교대상快感（ＣＶＡＢ）のソースと愛液、절정の処理（노출ソース、이탈ソース、달성ソース、쾌Ｃ、쾌Ｖ、쾌Ａ、쾌Ｂ、윤활、욕망、굴복、공순、억울、체력、기력、사정、모유、소변、이성、흥미、호감도、경험치）
+;죠교대상쾌감（ＣＶＡＢ）의 소스와 애액, 절정의 처리（노출소스, 이탈소스, 달성소스, 쾌Ｃ, 쾌Ｖ, 쾌Ａ, 쾌Ｂ, 윤활, 욕망, 굴복, 공순, 억울, 체력, 기력, 사정, 모유, 소변, 이성, 흥미, 호감도, 경험치）
 ;────────────────────────────────────
 @CALC_SOURCE00
 
 LOCALS = CALC_SOURCE00
 
-;最初の変動
+;최초의 변동
 CALLFORM %LOCALS%_TALENT
 
-;快感（ＣＶＡＢ）の上昇
+;쾌감（ＣＶＡＢ）의 상승
 CALLFORM %LOCALS%_PLEASURE
 
-;욕망、굴복、공순の上昇
+;욕망, 굴복, 공순의 상승
 CALLFORM %LOCALS%_DESIRE
 
-;억울の上昇
+;억울의 상승
 CALLFORM %LOCALS%_DEPRESSION
 
-;愛液処理
+;애액 처리
 CALLFORM %LOCALS%_MOIST
 
-;절정、체력、기력、사정、모유、소변などの処理
+;절정, 체력, 기력, 사정, 모유, 소변등의 처리
 CALLFORM %LOCALS%_EX
 
 ;────────────────────────────────────
-;最初の変動
+;최초의 변동
 ;────────────────────────────────────
 @CALC_SOURCE00_TALENT
 #DIM LCOUNT
-;ＣＶＡＢ部位について
+;ＣＶＡＢ부위에 대해서
 FOR LCOUNT, 0, 4
-	;민감と둔감を処理
+	;민감와둔감를 처리
 	;Ｘ민감
 	SIF TALENT:MASTER:(100 + LCOUNT * 2)
 		TIMES SOURCE:MASTER:LCOUNT, 1.50
 	;Ｘ둔감
 	SIF TALENT:MASTER:(101 + LCOUNT * 2)
 		TIMES SOURCE:MASTER:LCOUNT, 0.70
-	;죠교대상の상태
+	;죠교대상의상태
 	IF 0
 	ELSEIF M_COND("피폐")
 		TIMES SOURCE:MASTER:LCOUNT, 0.80
@@ -51,191 +51,191 @@ FOR LCOUNT, 0, 4
 NEXT
 
 ;────────────────────────────────────
-;快感（ＣＶＡＢ）の上昇
+;쾌감（ＣＶＡＢ）의 상승
 ;────────────────────────────────────
 @CALC_SOURCE00_PLEASURE
 #DIM LCOUNT
 
-;욕정PALAMが[0→4, 1000→7, 2000→9, 3000→10, 4000→11, 5000→12]をLOCALへ(4～12)
+;욕정PALAM가[0→4, 1000→7, 2000→9, 3000→10, 4000→11, 5000→12]를 LOCAL에(4～12)
 LOCAL = LIMIT(GET_REVISION_SQRT(PALAM:MASTER:욕정, 5000, 8) + 4, 4, 12)
 FOR LCOUNT, 0, 4
-	;연속ボーナス(연속횟수倍に増加するボーナス)
+	;연속보너스(연속횟수배에 증가하는 보너스)
 	CUP:MASTER:LCOUNT += SOURCE:MASTER:LCOUNT * LOCAL * TFLAG:동일행동보너스 / 10
-	;조교중に集中的に責られると弱くなる気がする(快Ｘ보정処理)
+	;조교중에 집중적으로 책와 약해질 생각이 든다(쾌Ｘ보정처리)
 	CUP:MASTER:LCOUNT = CUP:MASTER:LCOUNT * CFLAG:MASTER:(30 + LCOUNT) / 50
 NEXT
-;快Ｘ総計の1/100を마력として취득
-;TFLAG:취득마력 += SUMARRAY(CUP:MASTER, 0, 4) / 100
+;쾌Ｘ총계의 것 1/100을마력로서취득
+;TFLAG:취득마력 += SUMARRAY(CUP:MASTER, 0, 4)/100
 TFLAG:취득마력 += (CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ) / 100
 
 ;────────────────────────────────────
-;욕망、굴복、공순の上昇
+;욕망, 굴복, 공순의 상승
 ;────────────────────────────────────
 @CALC_SOURCE00_DESIRE
 #DIM LCOUNT
 
-;ABL:욕망をみる
+;ABL:욕망를 본다
 FOR LCOUNT, 0, 4
-	;ABL:MASTER:욕망が[0→5%, 5→30%]を快ＸSOURCEに乗算
-	LOCAL = SOURCE:MASTER:LCOUNT * LINE_CALC(ABL:MASTER:욕망, "0→5,5→30,LIMIT/5～30") / 100
-	;욕정PALAMに加算
+	;ABL:MASTER:욕망가[0→5%, 5→30%]를 쾌ＸSOURCE에 곱셈
+	LOCAL = SOURCE:MASTER:LCOUNT * LINE_CALC(ABL:MASTER:욕망, "0→5, 5→30, LIMIT/5～30") / 100
+	;욕정PALAM에 가산
 	CUP:MASTER:욕정 += LOCAL
-	;쾌Ａのみ굴복PALAMに加算
+	;쾌Ａ마셔굴복PALAM에 가산
 	SIF LCOUNT == 2
 		CUP:MASTER:굴복 += LOCAL
-	;쾌Ｖのみ공순PALAMに加算
+	;쾌Ｖ마셔공순PALAM에 가산
 	SIF LCOUNT == 1
 		CUP:MASTER:공순 += LOCAL / 2
 NEXT
 
 ;────────────────────────────────────
-;억울の上昇
+;억울의 상승
 ;────────────────────────────────────
 @CALC_SOURCE00_DEPRESSION
 
-;죠교대상に쾌감을부정、수줍음、억압素質が存在すれば
+;죠교대상에쾌감을부정, 수줍음, 억압소질이 존재하면
 IF TALENT:MASTER:억압 || TALENT:MASTER:수줍음 || TALENT:MASTER:쾌감을부정
-	;快ＸSOURCE総計の1/10を用意
-	;LOCAL = SUMARRAY(SOURCE, 0, 4) / 10
+	;쾌ＸSOURCE 총계의 것 1/10을 준비
+	;LOCAL = SUMARRAY(SOURCE, 0, 4)/10
 	LOCAL = SOURCE:MASTER:쾌Ｃ + SOURCE:MASTER:쾌Ｖ + SOURCE:MASTER:쾌Ａ + SOURCE:MASTER:쾌Ｂ
-	;ABL:MASTER:욕망が[0→100%, 5→10%]をさらに乗算
-	LOCAL = LOCAL * LINE_CALC(ABL:MASTER:욕망, "0→100,5→10,LIMIT/100～10") / 100
-;存在しなければ0
+	;ABL:MASTER:욕망가[0→100%, 5→10%]를 한층 더 곱셈
+	LOCAL = LOCAL * LINE_CALC(ABL:MASTER:욕망, "0→100, 5→10, LIMIT/100～10") / 100
+;존재하지 않으면 0
 ELSE
 	LOCAL = 0
 ENDIF
-;정욕の상태ならなしにする
+;정욕의상태라면 없음으로 한다
 SIF M_COND("정욕")
 	LOCAL = 0
-;억울PALAMに加算
+;억울PALAM에 가산
 CUP:MASTER:억울 += LOCAL
 
 ;────────────────────────────────────
-;愛液処理
+;애액 처리
 ;────────────────────────────────────
 @CALC_SOURCE00_MOIST
 
-;快Ｘ総計が合わせて10超過ならその20%の液体のソースが加わる（남자はダメ）
+;쾌Ｘ총계가 합해 10 초과라면 그 20%의 액체의 소스가 더해진다（남자는 안돼 xFF09>
 ;LOCAL = SUMARRAY(CUP:MASTER, 0, 4)
 LOCAL = CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ
 IF LOCAL > 10 && TALENT:MASTER:남자 == 0
-	;젖기쉬움と젖기어려움はここで処理
+	;젖기쉬움와젖기어려움는 여기서 처리
 	SIF TALENT:MASTER:젖기쉬움
 		TIMES LOCAL , 2.00
 	SIF TALENT:MASTER:젖기어려움
 		TIMES LOCAL , 0.50
-	;윤활PALAMに加算
+	;윤활PALAM에 가산
 	CUP:MASTER:윤활 += LOCAL / 5
 ENDIF
 
 ;────────────────────────────────────
-;절정、체력、기력、사정、모유、소변などの処理
+;절정, 체력, 기력, 사정, 모유, 소변등의 처리
 ;────────────────────────────────────
 @CALC_SOURCE00_EX
 #DIM LCOUNT
-#DIM DYNAMIC 절정強度, 4
-#DIM DYNAMIC 참다強度
-#DIM DYNAMIC 애태움強度, 4
-#DIM DYNAMIC 快感負担
-#DIM DYNAMIC 사정負担
-#DIM DYNAMIC 분유負担
-#DIM DYNAMIC 시오후키負担
-#DIM DYNAMIC 절정負担
-#DIM DYNAMIC 絞り強度
+#DIM DYNAMIC 절정강도, 4
+#DIM DYNAMIC 참다강도
+#DIM DYNAMIC 애태움강도, 4
+#DIM DYNAMIC 쾌감부담
+#DIM DYNAMIC 사정부담
+#DIM DYNAMIC 분유부담
+#DIM DYNAMIC 시오후키부담
+#DIM DYNAMIC 절정부담
+#DIM DYNAMIC 조임강도
 
-;발기判定(페니스存在時のみ)
+;발기판정(페니스존재시만)
 IF PENIS(MASTER)
-	;쾌Ｃの1/10、他の快Ｘの1/20を加算
+	;쾌Ｃ의 1/10, 다른 쾌Ｘ의 것 1/20을 가산
 	TCVAR:MASTER:금회발기 += CUP:MASTER:쾌Ｃ / 10 + (CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ) / 20
-	;욕정の1/10を加算
+	;욕정의 것 1/10을 가산
 	TCVAR:MASTER:금회발기 += CUP:MASTER:욕정 / 10
-	;고통時減算、ただし마조끼ABLにより増加へ向かう
+	;고통시 감산, 다만마조끼ABL에 의해 증가에 향한다
 	TCVAR:MASTER:금회발기 += CUP:MASTER:고통 * (GET_ABL(MASTER, "마조끼") - 20) / 300
-	;치정時加算、노출증ABLによりさらに増大
+	;치정시 가산, 노출증ABL에 의해 한층 더 증대
 	TCVAR:MASTER:금회발기 += CUP:MASTER:치정 * GET_ABL(MASTER, "노출증") / 30
 ENDIF
 
-;変数のリセット
-VARSET 절정強度
-VARSET 참다強度
-VARSET 애태움強度
-VARSET 快感負担
-VARSET 사정負担
-VARSET 분유負担
-VARSET 시오후키負担
-VARSET 절정負担
-VARSET 絞り強度
+;변수의 리셋트
+VARSET 절정강도
+VARSET 참다강도
+VARSET 애태움강도
+VARSET 쾌감부담
+VARSET 사정부담
+VARSET 분유부담
+VARSET 시오후키부담
+VARSET 절정부담
+VARSET 조임강도
 
-;ディープスロートをリセット
+;딥스로트를 리셋트
 DEEP_THROAT = 0
 
 ;절정Ｃ
-;쾌Ｃ、쾌ＣPALAM合計から刺激強度を用意
+;쾌Ｃ, 쾌ＣPALAM 합계로부터 자극 강도를 준비
 LOCAL = CUP:MASTER:쾌Ｃ + PALAM:MASTER:쾌Ｃ
 
-;페니스があるなら발기도が高い、페니스がないなら윤활が高く쾌Ｃ1000以上のとき
-;それぞれ미약・로션で簡単にイかせられるのもまた良しか
-;가버려で쾌Ｃ存在時
+;페니스가 있다면발기도가 높은, 페니스가 없으면윤활가 높고쾌Ｃ1000이상 때
+;각각미약·로션로 간단하게 보내지는 것도 또 좋다인가
+;가버려로쾌Ｃ존재시
 IF ((TCVAR:MASTER:발기도 >= 1000 && PENIS(MASTER)) || (PALAM:MASTER:윤활 >= 250 && !PENIS(MASTER) && PALAM:MASTER:쾌Ｃ >= 1000)) && TCVAR:MASTER:가버려 && CUP:MASTER:쾌Ｃ > 0
-	;참다中、가버려に耐えられるだけのABLが存在し、가게해줘！COMではなく、애태움상태ではない
+	;참다중, 가버려에 견딜 수 있을 뿐(만큼)의 ABL가 존재해, 가게해줘! COM는 아니고, 애태움상태는 아니다
 	IF (TCVAR:MASTER:참다 && TCVAR:MASTER:가버려 < ABL:MASTER:Ｃ감각 * 3) && SELECTCOM != 70 && TCVAR:MASTER:애태움도 == 0
-		;刺激が強ければ가버려상태が限界に近づく
+		;자극이 강하면가버려상태가 한계에 가까워진다
 		TCVAR:MASTER:가버려 += LOCAL / 2000
-		;참다強度値に今回の刺激の強さを代入
-		참다強度 = MAX(LOCAL / 10000, 1)
-	;애태움中
+		;참다강도치에 이번 자극의 강함을 대입
+		참다강도 = MAX(LOCAL / 10000, 1)
+	;애태움중
 	ELSEIF TCVAR:MASTER:애태움도 > 1
-		;애태움도を1ずつ減らす
+		;애태움도를 1씩 줄인다
 		TCVAR:MASTER:애태움도 -= 1
-		;1未満にはならない
+		;1미만은 되지 않는다
 		TCVAR:MASTER:애태움도 = MAX(TCVAR:MASTER:애태움도, 1)
-		;애태움強度値に今回の刺激の強さを代入
-		애태움強度:0 = MAX(LOCAL / 10000, 1)
-	;절정強度処理
+		;애태움강도치에 이번 자극의 강함을 대입
+		애태움강도:0 = MAX(LOCAL / 10000, 1)
+	;절정강도 처리
 	ELSE
-		절정強度:0 = CALC_SOURCE00_EX_P(0, LOCAL)
+		절정강도:0 = CALC_SOURCE00_EX_P(0, LOCAL)
 	ENDIF
 ENDIF
 
 ;절정Ｖ
-;절정強度処理
-절정強度:1 = CALC_SOURCE00_EX_P(1, CUP:MASTER:쾌Ｖ + PALAM:MASTER:쾌Ｖ)
+;절정강도 처리
+절정강도:1 = CALC_SOURCE00_EX_P(1, CUP:MASTER:쾌Ｖ + PALAM:MASTER:쾌Ｖ)
 
 ;절정Ａ
-;절정強度処理
-절정強度:2 = CALC_SOURCE00_EX_P(2, CUP:MASTER:쾌Ａ + PALAM:MASTER:쾌Ａ)
+;절정강도 처리
+절정강도:2 = CALC_SOURCE00_EX_P(2, CUP:MASTER:쾌Ａ + PALAM:MASTER:쾌Ａ)
 
 ;절정Ｂ
-;절정強度処理
-절정強度:3 = CALC_SOURCE00_EX_P(3, CUP:MASTER:쾌Ｂ + PALAM:MASTER:쾌Ｂ)
+;절정강도 처리
+절정강도:3 = CALC_SOURCE00_EX_P(3, CUP:MASTER:쾌Ｂ + PALAM:MASTER:쾌Ｂ)
 
-;절정すると동일행동보너스を半減する
-SIF MAXARRAY(절정強度) > 0
+;절정 하면동일행동보너스를 반감한다
+SIF MAXARRAY(절정강도) > 0
 	TFLAG:동일행동보너스 = MAX(TFLAG:동일행동보너스 / 2, 1)
 
-;절정強度合計から절정負担を計算
-절정負担 = 500 * SUMARRAY(절정強度)
+;절정강도 합계로부터절정부담을 계산
+절정부담 = 500 * SUMARRAY(절정강도)
 
-;快感による체력기력이성소모
-;快ＸSOURCE合計が[0→0, 2000→44, 4000→63, 6000→77, 8000→89, 10000→100]を快感負担へ
-快感負担 = GET_REVISION_SQRT(SUMARRAY(SOURCE, 0, 4), 10000, 100)
-;죠교の度合いによる軽減
-;죠교대상죠교레벨+욕망ABLが[0→100%, 2→91%, 4→83%, 6→75%, 8→67%, 10→59%, 12→51%]を快感負担に乗算(50～100%)
+;쾌감에 의한체력기력이성소모
+;쾌ＸSOURCE 합계가[0→0, 2000→44, 4000→63, 6000→77, 8000→89, 10000→100]을 쾌감 부담에
+쾌감부담 = GET_REVISION_SQRT(SUMARRAY(SOURCE, 0, 4), 10000, 100)
+;죠교의 정도에 의한 경감
+;죠교대상죠교레벨+욕망ABL가[0→100%, 2→91%, 4→83%, 6→75%, 8→67%, 10→59%, 12→51%]를 쾌감 부담에 곱셈(50～100%)
 LOCAL = GET_REVISION_SQRT_PROP(CFLAG:MASTER:죠교레벨 + ABL:MASTER:욕망, 1, 5, 12, 50)
-快感負担 -= 快感負担 * LIMIT(LOCAL, 50, 100) / 100
-;快感に対する反応
-;消極的な受容もしくは참다플래그ありの場合
+쾌감부담 -= 쾌감부담 * LIMIT(LOCAL, 50, 100) / 100
+;쾌감에 대한 반응
+;소극적인 수용 혹은참다플래그 있는 경우
 SIF IS_COMGRONAME("소극적으로 한다/용서를 빌다") || TCVAR:MASTER:참다
-	TIMES 快感負担, 2.00
-;受容の場合		서투르다고 모욕한다が派生：こきおろすで『태연하게 한다』扱いになる場合は弾く
-SIF IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる") && !TCVAR:MASTER:참다 && !IS_NOWCOMNAME("서투르다고 모욕한다")
-	TIMES 快感負担, 0.50
+	TIMES 쾌감부담, 2.00
+;수용의 경우		서투르다고 모욕한다가 파생:새겨 내리는 것으로 『태연하게 한다』취급이 되는 경우는 연주한다
+SIF IS_COMGRONAME("적극적으로 한다/태연하게 한다/받아들인다") && !TCVAR:MASTER:참다 && !IS_NOWCOMNAME("서투르다고 모욕한다")
+	TIMES 쾌감부담, 0.50
 
-;페니스存在時
+;페니스존재시
 IF PENIS(MASTER)
-	;절정決定で발기도が高く가버려
-	IF 절정強度:0 > 0 && TCVAR:MASTER:발기도 >= 1000 && TCVAR:MASTER:가버려
-		;사정ゲージがない
+	;절정결정으로발기도가 높고가버려
+	IF 절정강도:0 > 0 && TCVAR:MASTER:발기도 >= 1000 && TCVAR:MASTER:가버려
+		;사정게이지가 없다
 		IF BASE:MASTER:사정 == 0
 			STR:1034 = 드라이사정
 			DOWNBASE:MASTER:체력      += 200
@@ -244,44 +244,44 @@ IF PENIS(MASTER)
 			TCVAR:MASTER:사정          = 1
 			TCVAR:MASTER:드라이사정        = 1
 			TCVAR:MASTER:드라이사정수     += 1
-		;強절정
-		ELSEIF 절정強度:0 == 2
+		;강절정
+		ELSEIF 절정강도:0 == 2
 			STR:1034 = 대량사정
-			사정負担 = 500
+			사정부담 = 500
 			NOWEX:MASTER:사정 = 3
 			TCVAR:MASTER:사정 = 3
-		;통상の절정
+		;통상의절정
 		ELSE
 			STR:1034 = 사정
-			사정負担 = 300
+			사정부담 = 300
 			NOWEX:MASTER:사정 = 2
 			TCVAR:MASTER:사정 = 2
 		ENDIF
-	;特殊な사정判定
-	;조루(高쾌Ｃ時、사정可能でＣ감각ABLが低い時確率で)
+	;특수한사정판정
+	;조루(고쾌Ｃ시, 사정 가능해Ｃ감각ABL가 낮을 때 확률로)
 	ELSEIF (CUP:MASTER:쾌Ｃ + PALAM:MASTER:쾌Ｃ) >= 10000 && BASE:MASTER:사정 > 0 && ABL:MASTER:Ｃ감각 < RAND:(ABL:MASTER:Ｃ감각 + 3)
 		LOCAL = 0
-		;ＶＡ절정強度が十分高いか
-		LOCAL += 절정強度:1 + 절정強度:2 > 2 + RAND:2 - TALENT:MASTER:조루 + TALENT:MASTER:싫증
-		;ＶＡＢ절정強度が十分高いか
-		LOCAL += 절정強度:1 * 3 + 절정強度:2 * 3 + 절정強度:3 * 2 > 6 + RAND:3 - TALENT:MASTER:조루 + TALENT:MASTER:싫증
-		;쾌Ｃが十分高かったとき
+		;ＶＡ절정강도가 충분히 높은가
+		LOCAL += 절정강도:1 + 절정강도:2 > 2 + RAND:2 - TALENT:MASTER:조루 + TALENT:MASTER:싫증
+		;ＶＡＢ절정강도가 충분히 높은가
+		LOCAL += 절정강도:1 * 3 + 절정강도:2 * 3 + 절정강도:3 * 2 > 6 + RAND:3 - TALENT:MASTER:조루 + TALENT:MASTER:싫증
+		;쾌Ｃ가 충분히 높았을 때
 		LOCAL += CUP:MASTER:쾌Ｃ > 1000 && RAND:4 > 1 - TALENT:MASTER:조루 + TALENT:MASTER:싫증
-		;それぞれ確率で조루사정
+		;각각 확률로조루사정
 		IF LOCAL
 			STR:1034 = 사정（조루）
-			사정負担 = 300
+			사정부담 = 300
 			NOWEX:MASTER:사정 = 4
 			TCVAR:MASTER:사정 = 4
 			CDOWN:MASTER:쾌Ｃ = (PALAM:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｃ) / 2
 		ENDIF
-	;前立腺責め사정
+	;전립선 고문사정
 	ELSEIF TCVAR:MASTER:전립선자극
-		;가버려or쾌Ｃ8000以上時、対応部位절정するか전립선자극が強いと、強制사정
-		IF (TCVAR:MASTER:가버려 ||PALAM:MASTER:쾌Ｃ >= 8000) && ((TALENT:MASTER:남자 && 절정強度:2 > 0) || (TALENT:MASTER:후타나리 && 절정強度:1 > 0) || TCVAR:MASTER:전립선자극 > 1)
-			;사정ゲージがない
+		;가버려or쾌Ｃ8000이상시, 대응 부위절정 할까전립선자극가 강하면 강제사정
+		IF (TCVAR:MASTER:가버려 ||PALAM:MASTER:쾌Ｃ >= 8000) && ((TALENT:MASTER:남자 && 절정강도:2 > 0) || (TALENT:MASTER:후타나리 && 절정강도:1 > 0) || TCVAR:MASTER:전립선자극 > 1)
+			;사정게이지가 없다
 			IF BASE:MASTER:사정 == 0
-				STR:1034 = 드라이사정（前立腺）
+				STR:1034 = 드라이사정（전립선）
 				DOWNBASE:MASTER:체력  += 200
 				DOWNBASE:MASTER:기력  += 80
 				NOWEX:MASTER:사정      = 1
@@ -289,95 +289,95 @@ IF PENIS(MASTER)
 				TCVAR:MASTER:드라이사정    = 2
 				TCVAR:MASTER:드라이사정수 += 1
 			ELSE
-				STR:1034 = 사정（前立腺）
-				사정負担 = 300
+				STR:1034 = 사정（전립선）
+				사정부담 = 300
 				NOWEX:MASTER:사정 = 5
 				TCVAR:MASTER:사정 = 5
 			ENDIF
 		ENDIF
 	ENDIF
-	;空でない사정時は정액汚れを追加
+	;하늘이 아닌사정시는정액더러움을 추가
 	IF NOWEX:MASTER:사정 > 1
 		;죠교대상의 페니스
 		CALL SET_STAIN("페니스", "정액", MASTER)
-		;죠교자の(コンビネーションなら조수も含める)
+		;죠교자의(콤비 네이션이라면조수도 포함한다)
 		IF 0
-		;바기나(성교봉사時)
+		;바기나(성교봉사시)
 		ELSEIF MC_PLAYER(1) == 4
-			CALL SET_STAIN("바기나", "정액", TARGET)           ;죠교자の바기나
-			;SOURCE_MESSAGE的にも성교봉사時の질내사정はTARGETになっているので、조수関連はとりあえず(面倒なので)見送り
-			;コンビネーション時の(ASSI:1)も処理するなら条件を吟味する필요もありそう
-		;항문(성교봉사時)
+			CALL SET_STAIN("바기나", "정액", TARGET)           ;죠교자의바기나
+			;SOURCE_MESSAGE적으로도성교봉사시의질내사정는 TARGET가 되어 있으므로, 조수관련은 우선(귀찮은 것으로) 전송
+			;콤비 네이션시의 것(ASSI:1)도 처리한다면 조건을 음미하는필요도 있을 것 같다
+		;항문(성교봉사시)
 		ELSEIF MC_PLAYER(1) == 5
-			CALL SET_STAIN("항문", "정액", TARGET)             ;죠교자の항문
+			CALL SET_STAIN("항문", "정액", TARGET)             ;죠교자의항문
 		;손(손으로 애무)
 		ELSEIF GET_ACTNAME(GET_NORMALACTNUM(TFLAG:ACT)) == "손으로 애무" && MC_PLAYER(1) == 2
-			CALL SET_STAIN("손", "정액", TARGET)                 ;죠교자の손
-			;コンビネーション派生時
-			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("コンビネーション")
-				CALL SET_STAIN("손", "정액", (ASSI:1))           ;조수１の손
-		;입(입으로 애무)/顔射자위절정
+			CALL SET_STAIN("손", "정액", TARGET)                 ;죠교자의손
+			;콤비 네이션 파생시
+			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("콤비 네이션")
+				CALL SET_STAIN("손", "정액", (ASSI:1))           ;조수 1의손
+		;입(입으로 애무)/얼굴에 사정하기자위절정
 		ELSEIF (GET_ACTNAME(GET_NORMALACTNUM(TFLAG:ACT)) == "입으로 애무" && MC_PLAYER(1) == 1) || ME_PLAYER(1) == 9
-			CALL SET_STAIN("입", "정액", TARGET)                 ;죠교자の입
-			;コンビネーション派生時
-			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("コンビネーション")
-				CALL SET_STAIN("입", "정액", (ASSI:1))           ;조수１の입
+			CALL SET_STAIN("입", "정액", TARGET)                 ;죠교자의입
+			;콤비 네이션 파생시
+			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("콤비 네이션")
+				CALL SET_STAIN("입", "정액", (ASSI:1))           ;조수 1의입
 		;바기나(성기마찰한다)
 		ELSEIF GET_ACTNAME(GET_NORMALACTNUM(TFLAG:ACT)) == "성기마찰한다" && MC_PLAYER(1) == 8
-			CALL SET_STAIN("바기나", "정액", TARGET)           ;죠교자の바기나
-			;コンビネーション派生時
-			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("コンビネーション")
-				CALL SET_STAIN("바기나", "정액", (ASSI:1))     ;조수１の바기나
+			CALL SET_STAIN("바기나", "정액", TARGET)           ;죠교자의바기나
+			;콤비 네이션 파생시
+			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("콤비 네이션")
+				CALL SET_STAIN("바기나", "정액", (ASSI:1))     ;조수 1의바기나
 		;가슴(파이즈리한다)
 		ELSEIF GET_ACTNAME(GET_NORMALACTNUM(TFLAG:ACT)) == "파이즈리한다" && MC_PLAYER(1) == 6
-			CALL SET_STAIN("가슴", "정액", TARGET)                 ;죠교자の가슴
-			;コンビネーション派生時
-			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("コンビネーション")
-				CALL SET_STAIN("가슴", "정액", (ASSI:1))           ;조수１の가슴
+			CALL SET_STAIN("가슴", "정액", TARGET)                 ;죠교자의가슴
+			;콤비 네이션 파생시
+			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("콤비 네이션")
+				CALL SET_STAIN("가슴", "정액", (ASSI:1))           ;조수 1의가슴
 		;발(풋잡하기)
 		ELSEIF GET_ACTNAME(GET_NORMALACTNUM(TFLAG:ACT)) == "풋잡하기" && MC_PLAYER(1) == 7
-			CALL SET_STAIN("발", "정액", TARGET)                 ;죠교자の발
-			;コンビネーション派生時
-			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("コンビネーション")
-				CALL SET_STAIN("발", "정액", (ASSI:1))           ;조수１の발
-		;その他
+			CALL SET_STAIN("발", "정액", TARGET)                 ;죠교자의발
+			;콤비 네이션 파생시
+			SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("콤비 네이션")
+				CALL SET_STAIN("발", "정액", (ASSI:1))           ;조수 1의발
+		;그 외
 		ELSE
-			;何もしない
+			;아무것도 하지 않는다
 		ENDIF
-		;후타나리ではじめての사정は이탈が付く
+		;후타나리로 첫사정는이탈가 붙는다
 		SIF TALENT:MASTER:후타나리 && EXP:MASTER:사정경험 == 0 && CFLAG:MASTER:죠교레벨 < 10
 			SOURCE:MASTER:이탈 += 500 * (25 - ABL:MASTER:순종 - CFLAG:MASTER:죠교레벨) / 25
 	ENDIF
 ENDIF
 
-;Ｂ절정時、모유체질であれば
-IF 절정強度:3 && TALENT:MASTER:모유체질
-	;모유不발
+;Ｂ절정시, 모유체질이면
+IF 절정강도:3 && TALENT:MASTER:모유체질
+	;모유불발
 	IF BASE:MASTER:모유 < 50 + RAND:5 * 10
-		STR:1035 = 空분유
-		분유負担 = 50 + 절정強度:3 * 10
+		STR:1035 = 하늘분유
+		분유부담 = 50 + 절정강도:3 * 10
 		DOWNBASE:MASTER:체력 += 100
 		DOWNBASE:MASTER:기력 += 40
 		NOWEX:MASTER:분유     = 1
 		TCVAR:MASTER:분유     = 1
-		;NOWEX:분유では『空분유』と통상の분유に1を割り当ててしまっているので、TCVAR:분유と번호がずれる
-		;現状NOWEXの번호をずら했다くないので、TCVAR:분유だけ손当しておくことにする@(2014/11/08)/L
-	;強절정
-	ELSEIF 절정強度:3 == 2
-		STR:1035 = 大量분유
-		분유負担 = 500
+		;NOWEX:분유에서는 『하늘분유』라고통상의분유에 1을 할당해 버리고 있으므로, TCVAR:분유와번호가 어긋난다
+		;현상 NOWEX의번호를 두등했다구 없기 때문에, TCVAR:분유만손당 해 두기로 한다@(2014/11/08)/L
+	;강절정
+	ELSEIF 절정강도:3 == 2
+		STR:1035 = 대량분유
+		분유부담 = 500
 		NOWEX:MASTER:분유 = 2
 		TCVAR:MASTER:분유 = 3
-	;통상の절정
+	;통상의절정
 	ELSE
 		STR:1035 = 분유
-		분유負担 = 300
+		분유부담 = 300
 		NOWEX:MASTER:분유 = 1
 		TCVAR:MASTER:분유 = 2
 	ENDIF
-	;죠교대상가슴に모유汚れ
+	;죠교대상가슴에모유더러움
 	CALL SET_STAIN("가슴", "모유", MASTER)
-	;죠교자の(조수？ なんですかそれ？)
+	;죠교자의(조수? 무엇입니까 그것?)
 	;손
 	SIF MB_PLAYER(1) == 2
 		CALL SET_STAIN("손", "모유", TARGET)
@@ -387,23 +387,23 @@ IF 절정強度:3 && TALENT:MASTER:모유체질
 	;페니스
 	SIF MB_PLAYER(1) == 3
 		CALL SET_STAIN("페니스", "모유", TARGET)
-	;はじめての분유は이탈が付く
+	;첫분유는이탈가 붙는다
 	SIF EXP:분유경험 == 0 && CFLAG:MASTER:죠교레벨 < 20
 		SOURCE:MASTER:이탈 += 400 * (15 - GET_ABL(MASTER, "순종")/ 20 - CFLAG:MASTER:죠교레벨 / 2) / 15
 ENDIF
 
-;Ｖ절정時、전립선자극強があり、후타나리でないなら
-IF 절정強度:1 && !TALENT:MASTER:후타나리 && TCVAR:MASTER:전립선자극 > 1
-	;強절정
-	IF 절정強度:1 == 2
-		STR:1038 = 大量시오후키
-		시오후키負担 = 500
+;Ｖ절정시, 전립선자극강이 있어, 후타나리가 아니면
+IF 절정강도:1 && !TALENT:MASTER:후타나리 && TCVAR:MASTER:전립선자극 > 1
+	;강절정
+	IF 절정강도:1 == 2
+		STR:1038 = 대량시오후키
+		시오후키부담 = 500
 		NOWEX:MASTER:시오후키 = 2
 		TCVAR:MASTER:시오후키 = 2
-	;통상の절정
+	;통상의절정
 	ELSE
 		STR:1038 = 시오후키
-		시오후키負担 = 300
+		시오후키부담 = 300
 		NOWEX:MASTER:시오후키 = 1
 		TCVAR:MASTER:시오후키 = 1
 	ENDIF
@@ -411,132 +411,132 @@ ELSE
 	STR:1038 = 
 ENDIF
 
-;STR:1036(절정表示用文字列)初期化
+;STR:1036(절정표시용 캐릭터 라인) 초기화
 STR:1036 = 
-;절정種を順に記入
-SIF 절정強度:0
+;절정종을 순서에 기입
+SIF 절정강도:0
 	STR:1036 += "＆Ｃ"
-SIF 절정強度:1
+SIF 절정강도:1
 	STR:1036 += "＆Ｖ"
-SIF 절정強度:2
+SIF 절정강도:2
 	STR:1036 += "＆Ａ"
-SIF 절정強度:3
+SIF 절정강도:3
 	STR:1036 += "＆Ｂ"
-;다중절정時
+;다중절정시
 IF STRLENSU(STR:1036) > 2
-	;書式を整える
+	;서식을 정돈한다
 	STR:1036 = %SUBSTRINGU(STR:1036, 1)%절정
-	;文字数で절정種を判定
+	;문자수로절정종을 판정
 	;사중절정
 	IF STRLENSU(STR:1036) > 8
-		;사중절정時には特別な文字列を記入
-		STR:1036 = 四 重 絶 頂
-		TIMES 절정負担, 2.00
-		TIMES 사정負担, 1.40
-		TIMES 분유負担, 1.40
-		TIMES 시오후키負担, 1.40
-		TIMES 快感負担, 1.50
-	;三重절정
+		;사중절정시에는 특별한 캐릭터 라인을 기입
+		STR:1036 = 사중절정
+		TIMES 절정부담, 2.00
+		TIMES 사정부담, 1.40
+		TIMES 분유부담, 1.40
+		TIMES 시오후키부담, 1.40
+		TIMES 쾌감부담, 1.50
+	;삼중절정
 	ELSEIF STRLENSU(STR:1036) > 6
-		TIMES 절정負担, 1.65
-		TIMES 사정負担, 1.20
-		TIMES 분유負担, 1.20
-		TIMES 시오후키負担, 1.20
-		TIMES 快感負担, 1.30
-	;二重절정
+		TIMES 절정부담, 1.65
+		TIMES 사정부담, 1.20
+		TIMES 분유부담, 1.20
+		TIMES 시오후키부담, 1.20
+		TIMES 쾌감부담, 1.30
+	;이중절정
 	ELSE
-		TIMES 절정負担, 1.30
-		TIMES 사정負担, 1.10
-		TIMES 분유負担, 1.10
-		TIMES 시오후키負担, 1.10
-		TIMES 快感負担, 1.30
+		TIMES 절정부담, 1.30
+		TIMES 사정부담, 1.10
+		TIMES 분유부담, 1.10
+		TIMES 시오후키부담, 1.10
+		TIMES 쾌감부담, 1.30
 	ENDIF
-;単절정、無절정時
+;단절정, 무절정시
 ELSE
-	;文字列初期化
+	;캐릭터 라인 초기화
 	STR:1036 = 
 ENDIF
 
-;절정は달성の主なソースの一つ
-SOURCE:MASTER:달성 += 사정負担 + 분유負担 + 절정負担
+;절정는달성의 주된 소스의 1개
+SOURCE:MASTER:달성 += 사정부담 + 분유부담 + 절정부담
 
 ;노출
-SOURCE:MASTER:노출 += 30 * (SUMARRAY(절정強度) + 2) + 사정負担 / 2 + 분유負担 / 2 + 시오후키負担 / 2
+SOURCE:MASTER:노출 += 30 * (SUMARRAY(절정강도) + 2) + 사정부담 / 2 + 분유부담 / 2 + 시오후키부담 / 2
 
-;空でない사정時(사정ゲージの減りを보정)
+;하늘이 아닌사정시(사정게이지의 감소를보정)
 IF NOWEX:MASTER:사정 > 1
-	;죠교자욕망、기교、정액중독ABLにより基準値生成
-	絞り強度 = GET_ABL(TARGET, "욕망") + GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "정액중독")
+	;죠교자욕망, 기교, 정액중독ABL에 의해 기준치 생성
+	조임강도 = GET_ABL(TARGET, "욕망") + GET_ABL(TARGET, "기교") + GET_ABL(TARGET, "정액중독")
 	;성기마찰한다
 	IF IS_NOWACTNAME("성기마찰한다")
-		;애무ABLを加算
-		絞り強度 += GET_ABL(TARGET, "애무") * 2
-	;죠교자Ｖを利用했다성교중
+		;애무ABL를 가산
+		조임강도 += GET_ABL(TARGET, "애무") * 2
+	;죠교자Ｖ를 이용했다성교중
 	ELSEIF IS_NOWACTNAME("역강간/정상위시킨다/후배위시킨다/대면좌위시킨다/배면좌위시킨다")
-		;Ｖ감각、성교ABLを加算
-		絞り強度 += GET_ABL(TARGET, "Ｖ감각") + GET_ABL(TARGET, "성교")
-		;음호素質により보정
-		絞り強度 = 絞り強度 * (2 + TALENT:음호) / 2
-	;죠교자Ａを利用했다성교중
+		;Ｖ감각, 성교ABL를 가산
+		조임강도 += GET_ABL(TARGET, "Ｖ감각") + GET_ABL(TARGET, "성교")
+		;음호소질에 의해보정
+		조임강도 = 조임강도 * (2 + TALENT:음호) / 2
+	;죠교자Ａ를 이용했다성교중
 	ELSEIF IS_NOWACTNAME("항문섹스시킨다")
-		;Ａ감각、성교ABLを加算
-		絞り強度 += GET_ABL(TARGET, "Ａ감각") + GET_ABL(TARGET, "성교")
-		;음고素質により보정
-		絞り強度 = 絞り強度 * (2 + TALENT:음고) / 2
+		;Ａ감각, 성교ABL를 가산
+		조임강도 += GET_ABL(TARGET, "Ａ감각") + GET_ABL(TARGET, "성교")
+		;음고소질에 의해보정
+		조임강도 = 조임강도 * (2 + TALENT:음고) / 2
 	;손으로 애무
 	ELSEIF IS_NOWACTNAME("손으로 애무")
-		;애무ABLを加算
-		絞り強度 += GET_ABL(TARGET, "애무") * 2
-		;손가락기술素質により보정
-		絞り強度 = 絞り強度 * (2 + TALENT:손가락기술) / 2
+		;애무ABL를 가산
+		조임강도 += GET_ABL(TARGET, "애무") * 2
+		;손가락기술소질에 의해보정
+		조임강도 = 조임강도 * (2 + TALENT:손가락기술) / 2
 	;입으로 애무
 	ELSEIF IS_NOWACTNAME("입으로 애무")
-		;애무ABLを加算
-		絞り強度 += GET_ABL(TARGET, "애무") * 2
-		;혀기술、거친혀素質により보정
-		絞り強度 = 絞り強度 * (3 + TALENT:혀기술 + TALENT:거친혀) / 3
+		;애무ABL를 가산
+		조임강도 += GET_ABL(TARGET, "애무") * 2
+		;혀기술, 거친혀소질에 의해보정
+		조임강도 = 조임강도 * (3 + TALENT:혀기술 + TALENT:거친혀) / 3
 	;파이즈리한다
 	ELSEIF IS_NOWACTNAME("파이즈리한다")
-		;애무ABLを加算
-		絞り強度 += GET_ABL(TARGET, "애무") * 2
-		;거유、빈유、음유素質により보정
-		絞り強度 = 絞り強度 * (3 + TALENT:거유 - TALENT:빈유 + TALENT:음유) / 3
+		;애무ABL를 가산
+		조임강도 += GET_ABL(TARGET, "애무") * 2
+		;거유, 빈유, 음유소질에 의해보정
+		조임강도 = 조임강도 * (3 + TALENT:거유 - TALENT:빈유 + TALENT:음유) / 3
 	;풋잡하기
 	ELSEIF IS_NOWACTNAME("풋잡하기")
-		;애무ABLを加算
-		絞り強度 += GET_ABL(TARGET, "애무") * 2
-		;새드、각선미素質により보정
-		絞り強度 = 絞り強度 * (4 + TALENT:새드 + TALENT:각선미) / 4
+		;애무ABL를 가산
+		조임강도 += GET_ABL(TARGET, "애무") * 2
+		;새드, 각선미소질에 의해보정
+		조임강도 = 조임강도 * (4 + TALENT:새드 + TALENT:각선미) / 4
 	ENDIF
-	;W系で１．５倍
-	SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("コンビネーション")
-		TIMES 絞り強度, 1.50
-	;애태움플레이で보정
-	絞り強度 = 絞り強度 * (TCVAR:MASTER:가버려 + 10) / 10
-	;現在の精力/最大精力で보정
-	絞り強度 = 絞り強度 * (BASE:MASTER:사정 + 1000) / (MAXBASE:MASTER:사정 + 1000)
-	;最大精力による보정
-	絞り強度 = 絞り強度 * (MAXBASE:MASTER:사정 + 5000) / 10000
+	;W계로 1. 5배
+	SIF ASSI:1 > 0 && TCVAR:(ASSI:1):조수방침 == GET_ASSIMENUNUM("콤비 네이션")
+		TIMES 조임강도, 1.50
+	;애태움플레이로보정
+	조임강도 = 조임강도 * (TCVAR:MASTER:가버려 + 10) / 10
+	;현재의 정력/최대 정력으로보정
+	조임강도 = 조임강도 * (BASE:MASTER:사정 + 1000) / (MAXBASE:MASTER:사정 + 1000)
+	;최대 정력에 의한보정
+	조임강도 = 조임강도 * (MAXBASE:MASTER:사정 + 5000) / 10000
 ENDIF
 
-;체력と기력と精力の소모
-DOWNBASE:MASTER:체력 += 20 * 절정強度:0 + 40 * 절정強度:1 + 60 * 절정強度:2 + 20 * 절정強度:3 + 사정負担 / 10 + 분유負担 / 10 + 시오후키負担 / 10 + 快感負担 * (TFLAG:동일행동보너스 + 1) / 2
-DOWNBASE:MASTER:기력 += 5 * 절정強度:0 + 10 * 절정強度:1 + 15 * 절정強度:2 + 5 * 절정強度:3 + 사정負担 / 30 + 분유負担 / 30 + 시오후키負担 / 30 + 快感負担 * (TFLAG:동일행동보너스 + 1) * 2 / 10
-DOWNBASE:MASTER:사정 += 사정負担 * (100 + 絞り強度) / 100
-;今回の소모精力BASE分마력취득
+;체력와기력와 정력의소모
+DOWNBASE:MASTER:체력 += 20 * 절정강도:0 + 40 * 절정강도:1 + 60 * 절정강도:2 + 20 * 절정강도:3 + 사정부담 / 10 + 분유부담 / 10 + 시오후키부담 / 10 + 쾌감부담 * (TFLAG:동일행동보너스 + 1) / 2
+DOWNBASE:MASTER:기력 += 5 * 절정강도:0 + 10 * 절정강도:1 + 15 * 절정강도:2 + 5 * 절정강도:3 + 사정부담 / 30 + 분유부담 / 30 + 시오후키부담 / 30 + 쾌감부담 * (TFLAG:동일행동보너스 + 1) * 2 / 10
+DOWNBASE:MASTER:사정 += 사정부담 * (100 + 조임강도) / 100
+;이번소모정력 BASE분마력취득
 TFLAG:취득마력 += MIN(BASE:MASTER:사정, DOWNBASE:MASTER:사정) / 10
-;限界を超えて絞られた場合체력が削られる
+;한계를 넘어 좁혀졌을 경우체력가 깎아진다
 SIF DOWNBASE:MASTER:사정 > BASE:MASTER:사정
 	DOWNBASE:MASTER:체력 += 200 * (2 - TALENT:MASTER:정력절륜 + TALENT:MASTER:정력박약) / 2
-;모유の소모
-DOWNBASE:MASTER:모유 += 분유負担
-;限界を超えて絞られた場合체력が削られる
+;모유의소모
+DOWNBASE:MASTER:모유 += 분유부담
+;한계를 넘어 좁혀졌을 경우체력가 깎아진다
 SIF DOWNBASE:MASTER:모유 > BASE:MASTER:모유
 	DOWNBASE:MASTER:체력 += 200 * (2 - TALENT:MASTER:정력절륜 + TALENT:MASTER:정력박약) / 2
 
 ;실금
-BASE:MASTER:소변 += 절정強度:0 * 1000 + 사정負担 + CUP:MASTER:쾌Ｃ / 5
-;소변が限界を突破し、오줌싸개がある場合
+BASE:MASTER:소변 += 절정강도:0 * 1000 + 사정부담 + CUP:MASTER:쾌Ｃ / 5
+;소변가 한계를 돌파해, 오줌싸개가 있는 경우
 IF BASE:MASTER:소변 > MAXBASE:MASTER:소변 && TALENT:MASTER:오줌싸개
 	STR:1037 = 실금
 	NOWEX:MASTER:방뇨   = 1
@@ -549,81 +549,81 @@ IF BASE:MASTER:소변 > MAXBASE:MASTER:소변 && TALENT:MASTER:오줌싸개
 ENDIF
 
 ;이성소모
-DOWNBASE:MASTER:이성 += 快感負担 / 2 + (SUMARRAY(절정強度) + DOWNBASE:MASTER:사정 / 300 + NOWEX:MASTER:분유 + NOWEX:MASTER:방뇨 + 5) * 10
+DOWNBASE:MASTER:이성 += 쾌감부담 / 2 + (SUMARRAY(절정강도) + DOWNBASE:MASTER:사정 / 300 + NOWEX:MASTER:분유 + NOWEX:MASTER:방뇨 + 5) * 10
 ;쾌락에따른이성저하
-SIF TFLAG:쾌락에따른이성저하 == 0 && 快感負担 > 20
-	TFLAG:쾌락에따른이성저하 = 3 + 快感負担 / 30 + RAND:3
-SIF TFLAG:쾌락에따른이성저하 > 0 && 快感負担 > 10
+SIF TFLAG:쾌락에따른이성저하 == 0 && 쾌감부담 > 20
+	TFLAG:쾌락에따른이성저하 = 3 + 쾌감부담 / 30 + RAND:3
+SIF TFLAG:쾌락에따른이성저하 > 0 && 쾌감부담 > 10
 	TFLAG:쾌락에따른이성저하 += 1 + RAND:2
 
-;죠교자の흥미を引く現象
+;죠교자의흥미를 당기는 현상
 ;절정
-SIF SUMARRAY(절정強度) > 0
-	BASE:흥미 += 30 + 25 * (SUMARRAY(절정強度) + 8) / 8
+SIF SUMARRAY(절정강도) > 0
+	BASE:흥미 += 30 + 25 * (SUMARRAY(절정강도) + 8) / 8
 ;사정
-SIF 사정負担
-	BASE:흥미 += 10 + 10 * (사정負担 + 500) / 500
+SIF 사정부담
+	BASE:흥미 += 10 + 10 * (사정부담 + 500) / 500
 ;분유
-SIF 분유負担
-	BASE:흥미 += 10 + 10 * (분유負担 + 500) / 500
+SIF 분유부담
+	BASE:흥미 += 10 + 10 * (분유부담 + 500) / 500
 
-;죠교部位の누적値(보정値計算)
+;죠교부위의누적치(보정치 계산)
 FOR LCOUNT, 0, 4
-	SIF 절정強度:LCOUNT
+	SIF 절정강도:LCOUNT
 		CFLAG:MASTER:(30 + LCOUNT) = 50 + (CFLAG:MASTER:(30 + LCOUNT) - 50) / 2
 NEXT
 
-;호감도と경험치변화をカウント
-LOCAL = (SUMARRAY(절정強度) + DOWNBASE:MASTER:사정 / 300 + NOWEX:MASTER:분유) * (SUMARRAY(절정強度) + 8) / 8
+;호감도와경험치변화를 카운트
+LOCAL = (SUMARRAY(절정강도) + DOWNBASE:MASTER:사정 / 300 + NOWEX:MASTER:분유) * (SUMARRAY(절정강도) + 8) / 8
 TFLAG:호감도업 += LOCAL
 TFLAG:경험치업 += LOCAL
 
-;NOWEXにデータを入れる（절정時구상に使う）
+;NOWEX에 데이터를 넣는다（절정시구상에 사용한다）
 FOR LCOUNT, 0, 4
-	NOWEX:MASTER:LCOUNT = 절정強度:LCOUNT
+	NOWEX:MASTER:LCOUNT = 절정강도:LCOUNT
 NEXT
 
-;NOWEXをTCVAR절정系に保存
+;NOWEX를 TCVAR절정계에 보존
 TCVAR:MASTER:Ｃ절정 = NOWEX:MASTER:Ｃ절정
 TCVAR:MASTER:Ｖ절정 = NOWEX:MASTER:Ｖ절정
 TCVAR:MASTER:Ａ절정 = NOWEX:MASTER:Ａ절정
 TCVAR:MASTER:Ｂ절정 = NOWEX:MASTER:Ｂ절정
 
-;사정時、関連플래그を設定
+;사정시, 관련플래그를 설정
 IF NOWEX:MASTER:사정
-	;죠교대상사정후경과턴참조系플래그をリセット
+	;죠교대상사정후경과턴참조계플래그를 리셋트
 	VARSET TCVAR:MASTER:0, 0, 90, 100
-	;성교봉사時
+	;성교봉사시
 	IF V_SEX(MASTER) || A_SEX(MASTER)
-		;Ｖ섹스の場合
+		;Ｖ섹스의 경우
 		IF V_SEX(MASTER)
-			;TFLAG:질내사정후경과턴は403xx seriesあたりで抹消予定@/L
+			;TFLAG:질내사정후경과턴는 403xx series 근처에서 말소 예정@/L
 			TFLAG:질내사정후경과턴            = 1
 			TCVAR:MASTER:질내사정후경과턴참조 = 1
-		;Ａ섹스の場合
+		;Ａ섹스의 경우
 		ELSE
 			TCVAR:MASTER:장내사정후경과턴참조 = 1
 		ENDIF
-	;입による애무で사정의場合
+	;입에 의한애무로사정의경우
 	ELSEIF GET_ACTNAME(GET_NORMALACTNUM(TFLAG:ACT)) == "입으로 애무" || TEQUIP:죠교대상Ｃ사용 == 2
-		;죠교자が정욕かつ구음경험が一定以上ならディープスロート発生
+		;죠교자가정욕 또한구음경험가 일정 이상이라면 딥스로트 발생
 		SIF IS_CONDITION(TARGET, "정욕") && EXP:TARGET:구음경험 >= 50
 			DEEP_THROAT = 1
 	ENDIF
-	;TFLAG:사정후경과턴は403xx seriesあたりで抹消予定@/L
+	;TFLAG:사정후경과턴는 403xx series 근처에서 말소 예정@/L
 	TFLAG:사정후경과턴                  = 1
 	TCVAR:MASTER:사정후경과턴참조       = 1
 	CFLAG:MASTER:(250 + NOWEX:MASTER:사정) += 1
 	CFLAG:MASTER:사정횟수                  += 1
 	TCVAR:MASTER:가게해줘거동제어용         = 0
 ENDIF
-;절정횟수플래그を設定
+;절정횟수플래그를 설정
 FOR LCOUNT, 0, 4
-	SIF 절정強度:LCOUNT
+	SIF 절정강도:LCOUNT
 		CFLAG:MASTER:(256 + LCOUNT)++
 NEXT
 
-;절정횟수を増やす
+;절정횟수를 늘린다
 FOR LCOUNT, 0, 4
 	EX:MASTER:LCOUNT += NOWEX:MASTER:LCOUNT
 NEXT
@@ -631,41 +631,41 @@ SIF PENIS(MASTER)
 	EX:MASTER:사정 += NOWEX:MASTER:사정
 EX:MASTER:분유 += NOWEX:MASTER:분유
 EX:MASTER:방뇨 += NOWEX:MASTER:방뇨
-SIF !PENIS(MASTER)	;시오후키追加@revkoishi(14/05/26)
+SIF !PENIS(MASTER)	;시오후키추가@revkoishi(14/05/26)
 	EX:MASTER:시오후키 += NOWEX:MASTER:시오후키
 
-;【굴복:43】【굴복:55】の処理はSOURCE_MARK.ERBの@MARK_CHECK_SOURCE_SURRENDERに移設@/L
+;【굴복:43】【굴복:55】의 처리는 SOURCE_MARK.ERB의@MARK_CHECK_SOURCE_SURRENDER에 이전@/L
 
-SIF !TEQUIP:성교봉사중 || IS_NOWACTNAME("Ｗ역강간/타니와타리")	;既に抜けていたらクリア。引っ張りすぎ？@revkoishi(14/07/15)
+SIF !TEQUIP:성교봉사중 || IS_NOWACTNAME("Ｗ역강간/타니와타리")	;이미 빠져 있으면 클리어. 너무 이끌고? @revkoishi(14/07/15)
 	CALLF _UNEXTRACTION(MASTER, 1, 0)
 
-;죠교자に사정処理と안빼고判定。微調整@revkoishi(14/06/07)
-IF NOWEX:MASTER:사정	;죠교자に사정
+;죠교자에사정처리와안빼고판정. 미조정@revkoishi(14/06/07)
+IF NOWEX:MASTER:사정	;죠교자에사정
 	IF MC_PLAYER(1) == 4			;질내사정
-		CALLF CALC_SOURCE00_EX_R(0)	;죠교자に사정処理(Ｖ)
-	ELSEIF MC_PLAYER(1) == 5		;항문へ사정
-		CALLF CALC_SOURCE00_EX_R(1)	;죠교자に사정処理(Ａ)
+		CALLF CALC_SOURCE00_EX_R(0)	;죠교자에사정처리(Ｖ)
+	ELSEIF MC_PLAYER(1) == 5		;항문에사정
+		CALLF CALC_SOURCE00_EX_R(1)	;죠교자에사정처리(Ａ)
 	ENDIF
-ELSEIF TEQUIP:TARGET:페니스밴드 && (NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정)	;페니스밴드성교봉사で절정
+ELSEIF TEQUIP:TARGET:페니스밴드 && (NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정)	;페니스밴드성교봉사로절정
 	IF TEQUIP:TARGET:성교봉사중 && TEQUIP:TARGET:성교봉사중 != 6	;질내절정
 		CALLF CALC_SOURCE00_EX_R(0, 1)
-	ELSEIF TEQUIP:TARGET:성교봉사중 == 6							;항문で절정
+	ELSEIF TEQUIP:TARGET:성교봉사중 == 6							;항문로절정
 		CALLF CALC_SOURCE00_EX_R(1, 1)
 	ENDIF
 ENDIF
 
-;いきそう（暫定）
-;가버려でなく、페니스があれば발기도が十分高いか、페니스가없으면윤활が十分高いとき、쾌Ｃが存在すれば
+;삶그렇게（잠정）
+;가버려가 아니고, 페니스가 있으면발기도가 충분히 높은지, 페니스가없으면윤활가 충분히 높을 때, 쾌Ｃ가 존재하면
 IF TCVAR:MASTER:가버려 == 0 && ((TCVAR:MASTER:발기도 >= 1000 && PENIS(MASTER)) || (PALAM:MASTER:윤활 >= 250 && !PENIS(MASTER) && PALAM:MASTER:쾌Ｃ >= 1000)) && CUP:MASTER:쾌Ｃ > 0
-	;C감각が低いとより低い値でいきそうに、また이성低下でC値にかかわらずいきそうになる。
+	;C감각가 낮으면보다 낮은 값으로 갈 것 같게, 또이성저하로 C치에 관계없이 살 것 같게 된다.
 	VARSET LOCAL
-	;C刺激 > C감각 判定
+	;C자극 > C감각 판정
 	LOCAL += (CUP:MASTER:쾌Ｃ + PALAM:MASTER:쾌Ｃ) >= MAX(GET_ABL(MASTER, "Ｃ감각") * 100, 1000)
-	;技能 > 이성 判定
+	;기능 > 이성 판정
 	LOCAL += GET_ABL(TARGET, "기교") - GET_ABL(MASTER, "기교") > RAND:(MAX(BASE:MASTER:이성 / 10, 1))
-	;이성が全くなければ無条件で가버려に
+	;이성가 전혀 없으면 무조건으로가버려에
 	LOCAL += BASE:MASTER:이성 == 0
-	;どれかの判定に引っかかれば
+	;어떤 것인가의 판정에 인소
 	IF LOCAL
 		TCVAR:MASTER:가버려 += 5
 ;OriginalString : %CALLNAME:MASTER%は가버려되었다…
@@ -673,8 +673,8 @@ IF TCVAR:MASTER:가버려 == 0 && ((TCVAR:MASTER:발기도 >= 1000 && PENIS(MAST
 	ENDIF
 ENDIF
 
-;快感を참다時、참다に成功
-IF 참다強度 && TCVAR:MASTER:참다
+;쾌감을참다시, 참다에 성공
+IF 참다강도 && TCVAR:MASTER:참다
 	IF PENIS(MASTER)
 ;OriginalString : %CALLNAME:MASTER%は必死になって사정を참다している…
 		PRINTFORMW %CALLNAME:MASTER%(은)는 필사적으로 사정을 참고 있다…
@@ -684,29 +684,29 @@ IF 참다強度 && TCVAR:MASTER:참다
 	ENDIF
 ENDIF
 
-;자위の場合は焦らさない
+;자위의 경우는 초조하게 하지 않는다
 IF IS_NOWACTNAME("자위") && (GETBIT(TEQUIP:자위중, 0) || (GETBITAND(TEQUIP:자위중, 0, 1)))
 	TCVAR:MASTER:애태움도 = 0
 ENDIF
 
-;애태움中、애태움に成功
-IF TCVAR:MASTER:애태움도 > 1 || SUMARRAY(애태움強度) > 0
+;애태움중, 애태움에 성공
+IF TCVAR:MASTER:애태움도 > 1 || SUMARRAY(애태움강도) > 0
 ;OriginalString : %CALLNAME:MASTER%は절정寸前で焦らされている…
 	PRINTFORMW %CALLNAME:MASTER%(은)는 절정 직전에 초조하게 해지고 있다…
 ENDIF
 
 ;애태움
-;가버려で애태움中でなく사정もなく징계・中でもない
-IF TCVAR:MASTER:가버려 && !TCVAR:MASTER:애태움도 && !NOWEX:MASTER:사정 && !TFLAG:징계・플래그
+;가버려로애태움중이 아니고사정도 없고징계·그 중에서 없다
+IF TCVAR:MASTER:가버려 && !TCVAR:MASTER:애태움도 && !NOWEX:MASTER:사정 && !TFLAG:징계·플래그
 	VARSET LOCAL
-	;보정値を素質、ABLによって増減
+	;보정치를 소질, ABL에 의해 증감
 	LOCAL += 5 + TALENT:새드 + TALENT:심술궂음 - TALENT:마음씨착한 + (ABL:가학 >= ABL:애무 ? 1 # -1)
-	;보정値が十分高ければ
+	;보정치가 충분히 높면
 	IF RAND:LOCAL >= RAND:5
-		;기교ABLによって애태움도設定
+		;기교ABL에 의해애태움도설정
 		TCVAR:MASTER:애태움도 += MIN(ABL:기교 / 5 + 2, 4)
 	ENDIF
-	;애태움が開始されれば地の文表示
+	;애태움가 개시되면 지문 표시
 	SIF TCVAR:MASTER:애태움도 > 1
 		{
 		PRINTFORMW %CALLNAME:TARGET%은(는) \@ TALENT:심술궂음 || TALENT:새드 || !ALI(0, TARGET) 
@@ -714,127 +714,127 @@ IF TCVAR:MASTER:가버려 && !TCVAR:MASTER:애태움도 && !NOWEX:MASTER:사정 
 		}
 ENDIF
 
-;절정強度処理
-;ARG:0 = 快Ｘ種(ＣＶＡＢ)
-;ARG:1 = 今回の到達強度
-;RESULT = 절정強度
+;절정강도 처리
+;ARG:0 =쾌Ｘ종(ＣＶＡＢ)
+;ARG:1 =이번 도달 강도
+;RESULT = 절정강도
 @CALC_SOURCE00_EX_P(ARG, ARG:1)
 #FUNCTION
 #DIM LCOUNT
-#DIM 절정境界, 3
-;절정境界セット
-절정境界 = 90
-절정境界:1 = 10000
-절정境界:2 = 20000
-;LOCAL初期化
+#DIM 절정경계, 3
+;절정경계 세트
+절정경계 = 90
+절정경계:1 = 10000
+절정경계:2 = 20000
+;LOCAL 초기화
 VARSET LOCAL
-;절정境界分だけループする
+;절정경계분만큼 루프 한다
 FOR LCOUNT, 1, 3
-	;절정境界を越えると、절정強度が1ずつ上がる
-	SIF ARG:1 < 절정境界:LCOUNT
+	;절정경계를 넘으면, 절정강도가 1씩 오른다
+	SIF ARG:1 < 절정경계:LCOUNT
 		BREAK
 	LOCAL++
 NEXT
-;가버려時、Ｃ절정が必ず起こる
+;가버려시, Ｃ절정가 반드시 일어난다
 SIF (ARG == 0) && TCVAR:MASTER:가버려
 	LOCAL = MAX(LOCAL, 1)
-;절정時
+;절정시
 IF LOCAL >= 1
-	;절정境界:N、절정境界:0の数値に応じてPALAM減少
-	;(下限を突破しないよう調整)
-	CDOWN:MASTER:ARG = MIN(절정境界:LOCAL * 절정境界 / 100, ARG:1)
-	;절정表示用文字列初期化
+	;절정경계:N, 절정경계:0의 수치에 응해 PALAM 감소
+	;(하한을 돌파하지 않게 조정)
+	CDOWN:MASTER:ARG = MIN(절정경계:LOCAL * 절정경계 / 100, ARG:1)
+	;절정표시용 캐릭터 라인 초기화
 	STR:(1030 + ARG) = 
-	;強度が2なら"強"を追加
+	;강도가 2라면 "강"을 추가
 	SIF LOCAL == 2
-		STR:(1030 + ARG) += "強"
-	;절정種を記入
+		STR:(1030 + ARG) += "강"
+	;절정종을 기입
 	STR:(1030 + ARG) += EXNAME:ARG
-	;強度に応じて마력취득
+	;강도에 응해마력취득
 	TFLAG:취득마력 += 50 * LOCAL
-	;CDOWN:MASTER:快Ｘで下げても절정以上なら
-	;その値-1になるように調整（10000で절정なら9999）
-	;※これがこの位置にあることで애태움、참다の価値が
-	;  上昇するのではないかと思って試験的に移動。
-	;  不当に価値が上昇してしまったときはIF文から出すこと
-	SIF ARG:1 - CDOWN:MASTER:ARG >= 절정境界:1
-		CDOWN:MASTER:ARG = ARG:1 - 절정境界:1 + 1
+	;CDOWN:MASTER:쾌Ｘ로 내려도절정이상이라면
+	;그 값-1이 되도록(듯이) 조정（10000으로절정라면 9999）
+	;※이것이 이 위치에 있는 것으로애태움, 참다의 가치가
+	;  상승하는 것은 아닐까 생각해 시험적으로 이동.
+	;  부당하게 가치가 상승해 버렸을 때는 IF 문장으로부터 보내는 것
+	SIF ARG:1 - CDOWN:MASTER:ARG >= 절정경계:1
+		CDOWN:MASTER:ARG = ARG:1 - 절정경계:1 + 1
 ENDIF
-;절정強度을반환
+;절정강도을반환
 RETURNF LOCAL
 
 
 ;-------------------------------------------------
-;関数名:CALC_SOURCE00_EX_R
-;概　要:죠교자に사정処理(＋안빼고判定)
-;引　数:ARG:0…삽입箇所(0.Ｖ/1.Ａ)
-;　　　 ARG:1…페니스밴드の使用有無(0.未使用/1.使用)
-;戻り値:안빼고判定結果を表す真偽値(0か1)。0は抜く、1は안빼고(継続)
-;備　考:式中関数
-;諸変数加算/セット処理と안빼고の判定を行う
-;ちょっとだけ改造@revkoishi(14/06/07)
+;함수명:CALC_SOURCE00_EX_R
+;개  요점:죠교자에사정처리(＋안빼고판정)
+;인  수:ARG:0… 삽입개소(0Ｖ/1Ａ)
+;　　　 ARG:1… 페니스밴드의 사용 유무(0. 미사용/1. 사용)
+;반환값:안빼고판정 결과를 나타내는 진위치(0이나 1). 0은 뽑는, 1은안빼고(계속)
+;비  고:식 안의 함수
+;제변수 가산/세트 처리와안빼고의 판정을 실시한다
+;조금 개조@revkoishi(14/06/07)
 ;-------------------------------------------------
 @CALC_SOURCE00_EX_R(ARG:0, ARG:1)
 #FUNCTION
-CALLF _UNEXTRACTION(MASTER, 1, TFLAG:안빼고 ? TFLAG:안빼고 # 0)	;안빼고遅延判定用保持。既に抜けていたらクリア@revkoishi(14/07/14)
+CALLF _UNEXTRACTION(MASTER, 1, TFLAG:안빼고 ? TFLAG:안빼고 # 0)	;안빼고지연 판정용 보유. 이미 빠져 있으면 클리어@revkoishi(14/07/14)
 
-;諸変数加算
-IF !ARG:1	;페니스밴드未使用時
+;제변수 가산
+IF !ARG:1	;페니스밴드미사용시
 	SELECTCASE ARG:0
-		CASE 0	;Ｖ삽입時
-			IF NOWEX:MASTER:사정 != 1	;空でない사정時
+		CASE 0	;Ｖ삽입시
+			IF NOWEX:MASTER:사정 != 1	;하늘이 아닌사정시
 				CFLAG:TARGET:질정 += MIN(BASE:MASTER:사정, DOWNBASE:MASTER:사정)
 				STAIN:TARGET:바기나 |= 4
 				TFLAG:전회질싸 = 2
-			ELSE						;드라이사정時
+			ELSE						;드라이사정시
 				TFLAG:전회질싸 = 4
 			ENDIF
-		CASE 1	;Ａ삽입時
-			IF NOWEX:MASTER:사정 != 1	;空でない사정時
+		CASE 1	;Ａ삽입시
+			IF NOWEX:MASTER:사정 != 1	;하늘이 아닌사정시
 				STAIN:TARGET:항문 |= 4
 				TFLAG:전회질싸 = 6
-			ELSE						;드라이사정時
+			ELSE						;드라이사정시
 				TFLAG:전회질싸 = 8
 			ENDIF
 	ENDSELECT
 ENDIF
 
-;안빼고欲求보정値生成
+;안빼고욕구보정치 생성
 LOCAL:0 = 0
 LOCAL:0 += GET_ABL(TARGET, "욕망") * 3							;죠교자욕망
 LOCAL:0 += GET_ABL(TARGET, "기교")								;죠교자기교
 LOCAL:0 += GET_ABL(TARGET, \@ ARG:0 ? Ａ감각 # Ｖ감각 \@) * 2	;죠교자Ｖ감각/Ａ감각
 LOCAL:0 += GET_ABL(TARGET, "성교") * 2							;죠교자성교ABL
-IF NOWEX:MASTER:사정 == 1	;드라이사정時
-	LOCAL:0 -= 150											;보정値減少
-ELSE						;非드라이사정時
-	LOCAL:0 += !TFLAG:전턴성교봉사           ? 150 # 0	;삽입れたばかりならさらに加算
-	LOCAL:0 += (TFLAG:금일의방침 == 7 && !ARG:0) ? 300 # 0	;금일의방침が애만들기で、Ｖ삽입중ならさらに加算
+IF NOWEX:MASTER:사정 == 1	;드라이사정시
+	LOCAL:0 -= 150											;보정치 감소
+ELSE						;비드라이사정시
+	LOCAL:0 += !TFLAG:전턴성교봉사           ? 150 # 0	;삽입속여라면 한층 더 가산
+	LOCAL:0 += (TFLAG:금일의방침 == 7 && !ARG:0) ? 300 # 0	;금일의방침가애만들기로, Ｖ삽입중라면 한층 더 가산
 ENDIF
 LOCAL:0 = (LOCAL:0 * 2) / (TFLAG:안빼고 + 2)	;안빼고횟수(0=1, 1=2/3, 2=1/2, 3=2/5, 4=1/3,……)
-LOCAL:0 /= 10	;안빼고보정値によって안빼고挑戦判定
+LOCAL:0 /= 10	;안빼고보정치에 의해안빼고도전 판정
 
-;안빼고挑戦判定
-LOCAL:1 = 0	;挑戦結果
-IF PERCENT(GET_ASYMPTOTE(LOCAL:0, 100, 500))	;挑戦判定が成立했다場合
-	;挑戦する場合さらに안빼고技術判定に進む
-	;残り精力が100%なら50%の成功ボーナスが貰える。0%なら0%
-	;페니스밴드사용중なら除算しない。とりあえず0を返しておくけど望ましいと思う形に整えてもらっても構わない@/L
+;안빼고도전 판정
+LOCAL:1 = 0	;도전 결과
+IF PERCENT(GET_ASYMPTOTE(LOCAL:0, 100, 500))	;도전 판정이 성립했다경우
+	;도전하는 경우 한층 더안빼고기술 판정하러 진행된다
+	;나머지 정력이 100%라면 50%의 성공 보너스를 받을 수 있다. 0%라면 0%
+	;페니스밴드사용중라면 제산하지 않는다. 우선 0을 돌려주어 두지만 바람직하다고 생각하는 형태에 정돈해 받아도 상관없다@/L
 	LOCAL:0 = !ARG:1 ? BASE:MASTER:사정 * 50 / MAXBASE:MASTER:사정 # 0
-	;ボーナスの残り分は기교ABLで補う。
-	;残り精力が100%なら50%分を기교ABLで補う。0%なら100%
+	;보너스의 나머지분은기교ABL로 보충한다.
+	;나머지 정력이 100%라면 50%분을기교ABL로 보충한다. 0%라면 100%
 	LOCAL:0 = GET_ABL(TARGET, "기교") * (100 - LOCAL:0) / 100 + LOCAL:0
-	;ここでTEQUIPを判定しても過程の情報がわからない＝途中でＶ⇔Ａ挿し換えのパターンが拾えないので、ここでは扱えません
-	;そしてコンビネーションACTでの사정は結局のところ죠교자に中出しなので안빼고判定しても差し支えありません
-	;필요なのは抜けた時＝ACT時に即座に플래그を折ることであり、それはこの関数でやる内容ではないと思われるので
-	;この関数は判定だけします。それを良しとしないならば、あとはわからないのでがんばって＞＜@revkoishi
-	LOCAL:1 = PERCENT(LOCAL:0)	;判定
+	;여기서 TEQUIP를 판정해도 과정의 정보를 모른다=도중에Ｖ⇔Ａ꽂아 대체의 패턴을 주울 수 없기 때문에, 여기에서는 취급할 수 없습니다
+	;그리고 콤비 네이션 ACT에서의사정는 결국죠교자에 질내사정인 것로안빼고판정해도 지장 없습니다
+	;필요인 것은 빠졌을 때=ACT시에 즉석에서플래그를 꺾는 것이어, 그것은 이 함수로 하는 내용은 아니라고 생각되므로
+	;이 함수는 판정만 합니다. 그것을 좋다로 하지 않다면, 나머지는 모르기 때문에 노력해＞＜@revkoishi
+	LOCAL:1 = PERCENT(LOCAL:0)	;판정
 ENDIF
 
-;成功すれば안빼고開始・継続、失敗すれば抜く
+;성공하면안빼고개시·계속, 실패하면 뽑는다
 TFLAG:안빼고          = LOCAL:1 ? TFLAG:안빼고 + 1      # 0
 TCVAR:MASTER:애태움도 = LOCAL:1 ? TCVAR:MASTER:애태움도 # 0
-RETURNF LOCAL:1	;判定結果을반환。使うかどうかはともかく
-;TFLAG:안빼고が立たない場合はこの箇所で確実にリセットする。立った場合は確実に抜け시킨다@/L
+RETURNF LOCAL:1	;판정 결과을반환. 사용할지 어떨지는 어쨌든
+;TFLAG:안빼고가 서지 않는 경우는 이 개소에서 확실히 리셋트 한다. 섰을 경우는 확실히 뽑아라시킨다@/L
 
-;IS_UNEXTRACTIONと_UNEXTRACTIONはCOMMON_GETTER_TRAIN.ERBに移設
+;IS_UNEXTRACTION와_UNEXTRACTION는 COMMON_GETTER_TRAIN.ERB에 이전

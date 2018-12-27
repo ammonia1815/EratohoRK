@@ -1,44 +1,44 @@
 ﻿;────────────────────────────────────
-;新しいゲームの処理
+;새로운 게임의 처리
 ;────────────────────────────────────
 @EVENTFIRST
 #DIM LCOUNT
 
-;GLOBAL変数から애니메ーション設定を読み込む
+;GLOBAL 변수로부터애니메─숀 설정을 읽어들인다
 LOADGLOBAL
 CALLF ANIME_CONFIG("SET", GLOBAL)
 SAVEGLOBAL
 LOADGLOBAL
-;キャラクター役割変数を初期化
+;캐릭터 역할 변수를 초기화
 TARGET = -1
 ASSI = -1
 ASSI:1 = -1
 ASSI:2 = -1
 ASSI:3 = -1
-;諸変数を初期化
+;제변수를 초기화
 FLAG:모드 = 0
 FLAG:TXT빈도 = 1
 FLAG:추가조교자수 = 0
 
-;テスト用記述。いつでも消していいよ
+;테스트용 기술. 언제라도 지워도 좋아
 ;CALL GET_REVISION_SQRT_PROP_TEST(, 1, 5, 12, 50)
-;PRINTVL LINE_CALC(-2000, "-2000→-12,2000→0,LIMIT/-12～0")
-;PRINTV IS_NOWACTNAME("くそがっ")
+;PRINTVL LINE_CALC(-2000, "-2000→-12, 2000→0, LIMIT/-12～0")
+;PRINTV IS_NOWACTNAME("똥이")
 ;CALL MAKE_CSV
 ;SKIPDISP 1
 ;CALL INPUTINT(0, 1, 2, 3, 4)
 ;SKIPDISP 0
 
-;플레이시간の初期化  →SYSTEM_DATAMENU.ERB
+;플레이시간의 초기화  →SYSTEM_DATAMENU.ERB
 CALLF PLAYTIME("SET")
 
-;「당신」以外のキャラクターの総数。
+;「당신」이외의 캐릭터의 총수.
 DO
 	FLAG:Cha총수++
 LOOP EXISTCSV(FLAG:Cha총수 + 1, 0)
-;登場플래그をセット
+;등장플래그를 세트
 VARSET FLAG, 1, 100, 100 + FLAG:Cha총수
-;バリアント主の意向で霖之助を撤去
+;바리안트주의 의향으로 린노스케를 철거
 FLAG:155 = 0
 ;모드선택
 PRINTL ★★모드를 선택해 주세요★★
@@ -47,22 +47,22 @@ PRINTL [ 1]SANDBOX ―― NORMAL + 시험적으로 도입된 신기능(동작 �
 PRINTL [ 9]EXTRA   ―― 스토리가 없는, 좋아하는 캐릭터로 조교되는 모드
 PRINTL [-1]돌아온다
 CALL INPUTINT(0, 1, 9, -1)
-;オプションを設定
+;옵션을 설정
 FLAG:소질표시방법 = 1
 FLAG:일상 = 1
 FLAG:AI자유도 = 15
-;모드確定
+;모드확정
 FLAG:모드 = RESULT
-;NORMALならゆかりんにお呼ばれ
+;NORMAL라면 유카링에 초대
 IF FLAG:모드 == 0
 	CALL CHARA_MAKER
-	;죠교대상の의상 설정
+	;죠교대상의의상 설정
 	CALL CLOTHES_SETUP(MASTER)
-;SANDBOX、EXTRAなら主人公(죠교대상)선택
+;SANDBOX, EXTRA라면 주인공(죠교대상)선택
 ELSEIF FLAG:모드 == 1 || FLAG:모드 == 9
 	DELCHARA 0
 	CALL START_CHARA_SELECT
-;ニューゲームするつもりじゃなかったならタイトルへ돌아가기
+;뉴 게임할 생각이 아니었다면 타이틀에돌아가기
 ELSE
 	RESETDATA
 	BEGIN TITLE
@@ -73,7 +73,7 @@ ENDIF
 CALL START_CHARA_SELECT_T
 CALL BASE_TRAINER_SETUP
 
-;주인님認定
+;주인님인정
 TALENT:주인님 = 1
 FLAG:주인님 = TARGET
 
@@ -87,9 +87,9 @@ ITEM:505 = 1
 FLAG:구상 = 1
 PRINTL 
 DRAWLINE
-;オープニング
+;오프닝
 CALL KOJO_EVENT(1)
-;オープニングがない場合は汎用
+;오프닝이 없는 경우는 범용
 IF !RESULT
 	CALL WAIT_3
 	PRINTFORMW 어느 정도 자고 있었을 것인가.
@@ -107,19 +107,19 @@ IF !RESULT
 	PRINTL 
 	PRINTFORMW 탈출의 전망은 없다.
 	PRINTFORMW %CALLNAME%(이)가 지만 이 바보스러운 실험에 질려, %CALLNAME:MASTER%(을)를 해방해 줄 때까지.
-	CALL BGM_CUTIN(CSTR:곡１)
+	CALL BGM_CUTIN(CSTR:곡1)
 	PRINTL 
 	PRINTFORMW %CALLNAME:MASTER%(은)는, 다만 참을 뿐의 불쌍한 노예다――.
 	PRINTL 
 ENDIF
 
 REDRAW 0
-SETFONT "ＭＳ 明朝"
+SETFONT "나눔명조"
 FONTSTYLE 3
 
-;RESULTが2ならロゴをスキップ
+;RESULT가 2라면 로고를 스킵
 IF RESULT != 2
-	;ネタ。タイトルロゴ
+	;재료. 타이틀 로고
 ;OriginalString : (40, 17, "eratohoЯeverse――","　","　","　　　　　　――죠교が、始まる")
 	CALL FULLCUTIN(40, 17, "eratohoЯeverse――"," "," ","      ――죠교가, 시작된다")
 ENDIF
@@ -128,16 +128,16 @@ FOR LOCAL, 0, 100
 NEXT
 CALL DAY_EFFECT
 CLEARLINE 100
-;Emueraを디버그모드で起動했다場合にのみ表示するように
-;と思ったけど、디버그時には普通に[777]が表示されるのでやはり要らないと判断@/L
+;Emuera를디버그모드로 기동했다경우에게만 표시하도록(듯이)
+;라고 생각했지만, 디버그시에는 보통으로[777]가 표시되므로 역시 필요하지 않다고 판단@/L
 [SKIPSTART]
 [IF_DEBUG]
 PRINTL 
 PRINTL 
-PRINTW SHOP화면777입력으로 디버그 모드가 되어 정보의 출력,TARGET의 행동 지정,MASTER의 소질 변경등을 실시할 수가 있습니다
+PRINTW SHOP화면 777입력으로 디버그 모드가 되어 정보의 출력, TARGET의 행동 지정, MASTER의 소질 변경등을 실시할 수가 있습니다
 [ENDIF]
 [SKIPEND]
-;データベース初期化
+;데이타베이스 초기화
 CALL DATABASE_INPUT_INIT
 BEGIN SHOP
 

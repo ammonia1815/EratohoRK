@@ -1,403 +1,403 @@
 ﻿;==================================================
 ;
-;コマンド終了処理
+;커맨드 종료 처리
 ;
 ;==================================================
 @EVENTCOMEND
-;カウント変数
+;카운트 변수
 #DIM LCOUNT, 2
-;죠교대상호감도増減値
-#DIM M호의増減
-;죠교자호감도増減値
-#DIM T호의増減
-;죠교대상경험치上昇値
-#DIM M경험上昇
-;죠교자경험치上昇値
-#DIM T경험上昇
-;죄책감上昇値
-#DIM 죄책감上昇
-;아라이멘도변동値
-#DIM アラ変動
-;죠교대상체력回復値
-#DIM M체력回復
-;죠교대상기력回復値
-#DIM M기력回復
-;죠교자체력回復値
-#DIM T체력回復
-;죠교자기력回復値
-#DIM T기력回復
-;ヒート値減少量
-#DIM クール値
-;죠교継続基準値
-#DIM 継続基準値
+;죠교대상호감도증감치
+#DIM M호의증감
+;죠교자호감도증감치
+#DIM T호의증감
+;죠교대상경험치상승치
+#DIM M경험상승
+;죠교자경험치상승치
+#DIM T경험상승
+;죄책감상승치
+#DIM 죄책감상승
+;아라이멘도변동치
+#DIM 아라변동
+;죠교대상체력회복치
+#DIM M체력회복
+;죠교대상기력회복치
+#DIM M기력회복
+;죠교자체력회복치
+#DIM T체력회복
+;죠교자기력회복치
+#DIM T기력회복
+;히트치 감소량
+#DIM 쿨치
+;죠교계속 기준치
+#DIM 계속기준치
 
 ;────────────────────────────────────
-;절정系전회턴参照플래그のリセット
+;절정계전회턴참조플래그의 리셋트
 ;────────────────────────────────────
-;LOCAL初期化
+;LOCAL 초기화
 VARSET LOCAL
 FOR LCOUNT, 0, CHARANUM
 	VARSET TCVAR:LCOUNT:0, 0, 80, 90
 NEXT
 
 ;────────────────────────────────────
-;모유と사진の計算
+;모유와사진의 계산
 ;────────────────────────────────────
-;조수ACTが사진촬영
+;조수ACT가사진촬영
 SIF TFLAG:조수ACT == 52
 	CALL SELL_PHOTO
 
 
 ;────────────────────────────────────
-;호감도の計算（죠교대상）
+;호감도의 계산（죠교대상）
 ;────────────────────────────────────
-;LOCAL初期化
+;LOCAL 초기화
 VARSET LOCAL
 
-;호감도업、매혹素質を元に増減値の種を作る
-M호의増減 = TFLAG:호감도업 + TALENT:매혹 * (RAND:3 + 1)
+;호감도업, 매혹소질을 바탕으로 증감치의 종을 재배한다
+M호의증감 = TFLAG:호감도업 + TALENT:매혹 * (RAND:3 + 1)
 
-;CUP:MASTER:快Ｘによって増減値増加
+;CUP:MASTER:쾌Ｘ에 의해 증감치 증가
 FOR LCOUNT, 0, 4
 	SIF CUP:MASTER:LCOUNT > 100
-		M호의増減 += 1 + CUP:MASTER:LCOUNT / 1000
+		M호의증감 += 1 + CUP:MASTER:LCOUNT / 1000
 NEXT
 
-;その他要素による増減
-SIF M호의増減 > 0
-	M호의増減 = M호의増減 * (10 + GET_ABL(MASTER, "순종")) * (2 + CFLAG:MASTER:죠교레벨 / 3) * (11 - MARK:반항각인) * (3 + TALENT:MASTER:솔직 - TALENT:MASTER:반항적 + TALENT:매혹 + TALENT:친절함 - TALENT:까다로움) / 100
-SIF M호의増減 < 0
-	M호의増減 = M호의増減 * (1 + MARK:반항각인) * (100 - GET_ABL(MASTER, "순종")) * (3 + TALENT:MASTER:반항적 - TALENT:MASTER:솔직 + TALENT:MASTER:건방짐 - TALENT:위압감) / 100
+;그 외 요소에 의한 증감
+SIF M호의증감 > 0
+	M호의증감 = M호의증감 * (10 + GET_ABL(MASTER, "순종")) * (2 + CFLAG:MASTER:죠교레벨 / 3) * (11 - MARK:반항각인) * (3 + TALENT:MASTER:솔직 - TALENT:MASTER:반항적 + TALENT:매혹 + TALENT:친절함 - TALENT:까다로움) / 100
+SIF M호의증감 < 0
+	M호의증감 = M호의증감 * (1 + MARK:반항각인) * (100 - GET_ABL(MASTER, "순종")) * (3 + TALENT:MASTER:반항적 - TALENT:MASTER:솔직 + TALENT:MASTER:건방짐 - TALENT:위압감) / 100
 
-;호의増減値を決定
-SIF M호의増減 != 0
-	M호의増減 = ABLOSI_10(M호의増減 * 50)
+;호의증감치를 결정
+SIF M호의증감 != 0
+	M호의증감 = ABLOSI_10(M호의증감 * 50)
 
-;호감도を増減
-CFLAG:M호의 += M호의増減
+;호감도를 증감
+CFLAG:M호의 += M호의증감
 
-;地の文表示
-SIF M호의増減 != 0
-	PRINTFORML %CALLNAME:TARGET%에의 호감도\@ M호의増減 >= 0 ? + # \@{M호의増減}　(현재가{CFLAG:M호의})
+;지문 표시
+SIF M호의증감 != 0
+	PRINTFORML %CALLNAME:TARGET%에의 호감도\@ M호의증감 >= 0 ? + # \@{M호의증감}　(현재가{CFLAG:M호의})
 
 
 ;────────────────────────────────────
-;호감도の計算（죠교자）
+;호감도의 계산（죠교자）
 ;────────────────────────────────────
-;LOCAL初期化
+;LOCAL 초기화
 VARSET LOCAL
 
-;PALAM上昇等を元に増減値の種を作る
-T호의増減 = BASE:만족 / 200 + (CUP:쾌Ｃ + CUP:쾌Ｖ + CUP:쾌Ａ + CUP:쾌Ｂ) / 250 + (CUP:MASTER:욕정 + CUP:MASTER:굴복 - CUP:MASTER:반항) / 150 + (SOURCE:MASTER:애정 + SOURCE:MASTER:달성) / 100 + (NOWEX:Ｃ절정 + NOWEX:Ｖ절정 + NOWEX:Ａ절정 + NOWEX:Ｂ절정 + NOWEX:분유 + NOWEX:사정) * 2
+;PALAM 상승등을 바탕으로 증감치의 종을 재배한다
+T호의증감 = BASE:만족 / 200 + (CUP:쾌Ｃ + CUP:쾌Ｖ + CUP:쾌Ａ + CUP:쾌Ｂ) / 250 + (CUP:MASTER:욕정 + CUP:MASTER:굴복 - CUP:MASTER:반항) / 150 + (SOURCE:MASTER:애정 + SOURCE:MASTER:달성) / 100 + (NOWEX:Ｃ절정 + NOWEX:Ｖ절정 + NOWEX:Ａ절정 + NOWEX:Ｂ절정 + NOWEX:분유 + NOWEX:사정) * 2
 
-;죠교대상호감도上昇中かつリアクションが순종であれば追加で増加
-SIF M호의増減 > 0 && TFLAG:REACT분류 < 5
-	T호의増減 += RAND:M호의増減 * (3 + TALENT:MASTER:매혹 * 2 + TALENT:MASTER:친절함 - TALENT:MASTER:까다로움 + TALENT:MASTER:정서적 - TALENT:MASTER:감정결여) / 8
-;죠교자快感が大きければ追加で増加
+;죠교대상호감도상승중 또한 리액션이순종이면 추가로 증가
+SIF M호의증감 > 0 && TFLAG:REACT분류 < 5
+	T호의증감 += RAND:M호의증감 * (3 + TALENT:MASTER:매혹 * 2 + TALENT:MASTER:친절함 - TALENT:MASTER:까다로움 + TALENT:MASTER:정서적 - TALENT:MASTER:감정결여) / 8
+;죠교자쾌감이 크면 추가로 증가
 FOR LCOUNT, 0, 4
 	SIF CUP:LCOUNT > 100
-		T호의増減 += 1
+		T호의증감 += 1
 NEXT
 
-;죠교대상に매혹素質があれば追加で増加
+;죠교대상에매혹소질이 있으면 추가로 증가
 SIF TALENT:MASTER:매혹
-	T호의増減 += 1
+	T호의증감 += 1
 
-;초조함と相殺
+;초조함로 상쇄
 IF BASE:초조함 > 0
-	;호의増減値が大きくなるほど초조함への相殺効率は落ちる
-	IF BASE:초조함 - T호의増減 / 3 > BASE:초조함 / 2
-		BASE:초조함 -= T호의増減 / 3
-	ELSEIF BASE:초조함 - T호의増減 / 3 > 0
+	;호의증감치가 커질 정도로초조함에의 상쇄 효율은 떨어진다
+	IF BASE:초조함 - T호의증감 / 3 > BASE:초조함 / 2
+		BASE:초조함 -= T호의증감 / 3
+	ELSEIF BASE:초조함 - T호의증감 / 3 > 0
 		BASE:초조함 /= 2
 	ELSE
 		BASE:초조함 /= 3
 	ENDIF
-	;초조함が大きくなるほど호의増減値は割合で減る
-	T호의増減 = T호의増減 * (MAXBASE:초조함 - BASE:초조함) / MAXBASE:초조함
+	;초조함가 커질 정도로호의증감치는 비율로 줄어든다
+	T호의증감 = T호의증감 * (MAXBASE:초조함 - BASE:초조함) / MAXBASE:초조함
 ENDIF
 
-;現在の죠교대상호감도が大きいほど大きくなる보정値を作る
+;현재의죠교대상호감도가 큰 만큼 커지는보정치를 만든다
 LOCAL = (CFLAG:M호의 - 500) / 200
-;보정値を-5～5の範囲に収める
+;보정치를-5～5의 범위에 거둔다
 LOCAL = LIMIT(LOCAL, -5, 5)
-;죠교대상호감도上昇、下降予定に従って別の보정を行う
-SIF T호의増減 > 0
-	T호의増減 = T호의増減 * (10 + GET_ABL(MASTER, "순종")) * (6 + LOCAL + TALENT:MASTER:매혹 * 2 + TALENT:MASTER:친절함 - TALENT:MASTER:까다로움) / ((30 + MARK:MASTER:트라우마) * 10)
-SIF T호의増減 < 0
-	T호의増減 = T호의増減 * (100 - GET_ABL(MASTER, "순종")) * (3 + MARK:반항각인 + TALENT:MASTER:반항적 * 2 - TALENT:MASTER:솔직) / ((20 + CFLAG:MASTER:죠교레벨 * 2 + LOCAL * 3) * 10)
-;호감도増減は-5～40の範囲に収める
-T호의増減 = LIMIT(T호의増減, -5, 40)
+;죠교대상호감도상승, 하강 예정에 따라 다른보정를 실시한다
+SIF T호의증감 > 0
+	T호의증감 = T호의증감 * (10 + GET_ABL(MASTER, "순종")) * (6 + LOCAL + TALENT:MASTER:매혹 * 2 + TALENT:MASTER:친절함 - TALENT:MASTER:까다로움) / ((30 + MARK:MASTER:트라우마) * 10)
+SIF T호의증감 < 0
+	T호의증감 = T호의증감 * (100 - GET_ABL(MASTER, "순종")) * (3 + MARK:반항각인 + TALENT:MASTER:반항적 * 2 - TALENT:MASTER:솔직) / ((20 + CFLAG:MASTER:죠교레벨 * 2 + LOCAL * 3) * 10)
+;호감도증감은-5～40의 범위에 거둔다
+T호의증감 = LIMIT(T호의증감, -5, 40)
 
-;호감도を増減
-CFLAG:호의 += T호의増減
+;호감도를 증감
+CFLAG:호의 += T호의증감
 
-;地の文表示
-IF T호의増減 != 0
+;지문 표시
+IF T호의증감 != 0
 	IF TALENT:MASTER:독심능력 == 1
-		PRINTFORML %CALLNAME:MASTER%에의 호감도가\@ T호의増減 >= 0 ? 上がったようだ # 下がったようだ \@
+		PRINTFORML %CALLNAME:MASTER%에의 호감도가\@ T호의증감 >= 0 ? 오른 것 같다 # 내린 것 같다 \@
 	ELSEIF TALENT:MASTER:독심능력 == 2
-		PRINTFORML %CALLNAME:MASTER%에의 호감도\@ T호의増減 >= 0 ? + # \@{T호의増減}　(현재가{CFLAG:호의})
+		PRINTFORML %CALLNAME:MASTER%에의 호감도\@ T호의증감 >= 0 ? + # \@{T호의증감}　(현재가{CFLAG:호의})
 	ENDIF
 ENDIF
 
 
 ;────────────────────────────────────
-;경험치の計算（죠교대상）
+;경험치의 계산（죠교대상）
 ;────────────────────────────────────
-;LOCAL初期化
+;LOCAL 초기화
 VARSET LOCAL
 
-;경험치업を元に上昇値の種を作る
-M경험上昇 = TFLAG:경험치업
+;경험치업를 바탕으로 상승치의 종을 재배한다
+M경험상승 = TFLAG:경험치업
 
-;욕정上昇値の1/100だけ경험치上昇(上限20)
-M경험上昇 += LIMIT(CUP:MASTER:욕정 / 100, 0, 20)
-;욕정上昇値が500を突破すると0～1の負の보정がかかる
+;욕정상승치가 1/100만여라경험치상승(상한 20)
+M경험상승 += LIMIT(CUP:MASTER:욕정 / 100, 0, 20)
+;욕정상승치가 500을 돌파하면 0～1의 부의보정가 걸린다
 SIF CUP:MASTER:욕정 > 500
-	M경험上昇 -= RAND:2
+	M경험상승 -= RAND:2
 
-;공순上昇値の3/200だけ경험치上昇(上限30)
-M경험上昇 += LIMIT(3 * CUP:MASTER:공순 / 200, 0, 30)
-;공순上昇値が200を突破すると0～1の負の보정がかかる
+;공순상승치가 3/200만여라경험치상승(상한 30)
+M경험상승 += LIMIT(3 * CUP:MASTER:공순 / 200, 0, 30)
+;공순상승치가 200을 돌파하면 0～1의 부의보정가 걸린다
 SIF CUP:MASTER:공순 > 200
-	M경험上昇 -= RAND:2
+	M경험상승 -= RAND:2
 
-;치정上昇値のRAND:(1/125)だけ경험치上昇(上限15)
+;치정상승치의 RAND:(1/125) 만여라경험치상승(상한 15)
 LOCAL = LIMIT(CUP:MASTER:치정 / 125, 0, 16) + 1
-M경험上昇 += RAND:LOCAL
+M경험상승 += RAND:LOCAL
 
-;반항上昇値の3/1000だけ경험치上昇を抑制(下限-6)
-M경험上昇 -= LIMIT(3 * CUP:MASTER:반항 / 1000, 0, 6)
+;반항상승치가 3/1000만여라경험치상승을 억제(하한-6)
+M경험상승 -= LIMIT(3 * CUP:MASTER:반항 / 1000, 0, 6)
 
-;억울上昇値の1/240だけ경험치上昇を抑制(下限-5)
-M경험上昇 -= LIMIT(CUP:MASTER:억울 / 240, 0, 5)
+;억울상승치가 1/240만여라경험치상승을 억제(하한-5)
+M경험상승 -= LIMIT(CUP:MASTER:억울 / 240, 0, 5)
 
-;봉사の追加경험치
+;봉사의 추가경험치
 IF TFLAG:ACT분류 == 5
-	;REACT분류が소극적으로 한다
+	;REACT분류가소극적으로 한다
 	SIF IS_COMGRONAME("소극적으로 한다")
-		M경험上昇 += 4
-	;REACT분류が적극적으로 한다
+		M경험상승 += 4
+	;REACT분류가적극적으로 한다
 	SIF IS_COMGRONAME("적극적으로 한다")
-		M경험上昇 += 7
+		M경험상승 += 7
 ENDIF
 
-;순종と습득빠름/遅いの보정
-M경험上昇 = (M경험上昇 + 1) * (50 + GET_ABL(MASTER, "순종") * 2) * (2 + TALENT:MASTER:습득빠름 - TALENT:MASTER:습득느림) / 120
+;순종와습득빠름/늦은 것보정
+M경험상승 = (M경험상승 + 1) * (50 + GET_ABL(MASTER, "순종") * 2) * (2 + TALENT:MASTER:습득빠름 - TALENT:MASTER:습득느림) / 120
 
-;죠교대상절정時、경험치倍
+;죠교대상절정시, 경험치배
 FOR LCOUNT, 0, 4
 	SIF NOWEX:MASTER:LCOUNT
-		M경험上昇 *= 2
+		M경험상승 *= 2
 NEXT
-;죠교자절정時、경험치3倍
+;죠교자절정시, 경험치 3배
 FOR LCOUNT, 0, 4
 	SIF NOWEX:LCOUNT
-		M경험上昇 *= 3
+		M경험상승 *= 3
 NEXT
 
-;죠교자が죠교대상よりも경험豊富(貧弱)であるとき경험치上昇(下降)
-M경험上昇 = M경험上昇 * (CFLAG:죠교레벨 + 5) / (CFLAG:MASTER:죠교레벨 + 5)
+;죠교자가죠교대상보다경험풍부(빈약)일 때경험치상승(하강)
+M경험상승 = M경험상승 * (CFLAG:죠교레벨 + 5) / (CFLAG:MASTER:죠교레벨 + 5)
 
-;最低1の경험치は손に入る
-SIF M경험上昇 < 1
-	M경험上昇 = 1
+;최저 1의경험치는손에 들어간다
+SIF M경험상승 < 1
+	M경험상승 = 1
 
 IF FLAG:3134 == 1
-	TIMES M경험上昇, 1.50
+	TIMES M경험상승, 1.50
 ELSEIF FLAG:3134 == 2
-	TIMES M경험上昇 , 2.00
+	TIMES M경험상승 , 2.00
 ENDIF
 
-;地の文表示
-IF M경험上昇 > 0
-	CFLAG:MASTER:죠교경험 += M경험上昇
-	PRINTFORML %CALLNAME:MASTER%경험치+{M경험上昇}
+;지문 표시
+IF M경험상승 > 0
+	CFLAG:MASTER:죠교경험 += M경험상승
+	PRINTFORML %CALLNAME:MASTER%경험치+{M경험상승}
 ENDIF
 
 
 ;────────────────────────────────────
-;경험치の計算（죠교자）
+;경험치의 계산（죠교자）
 ;────────────────────────────────────
-;上昇値初期化
-T경험上昇 = 0
+;상승치 초기화
+T경험상승 = 0
 
-;各パラメーターの上昇値を見る
+;각 파라미터의 상승치를 본다
 FOR LCOUNT, 0, 50
-	;윤활は無視
+	;윤활는 무시
 	SIF LCOUNT == 4
 		CONTINUE
-	;PALAM上昇値の9/2500を경험치に加算(上限9)
-	T경험上昇 += LIMIT(9 * CUP:MASTER:LCOUNT / 2500, 0, 9)
+	;PALAM 상승치의 것 9/2500을경험치에 가산(상한 9)
+	T경험상승 += LIMIT(9 * CUP:MASTER:LCOUNT / 2500, 0, 9)
 NEXT
 
-;굴복と공순は高く評価され、반항と억울は負の要素とする
+;굴복와공순는 높게 평가되어반항와억울는 부의 요소로 한다
 
-;굴복上昇値の3/2500だけ경험치上昇(上限3)
-T경험上昇 += LIMIT(3 * CUP:MASTER:굴복 / 2500, 0, 3)
-;굴복上昇値が200を突破すると0～1の正の보정がかかる
+;굴복상승치가 3/2500만여라경험치상승(상한 3)
+T경험상승 += LIMIT(3 * CUP:MASTER:굴복 / 2500, 0, 3)
+;굴복상승치가 200을 돌파하면 0～1의 정의보정가 걸린다
 SIF CUP:MASTER:굴복 > 200
-	T경험上昇 += RAND:2
+	T경험상승 += RAND:2
 
-;공순上昇値の3/2500だけ경험치上昇(上限3)
-T경험上昇 += LIMIT(3 * CUP:MASTER:공순 / 2500, 0, 3)
-;공순上昇値が200を突破すると0～1の正の보정がかかる
+;공순상승치가 3/2500만여라경험치상승(상한 3)
+T경험상승 += LIMIT(3 * CUP:MASTER:공순 / 2500, 0, 3)
+;공순상승치가 200을 돌파하면 0～1의 정의보정가 걸린다
 SIF CUP:MASTER:공순 > 200
-	T경험上昇 += RAND:2
+	T경험상승 += RAND:2
 
-;반항上昇値の9/2500だけ경험치上昇を抑制(下限-9)
-T경험上昇 -= LIMIT(9 * CUP:MASTER:반항 / 2500, 0, 9)
+;반항상승치가 9/2500만여라경험치상승을 억제(하한-9)
+T경험상승 -= LIMIT(9 * CUP:MASTER:반항 / 2500, 0, 9)
 
-;억울上昇値の9/2500だけ경험치上昇を抑制(下限-9)
-T경험上昇 -= LIMIT(9 * CUP:MASTER:억울 / 2500, 0, 9)
+;억울상승치가 9/2500만여라경험치상승을 억제(하한-9)
+T경험상승 -= LIMIT(9 * CUP:MASTER:억울 / 2500, 0, 9)
 
-;죠교대상の反応による変動
-;REACT분류が소극적으로 한다
+;죠교대상의 반응에 의한 변동
+;REACT분류가소극적으로 한다
 SIF IS_COMGRONAME("소극적으로 한다")
-	T경험上昇 += 2
-;REACT분류が적극적으로 한다
+	T경험상승 += 2
+;REACT분류가적극적으로 한다
 SIF IS_COMGRONAME("적극적으로 한다")
-	T경험上昇 += 5
-;REACT분류が용서를 빌다
+	T경험상승 += 5
+;REACT분류가용서를 빌다
 SIF IS_COMGRONAME("용서를 빌다")
-	T경험上昇 += 1
-;REACT분류が날뛴다
+	T경험상승 += 1
+;REACT분류가날뛴다
 SIF IS_COMGRONAME("날뛴다")
-	T경험上昇 -= 3
-;REACT분류が要求に応じない
+	T경험상승 -= 3
+;REACT분류가 요구에 응하지 않는다
 SIF IS_COMGRONAME("거부")
-	T경험上昇 -= 1
+	T경험상승 -= 1
 
-;죠교대상절정時、경험치3倍
+;죠교대상절정시, 경험치 3배
 FOR LCOUNT, 0, 4
 	SIF NOWEX:MASTER:LCOUNT
-		T경험上昇 *= 3
+		T경험상승 *= 3
 NEXT
-;죠교자절정時、경험치倍
+;죠교자절정시, 경험치배
 FOR LCOUNT, 0, 4
 	SIF NOWEX:LCOUNT
-		T경험上昇 *= 2
+		T경험상승 *= 2
 NEXT
 
-;죠교대상から정액を搾り取ると경험치上昇
-T경험上昇 += DOWNBASE:MASTER:사정 / 100
+;죠교대상로부터정액를 짜내면경험치상승
+T경험상승 += DOWNBASE:MASTER:사정 / 100
 
-;죠교대상が죠교자よりも경험豊富(貧弱)であるとき경험치上昇(下降)
-T경험上昇 = T경험上昇 * (CFLAG:MASTER:죠교레벨 + 5) / (CFLAG:죠교레벨 + 5)
+;죠교대상가죠교자보다경험풍부(빈약)일 때경험치상승(하강)
+T경험상승 = T경험상승 * (CFLAG:MASTER:죠교레벨 + 5) / (CFLAG:죠교레벨 + 5)
 
-;습득빠름/遅いの보정
-T경험上昇 = T경험上昇 * (3 + TALENT:습득빠름 * 2 - TALENT:습득느림 * 2) / 2
+;습득빠름/늦은 것보정
+T경험상승 = T경험상승 * (3 + TALENT:습득빠름 * 2 - TALENT:습득느림 * 2) / 2
 
-;上昇値が-5を下回らない限り最低1の경험치は손に入る
-SIF T경험上昇 > -5 && T경험上昇 < 1
-	T경험上昇 = 1
+;상승치가-5를 밑돌지 않는 한 최저 1의경험치는손에 들어간다
+SIF T경험상승 > -5 && T경험상승 < 1
+	T경험상승 = 1
 
-;地の文表示
-IF T경험上昇 > 0
-	CFLAG:죠교경험 += T경험上昇
-	PRINTFORML %CALLNAME:TARGET%경험치+{T경험上昇}
+;지문 표시
+IF T경험상승 > 0
+	CFLAG:죠교경험 += T경험상승
+	PRINTFORML %CALLNAME:TARGET%경험치+{T경험상승}
 ENDIF
 
 
 ;────────────────────────────────────
-;죄책감と아라이멘도변동
+;죄책감와아라이멘도변동
 ;────────────────────────────────────
 
-;いわゆるカルマ値
+;이른바 업치
 
-;上昇値等初期化
-죄책감上昇 = 0
+;상승치등 초기화
+죄책감상승 = 0
 VARSET LOCAL
 
-;공포と억울を見る(3/1000上昇、上限3)
-죄책감上昇 += LIMIT(3 * (CUP:MASTER:공포 + CUP:MASTER:억울) / 1000, 0, 3)
-;1000を突破했다場合0～1の追加보정
+;공포와억울를 본다(3/1000상승, 상한 3)
+죄책감상승 += LIMIT(3 * (CUP:MASTER:공포 + CUP:MASTER:억울) / 1000, 0, 3)
+;1000를 돌파했다경우 0～1의 추가보정
 SIF (CUP:MASTER:공포 + CUP:MASTER:억울) > 1000
-	죄책감上昇 += RAND:2
+	죄책감상승 += RAND:2
 
-;새드、징계・모드、죠교대상の반항が激しい、一つでも満たせば고통と불쾌はカルマに加算しません
-IF !TALENT:새드 && (MARK:반항각인 * 150 < CUP:MASTER:반항) && !TFLAG:징계・플래그
-	;공포と억울を見る(1/300上昇、上限4)
-	죄책감上昇 += LIMIT((CUP:MASTER:고통 + CUP:MASTER:불쾌) / 300, 0, 4)
-	;さらにRAND:(1/600)上昇(0～2)
+;새드, 징계·모드, 죠교대상의반항가 격렬한, 1개에서도 채우면고통와불쾌는 업에 가산하지 않습니다
+IF !TALENT:새드 && (MARK:반항각인 * 150 < CUP:MASTER:반항) && !TFLAG:징계·플래그
+	;공포와억울를 본다(1/300상승, 상한 4)
+	죄책감상승 += LIMIT((CUP:MASTER:고통 + CUP:MASTER:불쾌) / 300, 0, 4)
+	;한층 더 RAND:(1/600) 상승(0～2)
 	LOCAL = LIMIT((CUP:MASTER:고통 + CUP:MASTER:불쾌) / 600, 0, 2) + 1
-	죄책감上昇 += RAND:LOCAL
+	죄책감상승 += RAND:LOCAL
 ENDIF
 
-;優しい성격なら하드なメニューをこな했다だけでも죄책감
+;상냥한성격라면하드인 메뉴를 진한했다만이라도죄책감
 SIF (TALENT:얌전한 || TALENT:마음씨착한) && (TFLAG:턴방침 > 3 || TFLAG:ACT분류 == 6 || TFLAG:ACT분류 == 7 || TFLAG:ACT분류 == 8)
-	죄책감上昇 += 2
+	죄책감상승 += 2
 
-;素質による보정
+;소질에 의한보정
 SIF TALENT:얌전한 || TALENT:마음씨착한
-	TIMES 죄책감上昇 , 1.50
+	TIMES 죄책감상승 , 1.50
 SIF TALENT:건방짐 || TALENT:새드 || TALENT:심술궂음
-	TIMES 죄책감上昇 , 0.50
+	TIMES 죄책감상승 , 0.50
 
-;죄책감増加
-CFLAG:죄책감 += 죄책감上昇
+;죄책감증가
+CFLAG:죄책감 += 죄책감상승
 
-;죄책감の消滅、これも조교중では下がるスピードがかなり遅いです
-;CFLAG:죄책감が大きく、죄책감上昇が小さいほど減少速度は速い(-3～0)
-LOCAL = (6 * CFLAG:죄책감) - (100 * 죄책감上昇)
+;죄책감의 소멸, 이것도조교중에서는 내리는 스피드가 꽤 늦습니다
+;CFLAG:죄책감가 크고, 죄책감상승이 작을 정도 감소 속도는 빠르다(-3～0)
+LOCAL = (6 * CFLAG:죄책감) - (100 * 죄책감상승)
 LOCAL = (LOCAL / 200) + ((LOCAL % 200) > RAND:200)
 CFLAG:죄책감 -= LIMIT(LOCAL, 0, 3)
 
-;죄책감が10以下の時、죄책감上昇が0以下なら1/2の確率で죄책감-1
-SIF CFLAG:죄책감 <= 10 && 죄책감上昇 <= 0
+;죄책감가 10 이하의 때, 죄책감상승이 0 이하라면 1/2의 확률로죄책감-1
+SIF CFLAG:죄책감 <= 10 && 죄책감상승 <= 0
 	CFLAG:죄책감 -= RAND:2
 
-;죄책감は負にならない
+;죄책감는 부가 되지 않는다
 SIF CFLAG:죄책감 < 0
 	CFLAG:죄책감 = 0
 
-;使用変数初期化
-アラ変動 = 0
+;사용 변수 초기화
+아라변동 = 0
 VARSET LOCAL
 
-;MASTERの応答で基本値が決まる
-;好印象大
+;MASTER의 응답으로 기본치가 정해진다
+;좋은인상
 IF TFLAG:REACT인상 == 1
-	アラ変動 = 500
-;好印象小
+	아라변동 = 500
+;약간좋은인상
 ELSEIF TFLAG:REACT인상 == 2
-	アラ変動 = 200
-;悪印象小
+	아라변동 = 200
+;나쁜인상
 ELSEIF TFLAG:REACT인상 == 3
-	アラ変動 = -200
+	아라변동 = -200
 ;악인상대
 ELSEIF TFLAG:REACT인상 == 4
-	アラ変動 = -500
-;０から遠ざかる
+	아라변동 = -500
+;0로부터 멀어진다
 ELSEIF TFLAG:REACT인상 == 5
 	IF CFLAG:아라이멘도 > 0
-		アラ変動 = 200
+		아라변동 = 200
 	ELSE
-		アラ変動 = -200
+		아라변동 = -200
 	ENDIF
-;０に近づく
+;0에 가까워진다
 ELSEIF TFLAG:REACT인상 == 6
 	IF CFLAG:아라이멘도 > 0
-		アラ変動 = -200
+		아라변동 = -200
 	ELSE
-		アラ変動 = 200
+		아라변동 = 200
 	ENDIF
 ELSE
-;영향なし
-	アラ変動 = 0
+;영향없음
+	아라변동 = 0
 ENDIF
 
-;아라이멘도변동경향の変動
-;연속で正(負)に아라이멘도が変動し続けると正(負)に加算され続ける
-;아라이멘도변동の正負が변화するとリセット(+-0もリセット대상)
-IF アラ変動 > 0
+;아라이멘도변동경향의 변동
+;연속로 정(부)에아라이멘도가 계속 변동하면 정(부)에 가산계속 된다
+;아라이멘도변동의 정부가변화 하면 리셋트(+-0도 리셋트대상)
+IF 아라변동 > 0
 	IF TFLAG:아라이멘도변동경향 >= 0
 		TFLAG:아라이멘도변동경향 ++
 	ELSE
 		TFLAG:아라이멘도변동경향 = 0
 	ENDIF
-ELSEIF アラ変動 < 0
+ELSEIF 아라변동 < 0
 	IF TFLAG:아라이멘도변동경향 <= 0
 		TFLAG:아라이멘도변동경향 --
 	ELSE
@@ -407,242 +407,242 @@ ELSE
 	TFLAG:아라이멘도변동경향 = 0
 ENDIF
 
-;성격で倍率が決まる。
-;最小値50(Mデレ)、最大値150(Sツン)、素質変動しない/させないキャラではLOCAL = 100
+;성격로 배율이 정해진다.
+;최소치 50(M데레), 최대치 150(S튼), 소질 변동하지 않는다/시키지 않는 캐릭터에서는 LOCAL = 100
 LOCAL = (CFLAG:SM성격 + CFLAG:츤데레 + 200) / 2
 
-;Mデレなら아라이멘도변동が+の方向に보정がかかる
-IF アラ変動 < 0
-	アラ変動 = アラ変動 * LOCAL / 100
+;M데레라면아라이멘도변동가+의 방향으로보정가 걸린다
+IF 아라변동 < 0
+	아라변동 = 아라변동 * LOCAL / 100
 ELSE
-	アラ変動 = アラ変動 * (200 - LOCAL) / 100
+	아라변동 = 아라변동 * (200 - LOCAL) / 100
 ENDIF
 
-;빗치ならより極端な値をとる。(最大25％の増減)
-アラ変動 = アラ変動 * (CFLAG:빗치 + 300) / 300
+;빗치라면 보다 극단적인 값을 받는다. (최대 25％의 증감)
+아라변동 = 아라변동 * (CFLAG:빗치 + 300) / 300
 
-;平時아라이멘도から遠ざかる時、現아라이멘도が極端な値であれば変動を0に近づける
-;平時아라이멘도が0であることを前提と했다場合、平時아라이멘도と아라이멘도の……
-;差が0の時1倍、差が20の時約0.4倍、差が40の時約0.2倍
-;※平時아라이멘도は10倍で保存されているので、使うときは1/10にする
+;평시아라이멘도로부터 멀어질 때, 현아라이멘도가 극단적인 값이면 변동을 0에 접근한다
+;평시아라이멘도가 0인 것을 전제와했다경우, 평시아라이멘도와아라이멘도의……
+;차이가 0때 1배, 차이가 20시약 0.4배, 차이가 40시약 0.2배
+;※평시아라이멘도는 10배로 보존되고 있으므로, 사용할 때는 1/10으로 한다
 
-;아라이멘도변동を見ると平時아라이멘도から遠ざかる時
-IF (CFLAG:평상시 / 10 > CFLAG:아라이멘도 && アラ変動 < 0) || (CFLAG:평상시 / 10 < CFLAG:아라이멘도 && アラ変動 > 0)
+;아라이멘도변동를 보면 평시아라이멘도로부터 멀어질 때
+IF (CFLAG:평상시 / 10 > CFLAG:아라이멘도 && 아라변동 < 0) || (CFLAG:평상시 / 10 < CFLAG:아라이멘도 && 아라변동 > 0)
 	
-	;LOCAL:1に分子(아라이멘도が0から遠ざかると小さくなる)を代入
+	;LOCAL:1에 분자(아라이멘도가 0에서멀어짐와 작아진다)를 대입
 	LOCAL:1 = 20 - ABS(CFLAG:아라이멘도) / 5
-	;LOCAL:2に分母(아라이멘도が平時から遠ざかると大きくなる)を代入
+	;LOCAL:2에 분모(아라이멘도가 평시부터 멀어지면 커진다)를 대입
 	LOCAL:2 = LOCAL:1 + ABS(CFLAG:평상시 / 10 - CFLAG:아라이멘도)
-	;※結果として、0または平時から아라이멘도が遠いとき보정が0倍に近づく
+	;※결과적으로, 0또는 평시부터아라이멘도가 멀 때보정가 0배에 가까워진다
 	
-	;分子は最低0
+	;분자는 최저 0
 	SIF LOCAL:1 < 0
 		LOCAL:1 = 0
-	;分母は最低1(0で除算の防止)
+	;분모는 최저 1(0으로 제산의 방지)
 	SIF LOCAL:2 <= 0
 		LOCAL:2 = 1
 	
-	;아라이멘도極端化抑止計算
-	アラ変動 = アラ変動 * LOCAL:1 / LOCAL:2
+	;아라이멘도극단화 억제 계산
+	아라변동 = 아라변동 * LOCAL:1 / LOCAL:2
 ENDIF
 
 ;아라이멘도변동
-CFLAG:아라이멘도 += アラ変動 / 100
+CFLAG:아라이멘도 += 아라변동 / 100
 
 
 ;────────────────────────────────────
-;징계・関連の処理
+;징계·관련의 처리
 ;────────────────────────────────────
 
-;LOCAL初期化
+;LOCAL 초기화
 VARSET LOCAL
 
-;초조함による加算
+;초조함에 의한 가산
 LOCAL += ABSQSI(DOWNBASE:만족 - DOWNBASE:초조함) * POWER(2, -6 + TALENT:충동적 - TALENT:자제심 + 10) / 1024
-;반항による加算
+;반항에 의한 가산
 LOCAL += SQRT(CUP:MASTER:반항) * POWER(2, -6 + TALENT:비관적 - TALENT:낙관적 + 10) / 1024
 
-;気の強さ、観念、受容力、血の気に従って보정後、징계・포인트にLOCAL加算
+;야무짐, 관념, 수용력, 핏기에 따라보정 후, 징계·포인트에 LOCAL 가산
 LOCAL:1 = TALENT:반항적 - TALENT:겁쟁이 + TALENT:비관적 - TALENT:낙관적
 LOCAL:2 = TALENT:민감 - TALENT:신중함 + TALENT:충동적 - TALENT:자제심
-TFLAG:징계・포인트 += LOCAL * POWER(2, (LOCAL ? LOCAL:1 # -LOCAL:1) + LOCAL:2 + 10) / 1024
-;징계・포인트は負にならない
-SIF TFLAG:징계・포인트 < 0
-	TFLAG:징계・포인트 = 0
+TFLAG:징계·포인트 += LOCAL * POWER(2, (LOCAL ? LOCAL:1 # -LOCAL:1) + LOCAL:2 + 10) / 1024
+;징계·포인트는 부가 되지 않는다
+SIF TFLAG:징계·포인트 < 0
+	TFLAG:징계·포인트 = 0
 
-;LOCAL初期化
+;LOCAL 초기화
 VARSET LOCAL
 
-;징계・中に入れる予定の条件
+;징계·안에 넣을 예정의 조건
 ;TALENT:심술궂음 - TALENT:마음씨착한
 
-;징계・모드の発生と解消
-;징계・中は
-IF TFLAG:징계・플래그 > 0
-	;죠교대상を痛めたり굴복시켰다りでいらいら解消。この場合簡単に降伏시킨다より無理やり折らせたほうが気持ち良いと思いますので、공순の比重を굴복より低く設定しま했다
+;징계·모드의 발생과 해소
+;징계·안은
+IF TFLAG:징계·플래그 > 0
+	;죠교대상를 손상하거나굴복시켰다로 안절부절 해소. 이 경우 간단하게 항복시킨다보다 억지로 꺾게 하는 편이 기분 좋다고 생각하기 때문에, 공순의 비중을굴복보다 낮게 설정 섬했다
 	LOCAL = CUP:MASTER:굴복 / 15 + CUP:MASTER:공포 / 30 + CUP:MASTER:공순 / 30 - CUP:MASTER:반항 / 20 + CUP:MASTER:고통 / 20 + CUP:MASTER:치정 / 75 + CUP:MASTER:불쾌 / 60 + CUP:MASTER:억울 / 75
-	;초조함を減衰させ、半分だけ만족が増加
+	;초조함를 감쇠시켜, 반만큼만족가 증가
 	BASE:초조함 -= LOCAL
 	BASE:만족 += LOCAL / 2
-	;징계・宣言の場合はこのターン決して징계・모드解消しません（애원を聞き入れた場合だけが例外）
+	;징계·선언의 경우는 이 턴 결코징계·모드해소하지 않습니다（애원를 들어주었을 경우만이 예외）
 	IF !IS_NOWACTNAME("징계한다고 위협한다") || IS_COMGRONAME("용서를 빌다")
-		;죠교대상の降伏、죠교자の만족、二つの条件のどれかを満た했다ら징계・모드解消
+		;죠교대상의 항복, 죠교자의만족, 2개의 조건의 어떤 것인지를 만했다등징계·모드해소
 		IF (CUP:MASTER:굴복 + CUP:MASTER:공포 + CUP:MASTER:공순 > CUP:MASTER:반항 + CUP:MASTER:불쾌 + CUP:MASTER:억울) || (BASE:만족 - BASE:초조함 > 100 + RAND:50)
-			;징계・포인트を半分弱に低減
-			TFLAG:징계・포인트 -= TFLAG:징계・포인트 / 2 - 5
-			;초조함半減
+			;징계·포인트를 반 미만에 저감
+			TFLAG:징계·포인트 -= TFLAG:징계·포인트 / 2 - 5
+			;초조함반감
 			BASE:초조함 /= 2
-			;징계・포인트を0～30の範囲に収める
-			TFLAG:징계・포인트 = LIMIT(TFLAG:징계・포인트, 0, 30)
-			;징계・終了
-			TFLAG:징계・플래그 = 0
+			;징계·포인트를 0～30의 범위에 거둔다
+			TFLAG:징계·포인트 = LIMIT(TFLAG:징계·포인트, 0, 30)
+			;징계·종료
+			TFLAG:징계·플래그 = 0
 		ENDIF
 	ENDIF
-;ちょっと複雑な計算をしてるみたいだが、징계・포인트を100まで貯めれば징계・모드という認識で大丈夫です。
-ELSEIF TFLAG:징계・포인트 + RAND:40 - RAND:10 > 100 + TALENT:심술궂음 * 3 - TALENT:마음씨착한 * RAND:5 - TALENT:새드 * 5 - TALENT:프라이드높음 * (1 + RAND:3) + TALENT:프라이드낮음 * (1 + RAND:2)
-	;징계・開始
-	TFLAG:징계・플래그 = 1
-	;징계・포인트半減
-	TFLAG:징계・포인트 /= 2
-	;밀어넘어짐、성교解除
+;조금 복잡한 계산을 하고 있는 것 같지만, 징계·포인트를 100까지 모으면징계·모드라고 하는 인식으로 괜찮습니다.
+ELSEIF TFLAG:징계·포인트 + RAND:40 - RAND:10 > 100 + TALENT:심술궂음 * 3 - TALENT:마음씨착한 * RAND:5 - TALENT:새드 * 5 - TALENT:프라이드높음 * (1 + RAND:3) + TALENT:프라이드낮음 * (1 + RAND:2)
+	;징계·개시
+	TFLAG:징계·플래그 = 1
+	;징계·포인트반감
+	TFLAG:징계·포인트 /= 2
+	;밀어넘어짐, 성교해제
 	TEQUIP:밀어넘어지는중 = 0
 	TEQUIP:성교중 = 0
 	TEQUIP:성교봉사중 = 0
 ENDIF
-;금일의방침が징계・であれば常に징계・中
+;금일의방침가징계·이면 항상징계·안
 IF TFLAG:금일의방침 == 2
-	TFLAG:징계・플래그 = 1
+	TFLAG:징계·플래그 = 1
 ENDIF
 
 
 ;────────────────────────────────────
-;TEQUIP処理
+;TEQUIP 처리
 ;────────────────────────────────────
 CALL EVENT_EQUIP
 
 
 ;────────────────────────────────────
-;발기計算
+;발기계산
 ;────────────────────────────────────
-;残り精力が少ないと발기しにくくなるように
+;나머지 정력이 적으면발기 하기 어려워지도록(듯이)
 
-;LOCAL初期化
+;LOCAL 초기화
 VARSET LOCAL
 
-;죠교대상に남성기が存在する場合
+;죠교대상에남성기가 존재하는 경우
 IF PENIS(MASTER)
-	;이성が低くなると보정値が減少(-6～0)
+	;이성가 낮아지면보정치가 감소(-6～0)
 	LOCAL -= 6 - LIMIT(6 * BASE:MASTER:이성 / 500, 0, 6)
-	;미약によって보정値減少
+	;미약에 의해보정치 감소
 	SIF TEQUIP:미약
 		LOCAL -= 5
-	;残り精力が少なくなると보정値上昇(0～9)
+	;나머지 정력이 적게 되면보정가격인상승(0～9)
 	LOCAL += 9 - LIMIT(18 * BASE:MASTER:사정 / MAXBASE:MASTER:사정, 0, 9)
-	;残り精力が0ならさらに보정値+1、요강제발기オン
+	;나머지 정력이 0이라면 한층 더보정치+1, 요강부디기온
 	IF BASE:MASTER:사정 == 0
 		LOCAL += 1
 		TCVAR:MASTER:요강제발기 = 1
 	ENDIF
-	;残り체력が少なくなると보정値上昇(0～7)
+	;나머지체력가 적게 되면보정가격인상승(0～7)
 	LOCAL += 7 - LIMIT(14 * BASE:MASTER:체력 / MAXBASE:MASTER:체력, 0, 7)
-	;残り기력が少なくなると보정値上昇(0～7)
+	;나머지기력가 적게 되면보정가격인상승(0～7)
 	LOCAL += 7 - LIMIT(14 * BASE:MASTER:기력 / MAXBASE:MASTER:기력, 0, 7)
-	;발기도が800超過なら追加보정
+	;발기도가 800 초과라면 추가보정
 	IF TCVAR:MASTER:발기도 > 800
 		LOCAL = LOCAL + (20 - LOCAL) * (TCVAR:MASTER:발기도 - 800) / 700
 	ENDIF
-	;보정値は20以上にならない
+	;보정치는 20이상이 되지 않는다
 	SIF LOCAL >= 20
 		LOCAL = 19
 ENDIF
-;現在の발기도を記憶
+;현재의발기도를 기억
 TCVAR:MASTER:전발기도 = TCVAR:MASTER:발기도
-;보정値が大きいほど발기도上昇を減衰
+;보정치가 큰 만큼발기도상승을 감쇠
 
-;발기の処理
-;전립선자극・強
+;발기의 처리
+;전립선자극·강
 IF TCVAR:MASTER:전립선자극 > 1
-	;ほぼ一発でびんびんに
+	;거의 일발로 펄떡펄떡
 	TCVAR:MASTER:발기도 += 500 + TCVAR:MASTER:금회발기 * (20 - LOCAL) / 10
-;전립선자극・弱
+;전립선자극·미만
 ELSEIF TCVAR:MASTER:전립선자극 == 1
-	;固定値+100つき
+	;고정치+100붙어 있는
 	TCVAR:MASTER:발기도 += 100 + TCVAR:MASTER:금회발기 * (20 - LOCAL) / 20
-;통상（요강제발기ではない）
+;통상（요강부디기는 아니다）
 ELSEIF !TCVAR:MASTER:요강제발기
 	TCVAR:MASTER:발기도 += TCVAR:MASTER:금회발기 * (20 - LOCAL) / 20
 ENDIF
 
-;사정処理
+;사정처리
 IF NOWEX:MASTER:사정
-	;전립선자극・強
+	;전립선자극·강
 	IF TCVAR:MASTER:전립선자극 > 1
-		;減衰しない
-	;드라이사정・전립선사정
+		;감쇠하지 않는다
+	;드라이사정·전립선사정
 	ELSEIF NOWEX:MASTER:사정 == 1 || NOWEX:MASTER:사정 == 5
-		;발기도が減衰しにくい
+		;발기도가 감쇠하기 어렵다
 		TCVAR:MASTER:발기도 = TCVAR:MASTER:발기도 / 2 + GET_ABL(TARGET, "기교") * 5
-	;사정/사정(조루)/A責사정
+	;사정/사정(조루)/A책사정
 	ELSEIF NOWEX:MASTER:사정 == 2 || NOWEX:MASTER:사정 > 3
-		;죠교자기교によって발기도維持
+		;죠교자기교에 의해발기도유지
 		TCVAR:MASTER:발기도 = TCVAR:MASTER:발기도 / 3 + GET_ABL(TARGET, "기교") * 5
 	;대량사정
 	ELSEIF NOWEX:MASTER:사정 == 3
-		;죠교자기교によって발기도維持
+		;죠교자기교에 의해발기도유지
 		TCVAR:MASTER:발기도 = TCVAR:MASTER:발기도 / 5 + GET_ABL(TARGET, "기교") * 3
 	ENDIF
-	;미약使用時、발기도増加
+	;미약사용시, 발기도증가
 	IF TEQUIP:미약
 		TCVAR:MASTER:발기도 = TCVAR:MASTER:발기도 * 5 / 4
 	ENDIF
-	;안빼고中は발기도1000以上を維持
+	;안빼고중은발기도 1000 이상을 유지
 	SIF TEQUIP:성교봉사중 && TFLAG:안빼고 && TCVAR:MASTER:발기도 < 1000
 		TCVAR:MASTER:발기도 = 1000
 ENDIF
 
 
 ;────────────────────────────────────
-;피폐の処理、ゲージの負数防止
+;피폐의 처리, 게이지의 음수 방지
 ;────────────────────────────────────
-;휴식などで피폐が負数되었다らここでリセット
+;휴식등으로피폐가 음수되었다등 여기서 리셋트
 SIF TFLAG:조교자소모도 < 0
 	TFLAG:조교자소모도 = 0
 SIF TFLAG:소모도 < 0
 	TFLAG:소모도 = 0
 
-;죠교대상체력が0以下
+;죠교대상체력가 0 이하
 IF BASE:MASTER:체력 <= 0
-	;地の文表示
-	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:MASTER%(은)는 꽤 소모하고 있는 듯 하다）
-	;소모도を1～3増加
+	;지문 표시
+	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:MASTER%는 꽤 소모하고 있는 듯 하다）
+	;소모도를 1～3 증가
 	TFLAG:소모도 += 1 + RAND:3
-	;체력は負にならない
+	;체력는 부가 되지 않는다
 	BASE:MASTER:체력 = 0
-;죠교대상체력が200未満
+;죠교대상체력가 200 미만
 ELSEIF BASE:MASTER:체력 < 200
-	;地の文表示
-	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:MASTER%(은)는 조금 소모하고 있는 듯 하다）
-	;소모도を1増加
+	;지문 표시
+	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:MASTER%는 조금 소모하고 있는 듯 하다）
+	;소모도를 1 증가
 	TFLAG:소모도 += 1
 ENDIF
 
-;죠교자체력が0以下
+;죠교자체력가 0 이하
 IF BASE:체력 <= 0
-	;地の文表示
-	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:TARGET%(은)는 꽤 소모하고 있는 듯 하다）
-	;소모도を1～3増加
+	;지문 표시
+	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:TARGET%는 꽤 소모하고 있는 듯 하다）
+	;소모도를 1～3 증가
 	TFLAG:조교자소모도 += 1 + RAND:3
-	;체력は負にならない
+	;체력는 부가 되지 않는다
 	BASE:체력 = 0
-;죠교자체력が200未満
+;죠교자체력가 200 미만
 ELSEIF BASE:체력 < 200
-	;地の文表示
-	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:TARGET%(은)는 조금 소모하고 있는 듯 하다）
-	;소모도を1増加
+	;지문 표시
+	PRINTFORMW （격렬한 조교에 의해 %CALLNAME:TARGET%는 조금 소모하고 있는 듯 하다）
+	;소모도를 1 증가
 	TFLAG:조교자소모도 += 1
 ENDIF
 
-;기력/사정/모유/소변/이성/흥미/초조함/만족/발기도は負にならない
+;기력/사정/모유/소변/이성/흥미/초조함/만족/발기도는 부가 되지 않는다
 FOR LCOUNT, 1, 6
 	SIF BASE:MASTER:LCOUNT < 0
 		BASE:MASTER:LCOUNT = 0
@@ -658,7 +658,7 @@ NEXT
 
 
 ;────────────────────────────────────
-;죠교대상기력０による저항불능の処理
+;죠교대상기력 0에 의한저항불능의 처리
 ;────────────────────────────────────
 IF !TFLAG:저항불능 && BASE:MASTER:기력 <= 0
 	PRINTFORMW 너무 긴장한 %CALLNAME:MASTER%(은)는, 이제 기력이 한계와 같다…
@@ -666,41 +666,41 @@ IF !TFLAG:저항불능 && BASE:MASTER:기력 <= 0
 ENDIF
 
 ;────────────────────────────────────
-;체력、기력、이성の自然回復、ゲージの限界突破防止
+;체력, 기력, 이성의 자연 회복, 게이지의 한계 돌파 방지
 ;────────────────────────────────────
-;このターンで激しい소모がなければ체력と기력は少しずつ自然回復
+;이 턴으로 격렬한소모가 없으면체력와기력는 조금씩 자연 회복
 
-;基礎回復量を設定
-M체력回復 = MAXBASE:MASTER:체력 / 100
-M기력回復 = MAXBASE:MASTER:기력 / (50-(TFLAG:저항불능*30))
-T체력回復 = MAXBASE:MASTER:체력 / 100
-T기력回復 = MAXBASE:MASTER:기력 / 50
+;기초 회복량을 설정
+M체력회복 = MAXBASE:MASTER:체력 / 100
+M기력회복 = MAXBASE:MASTER:기력 / (50-(TFLAG:저항불능*30))
+T체력회복 = MAXBASE:MASTER:체력 / 100
+T기력회복 = MAXBASE:MASTER:기력 / 50
 
-;회복빠름/遅い素質による보정
+;회복빠름/늦은 소질에 의한보정
 IF TALENT:MASTER:회복빠름
-	TIMES M체력回復 , 2.00
-	TIMES M기력回復 , 1.20
+	TIMES M체력회복 , 2.00
+	TIMES M기력회복 , 1.20
 ELSEIF TALENT:MASTER:회복느림
-	TIMES M체력回復 , 0.70
-	TIMES M기력回復 , 0.90
+	TIMES M체력회복 , 0.70
+	TIMES M기력회복 , 0.90
 ENDIF
 IF TALENT:회복빠름
-	TIMES T체력回復 , 2.00
-	TIMES T기력回復 , 1.20
+	TIMES T체력회복 , 2.00
+	TIMES T기력회복 , 1.20
 ELSEIF TALENT:회복느림
-	TIMES T체력回復 , 0.70
-	TIMES T기력回復 , 0.90
+	TIMES T체력회복 , 0.70
+	TIMES T기력회복 , 0.90
 ENDIF
 
-;체력기력回復
-BASE:MASTER:체력 += M체력回復
-BASE:MASTER:기력 += M기력回復
-BASE:체력 += T체력回復
-BASE:기력 += T기력回復
+;체력기력회복
+BASE:MASTER:체력 += M체력회복
+BASE:MASTER:기력 += M기력회복
+BASE:체력 += T체력회복
+BASE:기력 += T기력회복
 
 
 ;────────────────────────────────────
-;저항불능の回復処理
+;저항불능의 회복 처리
 ;────────────────────────────────────
 IF TFLAG:저항불능 && BASE:MASTER:기력 >= MAXBASE:MASTER:기력/2
 	PRINTFORMW 이루는 대로인 %CALLNAME:MASTER%(은)는, 다소 기력을 되찾은 것 같다…
@@ -711,122 +711,122 @@ ENDIF
 ;────────────────────────────────────
 ;대만족보너스
 ;────────────────────────────────────
-;만족が上限突破
+;만족가 상한 돌파
 IF BASE:만족 >= MAXBASE:만족
-	;地の文表示
+	;지문 표시
 	PRINTL 
-	;大만족구상を呼ぶ
+	;대만족구상를 부른다
 	RESULT = 0
 	CALL KOJO_EVENT(21)
 	SIF RESULT
 		PRINTL 
 	PRINTFORMW %CALLNAME:TARGET%님 대만족
-	;대만족보너스発生
+	;대만족보너스발생
 	CFLAG:만족보 = 1
-	;만족初期化
+	;만족초기화
 	BASE:만족 = 0
-	;만족のゲージを伸ばして次回のボーナスを취득するにはもっと頑張らなくちゃ
+	;만족의 게이지를 늘려 다음번의 보너스를취득 하려면 좀 더 노력하지 않으면
 	MAXBASE:만족 += (7000 - MAXBASE:만족) / 10
-	;대만족보너스発生を기록
+	;대만족보너스발생을기록
 	TFLAG:금회대만족 += 1
-	;新規に捏造@/L
+	;신규에 날조@/L
 	TCVAR:금회대만족 += 1
-;ある程度만족を貯めている場合はターンごとに自然소모
+;어느 정도만족를 모으고 있는 경우는 턴 마다 자연소모
 ELSEIF BASE:만족 > MAXBASE:만족 / 3
-	;無달성상태では減衰速度が速まる
+	;무달성상태에서는 감쇠 속도가 빨라진다
 	IF SOURCE:MASTER:달성 > 0
 		BASE:만족 -= MAXBASE:만족 / 50
 	ELSE
 		BASE:만족 -= MAXBASE:만족 / 30
 	ENDIF
-	;만족は負にならない
+	;만족는 부가 되지 않는다
 	SIF BASE:만족 < 0
 		BASE:만족 = 0
 ENDIF
 
 ;────────────────────────────────────
-;이성の自然回復、ゲージの限界突破防止
+;이성의 자연 회복, 게이지의 한계 돌파 방지
 ;────────────────────────────────────
 
 
-;地の文表示(이성描写)
-;低고통상태
+;지문 표시(이성묘사)
+;저고통상태
 IF TFLAG:고통에따른이성저하 == 0 || ABL:MASTER:마조끼 > 0
-	;이성が200未満に低下
+	;이성가 200 미만에 저하
 	IF BASE:MASTER:이성 < 200 && BASE:MASTER:이성 + DOWNBASE:MASTER:이성 > 200
 		PRINTFORML 강한 쾌감으로 %CALLNAME:MASTER%의 시야는 복숭아색의 안개에 희미하게 보여, 의식이 녹아 버릴것 같다.
-	;이성が500未満に低下
+	;이성가 500 미만에 저하
 	ELSEIF BASE:MASTER:이성 < 500 && BASE:MASTER:이성 + DOWNBASE:MASTER:이성 > 500
 		PRINTFORML %CALLNAME:TARGET%(이)가 주는 쾌감이 이성을 녹여, 저항하는 기력을 빼앗아 간다…
 	ENDIF
-;마조끼がなく고통
+;마조끼가 없고고통
 ELSE
-	;이성が200未満に低下
+	;이성가 200 미만에 저하
 	IF BASE:MASTER:이성 < 200 && BASE:MASTER:이성 + DOWNBASE:MASTER:이성 > 200
 		PRINTFORML 견딜 수 없는 고통으로 %CALLNAME:MASTER%의 사고는 완전하게 마비되어, 눈이 풀리고 있다.
-	;이성が500未満に低下
+	;이성가 500 미만에 저하
 	ELSEIF BASE:MASTER:이성 < 500 && BASE:MASTER:이성 + DOWNBASE:MASTER:이성 > 500
 		PRINTFORML %CALLNAME:TARGET%(이)가 주는 격통이 %CALLNAME:MASTER%의 이성을 깎아 간다…
 	ENDIF
 ENDIF
 
-;죠교대상の이성回復。もし쾌락/고통에따른이성저하の플래그があればまずそれらを解決します。상태이상の場合も回復しません
-;고통에따른이성저하。이성が一気に下がるが一ターンで解消します。つまり고통の効果は(이성ダメージ)+(1ターン이성回復なし)です
+;죠교대상의이성회복. 만약쾌락/고통에따른이성저하의플래그가 있으면 우선 그것들을 해결합니다. 상태이상의 경우도 회복하지 않습니다
+;고통에따른이성저하. 이성가 단번에 내리지만 1 턴으로 해소합니다. 즉고통의 효과는(이성데미지)+(1 턴이성회복 없음)입니다
 IF TFLAG:고통에따른이성저하 > 0
 	TFLAG:고통에따른이성저하 = 0
-;쾌락에따른이성저하。自然解消するのは遅いですが、절정すると一気に解消します。つまりいったら次のターンから이성回復できます
+;쾌락에따른이성저하. 자연 해소하는 것은 늦습니다만, 절정 하면 단번에 해소합니다. 즉 말하면 다음의 턴으로부터이성회복할 수 있습니다
 ELSEIF TFLAG:쾌락에따른이성저하 > 0
-	;快Ｘがある程度存在すると解消速度減少(0～1)
+	;쾌Ｘ가 어느 정도 존재하면 해소 속도 감소(0～1)
 	IF CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ > 50
 		TFLAG:쾌락에따른이성저하 -= RAND:2
-	;쾌락에따른이성저하解消(1～2)
+	;쾌락에따른이성저하해소(1～2)
 	ELSE
 		TFLAG:쾌락에따른이성저하 -= 1 + RAND:2
 	ENDIF
-	;절정時完全解消
+	;절정시 완전 해소
 	SIF NOWEX:MASTER:Ｃ절정 + NOWEX:MASTER:Ｖ절정 + NOWEX:MASTER:Ａ절정 + NOWEX:MASTER:Ｂ절정 > 0
 		TFLAG:쾌락에따른이성저하 = 0
-;上の条件+상태변화時に当てはまらなければ이성回復(60～100)
+;상의 조건+상태변화시에 들어맞지 않으면이성회복(60～100)
 ELSEIF TCVAR:MASTER:상태변화 == 0
 	BASE:MASTER:이성 += 50 + (5 + RAND:6) * (2 + RAND:4)
 ENDIF
 
-;죠교자の이성は상태이상でなければ自然回復
+;죠교자의이성는상태이상가 아니면 자연 회복
 SIF TCVAR:상태변화 == 0
 	BASE:이성 += 50 + (5 + RAND:6) * (2 + RAND:4)
 
-;발기도の自然低下
-;남성기存在時
+;발기도의 자연 저하
+;남성기존재시
 IF PENIS(MASTER)
-	;가버려、성교봉사중、발기도増加中、전립선자극中でなければ
+	;가버려, 성교봉사중, 발기도증가중, 전립선자극중이 아니면
 	IF !TCVAR:MASTER:가버려 && !TEQUIP:성교봉사중 && !TCVAR:MASTER:금회발기
-		;정욕時低下なし
+		;정욕시 저하 없음
 		IF TCVAR:상태변화 == 5
-		;피폐/쇠약/무기력時0.85倍
+		;피폐/쇠약/무기력시 0.85배
 		ELSEIF TCVAR:상태변화 == 1 || TCVAR:상태변화 == 2 || TCVAR:상태변화 == 3
 			TIMES TCVAR:MASTER:발기도, 0.85
-		;その他は0.9倍
+		;그 외는 0.9배
 		ELSE
 			TIMES TCVAR:MASTER:발기도, 0.90
 		ENDIF
-		;요강제발기時さらに0.9倍
+		;요강부디기시 게다가 0.9배
 		SIF TCVAR:MASTER:요강제발기 == 1
 				TIMES TCVAR:MASTER:발기도, 0.90
 	ENDIF
-;남성기非存在時は발기도初期化
+;남성기비존재시는발기도초기화
 ELSE
 	TCVAR:MASTER:발기도 = 0
 ENDIF
 
-;죠교대상체력/기력/사정/모유/소변/이성の上限突破を防止
+;죠교대상체력/기력/사정/모유/소변/이성의 상한 돌파를 방지
 FOR LCOUNT, 0, 6
 	SIF BASE:MASTER:LCOUNT > MAXBASE:MASTER:LCOUNT
 		BASE:MASTER:LCOUNT = MAXBASE:MASTER:LCOUNT
 NEXT
-;발기도の上限突破を防止
+;발기도의 상한 돌파를 방지
 SIF TCVAR:MASTER:발기도 > 1500
 	TCVAR:MASTER:발기도 = 1500
-;죠교자체력/기력/사정/모유/소변/이성/흥미/초조함の上限突破を防止
+;죠교자체력/기력/사정/모유/소변/이성/흥미/초조함의 상한 돌파를 방지
 FOR LCOUNT, 0, 8
 	SIF BASE:LCOUNT > MAXBASE:LCOUNT
 		BASE:LCOUNT = MAXBASE:LCOUNT
@@ -834,21 +834,21 @@ NEXT
 
 
 ;────────────────────────────────────
-;죠교대상の상태변화
+;죠교대상의상태변화
 ;────────────────────────────────────
-;이상상태中(0=통상/1=피폐/2=쇠약/3=무기력/4=몽롱/5=정욕/6=분노/7=싫증/8=울굴)
+;이상상태중(0=통상/1=피폐/2=쇠약/3=무기력/4=몽롱/5=정욕/6=분노/7=싫증/8=울굴)
 IF TCVAR:MASTER:상태변화 > 0
 	IF !(--TCVAR:MASTER:상태변화지속)
-		;正常
+		;정상
 		TCVAR:MASTER:상태변화 = 0
 		PRINTFORMW %CALLNAME:MASTER%(은)는 [통상]에 돌아왔다
 	ENDIF
 	GOTO DECIDE_CONDITION_M
 ENDIF
 
-;소모도が大きい時
+;소모도가 클 때
 IF TFLAG:소모도 > 3 + RAND:5
-	;소모도が大きければ쇠약、小さければ피폐
+	;소모도가 크면쇠약, 작으면피폐
 	IF TFLAG:소모도 > 5
 		TCVAR:MASTER:상태변화 = 2
 	ELSE
@@ -858,7 +858,7 @@ IF TFLAG:소모도 > 3 + RAND:5
 	GOTO DECIDE_CONDITION_M
 ENDIF
 
-;기력が無く、억울PALAMが高い時
+;기력가 없고, 억울PALAM가 높을 때
 IF BASE:MASTER:기력 < 0 && (PALAM:MASTER:억울 > 500 + RAND:500 || RAND:3 > 1)
 	;무기력
 	TCVAR:MASTER:상태변화 = 3
@@ -866,7 +866,7 @@ IF BASE:MASTER:기력 < 0 && (PALAM:MASTER:억울 > 500 + RAND:500 || RAND:3 > 1
 	GOTO DECIDE_CONDITION_M
 ENDIF
 
-;절정系が체력系を上回る時
+;절정계가체력계를 웃돌 때
 IF BASE:MASTER:체력 + BASE:MASTER:기력 + BASE:MASTER:이성 - NOWEX:MASTER:Ｃ절정 * 100 - NOWEX:MASTER:Ｖ절정 * 150 - NOWEX:MASTER:Ａ절정 * 120 - NOWEX:MASTER:Ｂ절정 * 80 - NOWEX:MASTER:분유 * 80 - NOWEX:MASTER:사정 * 150 < 1000
 	;몽롱
 	TCVAR:MASTER:상태변화 = 4
@@ -874,7 +874,7 @@ IF BASE:MASTER:체력 + BASE:MASTER:기력 + BASE:MASTER:이성 - NOWEX:MASTER:�
 	GOTO DECIDE_CONDITION_M
 ENDIF
 
-;高욕정で、욕정増加+이성低下が大きい時
+;고욕정로, 욕정증가+이성저하가 클 때
 IF (PALAM:MASTER:욕정 > 6000 - MARK:MASTER:쾌락각인 * 200 && RAND:3 > 1) || CUP:MASTER:욕정 + DOWNBASE:MASTER:이성 * 2 + TFLAG:쾌락에따른이성저하 * 100 > 2000
 	;정욕
 	TCVAR:MASTER:상태변화 = 5
@@ -882,25 +882,25 @@ IF (PALAM:MASTER:욕정 > 6000 - MARK:MASTER:쾌락각인 * 200 && RAND:3 > 1) |
 	GOTO DECIDE_CONDITION_M
 ENDIF
 
-;분노상태변화判定(基準値が負になると発生)
-;LOCAL初期化
+;분노상태변화판정(기준치가 부가 되면 발생)
+;LOCAL 초기화
 VARSET LOCAL
-;基準値(1000～1200)
+;기준치(1000～1200)
 LOCAL = 1000 + RAND:5 * 50
-;受容力보정
+;수용력보정
 LOCAL += 400 * POWER(2, TALENT:MASTER:신중함 - TALENT:MASTER:민감 + 10) / 1024
-;공순が大きいときに増加、반항,불쾌が大きいときに減少
+;공순가 클 때에 증가, 반항, 불쾌가 클 때에 감소
 LOCAL += CUP:MASTER:공순 - CUP:MASTER:반항 * 2 - CUP:MASTER:불쾌
-;굴복각인、트라우마によって増加、반항각인によって減少
+;굴복각인, 트라우마에 의해 증가, 반항각인에 의해 감소
 LOCAL += MARK:굴복각인 * 10 + MARK:MASTER:트라우마 * 10 - MARK:반항각인 * 20
-;基準を満たすと
+;기준을 채우면
 IF LOCAL < 0
 	TCVAR:MASTER:상태변화 = 6
 	TCVAR:MASTER:상태변화지속 = 3
 	GOTO DECIDE_CONDITION_M
 ENDIF
 
-;PALAM上昇量が小さい時
+;PALAM 상승량이 어릴 때
 IF CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ + CUP:MASTER:욕정 + CUP:MASTER:공포 + CUP:MASTER:고통 + CUP:MASTER:치정 + CUP:MASTER:불쾌 < 500 + BASE:MASTER:이성 + CFLAG:MASTER:죠교레벨 * (200 - MARK:굴복각인 * 10) && TFLAG:경과시간 > 15 && RAND:5 > 3
 	;싫증
 	TCVAR:MASTER:상태변화 = 7
@@ -908,7 +908,7 @@ IF CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ
 	GOTO DECIDE_CONDITION_M
 ENDIF
 
-;불쾌+억울PALAMが大きい時
+;불쾌+억울PALAM가 클 때
 IF PALAM:MASTER:불쾌 + PALAM:MASTER:억울 > 1200 + CFLAG:MASTER:죠교레벨 * 100 - MARK:MASTER:트라우마 * (50 + RAND:50) - TALENT:MASTER:광기 * 200
 	;울굴
 	TCVAR:MASTER:상태변화 = 8
@@ -919,21 +919,21 @@ ENDIF
 $DECIDE_CONDITION_M
 
 ;────────────────────────────────────
-;죠교자の상태변화
+;죠교자의상태변화
 ;────────────────────────────────────
-;이상상태中
+;이상상태중
 IF TCVAR:상태변화 > 0
 	IF !(--TCVAR:상태변화지속)
-		;正常
+		;정상
 		TCVAR:상태변화 = 0
 		PRINTFORMW %CALLNAME:TARGET%(은)는 [통상]에 돌아왔다
 	ENDIF
 		GOTO DECIDE_CONDITION_T
 ENDIF
 
-;소모도を見る
+;소모도를 본다
 IF TFLAG:조교자소모도 > 3 + RAND:5
-	;소모도が大きければ쇠약、小さければ피폐
+	;소모도가 크면쇠약, 작으면피폐
 	IF TFLAG:조교자소모도 > 5
 		TCVAR:상태변화 = 2
 	ELSE
@@ -943,7 +943,7 @@ IF TFLAG:조교자소모도 > 3 + RAND:5
 	GOTO DECIDE_CONDITION_T
 ENDIF
 
-;기력が無く、초조함が小さい時
+;기력가 없고, 초조함가 어릴 때
 IF BASE:기력 < 100 && (BASE:초조함 < 100 + RAND:100 || RAND:3 > 1)
 	;무기력
 	TCVAR:상태변화 = 3
@@ -951,7 +951,7 @@ IF BASE:기력 < 100 && (BASE:초조함 < 100 + RAND:100 || RAND:3 > 1)
 	GOTO DECIDE_CONDITION_T
 ENDIF
 
-;절정系が체력系を上回る時
+;절정계가체력계를 웃돌 때
 IF BASE:체력 + BASE:기력 + BASE:이성 - NOWEX:Ｃ절정 * 100 - NOWEX:Ｖ절정 * 150 - NOWEX:Ａ절정 * 120 - NOWEX:Ｂ절정 * 80 - NOWEX:분유 * 80 - NOWEX:사정 * 150 < 1000
 	;몽롱
 	TCVAR:상태변화 = 4
@@ -959,7 +959,7 @@ IF BASE:체력 + BASE:기력 + BASE:이성 - NOWEX:Ｃ절정 * 100 - NOWEX:Ｖ�
 	GOTO DECIDE_CONDITION_T
 ENDIF
 
-;高快ｘ時
+;고쾌x시
 IF PALAM:쾌Ｃ + PALAM:쾌Ｖ + PALAM:쾌Ａ + PALAM:쾌Ｂ > 12000 && RAND:3 > 1
 	;정욕
 	TCVAR:상태변화 = 5
@@ -967,12 +967,12 @@ IF PALAM:쾌Ｃ + PALAM:쾌Ｖ + PALAM:쾌Ａ + PALAM:쾌Ｂ > 12000 && RAND:3 >
 	GOTO DECIDE_CONDITION_T
 ENDIF
 
-;분노상태변화判定(基準値が負になると発生)
-;LOCAL初期化
+;분노상태변화판정(기준치가 부가 되면 발생)
+;LOCAL 초기화
 VARSET LOCAL
-;基準値(1000～1200)
+;기준치(1000～1200)
 LOCAL = 1000 + RAND:5 * 50
-;受容力보정
+;수용력보정
 LOCAL += 400 * POWER(2, TALENT:신중함 - TALENT:민감 + 10) / 1024
 ;공순보정
 LOCAL += CUP:MASTER:공순 * POWER(2, TALENT:마음씨착한 - TALENT:심술궂음 + 10) / 1024
@@ -982,9 +982,9 @@ LOCAL += (CUP:MASTER:굴복 + MARK:굴복각인 * 50) * POWER(2, TALENT:솔직 +
 LOCAL -= CUP:MASTER:반항 * POWER(2, 1 + TALENT:반항적 - TALENT:겁쟁이 + 10) / 1024
 ;초조함보정
 LOCAL -= BASE:초조함 * POWER(2, TALENT:충동적 - TALENT:자제심 + 10) / 1024
-;징계・보정
-LOCAL -= (TFLAG:징계・포인트 + TFLAG:징계・플래그 * 75) * POWER(2, 1 + TALENT:프라이드높음 - TALENT:프라이드낮음 + 10) / 1024
-;基準を満たすと
+;징계·보정
+LOCAL -= (TFLAG:징계·포인트 + TFLAG:징계·플래그 * 75) * POWER(2, 1 + TALENT:프라이드높음 - TALENT:프라이드낮음 + 10) / 1024
+;기준을 채우면
 IF LOCAL < 0
 	;분노
 	TCVAR:상태변화 = 6
@@ -992,7 +992,7 @@ IF LOCAL < 0
 	GOTO DECIDE_CONDITION_T
 ENDIF
 
-;低흥미時
+;저흥미시
 IF BASE:흥미 < 100 + (GET_TRAINLV(TARGET) + 1) * (10 + RAND:5) && RAND:3 > 1
 	;싫증
 	TCVAR:상태변화 = 7
@@ -1000,8 +1000,8 @@ IF BASE:흥미 < 100 + (GET_TRAINLV(TARGET) + 1) * (10 + RAND:5) && RAND:3 > 1
 	GOTO DECIDE_CONDITION_T
 ENDIF
 
-;초조함が大きく、반항が小さい時
-IF BASE:초조함- CUP:MASTER:반항 * 2 + TFLAG:징계・포인트 * 2 + TFLAG:징계・플래그 * 150 > 500 + CFLAG:죠교레벨 * 100 + (RAND:5 - TALENT:유치 - TALENT:광기 * 2) * 100
+;초조함가 크고, 반항가 어릴 때
+IF BASE:초조함- CUP:MASTER:반항 * 2 + TFLAG:징계·포인트 * 2 + TFLAG:징계·플래그 * 150 > 500 + CFLAG:죠교레벨 * 100 + (RAND:5 - TALENT:유치 - TALENT:광기 * 2) * 100
 	;울굴
 	TCVAR:상태변화 = 8
 	TCVAR:상태변화지속 = 3
@@ -1012,26 +1012,26 @@ $DECIDE_CONDITION_T
 
 
 ;────────────────────────────────────
-;상태변화구상とテ키스トの表示
+;상태변화구상와 테키스트의 표시
 ;────────────────────────────────────
-;상태변화구상を呼ぶ
+;상태변화구상를 부른다
 RESULT = 0
 SIF TCVAR:MASTER:상태변화지속 > 2
-	;ここは呼び出しを切り分けたい感が
+	;여기는 호출을 분리하고 싶은 감이
 	CALL KOJO_EVENT(22)
-;地の文表示
+;지문 표시
 SIF RESULT
 	PRINTL 
-;죠교대상상태변화時
+;죠교대상상태변화시
 SIF TCVAR:MASTER:상태변화 && TCVAR:MASTER:상태변화지속 > 2
 	PRINTFORMW %CALLNAME:MASTER%(은)는 [%CONDITION(TCVAR:MASTER:상태변화)%](이)가 되었다
 	;CALL KOJO_EVENT(22, 1)
-;죠교자상태변화時
+;죠교자상태변화시
 SIF TCVAR:상태변화 && TCVAR:상태변화지속 > 2
 	PRINTFORMW %CALLNAME:TARGET%(은)는 [%CONDITION(TCVAR:상태변화)%](이)가 되었다
 	;CALL KOJO_EVENT(22, 0)
-;발기描写
-;強발기
+;발기묘사
+;강발기
 IF TCVAR:MASTER:발기도 >= 1300 && TCVAR:MASTER:전발기도 < 1300
 	IF TCVAR:MASTER:전립선자극 > 1
 		PRINTFORML 안쪽에서 수컷 기능을 희롱해져 %CALLNAME:MASTER%의 남성기가 의사와 무관계하게 반응한다….
@@ -1041,39 +1041,39 @@ IF TCVAR:MASTER:발기도 >= 1300 && TCVAR:MASTER:전발기도 < 1300
 	ELSE
 		PRINTFORML %CALLNAME:MASTER%의 남성기는 배를 뒤따를 것 같을 만큼 젖혀져 돌아가, 격렬하게 맥박치고 있다….
 	ENDIF
-;中발기
+;중발기
 ELSEIF TCVAR:MASTER:발기도 >= 1000 && TCVAR:MASTER:전발기도 < 1000
 	IF TCVAR:MASTER:전립선자극
 		PRINTFORML 안쪽으로부터 근원의 뒤편을 켜져 %CALLNAME:MASTER%의 남성기가 팽창해 나간다….
 	ELSE
 		PRINTFORML %CALLNAME:MASTER%의 남성기는 지금 우뚝 서 있다….
 	ENDIF
-;弱발기
+;약발기
 ELSEIF TCVAR:MASTER:발기도 >= 200 && TCVAR:MASTER:전발기도 < 200
-	;急速
+	;급속
 	IF TCVAR:MASTER:발기도 - TCVAR:MASTER:전발기도 > 200
 		PRINTFORML %CALLNAME:MASTER%(은)는 하반신에 급속히 피가 모이는 것을 느꼈다….
-	;常速
+	;상속
 	ELSEIF TCVAR:MASTER:발기도 - TCVAR:MASTER:전발기도 > 50
 		PRINTFORML %CALLNAME:MASTER%(은)는 하반신에 피가 모이기 시작하는 것을 느꼈다….
-	;緩速
+	;완속
 	ELSE
 		PRINTFORML %CALLNAME:MASTER%(은)는 하반신에 천천히 피가 모이기 시작하는 것을 느꼈다….
 	ENDIF
-;요강제발기
+;요강부디기
 ELSEIF TCVAR:MASTER:요강제발기 && TCVAR:MASTER:발기도 <= 200 && TCVAR:MASTER:금회발기
 	PRINTFORML 정령 다한 %CALLNAME:MASTER%의 남성기절의 부엌과도 반응하지 않는다….
 ENDIF
-;윤활描写(남자以外)
+;윤활묘사(남자 이외)
 IF !TALENT:MASTER:남자
-	;윤활充分
+	;윤활 충분히
 	IF PALAM:MASTER:윤활 >= 1000 && TCVAR:MASTER:전윤활 < 1000
 		IF TEQUIP:로션
 			PRINTFORML %CALLNAME:MASTER%의 샘으로부터는과 목표 없게 애액이 흘러넘쳐 이미 로션의 의미가 없다….
 		ELSE
 			PRINTFORML %CALLNAME:MASTER%의 샘으로부터는과 목표 없게 애액이 흘러넘쳐 홍수와 같이 되어 있다….
 		ENDIF
-	;強윤활
+	;강윤활
 	ELSEIF PALAM:MASTER:윤활 >= 500 && TCVAR:MASTER:전윤활 < 500
 		IF TEQUIP:로션
 			PRINTFORML %CALLNAME:MASTER%의 여성기는 로션에 애액이 섞여 미끈미끈이 되어 있다….
@@ -1082,7 +1082,7 @@ IF !TALENT:MASTER:남자
 		ELSE
 			PRINTFORML %CALLNAME:MASTER%의 여성기는 밀을 늘어뜨려, 삽입을 기다려 바래 끄는 붙어 있다….
 		ENDIF
-	;中윤활
+	;중윤활
 	ELSEIF PALAM:MASTER:윤활 >= 250 && TCVAR:MASTER:전윤활 < 250
 		IF TEQUIP:로션 == 1
 			PRINTFORML %CALLNAME:MASTER%의 여성기는 말라 내기의 로션에 대신해 스스로도 애액을 분비하고 있다….
@@ -1093,7 +1093,7 @@ IF !TALENT:MASTER:남자
 		ELSE
 			PRINTFORML %CALLNAME:MASTER%(은)는 비순으로부터 따뜻한 애액이 늘어지고 떨어지는 것을 느껴 등골을 진동시켰다….
 		ENDIF
-	;弱윤활
+	;약윤활
 	ELSEIF PALAM:MASTER:윤활 >= 100 && TCVAR:MASTER:전윤활 < 100
 		IF TEQUIP:로션
 			PRINTFORML %CALLNAME:MASTER%의 고간은 로션으로 싫은 것 같게 빛나고 있다….
@@ -1104,15 +1104,15 @@ IF !TALENT:MASTER:남자
 		ENDIF
 	ENDIF
 ENDIF
-;소변描写(죠교대상に오줌싸개素質存在時)
+;소변묘사(죠교대상에오줌싸개소질 존재시)
 IF TALENT:MASTER:오줌싸개
-	;強소변
+	;강소변
 	IF BASE:MASTER:소변 > 7 * MAXBASE:MASTER:소변 / 8
 		PRINTFORML %CALLNAME:MASTER%(은)는 격렬하게 숨을 황, 무릎을 강하게 닫아, 부풀어 오르는 뇨의의 결궤를 가까스로 막고 있다….
-	;中소변
+	;중소변
 	ELSEIF BASE:MASTER:소변 > 2 * MAXBASE:MASTER:소변 / 3
 		PRINTFORML %CALLNAME:MASTER%(은)는 뺨을 홍조시켜, 떨어지고 도착하고 에 넙적다리를 조정이라고 뇨의에 참고 있다….
-	;弱소변
+	;약소변
 	ELSEIF BASE:MASTER:소변 > MAXBASE:MASTER:소변 / 2
 		PRINTFORML %CALLNAME:MASTER%(은)는 뇨의를 느끼고 있다….
 	ENDIF
@@ -1120,41 +1120,41 @@ ENDIF
 
 
 ;────────────────────────────────────
-;薬力の消滅、薬剤のクールダウン
+;약력의 소멸, 약제의 쿨 다운
 ;────────────────────────────────────
 ;로션
-;약독내성存在時は追加減少(1～2)
+;약독내성존재시는 추가 감소(1～2)
 SIF TEQUIP:로션 > 0 && TALENT:MASTER:약독내성
 	TEQUIP:로션 -= 1 + RAND:2
-;1/2の確率で減少(1～2)
+;1/2의 확률로 감소(1～2)
 SIF TEQUIP:로션 > 0 && RAND:2
 	TEQUIP:로션 -= 1 + RAND:2
-;下限突破を防止
+;하한 돌파를 방지
 SIF TEQUIP:로션 < 0
 	TEQUIP:로션 = 0
 
 ;미약
-;약독내성存在時は追加減少(2～3)
+;약독내성존재시는 추가 감소(2～3)
 SIF TEQUIP:미약 > 0 && TALENT:MASTER:약독내성
 	TEQUIP:미약 -= 2 + RAND:2
-;1/2の確率で減少(1～2)
+;1/2의 확률로 감소(1～2)
 SIF TEQUIP:미약 > 0 && RAND:2
 	TEQUIP:미약 -= 1 + RAND:2
-;下限突破を防止
+;하한 돌파를 방지
 SIF TEQUIP:미약 < 0
 	TEQUIP:미약 = 0
 
-;薬剤系ヒートは조교중あまりクールダウンせず、죠교終了後一気にクールダウンする。
+;약제계 히트는조교중 그다지 쿨 다운하지 않고, 죠교종료후 단번에 쿨 다운한다.
 SIF !RAND:5
 	FLAG:로션히트 -= 1
 SIF !RAND:5
 	FLAG:미약히트 -= 1
 SIF !RAND:4
 	FLAG:영양히트 -= 1
-;치료히트は기력체력が十分なときのみ減衰
+;치료히트는기력체력가 충분한 때 마셔 감쇠
 SIF BASE:체력 > 1000 && BASE:기력 > 500 && RAND:3
 	FLAG:치료히트 -= 1
-;薬剤系ヒートの下限突破を防止
+;약제계 히트의 하한 돌파를 방지
 FOR LCOUNT, 20, 25
 	SIF LCOUNT == 22
 		CONTINUE
@@ -1164,803 +1164,803 @@ NEXT
 
 
 ;────────────────────────────────────
-;ヒート蓄積とクールダウンの処理。このシステムが成功できるかの鍵なんですけど、こりゃまた複雑な構造になりま했다ね…
+;히트 축적과 쿨 다운의 처리. 이 시스템을 성공할 수 있을까의 열쇠입니다만, 이건 또 복잡한 구조에 했다군요…
 ;────────────────────────────────────
-;죠교방침히트蓄積
-;今回の방침について処理を行う
+;죠교방침히트축적
+;이번방침에 대해 처리를 실시한다
 
-;밀어넘어지는중は蓄積しない
+;밀어넘어지는중는 축적하지 않는다
 IF TEQUIP:밀어넘어지는중 != 1
-	;LOCALにヒート上昇量を確保
+	;LOCAL에 히트 상승량을 확보
 	LOCAL = 0
-	;LOCAL:1に変数ポインタを設定
+	;LOCAL:1에 변수 포인터를 설정
 	LOCAL:1 = 70 + TFLAG:턴방침
-	;ヒート値が存在すれば(+4)
+	;히트치가 존재하면(+4)
 	SIF TFLAG:(LOCAL:1) > 0
 		LOCAL += 4
-	;無条件で(+8)
+	;무조건으로(+8)
 	LOCAL += 8
-	;연속실행で(+5)
+	;연속실행로(+5)
 	SIF TFLAG:전턴방침 == TFLAG:턴방침
 		LOCAL += 5
-	;実際の上昇処理
+	;실제의 상승 처리
 	TFLAG:(LOCAL:1) += LOCAL
 ENDIF
 
-;죠교방침のクールダウン(ヒート値存在時処理を行う)
-;変数『クール値』に減少量保存
+;죠교방침의 쿨 다운(히트치 존재시 처리를 실시한다)
+;변수 『쿨치』에 감소량 보존
 
-;휴식のクールダウン
+;휴식의 쿨 다운
 IF TFLAG:휴식방침히트 > 0
-	;初期値(3)
-	クール値 = 3
-	;전회実行で(-1)
+	;초기치(3)
+	쿨치 = 3
+	;전회실행으로(-1)
 	SIF TFLAG:전턴방침 == 1
-		クール値 -= 1
-	;죠교자及び죠교대상の체력と기력の残量総計を見る(少ないほど大きくクールダウン, +0～3)
-	クール値 += 3 - LIMIT(BASE:체력 + BASE:기력 + BASE:MASTER:체력 + BASE:MASTER:기력 / 500, 0, 3)
-	;소모도が大きければ大きくクールダウン
-	クール値 += TFLAG:조교자소모도 / 2
-	クール値 += TFLAG:소모도 / 3
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 1
+	;죠교자 및죠교대상의체력와기력의 잔량 총계를 본다(적을 정도 크고 쿨 다운, +0～3)
+	쿨치 += 3 - LIMIT(BASE:체력 + BASE:기력 + BASE:MASTER:체력 + BASE:MASTER:기력 / 500, 0, 3)
+	;소모도가 크면 크고 쿨 다운
+	쿨치 += TFLAG:조교자소모도 / 2
+	쿨치 += TFLAG:소모도 / 3
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;피폐(+1)
 	SIF TCVAR:상태변화 == 1
-		クール値 += 1
+		쿨치 += 1
 	;쇠약(+2)
 	SIF TCVAR:상태변화 == 2
-		クール値 += 2
+		쿨치 += 2
 	;무기력(+1)
 	SIF TCVAR:상태변화 == 3
-		クール値 += 1
-	;죠교자/죠교대상の회복빠름/遅い素質を見る(回復早ければ-1, 遅ければ+1)
+		쿨치 += 1
+	;죠교자/죠교대상의회복빠름/늦은 소질을 본다(회복 빠르면-1, 늦으면+1)
 	SIF TALENT:회복빠름
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:MASTER:회복빠름
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:회복느림
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:MASTER:회복느림
-		クール値 += 1
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:휴식방침히트 -= クール値
-	;下限突破を防止
+		쿨치 += 1
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:휴식방침히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:휴식방침히트 < 0
 		TFLAG:휴식방침히트 = 0
 ENDIF
 
-;소프트のクールダウン
+;소프트의 쿨 다운
 IF TFLAG:소프트방침히트 > 0
-	;初期値(3～4)
-	クール値 = 3 + RAND:2
-	;전회実行で(-1)
+	;초기치(3～4)
+	쿨치 = 3 + RAND:2
+	;전회실행으로(-1)
 	SIF TFLAG:전턴방침 == 2
-		クール値 -= 1
-	;체력と기력の残量を見る(少ないほど大きくクールダウン, +0～2)
-	クール値 += 2 - LIMIT(BASE:체력 + BASE:기력 + BASE:MASTER:체력 + BASE:MASTER:기력 / 500, 0, 2)
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 1
+	;체력와기력의 잔량을 본다(적을 정도 크고 쿨 다운, +0～2)
+	쿨치 += 2 - LIMIT(BASE:체력 + BASE:기력 + BASE:MASTER:체력 + BASE:MASTER:기력 / 500, 0, 2)
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;정욕(+1)
 	SIF TCVAR:상태변화 == 5
-		クール値 += 1
+		쿨치 += 1
 	;분노(-2)
 	SIF TCVAR:상태변화 == 6
-		クール値 -= 2
+		쿨치 -= 2
 	;울굴(-1)
 	SIF TCVAR:상태변화 == 8
-		クール値 -= 1
-	;죠교자素質によりクールダウン量変動
+		쿨치 -= 1
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:반항적
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:얌전한
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:프라이드높음
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	SIF TALENT:건방짐
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:프라이드낮음
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	SIF TALENT:일선을넘지않음
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:도Ｍ
-		クール値 -= RAND:4
+		쿨치 -= RAND:4
 	SIF TALENT:심술궂음
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	SIF TALENT:마음씨착한
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:친절함
-		クール値 += RAND:2
-	;죠교자죠교레벨が低いと追加クールダウン(+1)
+		쿨치 += RAND:2
+	;죠교자죠교레벨가 낮으면 추가 쿨 다운(+1)
 	SIF CFLAG:죠교레벨 < 5
-		クール値 += 1
-	;아라이멘도が正に傾くと追加クールダウン(+1～2)
-	クール値 += LIMIT(CFLAG:아라이멘도 / 25, 0, 2)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:소프트방침히트 -= クール値
-	;下限突破を防止
+		쿨치 += 1
+	;아라이멘도가 정말로 기울면 추가 쿨 다운(+1～2)
+	쿨치 += LIMIT(CFLAG:아라이멘도 / 25, 0, 2)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:소프트방침히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:소프트방침히트 < 0
 		TFLAG:소프트방침히트 = 0
 ENDIF
 
-;노멀のクールダウン
+;노멀의 쿨 다운
 IF TFLAG:노멀방침히트 > 0
-	;初期値(5)
-	クール値 = 5
-	;전회非実行で(+1～3)
+	;초기치(5)
+	쿨치 = 5
+	;전회비실행으로(+1～3)
 	SIF TFLAG:전턴방침 != 3
-		クール値 += 1 + RAND:3
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 += 1 + RAND:3
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;분노(-1)
 	SIF TCVAR:상태변화 == 6
-		クール値 -= 1
+		쿨치 -= 1
 	;싫증(-3)
 	SIF TCVAR:상태변화 == 7
-		クール値 -= 3
+		쿨치 -= 3
 	;울굴(-3)
 	SIF TCVAR:상태변화 == 8
-		クール値 -= 3
-	;초조함が小さいとクールダウン抑制(-2～0)
-	クール値 -= 2 - LIMIT(BASE:초조함 / 200, 0, 2)
-	;죠교자素質によりクールダウン量変動
+		쿨치 -= 3
+	;초조함가 작으면 쿨 다운 억제(-2～0)
+	쿨치 -= 2 - LIMIT(BASE:초조함 / 200, 0, 2)
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:얌전한
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:일선을넘지않음
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:도Ｍ
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	SIF TALENT:신중함
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:유치
-		クール値 += RAND:3
+		쿨치 += RAND:3
 	SIF TALENT:매혹
-		クール値 += RAND:2
-	;죠교대상素質によりクールダウン量変動
+		쿨치 += RAND:2
+	;죠교대상소질에 의해 쿨 다운량 변동
 	SIF TALENT:MASTER:연모
-		クール値 += RAND:3
-	;아라이멘도が0に近いと追加クールダウン(+1～2)
+		쿨치 += RAND:3
+	;아라이멘도가 0에 가까우면 추가 쿨 다운(+1～2)
 	LOCAL = ABS(CFLAG:아라이멘도)
-	クール値 += 2 - LIMIT(LOCAL / 12, 0, 2)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:노멀방침히트 -= クール値
-	;下限突破を防止
+	쿨치 += 2 - LIMIT(LOCAL / 12, 0, 2)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:노멀방침히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:노멀방침히트 < 0
 		TFLAG:노멀방침히트 = 0
 ENDIF
 
-;하드のクールダウン
+;하드의 쿨 다운
 IF TFLAG:하드방침히트 > 0
-	;初期値(3～5)
-	クール値 = 3 + RAND:3
-	;전회実行で(-2)
+	;초기치(3～5)
+	쿨치 = 3 + RAND:3
+	;전회실행으로(-2)
 	SIF TFLAG:전턴방침 == 4
-		クール値 -= 2
-	;체력と기력の残量を見る(少ないほどクールダウン抑制, -2～0)
-	クール値 -= 2 - LIMIT(BASE:체력 + BASE:기력 + BASE:MASTER:체력 + BASE:MASTER:기력 / 500, 0, 2)
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 2
+	;체력와기력의 잔량을 본다(적을 정도쿨 다운 억제, -2～0)
+	쿨치 -= 2 - LIMIT(BASE:체력 + BASE:기력 + BASE:MASTER:체력 + BASE:MASTER:기력 / 500, 0, 2)
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;쇠약(-1)
 	SIF TCVAR:상태변화 == 2
-		クール値 -= 1
+		쿨치 -= 1
 	;무기력(-2)
 	SIF TCVAR:상태변화 == 3
-		クール値 -= 2
+		쿨치 -= 2
 	;싫증(+1)
 	SIF TCVAR:상태변화 == 7
-		クール値 += 1
-	;초조함が大きいと追加クールダウン(+0～2)
-	クール値 += LIMIT(BASE:초조함 / 300, 0, 2)
-	;죠교자素質によりクールダウン量変動
+		쿨치 += 1
+	;초조함가 크면 추가 쿨 다운(+0～2)
+	쿨치 += LIMIT(BASE:초조함 / 300, 0, 2)
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:겁쟁이
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:굳셈
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:프라이드높음
-		クール値 += RAND:3
+		쿨치 += RAND:3
 	SIF TALENT:건방짐
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:프라이드낮음
-		クール値 -= RAND:3
+		쿨치 -= RAND:3
 	SIF TALENT:일선을넘지않음
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:억압
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:해방
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:새드
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:신중함 && CFLAG:MASTER:죠교레벨 < 6
-		クール値 -= 3 - CFLAG:MASTER:죠교레벨 / 2
+		쿨치 -= 3 - CFLAG:MASTER:죠교레벨 / 2
 	SIF TALENT:위압감
-		クール値 += 1
-	;죠교대상素質によりクールダウン量変動
+		쿨치 += 1
+	;죠교대상소질에 의해 쿨 다운량 변동
 	SIF TALENT:MASTER:도Ｍ
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:MASTER:예속
-		クール値 += 2
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:하드방침히트 -= クール値
-	;下限突破を防止
+		쿨치 += 2
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:하드방침히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:하드방침히트 < 0
 		TFLAG:하드방침히트 = 0
 ENDIF
 
-;이상のクールダウン
+;이상의 쿨 다운
 IF TFLAG:이상방침히트 > 0
-	;初期値(0～5)
-	クール値 = RAND:6
-	;전회非実行で(+0～2)
+	;초기치(0～5)
+	쿨치 = RAND:6
+	;전회비실행으로(+0～2)
 	SIF TFLAG:전턴방침 != 5
-		クール値 += RAND:3
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 += RAND:3
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;몽롱(+1)
 	SIF TCVAR:상태변화 == 4
-		クール値 += 1
+		쿨치 += 1
 	;울굴(+3)
 	SIF TCVAR:상태변화 == 8
-		クール値 += 3
-	;죠교자이성が低いと追加クールダウン(+0～3)
-	クール値 += 3 - LIMIT(BASE:이성 / 150, 0, 3)
-	;죠교자素質によりクールダウン量変動
+		쿨치 += 3
+	;죠교자이성가 낮으면 추가 쿨 다운(+0～3)
+	쿨치 += 3 - LIMIT(BASE:이성 / 150, 0, 3)
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:겁쟁이
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:건방짐
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:자제심
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:충동적
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:일선을넘지않음
-		クール値 -= 3
+		쿨치 -= 3
 	SIF TALENT:억압
-		クール値 -= 1 + RAND:2
+		쿨치 -= 1 + RAND:2
 	SIF TALENT:해방
-		クール値 += 1 + RAND:2
+		쿨치 += 1 + RAND:2
 	SIF TALENT:광기
-		クール値 += 4
+		쿨치 += 4
 	SIF TALENT:불사
-		クール値 += 1 + RAND:2
+		쿨치 += 1 + RAND:2
 	SIF TALENT:금단의지식
-		クール値 += 2
-	;죠교대상素質によりクールダウン量変動
+		쿨치 += 2
+	;죠교대상소질에 의해 쿨 다운량 변동
 	SIF TALENT:MASTER:음란
-		クール値 += 1
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:이상방침히트 -= クール値
-	;下限突破を防止
+		쿨치 += 1
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:이상방침히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:이상방침히트 < 0
 		TFLAG:이상방침히트 = 0
 ENDIF
 
-;죠교メニュー히트蓄積
-;今回のACT분류について処理を行う
+;죠교메뉴히트축적
+;이번 ACT분류에 대해 처리를 실시한다
 
-;밀어넘어지는중は蓄積しない
-;また、휴식にはメニューヒートが存在しない
+;밀어넘어지는중는 축적하지 않는다
+;또, 휴식에는 메뉴 히트가 존재하지 않는다
 IF TEQUIP:밀어넘어지는중 != 1 && TFLAG:ACT분류 != 9
-	;LOCALにヒート上昇量を確保
+	;LOCAL에 히트 상승량을 확보
 	LOCAL = 0
-	;LOCAL:1に今回のACT분류によって変数ポインタを設定
+	;LOCAL:1에 이번 ACT분류에 의해 변수 포인터를 설정
 	LOCAL:1 = 81 + TFLAG:ACT분류
-	;分類が성교봉사であれば変数ポインタを調整
+	;분류가성교봉사이면 변수 포인터를 조정
 	SIF TFLAG:ACT분류 == 10
 		LOCAL:1 = 350
-	;ヒート値が正なら(+8)
+	;히트치가 정이라면(+8)
 	SIF TFLAG:(LOCAL:1) > 0
 		LOCAL += 8
-	;無条件で(+8)
+	;무조건으로(+8)
 	LOCAL += 8
-	;연속실행で(+8)
+	;연속실행로(+8)
 	IF TFLAG:전ACT분류 == TFLAG:ACT분류
 		LOCAL += 8
 	ENDIF
-	;선택可能系列数によって上昇量減少
+	;선택가능 계열수에 의해 상승량 감소
 	LOCAL = LOCAL * LIMIT(TFLAG:가능한ACT계열수 - 1, 0, 4) / 4
-	;実際の上昇処理
+	;실제의 상승 처리
 	TFLAG:(LOCAL:1) += LOCAL
 ENDIF
 
-;죠교メニューのクールダウン(ヒート値存在時処理を行う)
-;変数『クール値』に減少量保存
+;죠교메뉴의 쿨 다운(히트치 존재시 처리를 실시한다)
+;변수 『쿨치』에 감소량 보존
 
-;회화のクールダウン
+;회화의 쿨 다운
 IF TFLAG:회화히트 > 0
-	;技能に応じてクール値を設定(4～)
-	クール値 = 4 + (GET_ABL(TARGET, "회화") + 10) / 20
-	;전회実行で(-3)
+	;기능에 응해 쿨치를 설정(4～)
+	쿨치 = 4 + (GET_ABL(TARGET, "회화") + 10) / 20
+	;전회실행으로(-3)
 	SIF TFLAG:전ACT분류 == 0
-		クール値 -= 3
-	;체력と기력の残量を見る(少ないほど追加クールダウン, +0～2)
-	クール値 += 2 - LIMIT(BASE:체력 + BASE:기력 / 400, 0, 2)
-	;흥미が低いとクールダウン抑制(-3～+1)
-	クール値 += LIMIT(BASE:흥미 / 200, 0, 4) - 3
-	;죠교자素質によりクールダウン量変動
+		쿨치 -= 3
+	;체력와기력의 잔량을 본다(적을 정도 추가 쿨 다운, +0～2)
+	쿨치 += 2 - LIMIT(BASE:체력 + BASE:기력 / 400, 0, 2)
+	;흥미가 낮으면 쿨 다운 억제(-3～+1)
+	쿨치 += LIMIT(BASE:흥미 / 200, 0, 4) - 3
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:무관심
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:호기심
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:감정결여
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:정서적
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:낙관적
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	SIF TALENT:비관적
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	SIF TALENT:친절함
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:까다로움
-		クール値 -= 1
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:회화히트 -= クール値
-	;下限突破を防止
+		쿨치 -= 1
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:회화히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:회화히트 < 0
 		TFLAG:회화히트 = 0
 ENDIF
 
-;애무のクールダウン
+;애무의 쿨 다운
 IF TFLAG:애무히트 > 0
-	;技能に応じてクール値を設定(4～)
-	クール値 = 4 + RAND:3 + (GET_ABL(TARGET, "애무") + 10) / 20
-	;전회実行で(-1)
+	;기능에 응해 쿨치를 설정(4～)
+	쿨치 = 4 + RAND:3 + (GET_ABL(TARGET, "애무") + 10) / 20
+	;전회실행으로(-1)
 	SIF TFLAG:전ACT분류 != 1
-		クール値 -= 1
-	;조교자소모도が高いとクール値減少(-2～0)
+		쿨치 -= 1
+	;조교자소모도가 높으면 쿨치 감소(-2～0)
 	SIF TFLAG:조교자소모도 > 0
-		クール値 -= TFLAG:조교자소모도 > 5 ? 2 # 1
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= TFLAG:조교자소모도 > 5 ? 2 # 1
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;몽롱(+0～1)
 	SIF TCVAR:상태변화 == 4
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	;분노(-2)
 	SIF TCVAR:상태변화 == 6
-		クール値 -= 2
-	;흥미が低いとクールダウン抑制(-1～+1)
-	クール値 += LIMIT(BASE:흥미 / 400, 0, 2) - 1
-	;죠교자素質によりクールダウン量変動
+		쿨치 -= 2
+	;흥미가 낮으면 쿨 다운 억제(-1～+1)
+	쿨치 += LIMIT(BASE:흥미 / 400, 0, 2) - 1
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:무관심
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:호기심
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:감정결여
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:정서적
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:낙관적
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	SIF TALENT:비관적
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	SIF TALENT:혀기술
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:손가락기술
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:헌신적
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:수동적
-		クール値 -= 1
-	;죠교자が남성혐오の時、男が죠교대상なら(-2)
+		쿨치 -= 1
+	;죠교자가남성혐오때, 남자가죠교대상라면(-2)
 	SIF TALENT:남성혐오 && TALENT:MASTER:남자
-		クール値 -= 2
-	;남성혐오、레즈끼、ＢＬ끼が全て無いとき、죠교자・죠교대상が同性ならば(-2)
+		쿨치 -= 2
+	;남성혐오, 레즈끼, ＢＬ끼가 모두 없을 때, 죠교자·죠교대상가 동성이라면(-2)
 	SIF !TALENT:남성혐오 && ABL:레즈끼 < 1 && ABL:ＢＬ끼 < 1 && TALENT:MASTER:남자 == TALENT:남자
-			クール値 -= 2
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:애무히트 -= クール値
-	;下限突破を防止
+			쿨치 -= 2
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:애무히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:애무히트 < 0
 		TFLAG:애무히트 = 0
 ENDIF
 
-;도구のクールダウン
+;도구의 쿨 다운
 IF TFLAG:도구히트 > 0
-	;技能に応じてクール値を設定(4～)
-	クール値 = 4 + (GET_ABL(TARGET, "도구") + 10) * 2 / 30
-	;전회実行で(-3)
+	;기능에 응해 쿨치를 설정(4～)
+	쿨치 = 4 + (GET_ABL(TARGET, "도구") + 10) * 2 / 30
+	;전회실행으로(-3)
 	SIF TFLAG:전ACT분류 == 2
-		クール値 -= 3
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 3
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;무기력(-0～1)
 	SIF TCVAR:상태변화 == 3
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	;몽롱(-1)
 	SIF TCVAR:상태변화 == 4
-		クール値 -= 1
+		쿨치 -= 1
 	;정욕(-1)
 	SIF TCVAR:상태변화 == 5
-		クール値 -= 1
-	;도구無장착時(+3)
+		쿨치 -= 1
+	;도구무장착시(+3)
 	IF TEQUIP:바이브 + TEQUIP:항문바이브 + TEQUIP:항문비즈 + TEQUIP:관장그릇＋플러그 + TEQUIP:클리캡 + TEQUIP:오나홀 + TEQUIP:유두캡 == 0
-		クール値 += 3
-	;장착時(-1)
+		쿨치 += 3
+	;장착시(-1)
 	ELSE
-		クール値 -= 1
+		쿨치 -= 1
 	ENDIF
-	;죠교자素質によりクールダウン量変動
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:해방
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	SIF TALENT:억압
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	SIF TALENT:도구능숙
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:헌신적
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:수동적
-		クール値 -= 1
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:도구히트 -= クール値
-	;下限突破を防止
+		쿨치 -= 1
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:도구히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:도구히트 < 0
 		TFLAG:도구히트 = 0
 ENDIF
 
-;성교のクールダウン
+;성교의 쿨 다운
 IF TFLAG:성교히트 > 0
-	;技能に応じてクール値を設定(2～)
-	クール値 = 2 + (GET_ABL(TARGET, "성교") + 10) / 20
-	;전회実行で(-1)
+	;기능에 응해 쿨치를 설정(2～)
+	쿨치 = 2 + (GET_ABL(TARGET, "성교") + 10) / 20
+	;전회실행으로(-1)
 	SIF TFLAG:전ACT분류 == 3
-		クール値 -= 1
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 1
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;무기력(-0～1)
 	SIF TCVAR:상태변화 == 3
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	;정욕(+2)
 	SIF TCVAR:상태변화 == 5
-		クール値 += 2
+		쿨치 += 2
 	;싫증(-1)
 	SIF TCVAR:상태변화 == 7
-		クール値 -= 1
-	;삽입してる間だけ速いスピードでクールダウンする(+7)
+		쿨치 -= 1
+	;삽입 하고 있는 동안만 빠른 스피드로 쿨 다운한다(+7)
 	SIF TEQUIP:성교중 && TFLAG:ACT분류 != 3
-		クール値 += 7
-	;죠교자が남성혐오の時、男が죠교대상なら(-3)
+		쿨치 += 7
+	;죠교자가남성혐오때, 남자가죠교대상라면(-3)
 	SIF TALENT:남성혐오 && TALENT:MASTER:남자
-		クール値 -= 3
-	;남성혐오、레즈끼、ＢＬ끼が全て無いとき、죠교자・죠교대상が同性ならば(-3)
+		쿨치 -= 3
+	;남성혐오, 레즈끼, ＢＬ끼가 모두 없을 때, 죠교자·죠교대상가 동성이라면(-3)
 	SIF !TALENT:남성혐오 && ABL:레즈끼 < 1 && ABL:ＢＬ끼 < 1 && TALENT:MASTER:남자 == TALENT:남자
-			クール値 -= 3
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:성교히트 -= クール値
-	;下限突破を防止
+			쿨치 -= 3
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:성교히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:성교히트 < 0
 		TFLAG:성교히트 = 0
 ENDIF
 
-;수치のクールダウン
+;수치의 쿨 다운
 IF TFLAG:수치히트 > 0
-	;技能に応じてクール値を設定(4～)
-	クール値 = 4 + (GET_ABL(TARGET, "수치") + 10) / 20
-	;전회実行で(-2)
+	;기능에 응해 쿨치를 설정(4～)
+	쿨치 = 4 + (GET_ABL(TARGET, "수치") + 10) / 20
+	;전회실행으로(-2)
 	SIF TFLAG:전ACT분류 == 4
-		クール値 -= 2
-	;흥미が低いとクールダウン抑制(-3～+1)
-	クール値 += LIMIT(BASE:흥미 / 200, 0, 4) - 3
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 2
+	;흥미가 낮으면 쿨 다운 억제(-3～+1)
+	쿨치 += LIMIT(BASE:흥미 / 200, 0, 4) - 3
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;무기력(-2)
 	SIF TCVAR:상태변화 == 3
-		クール値 -= 2
+		쿨치 -= 2
 	;분노(-2)
 	SIF TCVAR:상태변화 == 6
-		クール値 -= 2
+		쿨치 -= 2
 	;싫증(-1)
 	SIF TCVAR:상태변화 == 7
-		クール値 -= 1
-	;눈가리개장착時は追加クールダウン(+1)
+		쿨치 -= 1
+	;눈가리개장착시는 추가 쿨 다운(+1)
 	SIF TEQUIP:눈가리개
-		クール値 += 1
-	;죠교자素質によりクールダウン量変動
+		쿨치 += 1
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:무관심
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:호기심
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:튀고싶어함
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:억압
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:해방
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:수줍음
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:수치없음
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:자위하기쉬움
-		クール値 += 1
-	;죠교대상素質によりクールダウン量変動
+		쿨치 += 1
+	;죠교대상소질에 의해 쿨 다운량 변동
 	SIF TALENT:MASTER:자위하기쉬움
-		クール値 += 1
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:수치히트 -= クール値
-	;下限突破を防止
+		쿨치 += 1
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:수치히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:수치히트 < 0
 		TFLAG:수치히트 = 0
 ENDIF
 
-;봉사のクールダウン
+;봉사의 쿨 다운
 IF TFLAG:봉사히트 > 0
-	;技能に応じてクール値を設定(5～)
-	クール値 = 5 + (GET_ABL(TARGET, "봉사") + 10) / 20
-	;전회実行で(-2)
+	;기능에 응해 쿨치를 설정(5～)
+	쿨치 = 5 + (GET_ABL(TARGET, "봉사") + 10) / 20
+	;전회실행으로(-2)
 	SIF TFLAG:전ACT분류 == 5
-		クール値 -= 2
-	;죠교대상기력が低いとクールダウン抑制(-2～0)
-	クール値 -= 2 - LIMIT(BASE:MASTER:기력 / 200, 0, 2)
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 2
+	;죠교대상기력가 낮으면 쿨 다운 억제(-2～0)
+	쿨치 -= 2 - LIMIT(BASE:MASTER:기력 / 200, 0, 2)
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;정욕(+2)
 	SIF TCVAR:상태변화 == 5
-		クール値 += 2
+		쿨치 += 2
 	;싫증(-2)
 	SIF TCVAR:상태변화 == 7
-		クール値 -= 2
-	;밧줄、볼개그장착時はクールダウン抑制
+		쿨치 -= 2
+	;밧줄, 볼개그장착시는 쿨 다운 억제
 	SIF TEQUIP:밧줄 || TEQUIP:볼개그
-		クール値 -= 1
-	;죠교자素質によりクールダウン量変動
+		쿨치 -= 1
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:프라이드높음
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:프라이드낮음
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:무관심
-		クール値 -= RAND:2
+		쿨치 -= RAND:2
 	SIF TALENT:호기심
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	SIF TALENT:튀고싶어함
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:수줍음
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:수치없음
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:헌신적
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:수동적
-		クール値 += 1 + RAND:2
+		쿨치 += 1 + RAND:2
 	SIF TALENT:쾌감에솔직
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:쾌감을부정
-		クール値 -= 2
-	;죠교대상素質によりクールダウン量変動
+		쿨치 -= 2
+	;죠교대상소질에 의해 쿨 다운량 변동
 	SIF TALENT:MASTER:연모
-		クール値 += 1
-	;죠교자が남성혐오の時、男が죠교대상なら(-1)
+		쿨치 += 1
+	;죠교자가남성혐오때, 남자가죠교대상라면(-1)
 	SIF TALENT:남성혐오 && TALENT:MASTER:남자
-		クール値 -= 1
-	;남성혐오、레즈끼、ＢＬ끼が全て無いとき、죠교자・죠교대상が同性ならば(-1)
+		쿨치 -= 1
+	;남성혐오, 레즈끼, ＢＬ끼가 모두 없을 때, 죠교자·죠교대상가 동성이라면(-1)
 	SIF !TALENT:남성혐오 && ABL:레즈끼 < 1 && ABL:ＢＬ끼 < 1 && TALENT:MASTER:남자 == TALENT:남자
-			クール値 -= 1
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:봉사히트 -= クール値
-	;下限突破を防止
+			쿨치 -= 1
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:봉사히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:봉사히트 < 0
 		TFLAG:봉사히트 = 0
 ENDIF
 
-;가학のクールダウン
+;가학의 쿨 다운
 IF TFLAG:가학히트 > 0
-	;技能に応じてクール値を設定(4～)
-	クール値 = 4 + (GET_ABL(TARGET, "가학") + 10) / 20
-	;전회実行で(-2)
+	;기능에 응해 쿨치를 설정(4～)
+	쿨치 = 4 + (GET_ABL(TARGET, "가학") + 10) / 20
+	;전회실행으로(-2)
 	SIF TFLAG:전ACT분류 == 6
-		クール値 -= 2
-	;죠교대상체력が低ければ(-1)
+		쿨치 -= 2
+	;죠교대상체력가 낮으면(-1)
 	SIF BASE:MASTER:체력 < 500
-		クール値 -= 1
-	;죠교대상흥미が低ければ(-1)
+		쿨치 -= 1
+	;죠교대상흥미가 낮으면(-1)
 	SIF BASE:MASTER:흥미 < 1000
-		クール値 -= 1
-	;초조함がかなり強ければ追加クールダウン(+0～2)
-	クール値 += LIMIT(BASE:초조함 / 200, 2, 4) - 2
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 1
+	;초조함가 꽤 강하면 추가 쿨 다운(+0～2)
+	쿨치 += LIMIT(BASE:초조함 / 200, 2, 4) - 2
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;쇠약(-1)
 	SIF TCVAR:상태변화 == 2
-		クール値 -= 1
+		쿨치 -= 1
 	;무기력(-2)
 	SIF TCVAR:상태변화 == 3
-		クール値 -= 2
+		쿨치 -= 2
 	;분노(+2)
 	SIF TCVAR:상태변화 == 6
-		クール値 += 2
+		쿨치 += 2
 	;울굴(+1)
 	SIF TCVAR:상태변화 == 8
-		クール値 += 1
-	;죠교자素質によりクールダウン量変動
+		쿨치 += 1
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:프라이드높음
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:프라이드낮음
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:얌전한
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:건방짐
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:바느질
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:긴박능숙
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:새드
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:심술궂음
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:마음씨착한
-		クール値 -= 1
-	;죠교대상素質によりクールダウン量変動
+		쿨치 -= 1
+	;죠교대상소질에 의해 쿨 다운량 변동
 	SIF TALENT:MASTER:도Ｍ
-		クール値 += 2
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:가학히트 -= クール値
-	;下限突破を防止
+		쿨치 += 2
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:가학히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:가학히트 < 0
 		TFLAG:가학히트 = 0
 ENDIF
 
-;이상行為のクールダウン
+;이상행위의 쿨 다운
 IF TFLAG:이상히트 > 0
-	;技能に応じてクール値を設定(1～)
-	クール値 = 1 + (GET_ABL(TARGET, "사역") + 10) * 2 / 30
-	;전회非実行で(+0～3)
+	;기능에 응해 쿨치를 설정(1～)
+	쿨치 = 1 + (GET_ABL(TARGET, "사역") + 10) * 2 / 30
+	;전회비실행으로(+0～3)
 	SIF TFLAG:전ACT분류 != 7
-		クール値 += RAND:4
-	;체력と기력の残量を見る(少ないほどクールダウン抑制, -2～0)
-	クール値 -= 2 - LIMIT(BASE:체력 + BASE:기력 / 600, 0, 2)
-	;만족が大きければクールダウン抑制(-2～0)
-	クール値 -= LIMIT(BASE:만족 / 300, 0, 2)
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 += RAND:4
+	;체력와기력의 잔량을 본다(적을 정도쿨 다운 억제, -2～0)
+	쿨치 -= 2 - LIMIT(BASE:체력 + BASE:기력 / 600, 0, 2)
+	;만족가 크면 쿨 다운 억제(-2～0)
+	쿨치 -= LIMIT(BASE:만족 / 300, 0, 2)
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;쇠약(-3)
 	SIF TCVAR:상태변화 == 2
-		クール値 -= 3
+		쿨치 -= 3
 	;무기력(-1)
 	SIF TCVAR:상태변화 == 3
-		クール値 -= 1
+		쿨치 -= 1
 	;몽롱(+2)
 	SIF TCVAR:상태변화 == 4
-		クール値 += 2
+		쿨치 += 2
 	;울굴(+4)
 	SIF TCVAR:상태변화 == 8
-		クール値 += 4
-	;죠교자素質によりクールダウン量変動
+		쿨치 += 4
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:겁쟁이
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:굳셈
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	SIF TALENT:자제심
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:충동적
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:억압
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:해방
-		クール値 += RAND:3
+		쿨치 += RAND:3
 	SIF TALENT:유치
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:광기
-		クール値 += 3
+		쿨치 += 3
 	SIF TALENT:불사
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	SIF TALENT:금단의지식
-		クール値 += 1
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:이상히트 -= クール値
-	;下限突破を防止
+		쿨치 += 1
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:이상히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:이상히트 < 0
 		TFLAG:이상히트 = 0
 ENDIF
 
-;사역のクールダウン
+;사역의 쿨 다운
 IF TFLAG:사역히트 > 0
-	;技能に応じてクール値を設定(1～)
-	クール値 = 1 + RAND:2 + (GET_ABL(TARGET, "사역") + 10) * 2 / 30
-	;전회実行で(-1)
+	;기능에 응해 쿨치를 설정(1～)
+	쿨치 = 1 + RAND:2 + (GET_ABL(TARGET, "사역") + 10) * 2 / 30
+	;전회실행으로(-1)
 	SIF TFLAG:전ACT분류 == 8
-		クール値 -= 1
-	;체력と기력の残量を見る(少ないほどクールダウン抑制, -4～0)
-	クール値 -= 4 - LIMIT(BASE:MASTER:체력 + BASE:MASTER:기력 / 300, 0, 4)
-	;흥미が小さければ追加クールダウン(+0～2)
-	クール値 += 2 - LIMIT(BASE:흥미 / 200, 0, 2)
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 1
+	;체력와기력의 잔량을 본다(적을 정도쿨 다운 억제, -4～0)
+	쿨치 -= 4 - LIMIT(BASE:MASTER:체력 + BASE:MASTER:기력 / 300, 0, 4)
+	;흥미가 작으면 추가 쿨 다운(+0～2)
+	쿨치 += 2 - LIMIT(BASE:흥미 / 200, 0, 2)
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;정욕(-1)
 	SIF TCVAR:상태변화 == 5
-		クール値 -= 1
+		쿨치 -= 1
 	;싫증(+3)
 	SIF TCVAR:상태변화 == 7
-		クール値 += 3
+		쿨치 += 3
 	;울굴(+1)
 	SIF TCVAR:상태변화 == 8
-		クール値 += 1
-	;죠교자素質によりクールダウン量変動
+		쿨치 += 1
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:무관심
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:호기심
-		クール値 -= 1
+		쿨치 -= 1
 	SIF TALENT:일선을넘지않음
-		クール値 -= 2
+		쿨치 -= 2
 	SIF TALENT:유치
-		クール値 += 1
+		쿨치 += 1
 	SIF TALENT:광기
-		クール値 += 2
+		쿨치 += 2
 	SIF TALENT:금단의지식
-		クール値 += 3
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:사역히트 -= クール値
-	;下限突破を防止
+		쿨치 += 3
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:사역히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:사역히트 < 0
 		TFLAG:사역히트 = 0
 ENDIF
 
-;성교(봉사)のクールダウン
+;성교(봉사)의 쿨 다운
 IF TFLAG:성봉히트 > 0
-	;初期値を設定(2)
-	クール値 = 2
-	;전회実行で(-1)
+	;초기치를 설정(2)
+	쿨치 = 2
+	;전회실행으로(-1)
 	SIF TFLAG:전ACT분류 == 10
-		クール値 -= 1
-	;죠교자상태변화によりクールダウン量変動
+		쿨치 -= 1
+	;죠교자상태변화에 의해 쿨 다운량 변동
 	;무기력(+0～1)
 	SIF TCVAR:상태변화 == 3
-		クール値 += RAND:2
+		쿨치 += RAND:2
 	;정욕(-3)
 	SIF TCVAR:상태변화 == 5
-		クール値 -= 3
+		쿨치 -= 3
 	;싫증(+1)
 	SIF TCVAR:상태변화 == 7
-		クール値 += 1
-	;삽입してる間だけ速いスピードでクールダウンする(+7)
+		쿨치 += 1
+	;삽입 하고 있는 동안만 빠른 스피드로 쿨 다운한다(+7)
 	SIF TEQUIP:성교봉사중 && TFLAG:ACT분류 != 10
-		クール値 += 7
-	;죠교자が남성혐오の時、男が죠교대상なら(+3)
+		쿨치 += 7
+	;죠교자가남성혐오때, 남자가죠교대상라면(+3)
 	SIF TALENT:남성혐오 && TALENT:MASTER:남자
-		クール値 += 3
-	;죠교자素質によりクールダウン量変動
+		쿨치 += 3
+	;죠교자소질에 의해 쿨 다운량 변동
 	SIF TALENT:연모
-		クール値 -= 1
-	;금일의방침が애만들기なら(+5)
+		쿨치 -= 1
+	;금일의방침가애만들기라면(+5)
 	SIF TFLAG:금일의방침 == 7
-		クール値 += 5
-	;リアクションによる倍率
-	クール値 = COOL_BYREACT(クール値)
-	;クール値が正ならクールダウン実行
-	SIF クール値 > 0
-		TFLAG:성봉히트 -= クール値
-	;下限突破を防止
+		쿨치 += 5
+	;리액션에 의한 배율
+	쿨치 = COOL_BYREACT(쿨치)
+	;쿨치가 정이라면 쿨 다운 실행
+	SIF 쿨치 > 0
+		TFLAG:성봉히트 -= 쿨치
+	;하한 돌파를 방지
 	SIF TFLAG:성봉히트 < 0
 		TFLAG:성봉히트 = 0
 ENDIF
 
 
 ;────────────────────────────────────
-;성교系同一体位抑制処理
-;PLAYER_ACTM系から移動@これみ
+;성교계 동일 체위 억제 처리
+;PLAYER_ACTM계로부터 이동@이것 보고
 ;────────────────────────────────────
-;성교系
+;성교계
 FOR LCOUNT, 0, 5
-	;該当体位なら+100
+	;해당 체위라면+100
 	IF TFLAG:전ACT == LCOUNT + 30
 		TFLAG:(356 + LCOUNT) += 100
-	;それ以外なら2/3
+	;그 이외라면 2/3
 	ELSE
 		TFLAG:(356 + LCOUNT) = TFLAG:(356 + LCOUNT) * 2 / 3
 	ENDIF
@@ -1969,64 +1969,64 @@ NEXT
 ;성교봉사
 LOCAL = 95, 96, 103, 97, 98
 FOR LCOUNT, 0, 5
-	;該当体位なら+100
+	;해당 체위라면+100
 	IF TFLAG:전ACT == LOCAL:LCOUNT
 		TFLAG:(351 + LCOUNT) += 100
-	;それ以外なら2/3
+	;그 이외라면 2/3
 	ELSE
 		TFLAG:(351 + LCOUNT) = TFLAG:(351 + LCOUNT) * 2 / 3
 	ENDIF
 NEXT
 
 ;────────────────────────────────────
-;イかせる、焦らす
+;가게 하는, 초조하게 한다
 ;────────────────────────────────────
-;汎用연속행동플래그(ACT분류예약、행동예약が既にある場合無視)
+;범용연속행동플래그(ACT분류예약, 행동예약가 이미 있는 경우 무시)
 IF TFLAG:연속행동 && TFLAG:ACT분류예약 == -1 && TCVAR:행동예약 == -1
-	;ACT분류、ACTを예약する
+	;ACT분류, ACT를예약 한다
 	TFLAG:ACT분류예약 = TFLAG:ACT분류
 	TCVAR:행동예약 = TFLAG:ACT
 ENDIF
-;연속행동플래그解除
+;연속행동플래그해제
 TFLAG:연속행동 = 0
 
-;Ｃ절정時
+;Ｃ절정시
 IF NOWEX:MASTER:사정 || NOWEX:MASTER:Ｃ절정
-	;가버려・애태움のリセット
+	;가버려·애태움의 리셋트
 	TCVAR:MASTER:가버려 = 0
 	TCVAR:MASTER:애태움도 = 0
 ENDIF
 SIF NOWEX:Ｃ절정
 	TCVAR:TARGET:가버려 = 0
 	
-;죠교대상に남성기が存在しない時にＣ절정
+;죠교대상에남성기가 존재하지 않을 때에Ｃ절정
 IF !PENIS(MASTER) && NOWEX:MASTER:Ｃ절정
-	;애태움のリセット
+	;애태움의 리셋트
 	TCVAR:MASTER:애태움도 = 0
 ENDIF
-;징계・時、애태움のリセット
-SIF TFLAG:징계・플래그
+;징계·때, 애태움의 리셋트
+SIF TFLAG:징계·플래그
 	TCVAR:MASTER:애태움도 = 0
 
 ;────────────────────────────────────
-;ACT보정値減少、減衰処理
+;ACT보정치 감소, 감쇠 처리
 ;────────────────────────────────────
 CFLAG:(400 + TFLAG:ACT) /= 2
 
 ;────────────────────────────────────
-;データベースの등록、ターンのリセット
+;데이타베이스의등록, 턴의 리셋트
 ;────────────────────────────────────
-;データベース등록
+;데이타베이스등록
 CALL DATABASE_INPUT
 
-;全CHARA体位の保存
+;전CHARA 체위의 보존
 FOR LCOUNT, 0, CHARANUM
 	FOR LCOUNT:1, 1, 11
 		TEQUIP:LCOUNT:(110 + LCOUNT:1) = TEQUIP:LCOUNT:(100 + LCOUNT:1)
 	NEXT
 NEXT
 
-;TEQUIPの保存
+;TEQUIP의 보존
 ;성교
 TFLAG:전턴성교 = TEQUIP:성교중
 TFLAG:전턴성교봉사 = TEQUIP:성교봉사중
@@ -2035,28 +2035,28 @@ TFLAG:전턴안면승마 = TEQUIP:안면승마
 TFLAG:전턴Ａ안면승마 = TEQUIP:안면승마항문
 
 ;참다플래그
-;참다中は
+;참다중은
 IF TCVAR:MASTER:참다
-	;절정で참다リセット
+	;절정로참다리셋트
 	IF NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정
 		TCVAR:MASTER:참다 = 0
-	;そうでなければカウントを-1
+	;그렇지 않으면 카운트를-1
 	ELSE
 		TCVAR:MASTER:참다 -= 1
 	ENDIF
 ENDIF
 
 ;────────────────────────────────────
-;사정後のターン数加算について by /L
+;사정 후의 턴수가산에 대해 by/L
 ;────────────────────────────────────
-;2014/11/08時点ではTFLAG:사정후경과턴とTFLAGとTCVARが混在してちょっと判り難い상태
-;とは言え、いきなりTFLAG:사정후경과턴等を削除してしまう訳にもいかないと考えるので
-;403xx series辺りまではこのままということで。あと장내사정후경과턴とか個人的趣味()で追加しま했다
+;2014/11/08시점에서는 TFLAG:사정후경과턴와 TFLAG와 TCVAR가 혼재해 조금 알기 어려운상태
+;라고는 해도, 갑자기 TFLAG:사정후경과턴등을 삭제해 버릴 수도 없다고 생각하므로
+;403xx series 근처까지는 이대로라고 하는 일로. 그리고장내사정후경과턴라든지 개인적 취미()로 추가 섬했다
 ;-------------------------------------------------
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교대상사정後のターン数加算
+;죠교대상사정 후의 턴수가산
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;TFLAG:사정후경과턴は403xx seriesで抹消予定@/L
+;TFLAG:사정후경과턴는 403xx series로 말소 예정@/L
 SIF TFLAG:사정후경과턴
 	TFLAG:사정후경과턴 += 1
 
@@ -2064,9 +2064,9 @@ SIF TCVAR:MASTER:사정후경과턴참조
 	TCVAR:MASTER:사정후경과턴 += 1
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교대상질내사정後のターン数加算
+;죠교대상질내사정 후의 턴수가산
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;TFLAG:질내사정후경과턴は403xx seriesで抹消予定@/L
+;TFLAG:질내사정후경과턴는 403xx series로 말소 예정@/L
 SIF TFLAG:질내사정후경과턴
 	TFLAG:질내사정후경과턴 += 1
 
@@ -2074,40 +2074,40 @@ SIF TCVAR:MASTER:질내사정후경과턴참조
 	TCVAR:MASTER:질내사정후경과턴 += 1
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교대상장내사정後のターン数加算
+;죠교대상장내사정 후의 턴수가산
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 SIF TCVAR:MASTER:장내사정후경과턴참조
 	TCVAR:MASTER:장내사정후경과턴 += 1
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교자사정後のターン数加算
+;죠교자사정 후의 턴수가산
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 SIF TCVAR:사정후경과턴참조
 	TCVAR:사정후경과턴 += 1
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교자질내사정後のターン数加算
+;죠교자질내사정 후의 턴수가산
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 SIF TCVAR:질내사정후경과턴참조
 	TCVAR:질내사정후경과턴 += 1
 
 ;━━━━━━━━━━━━━━━━━━━━━━━━
-;죠교자장내사정後のターン数加算
+;죠교자장내사정 후의 턴수가산
 ;━━━━━━━━━━━━━━━━━━━━━━━━
 SIF TCVAR:장내사정후경과턴참조
 	TCVAR:장내사정후경과턴 += 1
 
-;죠교ターン数加算
+;죠교턴수가산
 TFLAG:죠교시간 ++
 
-;실금플래그リセット
+;실금플래그리셋트
 TFLAG:실금 = 0
 
-;조수연속교합플래그加算
+;조수연속교합플래그가산
 SIF TFLAG:조수에삽입중 || TFLAG:조수가삽입중
 	TFLAG:조수연속교합 = 1
 
-;今回のコマンドを「전회의コマンド」とする
+;이번 커맨드를 「전회의커맨드」라고 한다
 PREVCOM = SELECTCOM
 TFLAG:전REACT분류 = TFLAG:REACT분류
 TFLAG:전턴방침 = TFLAG:턴방침
@@ -2115,26 +2115,26 @@ TFLAG:전ACT분류 = TFLAG:ACT분류
 TFLAG:전ACT = TFLAG:ACT
 TFLAG:조수의전행동 = TFLAG:조수의방침
 
-;윤활の保存
+;윤활의 보존
 TCVAR:MASTER:전윤활 = PALAM:MASTER:윤활
 
-;조교자행동제みの플래그をリセット
+;조교자행동제 보고의플래그를 리셋트
 TFLAG:조교자행동제 = 0
 
-;実行可能反応の数をリセット
+;실행 가능 반응의 수를 리셋트
 TFLAG:가능한COM수 = 0
 
-;행동パターンをリセット
+;행동패턴을 리셋트
 TFLAG:ACT파생 = 0
 
-;죠교대상の反応による영향をリセット
-CALL SET_COMGRO("なし")
+;죠교대상의 반응에 의한영향를 리셋트
+CALL SET_COMGRO("없음")
 
-;호감도/경험치上昇量をリセット
+;호감도/경험치상승량을 리셋트
 TFLAG:호감도업 = 0
 TFLAG:경험치업 = 0
 
-;누움상태の再設定
+;누움상태의 재설정
 IF TFLAG:누움 > 0
 	IF TEQUIP:밀어넘어지는중 || TEQUIP:안면승마 || TEQUIP:안면승마항문
 		TFLAG:누움 = 1
@@ -2143,20 +2143,20 @@ IF TFLAG:누움 > 0
 	ENDIF
 ENDIF
 
-;SP행동のリセット
+;SP행동의 리셋트
 TFLAG:ＳＰ행동 = 0
 
-;汎用연속행동플래그のリセット
+;범용연속행동플래그의 리셋트
 TFLAG:연속행동 = 0
 
-;발기計算のリセット
+;발기계산의 리셋트
 TCVAR:MASTER:금회발기 = 0
 TCVAR:MASTER:전립선자극 = 0
 
-;印象のリセット
-CALL SET_COMIMP("영향なし")
+;인상의 리셋트
+CALL SET_COMIMP("영향없음")
 
-;조수플레이時のTEQUIPをリセット
+;조수플레이시의 TEQUIP를 리셋트
 TFLAG:Ｐ삽입중 = 0
 TFLAG:Ｐ사용중 = 0
 TFLAG:Ａ사용중 = 0
@@ -2166,22 +2166,22 @@ TFLAG:Ｖ사용중 = 0
 TFLAG:발사용중 = 0
 TFLAG:손사용중 = 0
 
-;추가행동플래그のリセット
+;추가행동플래그의 리셋트
 TFLAG:강제탈의 = 0
 TFLAG:자주탈의 = 0
 TFLAG:미약등사용 = 0
 TFLAG:추가행동 = 0
 
-;구상発生플래그等のリセット
+;구상발생플래그등의 리셋트
 TFLAG:추가행동구상 = 0
 TFLAG:추가행동지문스킵 = 0
 TFLAG:미약등사용구상 = 0
 TFLAG:미약등사용지문스킵 = 0
 
-;죠교指令の기록
-TSTR:前죠교指令 = %TSTR:죠교指令%
+;죠교지령의기록
+TSTR:전죠교지령 = %TSTR:죠교지령%
 
-;절정の기록
+;절정의기록
 TCVAR:MASTER:전회턴Ｃ절정 = TCVAR:MASTER:Ｃ절정
 TCVAR:MASTER:전회턴Ｖ절정 = TCVAR:MASTER:Ｖ절정
 TCVAR:MASTER:전회턴Ａ절정 = TCVAR:MASTER:Ａ절정
@@ -2206,19 +2206,19 @@ TCVAR:전회턴방뇨          = TCVAR:방뇨
 TCVAR:MASTER:전회사정 = NOWEX:MASTER:사정
 TCVAR:전회사정 = NOWEX:사정
 
-;절정系TCVARのリセット
+;절정계 TCVAR의 리셋트
 FOR LCOUNT, 0, CHARANUM
 	VARSET TCVAR:LCOUNT:0, 0, 70, 80
 NEXT
 
 ;────────────────────────────────────
-;パラメータの上昇＆表示（DOWNもここで）
+;파라미터의 상승＆표시（DOWN도 여기서）
 ;────────────────────────────────────
 ;-----------------------------------------
-;PALAM보정値変動処理
-;CUPがあったものは増加、なかったものは減衰する
+;PALAM보정치 변동 처리
+;CUP가 있던 것은 증가, 없었던 것은 감쇠한다
 ;-----------------------------------------
-;快Ｘ/ｘ보정値上昇(快Ｘ/ｘ上昇時、보정値+10)
+;쾌Ｘ/x보정가격인상승(쾌Ｘ/x상승시, 보정치+10)
 FOR LCOUNT, 0, 4
 	SIF CUP:MASTER:LCOUNT
 		CFLAG:MASTER:(30 + LCOUNT) += 10
@@ -2226,7 +2226,7 @@ FOR LCOUNT, 0, 4
 		CFLAG:(30 + LCOUNT) += 10
 NEXT
 	
-;快Ｘ/ｘ보정値減衰(50超過時、1T毎-1)
+;쾌Ｘ/x보정치 감쇠(50 초과시, 1 T마다-1)
 FOR LCOUNT, 0, CHARANUM
 	FOR LCOUNT:1, 30, 34
 		SIF CFLAG:LCOUNT:(LCOUNT:1) > 50
@@ -2235,25 +2235,25 @@ FOR LCOUNT, 0, CHARANUM
 NEXT
 
 ;-----------------------------------------
-;PALAM自然減衰処理
-;CUPがなかったものは減衰する
+;PALAM 자연 감쇠 처리
+;CUP가 없었던 것은 감쇠한다
 ;-----------------------------------------
-;快感の自然減衰
-;合計0の場合は5%づつ減衰(いきそうな場合、쾌Ｃは除外)
-;快感系PALAMはいずれかの増加があったときは減衰しない
+;쾌감의 자연 감쇠
+;합계 0의 경우는 5%씩 감쇠(갈 것 같은 경우, 쾌Ｃ는 제외)
+;쾌감계 PALAM는 몇개의 증가가 있었을 때는 감쇠하지 않는다
 
-;죠교대상の快感減衰(快Ｘ上昇総計が0, 5%減衰)
+;죠교대상의 쾌감 감쇠(쾌Ｘ상승 총계가 0, 5% 감쇠)
 IF !MAX(CUP:MASTER:쾌Ｃ, CUP:MASTER:쾌Ｖ, CUP:MASTER:쾌Ａ, CUP:MASTER:쾌Ｂ)
-	;가버려な場合쾌Ｃを除外
+	;가버려인 경우쾌Ｃ를 제외
 	SIF TCVAR:MASTER:가버려 == 0
 		CDOWN:MASTER:쾌Ｃ += PALAM:MASTER:쾌Ｃ * 5 / 100
 	CDOWN:MASTER:쾌Ｖ += PALAM:MASTER:쾌Ｖ * 5 / 100
 	CDOWN:MASTER:쾌Ａ += PALAM:MASTER:쾌Ａ * 5 / 100
 	CDOWN:MASTER:쾌Ｂ += PALAM:MASTER:쾌Ｂ * 5 / 100
 ENDIF
-;죠교자の快感減衰(快ｘ上昇総計が0, 5%減衰)
+;죠교자의 쾌감 감쇠(쾌x상승 총계가 0, 5% 감쇠)
 IF !MAX(CUP:쾌Ｃ, CUP:쾌Ｖ, CUP:쾌Ａ, CUP:쾌Ｂ)
-	;가버려な場合쾌Ｃを除外
+	;가버려인 경우쾌Ｃ를 제외
 	SIF TCVAR:TARGET:가버려 == 0
 		CDOWN:쾌Ｃ += PALAM:쾌Ｃ * 5 / 100
 	CDOWN:쾌Ｖ += PALAM:쾌Ｖ * 5 / 100
@@ -2261,19 +2261,19 @@ IF !MAX(CUP:쾌Ｃ, CUP:쾌Ｖ, CUP:쾌Ａ, CUP:쾌Ｂ)
 	CDOWN:쾌Ｂ += PALAM:쾌Ｂ * 5 / 100
 ENDIF
 
-;가버려の判定
-;쾌Ｃ上昇0時は半減
+;가버려의 판정
+;쾌Ｃ상승 0시는 반감
 IF !CUP:MASTER:쾌Ｃ
 	TCVAR:MASTER:가버려 /= 2
-;それ以外では1.2倍
+;그 이외에서는 1.2배
 ELSE
 	TIMES TCVAR:MASTER:가버려 , 1.20
 ENDIF
 
-;쾌Ｃ上昇0時は半減
+;쾌Ｃ상승 0시는 반감
 IF !CUP:쾌Ｃ
 	TCVAR:TARGET:가버려 /= 2
-;それ以外では1.2倍
+;그 이외에서는 1.2배
 ELSE
 	TIMES TCVAR:TARGET:가버려 , 1.20
 ENDIF
@@ -2281,39 +2281,39 @@ ENDIF
 TCVAR:MASTER:가버려（정지） = TCVAR:MASTER:가버려 < ABL:MASTER:Ｃ감각 * 2 ? 1 # 0
 TCVAR:TARGET:가버려（정지） = TCVAR:TARGET:가버려 < ABL:TARGET:Ｃ감각 * 2 ? 1 # 0
 
-;로션非使用時は윤활減衰(5%)
+;로션비사용시는윤활감쇠(5%)
 CDOWN:MASTER:윤활 += TEQUIP:로션 ? 0 # PALAM:MASTER:윤활 * 5 / 100
 
-;Ｘ절정時
+;Ｘ절정시
 IF MAX(NOWEX:MASTER:Ｃ절정, NOWEX:MASTER:Ｖ절정, NOWEX:MASTER:Ａ절정, NOWEX:MASTER:Ｂ절정)
-	;욕정の30～60%減衰(욕정が大きいほど減衰)
+	;욕정의 30～60% 감쇠(욕정가 큰 만큼 감쇠)
 	CDOWN:MASTER:욕정 += PALAM:MASTER:욕정 * LIMIT(PALAM:MASTER:욕정, 4000, 8000) * 3 / 40000
-;快Ｘ上昇総計が小さい時
+;쾌Ｘ상승 총계가 어릴 때
 ELSEIF CUP:MASTER:쾌Ｃ + CUP:MASTER:쾌Ｖ + CUP:MASTER:쾌Ａ + CUP:MASTER:쾌Ｂ < 20
-	;욕정の0～10%減衰(욕정が大きいほど減衰)
+	;욕정의 0～10% 감쇠(욕정가 큰 만큼 감쇠)
 	CDOWN:MASTER:욕정 += PALAM:MASTER:욕정 * LIMIT(PALAM:MASTER:욕정, 0, 6000) / 60000
 ENDIF
 
-;굴복は上昇0時5%減衰
+;굴복는 상승 0시 5% 감쇠
 CDOWN:MASTER:굴복 += CUP:MASTER:굴복 ? 0 # PALAM:MASTER:굴복 * 5 / 100
-;공포は上昇0時1/12減衰
+;공포는 상승 0시 1/12감쇠
 CDOWN:MASTER:공포 += CUP:MASTER:공포 ? 0 # PALAM:MASTER:공포 / 12
-;さらに공포は上昇50未満で20%減衰追加
+;한층 더공포는 상승 50 미만으로 20% 감쇠 추가
 CDOWN:MASTER:공포 += CUP:MASTER:공포 >= 50 ? 0 # PALAM:MASTER:공포 * 20 / 100
-;반항は上昇0時1/18減衰
+;반항는 상승 0시 1/18감쇠
 CDOWN:MASTER:반항 += CUP:MASTER:반항 ? 0 # PALAM:MASTER:반항 / 18
-;고통は上昇0時10%減衰
+;고통는 상승 0시 10% 감쇠
 CDOWN:MASTER:고통 += CUP:MASTER:고통 ? 0 # PALAM:MASTER:고통 * 10 / 100
-;치정は上昇0時10%減衰
+;치정는 상승 0시 10% 감쇠
 CDOWN:MASTER:치정 += CUP:MASTER:치정 ? 0 # PALAM:MASTER:치정 * 10 / 100
-;불쾌は上昇0時1/12減衰
+;불쾌는 상승 0시 1/12감쇠
 CDOWN:MASTER:불쾌 += CUP:MASTER:불쾌 ? 0 # PALAM:MASTER:불쾌 / 12
-;억울は上昇0時5%減衰(ACTが脅すのときは減衰しない)
+;억울는 상승 0시 5% 감쇠(ACT가 위협하는 것 때는 감쇠하지 않는다)
 CDOWN:MASTER:억울 += CUP:MASTER:억울 && !IS_NOWACTNAME("엄하게 위협한다") ? 0 # PALAM:MASTER:억울 * 5 / 100
-;さらに억울は慰めるで従った場合20%減衰
+;한층 더억울는 위로하는 것으로 따랐을 경우 20% 감쇠
 CDOWN:MASTER:억울 += IS_NOWACTNAME("상냥하게 위로한다") && TFLAG:REACT분류 < 6 ? 0 # PALAM:MASTER:억울 * 20 / 100
 
-;地の文表示
+;지문 표시
 PRINTL 　
 IF FLAG:PALAM애니메 == 2
 	UPCHECK
@@ -2321,7 +2321,7 @@ ELSE
 	CALL UPCHECK_REV
 ENDIF
 
-;CUP,CDOWN,SOURCEをリセット
+;CUP, CDOWN, SOURCE를 리셋트
 FOR LCOUNT, 0, 50
 	CVARSET CUP, LCOUNT
 	CVARSET CDOWN, LCOUNT
@@ -2329,182 +2329,182 @@ FOR LCOUNT, 0, 50
 NEXT
 WAIT
 
-;全PALAMについて調査
+;전PALAM에 대해 조사
 FOR LCOUNT, 0, 50
-	;PALAMが限界を突破했다場合
+	;PALAM가 한계를 돌파했다경우
 	IF PALAM:MASTER:LCOUNT > 9999
-		;超過量を確認し、PALAMを上限に設定
+		;초과량을 확인해, PALAM를 상한으로 설정
 		LOCAL = PALAM:MASTER:LCOUNT - 9999
 		PALAM:MASTER:LCOUNT = 9999
-		;快Ｘ以外の時、이상경험が少なければ
+		;쾌Ｘ이외의 때, 이상경험가 적으면
 		IF LCOUNT > 4 && LOCAL > EXP:MASTER:이상경험 * 50
-			;이상경험加算
+			;이상경험가산
 			EXP:MASTER:이상경험 += 1
-			;地の文表示
-			PRINTL （파라미터(parameter) 한계 돌파에 의해）이상 경험+1
+			;지문 표시
+			PRINTL （파라미터 한계 돌파에 의해）이상 경험+1
 		ENDIF
 	ENDIF
-	;下限突破を防止
+	;하한 돌파를 방지
 	SIF PALAM:MASTER:LCOUNT < 0
 		PALAM:MASTER:LCOUNT = 0
 NEXT
 
-;파라미터변동を終了
+;파라미터변동를 종료
 TFLAG:파라미터변동 = 0
 
 ;────────────────────────────────────
-;죠교終了の判定
+;죠교종료의 판정
 ;────────────────────────────────────
 
-;リセットされる箇所がないのでここで初期化
+;리셋트 되는 개소가 없기 때문에 여기서 초기화
 FLAG:일상제어 = 0
 
 ;일회휴게
 IF TFLAG:일회휴게 == 1
-	;죠교後플래그に『일회휴게による終了』を渡す
+	;죠교 후플래그에 『일회휴게에 의한 종료』를 건네준다
 	FLAG:일상제어 = 3
-	;地の文表示
+	;지문 표시
 	PRINTL 
-	;죠교終了
+	;죠교종료
 	BEGIN AFTERTRAIN
-;통상の죠교(11カウント以降)
+;통상의죠교(11 카운트 이후)
 ELSEIF TFLAG:경과시간 > 10
-	;죠교継続判断
+	;죠교계속 판단
 	CALL EST_T_TRA_END()
-	継続基準値 = RESULT
+	계속기준치 = RESULT
 	
-	;죠교継続基準値を生成する
-	継続基準値 += TFLAG:경과시간 / 10
-	継続基準値 += TFLAG:조교자소모도 / 2
-	継続基準値 += TFLAG:소모도 / 3
+	;죠교계속 기준치를 생성한다
+	계속기준치 += TFLAG:경과시간 / 10
+	계속기준치 += TFLAG:조교자소모도 / 2
+	계속기준치 += TFLAG:소모도 / 3
 	
-	;경과시간によって보정
-	;30未満なら基準値減少(-3～0)
+	;경과시간에 의해보정
+	;30미만이라면 기준치 감소(-3～0)
 	IF TFLAG:경과시간 < 30
-		継続基準値 -= 3 - (TFLAG:경과시간 / 10)
-	;100未満なら基準値増加(100に近づくほど増加速度上昇, +0～23)
+		계속기준치 -= 3 - (TFLAG:경과시간 / 10)
+	;100미만이라면 기준치 증가(100에가까워짐(정도)만큼 증가 속도 상승, +0～23)
 	ELSEIF TFLAG:경과시간 < 100
-		継続基準値 += (TFLAG:경과시간 - 30) * (TFLAG:경과시간 / 2) / 150
-	;100以上なら基準値増加(+23～)
+		계속기준치 += (TFLAG:경과시간 - 30) * (TFLAG:경과시간 / 2) / 150
+	;100이상이라면 기준치 증가(+23～)
 	ELSE
-		継続基準値 += (TFLAG:경과시간 / 10) + 13
+		계속기준치 += (TFLAG:경과시간 / 10) + 13
 	ENDIF
 	
-	;흥미によって보정(低いほど基準値増加, -5～10)
-	継続基準値 += 10 - LIMIT(BASE:흥미 / 40, 0, 15)
+	;흥미에 의해보정(낮을 정도 기준치 증가, -5～10)
+	계속기준치 += 10 - LIMIT(BASE:흥미 / 40, 0, 15)
 	
-	;죠교자상태によって보정
+	;죠교자상태에 의해보정
 	;무기력(+3)
 	SIF TCVAR:상태변화 == 3
-		継続基準値 += 3
+		계속기준치 += 3
 	;몽롱(+1)
 	SIF TCVAR:상태변화 == 4
-		継続基準値 += 1
+		계속기준치 += 1
 	;정욕(-2)
 	SIF TCVAR:상태변화 == 5
-		継続基準値 -= 2
+		계속기준치 -= 2
 	;분노(-5)
 	SIF TCVAR:상태변화 == 6
-		継続基準値 -= 5
+		계속기준치 -= 5
 	;싫증(+5)
 	SIF TCVAR:상태변화 == 7
-		継続基準値 += 5
+		계속기준치 += 5
 	
-	;今回の죠교で대만족보너스を취득했다場合基準値上昇(+5)
+	;이번죠교로대만족보너스를취득했다경우 기준치 상승(+5)
 	SIF TFLAG:금회대만족 > 0
-		継続基準値 += 5
+		계속기준치 += 5
 	
-	;基準値は最低1
-	継続基準値 = MAX(継続基準値, 1)
-	;B = TFLAG:금일의방침 == 3 ? 5 # 0
+	;기준치는 최저 1
+	계속기준치 = MAX(계속기준치, 1)
+	;B = TFLAG:금일의방침 == 3? 5 # 0
 	
-	;基準値が죠교자죠교레벨による値を上回ると
-	IF RAND:継続基準値 > 10 + (GET_TRAINLV(TARGET) / 20) + 5
-		;精力0の場合、죠교後플래그に『精力0時終了』を渡す
+	;기준치가죠교자죠교레벨에 의한 값을 웃돌면
+	IF RAND:계속기준치 > 10 + (GET_TRAINLV(TARGET) / 20) + 5
+		;정력 0의 경우, 죠교 후플래그에 『정력 0시 종료』를 건네준다
 		IF BASE:MASTER:사정 <= 0
 			FLAG:일상제어 = 2
-		;その他の場合、죠교後플래그に『통상の終了』を渡す
+		;그 외의 경우, 죠교 후플래그에 『통상의 종료』를 건네준다
 		ELSE
 			FLAG:일상제어 = 1
 		ENDIF
-		;地の文、구상表示
+		;지문, 구상표시
 		PRINTL
 		CALL KOJO_EVENT(13)
 		CALL VOIDLINE_IF(RESULT)
-		;죠교終了
+		;죠교종료
 		BEGIN AFTERTRAIN
-	;소모도過剰時
-	;SANDBOX限定処理 체력0で即실신
+	;소모도과잉시
+	;SANDBOX 한정 처리 체력 0로 즉실신
 	ELSEIF (TFLAG:소모도 > 5 + TALENT:MASTER:작은체형 - TALENT:MASTER:장신 + TALENT:MASTER:정력절륜 - TALENT:MASTER:정력박약 + CFLAG:MASTER:죠교레벨 / 3 + RAND:5) || (BASE:MASTER:체력 == 0 && FLAG:모드 == 1)
-		;죠교자체력+기력は十分
+		;죠교자체력+기력는 충분히
 		IF BASE:MASTER:체력 + BASE:MASTER:기력 > 600
-			;地の文、구상表示
+			;지문, 구상표시
 			PRINTFORML 조교가 너무 격렬해 %CALLNAME:MASTER%(은)는 피로가 모여 있는 것 같다, %CALLNAME:TARGET%(은)는 조교를 끝맺었다
 			PRINTL
 			CALL KOJO_EVENT(13, 1)
-		;죠교자체력+기력が不발
+		;죠교자체력+기력가 불발
 		ELSE
-			;地の文、구상表示
+			;지문, 구상표시
 			PRINTFORML 조교가 너무 격렬해 %CALLNAME:MASTER%(은)는 실신했다
-			CALL MARK_CHECK_GET("실신")	;【굴복:56】실신 新仕様に変更@revkoishi(14/05/26)
+			CALL MARK_CHECK_GET("실신")	;【굴복:56】실신 신사양으로 변경@revkoishi(14/05/26)
 			PRINTL 
 			CALL KOJO_EVENT(13, 2)
 		ENDIF
-		;個別に処理していたのを統合。EVENT13_1はたぶんバグっていたはず@/L
-		;RESULT値が0以上なら空行
+		;개별적으로 처리하고 있던 것을 통합. EVENT13_1은 아마 버그를 일으키고 있었을 것@/L
+		;RESULT치가 0이상이라면 공행
 		CALL VOIDLINE_IF(RESULT)
-		;죠교後플래그に『실신による終了』を渡す
+		;죠교 후플래그에 『실신에 의한 종료』를 건네준다
 		FLAG:일상제어 = 4
-		;죠교終了
+		;죠교종료
 		BEGIN AFTERTRAIN
 	ENDIF
 ENDIF
 
 ;────────────────────────────────────
-;절정や시간경과等によるTEQUIPの解除
+;절정나시간경과등에 의한 TEQUIP의 해제
 ;────────────────────────────────────
-;※BEGINの解決はその時点で実行できる全てのコードの処理が終わった後で初めて行われます
-;※TEQUIP解除はこのタイミングでないと、죠교終了구상から体位の参照等が出来ません
-;※基本的には全部のTEQUIP解除はギリギリまで引っ張った方が便利かもしれませんが…
-;※各所を整合するのも面倒なのでとりあえず필요と思われる分だけ。残りは近いうちに
+;※BEGIN의 해결은 그 시점에서 실행할 수 있는 모든 코드의 처리가 끝난 다음에 처음으로 행해집니다
+;※TEQUIP 해제는 이 타이밍이 아니면, 죠교종료구상로부터 체위의 참조등을 할 수 없습니다
+;※기본적으로는 전부의 TEQUIP 해제는 빠듯이까지 이끄는 것이 편리할지도 모릅니다만…
+;※각처를 정합하는 것도 귀찮은 것으로 우선필요라고 생각되는 분만큼. 나머지는 가까운 시일내에
 
-;죠교자사정による성교解除
+;죠교자사정에 의한성교해제
 TEQUIP:성교중 = NOWEX:사정 ? 0 # TEQUIP:성교중
-;죠교대상사정(継続なし)による성교봉사解除
+;죠교대상사정(계속 없음)에 의한성교봉사해제
 TEQUIP:성교봉사중 = NOWEX:MASTER:사정 && !TFLAG:안빼고 ? 0 # TEQUIP:성교봉사중
-;죠교자が페니스밴드使用時、各種절정による성교解除
+;죠교자가페니스밴드사용시, 각종절정에 의한성교해제
 TEQUIP:성교중 = TEQUIP:죠교자페니스밴드 && (NOWEX:Ｃ절정 || NOWEX:Ｖ절정) ? 0 # TEQUIP:성교중
-;죠교대상が페니스밴드使用時、各種절정による성교解除
+;죠교대상가페니스밴드사용시, 각종절정에 의한성교해제
 TEQUIP:성교봉사중 = TEQUIP:페니스밴드 && (NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정) && !TFLAG:안빼고 ? 0 # TEQUIP:성교봉사중
 
-;非성교봉사時、안빼고を解除
+;비성교봉사시, 안빼고를 해제
 TFLAG:안빼고 = !TEQUIP:성교봉사중 ? 0 # TFLAG:안빼고
-;죠교대상사정(継続なし)によるC애무解除
+;죠교대상사정(계속 없음)에 의한 C애무해제
 IF TEQUIP:죠교대상Ｃ사용 && NOWEX:MASTER:사정
 	SELECTCASE TEQUIP:죠교대상Ｃ사용
-		;수음時
+		;수음시
 		CASE 1
-			;드라이사정時
+			;드라이사정시
 			IF NOWEX:MASTER:사정 == 1
 				TEQUIP:죠교대상Ｃ사용 = 0
 				TEQUIP:접촉손가락 = 0
-			;1/2の確率で終了
+			;1/2의 확률로 종료
 			ELSEIF RAND:2
 				TEQUIP:죠교대상Ｃ사용 = 0
 				TEQUIP:접촉손가락 = 0
 				PRINTFORMW %CALLNAME:TARGET%(은)는 손에 부착한 %CALLNAME:MASTER%의 정액을 맛있게 빨아 먹고 있다…
-			;継続
+			;계속
 			ELSE
 				PRINTFORML %CALLNAME:TARGET%(은)는 페니스 전체에 정액을 발라 넓혀
 				PRINTFORMW 천천히 애무하며 %CALLNAME:MASTER%의 다음 정액을 재촉 하고 있다…
 			ENDIF
-		;펠라チオ時
+		;펠라티오시
 		CASE 2
-			;드라이사정時
+			;드라이사정시
 			IF NOWEX:MASTER:사정 == 1
 				TEQUIP:죠교대상Ｃ사용 = 0
 				TEQUIP:접촉입 = 0
-			;1/2の確率で終了
+			;1/2의 확률로 종료
 			ELSEIF RAND:2
 				TEQUIP:죠교대상Ｃ사용 = 0
 				TEQUIP:접촉입 = 0
@@ -2514,61 +2514,61 @@ IF TEQUIP:죠교대상Ｃ사용 && NOWEX:MASTER:사정
 				? 입가에 살짝 뭍은 정액을 손가락으로 닦아、%CALLNAME:MASTER%에가 과시하는 것처럼 핥아먹는다
 				# 입을 벌려 안의 정액을 %CALLNAME:MASTER%에게 과시하며 천천히 삼킨다\@…
 				}
-			;継続
+			;계속
 			ELSE
 				PRINTFORML %CALLNAME:TARGET%(은)는 입안에 발해진 정액을 삼키면
 				PRINTFORMW 귀두에 입맞춤 분뇨 도내의 정액을 빨아 올리고 있다…
 			ENDIF
 	ENDSELECT
-;여자죠교대상Ｃ절정によるＣ애무解除
+;여자죠교대상Ｃ절정에 의한다Ｃ애무해제
 ELSEIF TEQUIP:죠교대상Ｃ사용 && NOWEX:MASTER:Ｃ절정 && !PENIS(MASTER)
 	SELECTCASE TEQUIP:죠교대상Ｃ사용
-		;애무時
+		;애무시
 		CASE 1
 			;페니스밴드수음
 			IF TEQUIP:페니스밴드
-				;1/2の確率で終了
+				;1/2의 확률로 종료
 				IF RAND:2
 					TEQUIP:죠교대상Ｃ사용 = 0
 					TEQUIP:접촉손가락 = 0
 					PRINTFORMW %CALLNAME:TARGET%(은)는 진짜의 페니스와 같이 뛰는 %CALLNAME:MASTER%의 장형으로부터 손을 떼어 놓았다…
-				;継続
+				;계속
 				ELSE
 					PRINTFORML %CALLNAME:TARGET%(은)는 절정에서 단단히 조일 수 있는 질내를 페니스 밴드로 풀어,
 					PRINTFORMW 천천히 한 전후 운동으로 %CALLNAME:MASTER%에 절정의 여운을 주고 있다…
 				ENDIF
 			;애무
 			ELSE
-				;1/2の確率で終了
+				;1/2의 확률로 종료
 				IF RAND:2
 					TEQUIP:죠교대상Ｃ사용 = 0
 					TEQUIP:접촉손가락 = 0
 					PRINTFORMW %CALLNAME:TARGET%(은)는 손에 부착한 %CALLNAME:MASTER%의 애액을 맛있게 빨아 먹고 있다…
-				;継続
+				;계속
 				ELSE
 					PRINTFORML %CALLNAME:TARGET%(은)는 보지 전체에 애액을 발라 넓혀
 					PRINTFORMW 천천히 한 애무로%CALLNAME:MASTER%에 절정의 여운을 주고 있다…
 				ENDIF
 			ENDIF
-		;クンニ時
+		;쿤닐링구스시
 		CASE 2
-			;1/2の確率で終了
+			;1/2의 확률로 종료
 			IF RAND:2
 				TEQUIP:죠교대상Ｃ사용 = 0
 				TEQUIP:접촉입 = 0
 				PRINTFORML %CALLNAME:TARGET%(은)는 키스를 하듯이 천천히 클리토리스를 빨아
 				PRINTFORMW 자취 아까운 듯이  간신히 입을 떼어 놓았다…
-			;継続
+			;계속
 			ELSE
 				PRINTFORML %CALLNAME:TARGET%(은)는 클리토리스흡인이들 와 혀끝에서 계속 빨고
 				PRINTFORMW 강제적으로 %CALLNAME:MASTER%에 깊은 절정감을 보내려 하고 있다…
 			ENDIF
 	ENDSELECT
 ENDIF
-;죠교대상절정による죠교자자위解除
+;죠교대상절정에 의한죠교자자위해제
 SIF NOWEX:MASTER:Ｃ절정 || NOWEX:MASTER:Ｖ절정 || NOWEX:MASTER:Ａ절정 || NOWEX:MASTER:Ｂ절정 || NOWEX:MASTER:사정
 	CLEARBIT TEQUIP:자위중, 0
-;죠교자절정による죠교자자위解除
+;죠교자절정에 의한죠교자자위해제
 SIF NOWEX:Ｃ절정 || NOWEX:Ｖ절정 || NOWEX:Ａ절정 || NOWEX:Ｂ절정
 	CLEARBIT TEQUIP:자위중, 1
 IF FLAG:오토모드표시설정 == 1 && FLAG:오토모드 > 0
@@ -2582,9 +2582,9 @@ IF FLAG:오토모드표시설정 == 1 && FLAG:오토모드 > 0
 	SKIPDISP 1
 ENDIF
 [SKIPSTART]
-구상側を対応시킨다필요があるので当面の間はコメントアウト
-v1.020若しくは1.010用パッチ対応予定。余裕ないんですよね、今ｗ(2015/01/09)
-;NOWEXのリセット
+구상측을 대응시킨다필요가 있으므로 당분간은 comment out
+v1. 020혹은 1.010용 패치 대응 예정. 여유 없지요, 지금 w(2015/01/09)
+;NOWEX의 리셋트
 FOR LCOUNT, 0, CHARANUM
 	VARSET NOWEX:LCOUNT:0
 NEXT
@@ -2595,7 +2595,7 @@ CALL SHOW_AUTOMODE_UPCHECK
 #DIM ABL_M, 100
 #DIM ABL_T, 100
 #DIM MARK_T, 10
-#DIM 성교有無, 1
+#DIM 성교유무, 1
 #LOCALSIZE 2
 SIF FLAG:오토모드표시설정 != 1
 	RETURN 0
@@ -2611,7 +2611,7 @@ IF ARG
 	FOR LOCAL, 0, 10
 		MARK_T:LOCAL = MARK:TARGET:LOCAL
 	NEXT
-	성교有無 = EXP:TARGET:성교경험 == CSVEXP(NO:TARGET, GETNUM(EXP, "성교경험"), 0) ? 1 # 0
+	성교유무 = EXP:TARGET:성교경험 == CSVEXP(NO:TARGET, GETNUM(EXP, "성교경험"), 0) ? 1 # 0
 ELSE
 	SKIPDISP 0
 	SETCOLOR 0xC07070
@@ -2630,9 +2630,9 @@ ELSE
 			PRINTFORML %CALLNAME:TARGET%에 의한 [%MARKNAME:LOCAL%](이)가 Lv{MARK:TARGET:LOCAL}(으)로 상승
 		MARK_T:LOCAL = MARK:TARGET:LOCAL
 	NEXT
-	IF 성교有無 && EXP:TARGET:성교경험 != CSVEXP(NO:TARGET, GETNUM(EXP, "성교경험"), 0)
-		성교有無 = 0
-		PRINTFORML 첫성교 발생！
+	IF 성교유무 && EXP:TARGET:성교경험 != CSVEXP(NO:TARGET, GETNUM(EXP, "성교경험"), 0)
+		성교유무 = 0
+		PRINTFORML 첫성교 발생!
 	ENDIF
 	RESETCOLOR
 	SKIPDISP 1
@@ -2640,22 +2640,22 @@ ENDIF
 
 
 ;────────────────────────────────────
-;クール値の計算
+;쿨치의 계산
 ;────────────────────────────────────
-;リアクション分類によるクール値倍率の処理
-;原則、호의的な反応をしていればヒート値が溜まりにくい。
-;주인님が새드かったり欲求不満だと天邪鬼な対応になるようにしてもいいかも？
-;暫定的なものなので要調整か。REACT분류を使ってもよいか？
+;리액션 분류에 의한 쿨치 배율의 처리
+;원칙, 호의적인 반응을 하고 있으면 히트치가 모이기 어렵다.
+;주인님가새드나 충분하고 욕구 불만이라면 심술쟁이인 대응이 되도록(듯이)해도 될지도?
+;잠정적인 것으로 요점 조정인가. REACT분류를 사용해도 괜찮은가?
 @COOL_BYREACT(ARG)
 #FUNCTION
 SELECTCASE TFLAG:REACT인상
-	;好印象大
+	;좋은인상
 	CASE 1, 5
 		TIMES ARG, 2.00
-	;好印象小
+	;약간좋은인상
 	CASE 2
 		TIMES ARG, 1.50
-	;悪印象小
+	;나쁜인상
 	CASE 3
 		TIMES ARG, 0.75
 	;악인상대

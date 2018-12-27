@@ -1,34 +1,34 @@
 ﻿;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
-;		봉사系メッセージ
+;		봉사계 메세지
 
 ;_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/#
 
 ;────────────────────────────────────
-;050,수음/애무強制
+;050, 수음/애무강제
 ;────────────────────────────────────
-;★リアクション前★
+;★리액션전★
 @TRAIN_MESSAGE_50
 IF 0
-;정상위/대면좌위/배면좌위中かつ죠교자が정욕かつTCVAR:가버려が立っている場合は発生するように変更@/L
+;정상위/대면좌위/배면좌위중 또한죠교자가정욕 또한 TCVAR:가버려가 서 있는 경우는 발생하도록(듯이) 변경@/L
 ELSEIF TEQUIP:성교봉사중 && IS_CONDITION(TARGET, "정욕") && TCVAR:가버려
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 突き\@ TEQUIP:성교봉사중 == 1 ? こみ # 上げ \@に激しく喘ぎながら、
 	PRINTFORML %CALLNAME%(은)는 %CALLNAME:MASTER%의 찌르기\@ TEQUIP:성교봉사중 == 1 ? 포함 # 인상 \@에 격렬하게 허덕이면서,
 ;OriginalString : %CALLNAME:MASTER%의 손を自らの\@ TFLAG:ACT파생 == 2 ? %DHARNESS_DESCRIPTION(TARGET)% # %Ｃ描写(TARGET)% \@へと導き、애무を促했다…
-	PRINTFORML %CALLNAME:MASTER%의 손을 스스로의 \@ TFLAG:ACT파생 == 2 ? %DHARNESS_DESCRIPTION(TARGET)% # %Ｃ描写(TARGET)% \@로 이끌어,애무를 촉했다…
-;ACT파생が수음強制
+	PRINTFORML %CALLNAME:MASTER%의 손을 스스로의 \@ TFLAG:ACT파생 == 2 ? %DHARNESS_DESCRIPTION(TARGET)% # %Ｃ묘사(TARGET)% \@로 이끌어,애무를 촉했다…
+;ACT파생가수음강제
 ELSEIF TFLAG:ACT파생 == 1
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%に
 	PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%에
 ;OriginalString : 自分の남성기を손で扱けと命令했다…
 	PRINTFORML 자신의 남성기를 손으로 잡아당기라고 명령했다…
-;ACT파생が페니스밴드수음強制
+;ACT파생가페니스밴드수음강제
 ELSEIF TFLAG:ACT파생 == 2
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%に
 		PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%에
 ;OriginalString : 自分の身に着けた페니스밴드を손で掴んで動かせと命令했다…
 		PRINTFORML 자신의 몸에 댄 페니스 밴드를 손으로 잡아 움직이라고 명령했다…
-;ACT파생が애무強制
+;ACT파생가애무강제
 ELSE
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%に
 	PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%에
@@ -36,12 +36,12 @@ ELSE
 	PRINTFORML 자신의 성기를 손으로 애무하라고 명령했다…
 ENDIF
 
-;☆リアクション後☆
+;☆리액션 후☆
 @TRAIN_MESSAGE2_50
 SELECTCASE COMGRONAME(TFLAG:REACT분류)
 	CASE "적극적으로 한다", "태연하게 한다"
 		SELECTCASE TFLAG:ACT파생
-			CASE 1                      ;ACT파생が수음
+			CASE 1                      ;ACT파생가수음
 ;OriginalString : %CALLNAME:MASTER%は
 				PRINTFORM %CALLNAME:MASTER%(은)는 
 				SIF TCVAR:MASTER:자세 == 10       ;무릎으로 서있다
@@ -49,7 +49,7 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 					PRINTFORML 빠져들듯 무릎서기가 되어,
 ;OriginalString : %CALLNAME:TARGET%
 				PRINTFORM %CALLNAME:TARGET%
-				IF TCVAR:MASTER:위치전후 == 3     ;背後
+				IF TCVAR:MASTER:위치전후 == 3     ;배후
 ;OriginalString : の背後から손を回し、
 					PRINTFORM 의 배후로부터 손을 써,
 				ELSE                              ;통상
@@ -58,13 +58,13 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 				ENDIF
 ;OriginalString : %PENIS_DESCRIPTION(TARGET)%페니스를丁寧に애무했다…
 				PRINTFORML %PENIS_DESCRIPTION(TARGET)%페니스를 정중하게 애무했다…
-				IF TCVAR:발기 > 1                 ;죠교자발기が一定以上
-					IF PALAM:쾌Ｃ > 5000                    ;죠교자쾌Ｃが一定以上
+				IF TCVAR:발기 > 1                 ;죠교자발기가 일정 이상
+					IF PALAM:쾌Ｃ > 5000                    ;죠교자쾌Ｃ가 일정 이상
 ;OriginalString : %CALLNAME:TARGET%は페니스への刺激に\@ TALENT:작은체형 ? 可愛らしい # 艶っぽい \@喘ぎ声をあげている…
 						PRINTFORML %CALLNAME:TARGET%(은)는 페니스에의 자극에\@ TALENT:작은체형 ? 사랑스럽다 # 음란하다 \@허덕여 소리를 지르고 있다…
 					ENDIF
 				ENDIF
-			CASE 2                      ;ACT파생が페니스밴드수음
+			CASE 2                      ;ACT파생가페니스밴드수음
 ;OriginalString : %CALLNAME:MASTER%は
 				PRINTFORM %CALLNAME:MASTER%(은)는 
 				SIF TCVAR:MASTER:자세 == 10       ;무릎으로 서있다
@@ -72,7 +72,7 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 					PRINTFORML 빠져들듯 무릎서기가 되어,
 ;OriginalString : %CALLNAME:TARGET%
 				PRINTFORM %CALLNAME:TARGET%
-				IF TCVAR:MASTER:위치전후 == 3     ;背後
+				IF TCVAR:MASTER:위치전후 == 3     ;배후
 ;OriginalString : の背後から손を回し、
 					PRINTFORM 의 배후로부터 손을 써,
 				ELSE                              ;통상
@@ -81,11 +81,11 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 				ENDIF
 ;OriginalString : 作り物의 페니스를 本物のように애무했다…
 				PRINTFORML 모조품의 페니스를 진짜와 같이 애무했다…
-				IF PALAM:쾌Ｖ > 1000              ;죠교자쾌Ｖが一定以上
+				IF PALAM:쾌Ｖ > 1000              ;죠교자쾌Ｖ가 일정 이상
 ;OriginalString : %CALLNAME:TARGET%は페니스밴드越しの질내への刺激に\@ TALENT:작은체형 ? 可愛らしい # 艶っぽい \@喘ぎ声をあげている…
 					PRINTFORML %CALLNAME:TARGET%(은)는 페니스 밴드월 해의 질내에의 자극에\@ TALENT:작은체형 ? 사랑스럽다 # 음란하다 \@허덕여 소리를 지르고 있다…
 				ENDIF
-			CASEELSE                    ;ACT파생が애무
+			CASEELSE                    ;ACT파생가애무
 ;OriginalString : %CALLNAME:MASTER%は
 				PRINTFORM %CALLNAME:MASTER%(은)는 
 				SIF TCVAR:MASTER:자세 == 10       ;무릎으로 서있다
@@ -93,7 +93,7 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 					PRINTFORML 빠져들듯 무릎서기가 되어,
 ;OriginalString : %CALLNAME:TARGET%
 				PRINTFORM %CALLNAME:TARGET%
-				IF TCVAR:MASTER:위치전후 == 3     ;背後
+				IF TCVAR:MASTER:위치전후 == 3     ;배후
 ;OriginalString : の背後から손を回し、
 					PRINTFORM 의 배후로부터 손을 써,
 				ELSE                              ;통상
@@ -102,14 +102,14 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 				ENDIF
 ;OriginalString : 전신を애무했다…
 				PRINTFORML 전신을 애무했다…
-				IF TCVAR:가버려 || PALAM:쾌Ｃ > 7500 || PALAM:쾌Ｂ > 7500 || PALAM:쾌Ａ > 5000    ;快ｘが規定以上
-					IF TCVAR:가버려 || PALAM:쾌Ｃ > 7500            ;쾌Ｃ条件
+				IF TCVAR:가버려 || PALAM:쾌Ｃ > 7500 || PALAM:쾌Ｂ > 7500 || PALAM:쾌Ａ > 5000    ;쾌x가 규정 이상
+					IF TCVAR:가버려 || PALAM:쾌Ｃ > 7500            ;쾌Ｃ조건
 ;OriginalString : %CALLNAME:MASTER%의 손が민감되었다클리토리스を刺激すると
 						PRINTFORML %CALLNAME:MASTER%의 손이 민감하게 된 클리토리스를 자극하면
-					ELSEIF PALAM:쾌Ｂ > 7500                          ;쾌Ｂ条件
+					ELSEIF PALAM:쾌Ｂ > 7500                          ;쾌Ｂ조건
 ;OriginalString : %CALLNAME:MASTER%의 손が민감되었다乳首の先端を刺激すると
 						PRINTFORML %CALLNAME:MASTER%의 손이 민감하게 된 유두의 첨단을 자극하면
-					ELSE                                              ;쾌Ａ条件
+					ELSE                                              ;쾌Ａ조건
 ;OriginalString : %CALLNAME:MASTER%がよくほぐれた엉덩이に指を삽입すると、
 						PRINTFORML %CALLNAME:MASTER%자포자기한 애널에 손가락을 삽입하면,
 					ENDIF
@@ -120,57 +120,57 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 		RETURN 2
 	CASE "용서를 빌다"
 		SELECTCASE TFLAG:ACT파생
-			CASE 1                      ;ACT파생が수음
+			CASE 1                      ;ACT파생가수음
 ;OriginalString : %CALLNAME:MASTER%は命令に従い、%CALLNAME:TARGET%의 %PENIS_DESCRIPTION(TARGET)%페니스に손を伸ば했다…
 				PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따라, %CALLNAME:TARGET%의 %PENIS_DESCRIPTION(TARGET)%페니스에 손을 뻗었다…
-			CASE 2                      ;ACT파생が페니스밴드수음
+			CASE 2                      ;ACT파생가페니스밴드수음
 ;OriginalString : %CALLNAME:MASTER%は命令に従い、%CALLNAME:TARGET%의 作り物의 페니스に손を伸ば했다…
 				PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따라, %CALLNAME:TARGET%의 모조품의 페니스에 손을 뻗었다…
-			CASEELSE                    ;ACT파생が애무
+			CASEELSE                    ;ACT파생가애무
 ;OriginalString : %CALLNAME:MASTER%は命令に従い、%CALLNAME:TARGET%의 비순に손を伸ば했다…
 				PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따라, %CALLNAME:TARGET%의 비순에 손을 뻗었다…
 		ENDSELECT
 		RETURN 2
 	CASE "소극적으로 한다"
 		SELECTCASE TFLAG:ACT파생
-			CASE 1                      ;ACT파생が수음
+			CASE 1                      ;ACT파생가수음
 ;OriginalString : %CALLNAME:TARGET%は싫어하는 %CALLNAME:MASTER%의 손をとると、
 				PRINTFORML %CALLNAME:TARGET%(은)는 싫어하는 %CALLNAME:MASTER%(이)가 손을 잡으면,
 ;OriginalString : 自分の남성기を握らせた…
 				PRINTFORML 자신의 남성기를 잡게 했다…
-			CASE 2                      ;ACT파생が페니스밴드수음
+			CASE 2                      ;ACT파생가페니스밴드수음
 ;OriginalString : %CALLNAME:TARGET%は싫어하는 %CALLNAME:MASTER%의 손をとると、
 				PRINTFORML %CALLNAME:TARGET%(은)는 싫어하는 %CALLNAME:MASTER%(이)가 손을 잡으면,
 ;OriginalString : 自分の身に着けた偽りの남성기を握らせた…
 				PRINTFORML 자신의 몸에 댄 거짓의 남성기를 잡게 했다…
-			CASEELSE                    ;ACT파생が애무
+			CASEELSE                    ;ACT파생가애무
 ;OriginalString : %CALLNAME:TARGET%は싫어하는 %CALLNAME:MASTER%의 손をとると、
 				PRINTFORML %CALLNAME:TARGET%(은)는 싫어하는 %CALLNAME:MASTER%(이)가 손을 잡으면,
 ;OriginalString : 自分の秘所にこすりつけ始めた…
 				PRINTFORML 자신의 비곳에 문질러 바르기 시작했다…
 		ENDSELECT
 		RETURN 2
-	CASE "거부", "날뛴다", "逃げる"
-		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사系ACTの場合は거부扱い
+	CASE "거부", "날뛴다", "도망친다"
+		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사계 ACT의 경우는거부취급
 ;OriginalString : %CALLNAME:MASTER%は命令に従わず、勝손に자위を始めた。%CALLNAME:TARGET%は\@ IS_COMIMPNAME("악인상대") ? 不満そうだ # 呆れつつも諦め顔だ \@…
 			PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따르지 않고, 마음대로 자위를 시작했다.%CALLNAME:TARGET%(은)는 \@ IS_COMIMPNAME("악인상대") ? 불만인 것 같다 # 기가 막히면서도 체념얼굴이다 \@…
-		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정先行
+		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정선행
 ;OriginalString : %CALLNAME:MASTER%は恥ずかしくて%CALLNAME:TARGET%의 命令通りに봉사できなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 봉사할 수 없었다.%CALLNAME:TARGET%(은)는 불만스럽다…
-		ELSE                                                ;반항先行
+		ELSE                                                ;반항선행
 ;OriginalString : %CALLNAME:MASTER%は嫌がって%CALLNAME:TARGET%의 要求に応じなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 불만스럽다…
 		ENDIF
 		RETURN 1
-	;「受け入れる」はCOM側へ流します（봉사系一括処理）
+	;「받아들인다」는 COM측에 흘립니다（봉사계 일괄처리）
 ENDSELECT
 
 ;────────────────────────────────────
-;051,펠라チオ/クンニ強制
+;051, 펠라티오/쿤닐링구스 강제
 ;────────────────────────────────────
-;★リアクション前★
+;★리액션전★
 @TRAIN_MESSAGE_51
-IF GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2)        ;죠교대상がＣを責められている時
+IF GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2)        ;죠교대상가Ｃ를 꾸짖어지고 있을 때
 ;OriginalString : %CALLNAME:TARGET%は
 	PRINTFORM %CALLNAME:TARGET%(은)는 
 	IF TEQUIP:페니스밴드
@@ -186,7 +186,7 @@ IF GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2)        ;죠교대상がＣを�
 ;OriginalString : を애무하면서 %CALLNAME:MASTER%의 顔面にまたがった…
 	PRINTFORML (을)를 애무하면서 %CALLNAME:MASTER%의 안면에 걸쳤다…
 	SELECTCASE TFLAG:ACT파생
-		CASE 3                               ;ACT파생が안면승마항문
+		CASE 3                               ;ACT파생가안면승마항문
 			IF INRANGE(TCVAR:MASTER:장내사정후경과턴, 1, 2)
 ;OriginalString : %CALLNAME:TARGET%의 %ANUS_DESCRIPTION(TARGET)%からは、%CALLNAME:MASTER%が放った%SEMEN_DESCRIPTION(MASTER)%がどろりとあふれでている…
 				PRINTFORML %CALLNAME:TARGET%의 %ANUS_DESCRIPTION(TARGET)%(으)로부터는, %CALLNAME:MASTER%(은)는 발했다%SEMEN_DESCRIPTION(MASTER)%가 꿀렁꿀렁 넘쳐 나오고 있다…
@@ -194,10 +194,10 @@ IF GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2)        ;죠교대상がＣを�
 ;OriginalString : %CALLNAME:MASTER%의 目の前にひくつく菊門がさらけ出されている……
 				PRINTFORML %CALLNAME:MASTER%의 눈앞에 살짝 열린 항문이 드러나고 있다……
 			ENDIF
-		CASE 1                               ;ACT파생が펠라強制
+		CASE 1                               ;ACT파생가펠라강제
 ;OriginalString : %CALLNAME%は%PENIS_DESCRIPTION(TARGET)%페니스를見せ付けつつ、%CALLNAME:MASTER%に입で扱けと命じた……
 			PRINTFORML %CALLNAME%(은)는 %PENIS_DESCRIPTION(TARGET)%페니스를 과시하면서, %CALLNAME:MASTER%에 입으로 잡아당기라고 명했다……
-		CASEELSE                                                    ;ACT파생がクンニ強制/안면승마
+		CASEELSE                                                    ;ACT파생가 쿤닐링구스 강제/안면승마
 			IF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)
 ;OriginalString : %CALLNAME:TARGET%의 膣입からは先程たっぷりと搾り取った%SEMEN_DESCRIPTION(MASTER)%がどろりとあふれでている…
 				PRINTFORML %CALLNAME:TARGET%의 질구로부터는 조금 전 가득 짜낸 %SEMEN_DESCRIPTION(MASTER)%가 꿀렁꿀렁 넘쳐 나오고 있다…
@@ -206,52 +206,52 @@ IF GROUPMATCH(TEQUIP:죠교대상Ｃ사용, 1, 2)        ;죠교대상がＣを�
 				PRINTFORML %CALLNAME:MASTER%의 눈앞에 무방비인 %VAGINA_DESCRIPTION(TARGET)%이(가) 드러내지고 있다……
 			ENDIF
 	ENDSELECT
-ELSE                                              ;その他
+ELSE                                              ;그 외
 	SELECTCASE TFLAG:ACT파생
-		CASE 1                                              ;ACT파생が펠라強制
+		CASE 1                                              ;ACT파생가펠라강제
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%に自分の남성기を입で扱けと命令했다…
 			PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%에 자신의 남성기를 입으로 잡아당기라고 명령했다…
-		CASE 2                                              ;ACT파생が안면승마
+		CASE 2                                              ;ACT파생가안면승마
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 顔面にまたがり陰唇を開いて舐めるように命令했다…
 			PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 안면에 걸쳐 음순을 열어 빨도록 명령했다…
-			;질내사정後しばらく
-			SIF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)    ;질내사정後2ターン以内
+			;질내사정 후 당분간
+			SIF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)    ;질내사정 후 2 턴 이내
 ;OriginalString : %CALLNAME:TARGET%의 膣입からは先程たっぷりと搾り取った%SEMEN_DESCRIPTION(MASTER)%がどろりとあふれでている…
 				PRINTFORML %CALLNAME:TARGET%의 질구로부터는 조금 전 가득 짜낸 %SEMEN_DESCRIPTION(MASTER)%가 꿀렁꿀렁 넘쳐 나오고 있다…
-		CASE 3                                              ;ACT파생が안면승마항문
+		CASE 3                                              ;ACT파생가안면승마항문
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 顔面にまたがり엉덩이를 핥아るように命令했다…
 			PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 안면에 걸쳐 애널를 빨도록 명령했다…
-			SIF INRANGE(TCVAR:MASTER:장내사정후경과턴, 1, 2)    ;장내사정後2ターン以内
+			SIF INRANGE(TCVAR:MASTER:장내사정후경과턴, 1, 2)    ;장내사정 후 2 턴 이내
 ;OriginalString : %CALLNAME:TARGET%의 %ANUS_DESCRIPTION(TARGET)%からは、%CALLNAME:MASTER%が放った%SEMEN_DESCRIPTION(MASTER)%がどろりとあふれでている…
 				PRINTFORML %CALLNAME:TARGET%의 %ANUS_DESCRIPTION(TARGET)%(으)로부터는, %CALLNAME:MASTER%(은)는 발했다%SEMEN_DESCRIPTION(MASTER)%가 꿀렁꿀렁 넘쳐 나오고 있다…
-		CASEELSE                                            ;ACT파생がクンニ強制
+		CASEELSE                                            ;ACT파생가 쿤닐링구스 강제
 ;OriginalString : %CALLNAME:TARGET%は%VAGINA_DESCRIPTION(TARGET)%を指で開いて
 			PRINTFORML %CALLNAME:TARGET%(은)는 %VAGINA_DESCRIPTION(TARGET)%(을)를 손가락으로 열려
 ;OriginalString : %CALLNAME:MASTER%に舐めるよう命令했다…
 			PRINTFORML %CALLNAME:MASTER%에 빨도록 명령했다…
-			SIF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)    ;질내사정後2ターン以内
+			SIF INRANGE(TCVAR:MASTER:질내사정후경과턴, 1, 2)    ;질내사정 후 2 턴 이내
 ;OriginalString : %CALLNAME:TARGET%의 膣입からは先程たっぷりと搾り取った%SEMEN_DESCRIPTION(MASTER)%がどろりとあふれでている…
 				PRINTFORML %CALLNAME:TARGET%의 질구로부터는 조금 전 가득 짜낸 %SEMEN_DESCRIPTION(MASTER)%가 꿀렁꿀렁 넘쳐 나오고 있다…
 	ENDSELECT
 ENDIF
 
-;☆リアクション後☆
+;☆리액션 후☆
 @TRAIN_MESSAGE2_51
 SELECTCASE COMGRONAME(TFLAG:REACT분류)
 	CASE "적극적으로 한다", "태연하게 한다"
 		SELECTCASE TFLAG:ACT파생
-			CASE 3                      ;ACT파생が안면승마항문
+			CASE 3                      ;ACT파생가안면승마항문
 ;OriginalString : %CALLNAME:MASTER%は目の前でひくつく%CALLNAME:TARGET%의 엉덩이を丁寧に舐め始めた…
 				PRINTFORML %CALLNAME:MASTER%(은)는 눈앞에 붙은 %CALLNAME:TARGET%의 애널를 정중하게 빨기 시작했다…
-			CASE 2                      ;ACT파생が안면승마
+			CASE 2                      ;ACT파생가안면승마
 				IF IS_COMGRONAME("적극적으로 한다")              ;적극적으로 한다
 ;OriginalString : %CALLNAME:MASTER%は溢れ出る愛液の芳香に恍惚と하면서 %CALLNAME:TARGET%의 女성기に舌を這わせた…
 					PRINTFORML %CALLNAME:MASTER%(은)는 넘쳐 나오는 애액의 방향에 황홀로 하면서 %CALLNAME:TARGET%의 여성기에 혀를 기게 했다…
 				ELSE                                        ;태연하게 한다
 ;OriginalString : %CALLNAME:MASTER%は反応を１つずつ確かめるようにして%CALLNAME:TARGET%의 女성기に舌を這わせた…
-					PRINTFORML %CALLNAME:MASTER%(은)는 반응을１개씩 확인하듯이 해 %CALLNAME:TARGET%의 여성기에 혀를 기게 했다…
+					PRINTFORML %CALLNAME:MASTER%는 반응을 1개씩 확인하듯이 해 %CALLNAME:TARGET%의 여성기에 혀를 기게 했다…
 				ENDIF
-			CASE 1                      ;ACT파생が펠라チオ強制
+			CASE 1                      ;ACT파생가펠라티오 강제
 ;OriginalString : %CALLNAME:MASTER%は
 				PRINTFORM %CALLNAME:MASTER%(은)는 
 				SIF TCVAR:MASTER:자세 == 10                 ;무릎으로 서있다
@@ -259,11 +259,11 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 					PRINTFORML %CALLNAME:TARGET%의 전에 무릎 꿇어,
 ;OriginalString : %CALLNAME:TARGET%의 페니스를 根元までくわえ込み熱心に봉사했다…
 				PRINTFORML %CALLNAME:TARGET%의 페니스를 근원까지 입에 물고 붐비어 열심히 봉사했다…
-			CASEELSE                    ;ACT파생がその他
-				IF TALENT:다리없음                            ;죠교자に발がない
+			CASEELSE                    ;ACT파생가 그 외
+				IF TALENT:다리없음                            ;죠교자에발가 없다
 ;OriginalString : %CALLNAME:MASTER%は성기を掲げて準備している%CALLNAME:TARGET%의 前にひざまずき、
 					PRINTFORML %CALLNAME:MASTER%(은)는 성기를 내걸어 준비해 있는 %CALLNAME:TARGET%의 전에 무릎 꿇어,
-				ELSE                                        ;발はある
+				ELSE                                        ;발는 있다
 ;OriginalString : %CALLNAME:MASTER%は脚を開いて準備している%CALLNAME:TARGET%의 前にひざまずき、
 					PRINTFORML %CALLNAME:MASTER%(은)는 다리를 열어 준비해 있는 %CALLNAME:TARGET%의 전에 무릎 꿇어,
 				ENDIF
@@ -273,115 +273,115 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 		RETURN 2
 	CASE "용서를 빌다", "소극적으로 한다"
 		SELECTCASE TFLAG:ACT파생
-			CASE 3                      ;ACT파생が안면승마항문
+			CASE 3                      ;ACT파생가안면승마항문
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 입に애널을 문지르、봉사を強要している…
 				PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 입에 애널를 꽉 눌러 봉사를 강요하고 있다…
-			CASE 2                      ;ACT파생が안면승마
+			CASE 2                      ;ACT파생가안면승마
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 입を성기でふさぎ、봉사を強要している…
 				PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 입을 성기로 막아, 봉사를 강요하고 있다…
-			CASE 1                      ;ACT파생が펠라チオ強制
+			CASE 1                      ;ACT파생가펠라티오 강제
 ;OriginalString : %CALLNAME:MASTER%は鼻先に突きつけられた페니스に、顔をしかめながらも봉사했다…
 				PRINTFORML %CALLNAME:MASTER%(은)는 코끝에 들이댈 수 있었던 페니스에, 얼굴을 밖에 째면서도 봉사했다…
-			CASEELSE                    ;ACT파생がその他
+			CASEELSE                    ;ACT파생가 그 외
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 頭をつかんで自分の秘所に押し付けた…
 				PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 머리를 잡아 자신의 비소에 꽉 눌렀다…
 		ENDSELECT
 		RETURN 2
-	CASE "거부", "날뛴다", "逃げる"
-		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사系ACTの場合は거부扱い
+	CASE "거부", "날뛴다", "도망친다"
+		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사계 ACT의 경우는거부취급
 ;OriginalString : %CALLNAME:MASTER%は命令に従わず、勝손に자위を始めた。%CALLNAME:TARGET%は\@ IS_COMIMPNAME("악인상대") ? 不満そうだ # 呆れつつも諦め顔だ \@…
 			PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따르지 않고, 마음대로 자위를 시작했다. %CALLNAME:TARGET%(은)는 \@ IS_COMIMPNAME("악인상대") ? 불만인 것 같다 # 기가 막히면서도 체념한 얼굴이다 \@…
-		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정先行
+		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정선행
 ;OriginalString : %CALLNAME:MASTER%は恥ずかしくて%CALLNAME:TARGET%의 命令通りに봉사できなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 봉사할 수 없었다.%CALLNAME:TARGET%(은)는 불만스럽다…
-		ELSE                                                ;반항先行
+		ELSE                                                ;반항선행
 ;OriginalString : %CALLNAME:MASTER%は嫌がって%CALLNAME:TARGET%의 要求に応じなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 불만스럽다…
 		ENDIF
 		RETURN 1
-	;「受け入れる」はCOM側へ流します（봉사系一括処理）
+	;「받아들인다」는 COM측에 흘립니다（봉사계 일괄처리）
 ENDSELECT
 
 ;────────────────────────────────────
-;052,파이즈리
+;052, 파이즈리
 ;────────────────────────────────────
-;★リアクション前★
+;★리액션전★
 @TRAIN_MESSAGE_52
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%に
 PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%에
 ;OriginalString : 自分の남성기を가슴で扱けと命令했다…
 PRINTFORML 자신의 남성기를 가슴으로 잡아당기라고 명령했다…
 
-;☆リアクション後☆
+;☆리액션 후☆
 @TRAIN_MESSAGE2_52
 SELECTCASE COMGRONAME(TFLAG:REACT분류)
 	CASE "적극적으로 한다", "태연하게 한다"
-		IF TALENT:MASTER:거유           ;죠교대상が거유
+		IF TALENT:MASTER:거유           ;죠교대상가거유
 ;OriginalString : %CALLNAME:MASTER%は自らの豊満な乳房を存分に活かして봉사했다…
 			PRINTFORML %CALLNAME:MASTER%(은)는 스스로의 풍만한 유방을 마음껏 살려 봉사했다…
-		ELSEIF TALENT:MASTER:빈유       ;죠교대상が빈유
+		ELSEIF TALENT:MASTER:빈유       ;죠교대상가빈유
 ;OriginalString : %CALLNAME:MASTER%は平らな가슴を懸命に寄せて擦り付けるようにして봉사했다…
 			PRINTFORML %CALLNAME:MASTER%(은)는 평평한 가슴을 열심히 대어 칠하듯이 해 봉사했다…
-		ELSE                            ;その他
+		ELSE                            ;그 외
 ;OriginalString : %CALLNAME:MASTER%は両손で가슴を寄せて%CALLNAME%を少しでも気持ち良くさせようと했다…
 			PRINTFORML %CALLNAME:MASTER%(은)는 양손으로 가슴을 대어%CALLNAME%(을)를 조금이라도 기분 좋게 시키려고 했다…
 		ENDIF
 		RETURN 2
 	CASE "용서를 빌다", "소극적으로 한다"
-		IF TALENT:MASTER:거유           ;죠교대상が거유
+		IF TALENT:MASTER:거유           ;죠교대상가거유
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 豊かな가슴を思うままに蹂躙했다…
 			PRINTFORML %CALLNAME%(은)는 %CALLNAME:MASTER%의 풍부한 가슴을 생각하는 대로 유린했다…
-		ELSEIF TALENT:MASTER:빈유       ;죠교대상が빈유
+		ELSEIF TALENT:MASTER:빈유       ;죠교대상가빈유
 ;OriginalString : %CALLNAME%は%CALLNAME:MASTER%의 平坦な가슴に페니스를擦りつけた…
 			PRINTFORML %CALLNAME%(은)는 %CALLNAME:MASTER%의 평탄한 가슴에 페니스를 문질렀다…
-		ELSE                            ;その他
+		ELSE                            ;그 외
 ;OriginalString : %CALLNAME:MASTER%は%CALLNAME%に乳房の谷間を犯され、顔を背けた…
 			PRINTFORML %CALLNAME:MASTER%(은)는 %CALLNAME%에 유방의 골짜기를 범해져 얼굴을 돌렸다…
 		ENDIF
 		RETURN 2
-	CASE "거부", "날뛴다", "逃げる"
-		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사系ACTの場合は거부扱い
+	CASE "거부", "날뛴다", "도망친다"
+		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사계 ACT의 경우는거부취급
 ;OriginalString : %CALLNAME:MASTER%は命令に従わず、勝손に자위を始めた。%CALLNAME:TARGET%は\@ IS_COMIMPNAME("악인상대") ? 不満そうだ # 呆れつつも諦め顔だ \@…
 			PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따르지 않고, 마음대로 자위를 시작했다.%CALLNAME:TARGET%(은)는 \@ IS_COMIMPNAME("악인상대") ? 불만인 것 같다 # 기가 막히면서도 체념얼굴이다 \@…
-		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정先行
+		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정선행
 ;OriginalString : %CALLNAME:MASTER%は恥ずかしくて%CALLNAME:TARGET%의 命令通りに봉사できなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 봉사할 수 없었다.%CALLNAME:TARGET%(은)는 불만스럽다…
-		;반항先行
-		ELSE                                                ;반항先行
+		;반항선행
+		ELSE                                                ;반항선행
 ;OriginalString : %CALLNAME:MASTER%は嫌がって%CALLNAME:TARGET%의 要求に応じなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 불만스럽다…
 		ENDIF
 		RETURN 1
-	;「受け入れる」はCOM側へ流します（봉사系一括処理）
+	;「받아들인다」는 COM측에 흘립니다（봉사계 일괄처리）
 ENDSELECT
 
 ;────────────────────────────────────
-;053,스마타
+;053, 스마타
 ;────────────────────────────────────
-;★リアクション前★
+;★리액션전★
 @TRAIN_MESSAGE_53
 IF TFLAG:ACT파생 == 1         ;페니스밴드스마타
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%に
 	PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%에
 ;OriginalString : %CALLNAME:TARGET%が身に着けた페니스밴드の先端を股に挟んで擦れと命令했다…
 	PRINTFORML %CALLNAME:TARGET%(은)는 몸에 댄 페니스 밴드의 첨단을 가랑이에 끼워 스치고라고 명령했다…
-ELSE                          ;통상の스마타
+ELSE                          ;통상의스마타
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%に
 	PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%에
 ;OriginalString : 自分の남성기を股に挟んで擦れと命令했다…
 	PRINTFORML 자신의 남성기를 가랑이에 끼워 스치고라고 명령했다…
 ENDIF
 
-;☆リアクション後☆
+;☆리액션 후☆
 @TRAIN_MESSAGE2_53
 SELECTCASE COMGRONAME(TFLAG:REACT분류)
 	CASE "적극적으로 한다", "태연하게 한다"
-		IF TFLAG:ACT파생 == 1           ;ACT파생が페니스밴드스마타
+		IF TFLAG:ACT파생 == 1           ;ACT파생가페니스밴드스마타
 ;OriginalString : %CALLNAME:MASTER%は太腿で모형자지を挟んで捕まえ、尻を回すように揺すって
 			PRINTFORML %CALLNAME:MASTER%(은)는 태 넙적다리로 펴 형태를 끼워 잡아 엉덩이를 돌리도록(듯이) 요 들이마셔
 ;OriginalString : %CALLNAME%に快感を与えようと했다…
 			PRINTFORML %CALLNAME%에 쾌감을 주려고 했다…
-		ELSE                            ;ACT파생が스마타
+		ELSE                            ;ACT파생가스마타
 ;OriginalString : %CALLNAME:MASTER%は愛液で塗れた太腿の間で%CALLNAME%의 페니스를 揉みほぐし、
 			PRINTFORML %CALLNAME:MASTER%(은)는 애액으로 바를 수 있었던 허벅지의 사이에 %CALLNAME%의 페니스를 비비어 풀어,
 ;OriginalString : 弾みをつけて腰を前後に揺すって刺激했다…
@@ -389,44 +389,44 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 		ENDIF
 		RETURN 2
 	CASE "용서를 빌다", "소극적으로 한다"
-		IF TFLAG:ACT파생 == 1           ;ACT파생が페니스밴드스마타
+		IF TFLAG:ACT파생 == 1           ;ACT파생가페니스밴드스마타
 ;OriginalString : %CALLNAME:MASTER%は太腿で모형자지を挟んで捕まえ、尻を回すように揺すって
 			PRINTFORML %CALLNAME:MASTER%(은)는 태 넙적다리로 펴 형태를 끼워 잡아 엉덩이를 돌리도록(듯이) 요 들이마셔
 ;OriginalString : %CALLNAME%に快感を与えようと했다…
 			PRINTFORML %CALLNAME%에 쾌감을 주려고 했다…
-		ELSE                            ;ACT파생が스마타
+		ELSE                            ;ACT파생가스마타
 ;OriginalString : %CALLNAME:MASTER%は愛液で塗れた太腿の間で%CALLNAME%의 페니스를 揉みほぐし、
 			PRINTFORML %CALLNAME:MASTER%(은)는 애액으로 바를 수 있었던 허벅지의 사이에 %CALLNAME%의 페니스를 비비어 풀어,
 ;OriginalString : 弾みをつけて腰を前後に揺すって刺激했다…
 			PRINTFORML 탄력을 주어 허리를 전후에 요 들이마셔 자극했다…
 		ENDIF
 		RETURN 2
-	CASE "거부", "날뛴다", "逃げる"
-		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사系ACTの場合は거부扱い
+	CASE "거부", "날뛴다", "도망친다"
+		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사계 ACT의 경우는거부취급
 ;OriginalString : %CALLNAME:MASTER%は命令に従わず、勝손に자위を始めた。%CALLNAME:TARGET%は\@ IS_COMIMPNAME("악인상대") ? 不満そうだ # 呆れつつも諦め顔だ \@…
 			PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따르지 않고, 마음대로 자위를 시작했다.%CALLNAME:TARGET%(은)는 \@ IS_COMIMPNAME("악인상대") ? 불만인 것 같다 # 기가 막히면서도 체념얼굴이다 \@…
-		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정先行
+		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정선행
 ;OriginalString : %CALLNAME:MASTER%は恥ずかしくて%CALLNAME:TARGET%의 命令通りに봉사できなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 봉사할 수 없었다.%CALLNAME:TARGET%(은)는 불만스럽다…
-		ELSE                                                ;반항先行
+		ELSE                                                ;반항선행
 ;OriginalString : %CALLNAME:MASTER%は嫌がって%CALLNAME:TARGET%의 要求に応じなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 불만스럽다…
 		ENDIF
 		RETURN 1
-	;「受け入れる」はCOM側へ流します（봉사系一括処理）
+	;「받아들인다」는 COM측에 흘립니다（봉사계 일괄처리）
 ENDSELECT
 
 ;────────────────────────────────────
-;055,발핥기강제
+;055, 발핥기강제
 ;────────────────────────────────────
-;★リアクション前★
+;★리액션전★
 @TRAIN_MESSAGE_55
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%に
 PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하면서、")% %CALLNAME:MASTER%에
 ;OriginalString : 自分の발를 핥아ろと命令했다…
 PRINTFORML 자신의 다리를 빨라고 명령했다…
 
-;☆リアクション後☆
+;☆리액션 후☆
 @TRAIN_MESSAGE2_55
 SELECTCASE COMGRONAME(TFLAG:REACT분류)
 	CASE "적극적으로 한다", "태연하게 한다"
@@ -439,30 +439,30 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 ;OriginalString : %CALLNAME:MASTER%は突き出했다舌で少しだけ%CALLNAME%の발를 핥아た…
 		PRINTFORML %CALLNAME:MASTER%(은)는 쑥 내민 혀로 약간%CALLNAME%의 다리를 빨았다…
 		RETURN 2
-	CASE "거부", "날뛴다", "逃げる"
-		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사系ACTの場合は거부扱い
+	CASE "거부", "날뛴다", "도망친다"
+		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사계 ACT의 경우는거부취급
 ;OriginalString : %CALLNAME:MASTER%は命令に従わず、勝손に자위を始めた。%CALLNAME:TARGET%は\@ IS_COMIMPNAME("악인상대") ? 不満そうだ # 呆れつつも諦め顔だ \@…
 			PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따르지 않고, 마음대로 자위를 시작했다.%CALLNAME:TARGET%(은)는 \@ IS_COMIMPNAME("악인상대") ? 불만인 것 같다 # 기가 막히면서도 체념얼굴이다 \@…
-		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정先行
+		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정선행
 ;OriginalString : %CALLNAME:MASTER%は恥ずかしくて%CALLNAME:TARGET%의 命令通りに봉사できなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 봉사할 수 없었다.%CALLNAME:TARGET%(은)는 불만스럽다…
-		ELSE                                                ;반항先行
+		ELSE                                                ;반항선행
 ;OriginalString : %CALLNAME:MASTER%は嫌がって%CALLNAME:TARGET%의 要求に応じなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 불만스럽다…
 		ENDIF
 		RETURN 1
-	;「受け入れる」はCOM側へ流します（봉사系一括処理）
+	;「받아들인다」는 COM측에 흘립니다（봉사계 일괄처리）
 ENDSELECT
 
 ;────────────────────────────────────
-;056,이라마치오
+;056, 이라마치오
 ;────────────────────────────────────
-;★リアクション前★
+;★리액션전★
 @TRAIN_MESSAGE_56
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%의 頭をつかんで、乱暴に%CALLNAME:MASTER%의 喉まで突き入れた…
 PRINTFORML %CALLNAME:TARGET%은(는) %CALLNAME:MASTER%의 머리를 잡아, 난폭하게 %CALLNAME:MASTER%의 목까지 찔러 넣었다…
 
-;☆リアクション後☆
+;☆리액션 후☆
 @TRAIN_MESSAGE2_56
 SELECTCASE COMGRONAME(TFLAG:REACT분류)
 	CASE "적극적으로 한다", "태연하게 한다"
@@ -475,7 +475,7 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 		PRINTFORML %CALLNAME%(은)는 숨을 하지 못하고 괴로워하는 %CALLNAME:MASTER%에 억지로질먹이키,
 ;OriginalString : 呻いても意に介さず입腔を蹂躙し続けた…
 		PRINTFORML 신음해도 뜻에 개좌도 구강을 계속 유린했다…
-	CASE "受け入れる"
+	CASE "받아들인다"
 ;OriginalString : %CALLNAME:MASTER%は쾌락を求めて蕩けた頭でどうにか理解すると、
 		PRINTFORML %CALLNAME:MASTER%(은)는 쾌락을 추구해 녹은 머리로 어떻게든 이해하면,
 ;OriginalString : %CALLNAME%が求めるままに입と喉を捧げた…
@@ -484,41 +484,41 @@ ENDSELECT
 RETURN 2
 
 ;────────────────────────────────────
-;057,가슴애무강제
+;057, 가슴애무강제
 ;────────────────────────────────────
-;★リアクション前★
+;★리액션전★
 @TRAIN_MESSAGE_57
 SELECTCASE TFLAG:ACT파생
-	CASE 2                              ;ACT파생が입で가슴애무를 강요
+	CASE 2                              ;ACT파생가입로가슴애무를 강요
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하며、")% %CALLNAME:MASTER%의 입元に
 		PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하며、")% %CALLNAME:MASTER%의 입가에
 ;OriginalString : %OPPAI_DESCRIPTION(TARGET)%を突き出し입で봉사するよう誘惑している…
 		PRINTFORML %OPPAI_DESCRIPTION(TARGET)%(을)를 들이대 봉사하듯이 유혹하고 있다…
-	CASEELSE                            ;ACT파생が손で가슴애무를 강요
+	CASEELSE                            ;ACT파생가손로가슴애무를 강요
 ;OriginalString : %CALLNAME:TARGET%は%TARGET_DESCRIPTION("하며")% %CALLNAME:MASTER%의 손をとり、
 		PRINTFORML %CALLNAME:TARGET%(은)는 %TARGET_DESCRIPTION("하며")% %CALLNAME:MASTER%의 손을 잡아,
 ;OriginalString : %OPPAI_DESCRIPTION(TARGET)%に導いた…
 		PRINTFORML %OPPAI_DESCRIPTION(TARGET)%에 이끌었다…
 ENDSELECT
 
-;☆リアクション後☆
+;☆리액션 후☆
 @TRAIN_MESSAGE2_57
 SELECTCASE COMGRONAME(TFLAG:REACT분류)
 	CASE "적극적으로 한다", "태연하게 한다"
-		IF TFLAG:ACT파생 == 2           ;ACT파생が입で가슴애무를 강요
+		IF TFLAG:ACT파생 == 2           ;ACT파생가입로가슴애무를 강요
 			PRINTFORM %CALLNAME:MASTER%(은)는 
 			SIF TCVAR:MASTER:자세 == 10 && TCVAR:MASTER:위치전후 == 1           ;무릎으로 서있다
 ;OriginalString : %CALLNAME:TARGET%의 乳房に顔を埋めるように무릎으로 서있다になり、
 				PRINTFORML %CALLNAME:TARGET%의 유방에 얼굴을 묻고 무릎서기가 되어,
 ;OriginalString : %CALLNAME:TARGET%의 乳首を입に含み時折甘噛み하면서吸いついている…
 			PRINTFORML %CALLNAME:TARGET%의 유두를 입에 넣어 핥고 때때로 감 살짝 씹으면서 애무했다…
-		ELSE                            ;ACT파생が손で가슴애무를 강요
+		ELSE                            ;ACT파생가손로가슴애무를 강요
 			PRINTFORM %CALLNAME:MASTER%(은)는 
 			SIF TCVAR:MASTER:자세 == 10 && TCVAR:MASTER:위치전후 == 1           ;무릎으로 서있다
 ;OriginalString : %CALLNAME:TARGET%의 乳房に顔を埋めるように무릎으로 서있다になり、
 				PRINTFORML %CALLNAME:TARGET%의 유방에 얼굴을 묻고 무릎서기가 되어,
 			PRINTFORM %CALLNAME:TARGET%의 
-			IF TCVAR:MASTER:위치전후 == 3                                       ;背後
+			IF TCVAR:MASTER:위치전후 == 3                                       ;배후
 ;OriginalString : 背後から손を回し、
 				PRINTFORM 배후로부터 손을 써,
 			ENDIF
@@ -527,25 +527,25 @@ SELECTCASE COMGRONAME(TFLAG:REACT분류)
 		ENDIF
 		RETURN 2
 	CASE "용서를 빌다", "소극적으로 한다"
-		IF TFLAG:ACT파생 == 2           ;ACT파생が입で가슴애무를 강요
+		IF TFLAG:ACT파생 == 2           ;ACT파생가입로가슴애무를 강요
 ;OriginalString : %CALLNAME:MASTER%は입元に押し当てられた%CALLNAME:TARGET%의 가슴に舌を這わせた…
 			PRINTFORML %CALLNAME:MASTER%(은)는 입가에 꽉 누를 수 있던 %CALLNAME:TARGET%의 가슴에 혀를 기게 했다…
-		ELSE                            ;ACT파생が손で가슴애무를 강요
+		ELSE                            ;ACT파생가손로가슴애무를 강요
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:MASTER%と손を重ね自分の가슴を揉みしだいている…
 			PRINTFORML %CALLNAME:TARGET%(은)는 %CALLNAME:MASTER%의 손을 모으고 자신의 가슴을 비비고 있다…
 		ENDIF
 		RETURN 2
-	CASE "거부", "날뛴다", "逃げる"
-		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사系ACTの場合は거부扱い
+	CASE "거부", "날뛴다", "도망친다"
+		IF IS_NOWCOMNAME("자위를 시작한다")                    ;봉사계 ACT의 경우는거부취급
 ;OriginalString : %CALLNAME:MASTER%は命令に従わず、勝손に자위を始めた。%CALLNAME:TARGET%は\@ IS_COMIMPNAME("악인상대") ? 不満そうだ # 呆れつつも諦め顔だ \@…
 			PRINTFORML %CALLNAME:MASTER%(은)는 명령에 따르지 않고, 마음대로 자위를 시작했다.%CALLNAME:TARGET%(은)는 \@ IS_COMIMPNAME("악인상대") ? 불만인 것 같다 # 기가 막히면서도 체념얼굴이다 \@…
-		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정先行
+		ELSEIF PALAM:MASTER:치정 > PALAM:MASTER:반항        ;치정선행
 ;OriginalString : %CALLNAME:MASTER%は恥ずかしくて%CALLNAME:TARGET%의 命令通りに봉사できなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 부끄러워서 %CALLNAME:TARGET%의 명령 대로에 봉사할 수 없었다.%CALLNAME:TARGET%(은)는 불만스럽다…
-		ELSE                                                ;반항先行
+		ELSE                                                ;반항선행
 ;OriginalString : %CALLNAME:MASTER%は嫌がって%CALLNAME:TARGET%의 要求に応じなかった。%CALLNAME:TARGET%は不満そうだ…
 			PRINTFORML %CALLNAME:MASTER%(은)는 싫어해 %CALLNAME:TARGET%의 요구에 응하지 않았다.%CALLNAME:TARGET%(은)는 불만스럽다…
 		ENDIF
 		RETURN 1
-	;「受け入れる」はCOM側へ流します（봉사系一括処理）
+	;「받아들인다」는 COM측에 흘립니다（봉사계 일괄처리）
 ENDSELECT

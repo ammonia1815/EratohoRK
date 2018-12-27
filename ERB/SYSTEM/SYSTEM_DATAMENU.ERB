@@ -1,8 +1,8 @@
 ﻿;-------------------------------------------------------------------------------
-;	DATAMENUで使用するマジックナンバー
+;	DATAMENU로 사용하는 magic number-
 ;-------------------------------------------------------------------------------
-;	とりあえずSAVEとAUTOで90+10で100枠、オプションで変更できるようにするなら
-;	マジックナンバーのところを適当なFLAGにでもすればおｋ
+;	우선 SAVE와 AUTO로 90+10로 100범위, 옵션으로 변경할 수 있도록(듯이)한다면
+;	magic number-를 적당한 FLAG라도 하면 k
 ;===============================================================================
 @SAVE_AREA(ARG)
 #FUNCTION
@@ -12,10 +12,10 @@ RETURNF LIMIT(100 + ARG, 0, 1000)
 #FUNCTION
 RETURNF LIMIT(10 + ARG, 0, SAVE_AREA())
 
-;COPYDATA用GLOBAL:x/GLOBALS:x
-;	現段階では코비―원 = GLOBAL:998、코비―선 = GLOBAL:999を使用
-;	대화용일시사용 = GLOBALS:99 を使用、TEMP세이브枠に1000 を使用
-;	ここを変えれば変更可
+;COPYDATA용 GLOBAL:x/GLOBALS:x
+;	현단계에서는코비─원 = GLOBAL:998, 코비─선 = GLOBAL:999를 사용
+;	대화용일시사용 = GLOBALS:99를 사용, TEMP세이브 범위에 1000을 사용
+;	여기를 바꾸면 변경가능
 @COPYDATA_BY()
 #FUNCTION
 RETURNF 998
@@ -33,7 +33,7 @@ RETURNF 1000
 RETURNF 99
 
 ;-------------------------------------------------------------------------------
-;	TITLE_LOADGAME	タイトル画面から로드を選んだ場合の独自処理
+;	TITLE_LOADGAME	타이틀 화면으로부터로드를 선택했을 경우의 독자 처리
 ;-------------------------------------------------------------------------------
 ;===============================================================================
 @TITLE_LOADGAME
@@ -42,8 +42,8 @@ CALL DATAMENU("TITLELOAD")
 ;-------------------------------------------------------------------------------
 ;	EVENTLOAD
 ;-------------------------------------------------------------------------------
-;	Rev#でEVENTLOADが見当たらなかったのでこんなところに
-;	え、まじで？
+;	Rev#로 EVENTLOAD가 눈에 띄지 않았기 때문에 이런 곳에
+;	네, 진심으로?
 ;===============================================================================
 @EVENTLOAD
 LOADGLOBAL
@@ -54,22 +54,22 @@ SIF GLOBALS:COPYDATA_TAG() != ""
 REDRAW 0
 CALL DAY_EFFECT
 
-;FLAG:2の更新
+;FLAG:2의 갱신
 FLAG:주인님 = FINDTALENT("주인님")
-; 플레이시간用
+; 플레이시간용
 CALLF PLAYTIME("SET")
 
 ;-------------------------------------------------------------------------------
-;	세이브時用一時変数初期化
+;	세이브시 용 일시 변수 초기화
 ;-------------------------------------------------------------------------------
-;	みたまんま
-;	Rev#の세이브システムでどれを消していいのかわからないので行頭RETURN
+;	본 그대로
+;	Rev#의세이브시스템으로 어떤 것을 지워도 좋은 것인지 모르기 때문에 줄머리 RETURN
 ;===============================================================================
 @VAR_INITIALIZE
 #LOCALSIZE 1
 RETURN RESULT
 
-;↓以下処理-------------------------------------------------
+;↓이하 처리-------------------------------------------------
 VARSET TFLAG
 VARSET TSTR
 FOR LOCAL, 0, VARSIZE("TCVAR")
@@ -97,15 +97,15 @@ NEXT
 RETURN RESULT
 
 ;-------------------------------------------------------------------------------
-;	SAVEINFO		(使用せず)
+;	SAVEINFO		(사용하지 않고)
 ;-------------------------------------------------------------------------------
 ;===============================================================================
-; →SHOP.ERBにてコメントアウト
+; →SHOP.ERB에서 comment out
 
 ;-------------------------------------------------------------------------------
-;	SAVEINFOF(式中関数)
+;	SAVEINFOF(식 안의 함수)
 ;-------------------------------------------------------------------------------
-;	SAVEINFOの式中関数版  PUTFORM？  何それ美味しいの？
+;	SAVEINFO의 식 안의 함수판  PUTFORM?   그게 뭐야 맛있는거야?
 ;===============================================================================
 @SAVEINFOF
 #FUNCTIONS
@@ -113,23 +113,23 @@ RETURN RESULT
 GETTIME
 LOCALS = %RESULTS% %CALLNAME:MASTER% {DAY+1}일째 %GET_TIME()% \@ TARGET >= 0 ? %CALLNAME:TARGET%이(가) %CALLNAME:MASTER%을(를) 조교 중 # \@【%PLAYTIME("GET")%】
 RETURNF LOCALS
-;LOCALS = %RESULTS% %CALLNAME:MASTER% {DAY+1}日目%GET_TIME()% \@ TARGET >= 0 ? %CALLNAME:TARGET%が%CALLNAME:MASTER%を조교중 # \@【%PLAYTIME("GET")%】
+;LOCALS = %RESULTS% %CALLNAME:MASTER% {DAY+1}일째%GET_TIME()% \@ TARGET >= 0 ? %CALLNAME:TARGET%가%CALLNAME:MASTER%를조교중 # \@【%PLAYTIME("GET")%】
 ;-------------------------------------------------------------------------------
-;	CHKDATAのRESULTSから세이브日時を취득する(式中関数)
+;	CHKDATA의 RESULTS로부터세이브일시를취득 한다(식 안의 함수)
 ;-------------------------------------------------------------------------------
-;	例  2010/04/01 12:34:56  →  20100401123456
-;	式中関数版CHKDATAのRESULTへの日時취득なんてなかった…！
+;	예  2010/04/01 12:34:56  →  20100401123456
+;	식 안의 함수판 CHKDATA의 RESULT에의 일시취득는 없었다…!
 ;===============================================================================
-;	ARGS = CHKDATA直後のRESULTSのみ対応
+;	ARGS = CHKDATA 직후의 RESULTS만 대응
 @CHKDATA_DATE(ARGS)
 #FUNCTION
 RETURNF TOINT(SUBSTRING(ARGS,0,4))*10000000000 + TOINT(SUBSTRING(ARGS,5,2))*100000000 + TOINT(SUBSTRING(ARGS,8,2))*1000000 + TOINT(SUBSTRING(ARGS,11,2))*10000 + TOINT(SUBSTRING(ARGS,14,2))*100 + TOINT(SUBSTRING(ARGS,17,2))
 
 ;-------------------------------------------------------------------------------
-;	세이브データを全検索して最も新しい세이브データ번호を취득(式中関数)
+;	세이브데이터를 전검색해 가장 새로운세이브데이터번호를취득(식 안의 함수)
 ;-------------------------------------------------------------------------------
 ;===============================================================================
-;	ARGS = "NOAUTO" 오토세이브含まない / その他 오토세이브含める
+;	ARGS = "NOAUTO"오토세이브 포함하지 않는/그 외 오토세이브 포함한다
 @ALLCHKDATA_DATE_LATEST(ARGS)
 #FUNCTION
 #LOCALSIZE 4
@@ -152,50 +152,50 @@ RETURNF LOCAL:2
 
 
 ;-------------------------------------------------------------------------------
-;	枠拡大오토세이브
+;	범위 확대오토세이브
 ;-------------------------------------------------------------------------------
-;	SAVE_AREA()-1番から逆算してまでAUTOSAVE_AREA()個
-;	「ゲッ、오토세이브上書きされちゃった！」な事故防止用
+;	SAVE_AREA()-1번으로부터 역산해서까지 AUTOSAVE_AREA() 개
+;	「겐, 오토세이브덧쓰기되어 버렸다!」사고 방지용
 ;===============================================================================
-;	LOCAL = COUNT  LOCAL:1 = DATE一時保存  LOCAL:2 = 比較用DATE  LOCAL:3 = 最終 
+;	LOCAL = COUNT  LOCAL:1 = DATE 일시 보존  LOCAL:2 =비교용 DATE  LOCAL:3 =최종 
 @SYSTEM_AUTOSAVE
 #LOCALSIZE 4
 VARSET LOCAL
-;오토세이브枠が0以下なら何もしない
+;오토세이브 범위가 0 이하라면 아무것도 하지 않는다
 SIF AUTOSAVE_AREA() <= 0
 	RETURN 0
-;デフォルト比較用にありえないDATEを(2999/12/31 23:59:59)セット
+;디폴트 비교용으로 있을 수 없는 DATE를(2999/12/31 23:59:59) 세트
 LOCAL:2 = 29991231235959
-;逆算
-;例:SAVE枠100,AUTO枠5 99,                      99-5(94), = 95番から99番まで
+;역산
+;예:SAVE범위 100, AUTO범위 5 99,                       99-5(94), = 95번에서 99번까지
 FOR LOCAL, SAVE_AREA(-1), SAVE_AREA(-1)-AUTOSAVE_AREA(), -1
 	CHKDATA LOCAL
-	;既存세이브データが存在するならDATEを、そうでないなら-1を一時保存
+	;기존세이브데이터가 존재한다면 DATE를, 그렇지 않으면-1을 일시 보존
 	LOCAL:1 = RESULT == 0 ? CHKDATA_DATE(RESULTS) # -1
-	;上と比較用DATEを比較してより古いor空いている場合
+	;상과 비교용 DATE를 비교해보다 낡은 or 비어 있는 경우
 	IF LOCAL:1 < LOCAL:2
-		;比較用DATE更新
+		;비교용 DATE 갱신
 		LOCAL:2 = LOCAL:1
-		;最も古いもしくは空き세이브データ 更新
+		;가장 낡은 것도 깔고는 빈세이브데이터 갱신
 		LOCAL:3 = LOCAL
 	ENDIF
 NEXT
-;他所様のバリアントで怖いのでコメントアウト
+;다른 장소님의 바리안트로 무섭기 때문에 comment out
 ;CALL VAR_INITIALIZE
 SAVEDATA LOCAL:3, @"%SAVEINFOF()%"
 RETURN 1
 
 ;-------------------------------------------------------------------------------
-;	枠拡大クイック로드
+;	범위 확대 퀵로드
 ;-------------------------------------------------------------------------------
-;	最も新しい세이브データを로드
+;	가장 새로운세이브데이터를로드
 ;===============================================================================
 @QUICKLOAD
 #LOCALSIZE 1
 VARSET LOCAL
 LOCAL = ALLCHKDATA_DATE_LATEST()
 IF LOCAL == -1
-	CALL PRINT_DIALOG("세이브データが로드できません",2,2,2)
+	CALL PRINT_DIALOG("세이브데이터가로드 할 수 없습니다",2,2,2)
 	RETURN 0
 ELSE
 	CALL PRINT_DIALOG(@"{LOCAL}번을 로드했다",2,2,0)
@@ -205,19 +205,19 @@ ENDIF
 RETURN 1
 
 ;-------------------------------------------------------------------------------
-;	세이브データ総合
+;	세이브데이터 종합
 ;-------------------------------------------------------------------------------
-;	세이브,コメント세이브,로드,削除,コピーの各세이브データ관리を統合
+;	세이브, 코멘트세이브, 로드, 삭제, 카피의 각세이브데이터관리를 통합
 ;
-;	使い方
-;			↓こういう関数を作る
+;	사용법
+;			↓이런 함수를 만든다
 ;	@TITLE_LOADGAME
 ;	CALL DATAMENU("TITLELOAD")
 ;
-;	SAVEGAMEをCALL DATAMENU("SAVE")に置換
-;	LOADGAMEをCALL DATAMENU("LOAD")に置換
+;	SAVEGAME를 CALL DATAMENU("SAVE")에 치환
+;	LOADGAME를 CALL DATAMENU("LOAD")에 치환
 ;
-;	@EVENTLOAD に↓の二行を追加
+;	@EVENTLOAD 에↓의 2행을 추가
 ;	SIF GLOBALS:COPYDATA_TAG() != ""
 ;		CALL DATAMENU("NOWCOPY")
 ;																		ENJOY!
@@ -231,55 +231,55 @@ RETURN 1
 #LOCALSIZE 2
 #LOCALSSIZE 1
 COPYSELECT = -1
-;初期모드선택
+;초기모드선택
 SELECTCASE ARGS
-	;TITLEから飛んできた(LOAD意外不可)
+	;TITLE로부터 날아 왔다(LOAD 의외 불가)
 	CASE "TITLELOAD"
 		NOWMODE = 0
 	;세이브모드
 	CASE "SAVE"
 		NOWMODE = 1
-	;コメント付き세이브모드
+	;코멘트 첨부세이브모드
 	CASE "SAVECOMMENT"
 		NOWMODE = 2
 	;로드모드
 	CASE "LOAD"
 		NOWMODE = 3
-	;削除모드
+	;삭제모드
 	CASE "DELETE"
 		NOWMODE = 4
-	;コピー모드
+	;카피모드
 	CASE "COPY"
 		NOWMODE = 5
-	;コピー中EVENTLOADから飛んできた
+	;카피중 EVENTLOAD로부터 날아 왔다
 	CASE "NOWCOPY"
 		CALL COPYDATA
 		NOWMODE = 5
-	;引数文字列がおかしかったらRETURN
+	;인수 캐릭터 라인이 이상했으면 RETURN
 	CASEELSE
 		RETURN -1
 ENDSELECT
-;初期ページは오토세이브を含まない最新データのあるところ
+;초기 페이지는오토세이브를 포함하지 않는 최신 데이터가 있는 곳
 NOWPAGE = ALLCHKDATA_DATE_LATEST("NOAUTO") / 20
 
-;再描写はここから-------------------------------------------
+;재묘사는 여기로부터-------------------------------------------
 $PRINT_LIST
 SCREEN = LINECOUNT
-;最新データの취득
+;최신 데이터의취득
 LOCAL:1 = ALLCHKDATA_DATE_LATEST()
-;ダイアログ表示
+;다이얼로그 표시
 CALL PRINT_DIALOG(DATAMENU_LABEL(NOWMODE,1,COPYSELECT),1,1,1)
-;リスト表示
+;리스트 표시
 FOR LOCAL, 0, SAVE_AREA()
-	;20個ずつの表示
+	;20개씩의 표시
 	SIF !RANGE(LOCAL, NOWPAGE * 20, (NOWPAGE + 1) * 20 - 1)
 		CONTINUE
 
 	CHKDATA LOCAL
-	;선택出来ないものを暗色化
+	;선택 할 수 없는 것을 암색화
 	SIF RESULT != 0 && !( NOWMODE == 1 || NOWMODE == 2 || (NOWMODE == 5 && COPYSELECT != -1) )
 		SETCOLOR 0x808080
-	;行頭情報	COPY/NEW!/AUTO
+	;줄머리 정보	COPY/NEW!/AUTO
 	IF LOCAL == COPYSELECT
 		SETCOLOR 0xFFFF00
 ;OriginalString : %" COPY "%
@@ -301,11 +301,11 @@ FOR LOCAL, 0, SAVE_AREA()
 NEXT
 CALL NEWLINE
 
-;最大ページ数
+;최대 페이지수
 MAXPAGE = (LOCAL - 1) / 20
-;ページセレクタ
+;페이지 실렉터
 CALL PRINT_PAGESELECT(NOWPAGE,MAXPAGE)
-;タイトルから飛んできた場合は他機能不可
+;타이틀로부터 날아 왔을 경우는 타기능 불가
 IF NOWMODE
 	CALL NEWLINE
 	CALL PRINTC_COMMAND(1010,@"%UNICODE(0x25C0)%%DATAMENU_LABEL(TURNPAGE(NOWMODE, -1, 1, 5))%")
@@ -329,7 +329,7 @@ SELECTCASE RESULT
 	CASE 1011
 		NOWMODE = NOWMODE ? TURNPAGE(NOWMODE, +1, 1, 5) # 0
 ENDSELECT
-;コピー모드外れたら코비―원リセット
+;카피모드 빗나가면코비─원리셋트
 SIF NOWMODE != 5 && COPYSELECT != -1
 	COPYSELECT = -1
 $REPRINT
@@ -337,31 +337,31 @@ CLEARLINE LINECOUNT - SCREEN
 GOTO PRINT_LIST
 
 
-;実処理ここから----------------------------------------------
+;열매 처리 여기로부터----------------------------------------------
 $DO_PROCESS
-;だみぃ
+;다 보고
 IF NOWMODE < 0
 
-;세이브(코비―선선택)処理-------------------------
+;세이브(코비─선선택) 처리-------------------------
 ELSEIF NOWMODE == 1 || NOWMODE == 2 || ( NOWMODE == 5 && ( COPYSELECT != -1 && COPYSELECT != LOCAL) )
 	SELECTCASE RESULT
 		CASE 0,2,3,4
-			CALL PRINT_DIALOG(@"\@ !RESULT ? 세이브데이터가 존재합니다 덮어 쓰시겠습니까？ #  알 수 없는 데이터가 존재합니다 덮어 쓰시겠습니까？ \@",1,1,1)
+			CALL PRINT_DIALOG(@"\@ !RESULT ? 세이브데이터가 존재합니다 덮어 쓰시겠습니까?  #  알 수 없는 데이터가 존재합니다 덮어 쓰시겠습니까?  \@",1,1,1)
 			CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 			SIF RESULT == 2
 				GOTO REPRINT
 		CASE 1
 	ENDSELECT
-	;コピー모드時二回目はCALL先で코비―원を로드するのでここで終了
+	;카피모드시 2회째는 CALL처에서코비─원를로드 하므로 여기서 종료
 	SIF NOWMODE == 5 && ( COPYSELECT != -1 )
 		CALL COPYDATA(COPYSELECT,LOCAL)
 
-	;変数初期化  こわいのでコメントアウト
+	;변수 초기화  무섭기 때문에 comment out
 	;CALL VAR_INITIALIZE
 	LOCALS = %SAVEINFOF()%
-	;コメント세이브모드時はコメント入力
+	;코멘트세이브모드시는 코멘트 입력
 	IF NOWMODE == 2
-		CALL PRINT_DIALOG("コメントを入力してください",1,1,1)
+		CALL PRINT_DIALOG("코멘트를 입력해 주세요",1,1,1)
 		INPUTS
 		LOCALS += @" %RESULTS%"
 	ENDIF
@@ -370,7 +370,7 @@ ELSEIF NOWMODE == 1 || NOWMODE == 2 || ( NOWMODE == 5 && ( COPYSELECT != -1 && C
 	CALL PRINT_DIALOG(LOCALS,0,2,2)
 	RETURN 1
 
-;로드処理---------------------------------------
+;로드처리---------------------------------------
 ELSEIF NOWMODE == 0 || NOWMODE == 3
 	SELECTCASE RESULT
 		CASE 0
@@ -378,23 +378,23 @@ ELSEIF NOWMODE == 0 || NOWMODE == 3
 			CALL PRINT_DIALOG(RESULTS,0,2,2)
 			LOADDATA LOCAL
 		CASE 2,3,4
-			CALL PRINT_DIALOG("로드可能なデータでは有りません",2,2,2)
+			CALL PRINT_DIALOG("로드 가능한 데이터가 아닙니다",2,2,2)
 			GOTO REPRINT
 	ENDSELECT
 
-;削除処理-----------------------------------------
+;삭제 처리-----------------------------------------
 ELSEIF NOWMODE == 4 && RESULT != 1
-	CALL PRINT_DIALOG(@"{LOCAL}番を削除しても良いですか？",1,1,0)
+	CALL PRINT_DIALOG(@"{LOCAL}차례를 삭제해도 좋습니까?",1,1,0)
 	CALL PRINT_DIALOG(RESULTS,0,1,1)
 	CALL PRINT_CHOICE(,"예",1,"아니오",2,)
 	IF RESULT == 1
 		DELDATA LOCAL
-		CALL PRINT_DIALOG(@"{LOCAL}番を削除しま했다",2,2,0)
+		CALL PRINT_DIALOG(@"{LOCAL}차례를 삭제 섬했다",2,2,0)
 		CALL PRINT_DIALOG(RESULTS,0,2,2)
 		GOTO PRINT_LIST
 	ENDIF
 
-;코비―원선택処理---------------------------------
+;코비─원선택처리---------------------------------
 ELSEIF NOWMODE == 5 && COPYSELECT == -1 && RESULT == 0
 	COPYSELECT = LOCAL
 	GOTO PRINT_LIST
@@ -403,43 +403,43 @@ ENDIF
 GOTO REPRINT
 
 ;-----------------------------------------------------------
-;	DATAMENUで使うラベル表示用関数(式中関数)
+;	DATAMENU로 사용하는 라벨 표시용 함수(식 안의 함수)
 ;===========================================================
-;	ARG = NOWMODE  ARG:1 = HEADER用  ARG:2 = コピー모드のHEADER用
+;	ARG = NOWMODE  ARG:1 = HEADER용  ARG:2 =카피모드의 HEADER용
 @DATAMENU_LABEL(ARG,ARG:1,ARG:2)
 #FUNCTIONS
 SELECTCASE ARG
 	CASE 1, 2
 		SIF ARG:1
-			RETURNF @"세이브 - 어느 슬롯에 세이브합니까？ \@ ARG == 2 ? (コメント모드) # \@"
-		RETURNF @"\@ARG == 1 ? %FORMCELL("세이브",PRINTCPERLENGTH(-10),2)% # %FORMCELL("コメント세이브",PRINTCPERLENGTH(-10),2)% \@"
+			RETURNF @"세이브 - 어느 슬롯에 세이브합니까?  \@ ARG == 2 ? (코멘트모드) # \@"
+		RETURNF @"\@ARG == 1 ? %FORMCELL("세이브",PRINTCPERLENGTH(-10),2)% # %FORMCELL("코멘트세이브",PRINTCPERLENGTH(-10),2)% \@"
 	CASE 0, 3
 		SIF ARG:1
-			RETURNF "로드 - 어느 데이터를 로드합니까？"
+			RETURNF "로드 - 어느 데이터를 로드합니까?"
 		RETURNF FORMCELL("로드",PRINTCPERLENGTH(-10),2)
 	CASE 4
 		SIF ARG:1
-			RETURNF "삭제 - 어느 데이터를 삭제합니까？"
-		RETURNF FORMCELL("削除",PRINTCPERLENGTH(-10),2)
+			RETURNF "삭제 - 어느 데이터를 삭제합니까?"
+		RETURNF FORMCELL("삭제",PRINTCPERLENGTH(-10),2)
 	CASE 5
 		SIF ARG:1
-			RETURNF @"\@ ARG:2 == -1 ? 복사 - 어느 데이터를 복사합니까？ # 복사 - {ARG:2}번 데이터를 어느 슬롯에 복사합니까？ \@"
-		RETURNF FORMCELL("コピー",PRINTCPERLENGTH(-10),2)
+			RETURNF @"\@ ARG:2 == -1 ? 복사 - 어느 데이터를 복사합니까?  # 복사 - {ARG:2}번 데이터를 어느 슬롯에 복사합니까?  \@"
+		RETURNF FORMCELL("카피",PRINTCPERLENGTH(-10),2)
 	CASEELSE
 		RETURNF @"ERROR!{ARG,2}"
 ENDSELECT
 
 
 ;-----------------------------------------------------------
-;	세이브データコピー中用
+;	세이브데이터 카피중용
 ;-----------------------------------------------------------
-;	しっかし見難いなぁｗ
+;	그러나 보기 어렵구나w
 ;===========================================================
-;	ARG:0 / COPYDATA_BY() = 코비―원  
-;	ARG:1 / COPYDATA_TO() = 코비―선
+;	ARG:0/COPYDATA_BY() = 코비─원  
+;	ARG:1/COPYDATA_TO() = 코비─선
 @COPYDATA(ARG:0, ARG:1)
-;初めて飛んできた
-;現在のデータをTEMP枠に保存し、GLOBAL/Sに元/先/タグ保存して코비―원をLOAD
+;처음으로 날아 왔다
+;현재의 데이터를 TEMP범위에 보존해, GLOBAL/S에 원/선/태그 보존해코비─원를 LOAD
 IF !GLOBAL:COPYDATA_BY() && !GLOBAL:COPYDATA_TO() && GLOBALS:COPYDATA_TAG() == ""
 	SAVEDATA COPYDATA_TEMP(), @"TEMP"
 	GLOBAL:COPYDATA_BY() = ARG:0
@@ -447,15 +447,15 @@ IF !GLOBAL:COPYDATA_BY() && !GLOBAL:COPYDATA_TO() && GLOBALS:COPYDATA_TAG() == "
 	GLOBALS:COPYDATA_TAG() = {ARG,2}번 데이터를 {ARG:1,2} 슬롯에 복사했다
 	SAVEGLOBAL
 	LOADDATA GLOBAL:COPYDATA_BY()
-;二回目
-;LASTLOAD_NOと코비―원が同一でコピー用タグが真は코비―선にSAVEしてTEMPデータをLOAD
+;2회째
+;LASTLOAD_NO와코비─원가 동일해 카피용 태그가 진은코비─선에 SAVE 해 TEMP 데이터를 LOAD
 ELSEIF LASTLOAD_NO == GLOBAL:COPYDATA_BY() && GLOBALS:COPYDATA_TAG() != ""
 	GLOBAL:COPYDATA_BY() = 0
 	SAVEGLOBAL
 	SAVEDATA GLOBAL:COPYDATA_TO(), LASTLOAD_TEXT
 	LOADDATA COPYDATA_TEMP()
-;三回目(最後)
-;LASTLOAD_NOとTEMP枠が同一でコピー用タグが真はタグを表示してTEMP枠を削除
+;3회째(최후)
+;LASTLOAD_NO와 TEMP범위가 동일해 카피용 태그가 진은 태그를 표시해 TEMP범위를 삭제
 ELSEIF LASTLOAD_NO == COPYDATA_TEMP() && GLOBALS:COPYDATA_TAG() != ""
 	CALL PRINT_DIALOG(GLOBALS:COPYDATA_TAG(),2,2,2)
 	DELDATA COPYDATA_TEMP()

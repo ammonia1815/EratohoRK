@@ -1,17 +1,17 @@
 ﻿;==================================================
 ;
-;	関数置き場
+;	함수 두는 곳
 ;
 ;==================================================
 
 ;-------------------------------------------------
-;関数名:PRINT_HEARTCBW
-;概　要:HEARTCBをCALL했다後、『」』を指定色で表示し入力待ちする
-;引　数:0 ハート色指定
-;引　数:1 ハートの数(省略すると１つ)
-;引　数:2 使用するフォント名（省略するとVerdana）
-;引　数:3 『」』色指定 省略すると青(구상指定色)で表示
-;引　数:4 『」』の代わりに表示する文字列
+;함수명:PRINT_HEARTCBW
+;개  요점:HEARTCB를 CALL했다 후, 『」』를 지정색으로 표시해 입력 기다려 한다
+;인  수:0 하트색지정
+;인  수:1 하트의 수(생략 하면 1개)
+;인  수:2 사용하는 폰트명（생략 하면 Verdana）
+;인  수:3 『」』색지정 생략 하면 파랑(구상지정색)으로 표시
+;인  수:4 『」』대신에 표시하는 캐릭터 라인
 ;-------------------------------------------------
 @K11_PRINT_HEARTCBW(ARG:1 = 0xC07070, ARG = 1, ARGS = "Verdana", ARG:2 = 0xff5e64, ARGS:1 = "」")
 #LOCALSIZE 10
@@ -27,14 +27,14 @@ SETCOLOR LOCAL
 RETURN RESULT
 
 
-;吸血당했다らおちんちんギンギン設定って、何なんですかね。ホント理解できません。僕も吸血されてギンギンになりたいです
+;흡혈당했다등 자지 끙끙 설정은, 무엇일까요. 정말 이해할 수 없습니다. 나도 흡혈 되어 끙끙이 되고 싶습니다
 @K11_VAMPIRE
 	TCVAR:MASTER:발기도 = 1500
 	MAXBASE:MASTER:사정 += 100
 	BASE:MASTER:사정 = MAXBASE:MASTER:사정
 RETURN RESULT
 
-;強制SEX행동
+;강제 SEX행동
 @K11_SEX
 	IF TEQUIP:MASTER:하반신겉옷 || TEQUIP:MASTER:하반신속옷
 		TCVAR:행동예약 = 5
@@ -63,18 +63,18 @@ RETURN RESULT
 
 
 [SKIPSTART]
-;開始時に니삭스をガーターベルトにする
-;開幕速攻脱ぐ事になっても泣かない
+;개시시에니삭스를 가터 벨트로 한다
+;개막 속공 벗는 일이 되어도 울지 않는다
 @K11_SOCKS_CHANGE1
-;전라設定の場合、이벤트起こらない。섹스も起こりやすい반라オススメ。
+;전라설정의 경우, 이벤트 일어나지 않는다. 섹스도 일어나기 쉬운반라추천.
 IF CFLAG:TARGET:의상 == 0 || CFLAG:TARGET:의상 == 1
 	
 	IF KFLAG:4 == 0 && FAVOR(1500, 1500)
-		;無いとは思うが、一度も出なかったらそれはそれで寂しいので、１度は호감도により着替えあり
+		;없다고는 생각하지만, 한번도 나오지 않았으면 그건 그걸로 외롭기 때문에, 1번은호감도에 의해 서로 갈아입어
 		KFLAG:4 = 1
 	ELSE
-		;착의플레이선호あれば、３分の１
-		;なければ９分の１で変更で着替える
+		;착의플레이선호 있으면, 3분의 1
+		;없으면 9분의 1으로 변경으로 갈아입는다
 		LOCAL:1 = PERCENT(66)
 		SIF LOCAL:1
 			RETURN RESULT
@@ -83,28 +83,28 @@ IF CFLAG:TARGET:의상 == 0 || CFLAG:TARGET:의상 == 1
 			RETURN RESULT
 	ENDIF
 
-	;ガーター変更
+	;가터 변경
 	EQUIP:TARGET:신발안 = 3
 	TEQUIP:TARGET:신발안 = 3
-	;K11_SOCKS_CHANGE2で使う플래그
+	;K11_SOCKS_CHANGE2로 사용하는플래그
 	KFLAG:3 = 1
 	LOCAL = GETCOLOR()
 	SETCOLOR 0xCCCCCC
 	DRAWLINE
 	SETCOLOR LOCAL
 	PRINTFORMDL 
-	PRINTFORMW 「응……오늘은 이런 건 신어 보았지만 아무쪼록인？」
+	PRINTFORMW 「응…… 오늘은 이런 건 신어 보았지만 아무쪼록인?」
 	IF CFLAG:TARGET:의상 == 0
 		PRINTFORMDW 프랑은 미니스커트의 옷자락을 안주, 싶게 하면 어른의 색과 향기를 발하는 가타 스타킹을 매료 시키고 붙인다
-		PRINTFORM 「어쩐지 외설 보이겠죠.%MASTERNAME%기뻐해 주면 기쁘다
+		PRINTFORM 「어쩐지 외설 보이겠죠. %MASTERNAME%기뻐해 주면 기쁘다
 		CALL K11_PRINT_HEARTCBW
 	ELSEIF CFLAG:TARGET:의상 == 1
-		PRINTFORMDW 프랑은 속옷 모습인 채 가는 다리를 내미면(자), 어른의 색과 향기를 발하는 가타 스타킹을 매료 시키고 붙인다
-		PRINTFORM 「후후, 이런 것 좋아하겠지？ %MASTERNAME%(을)를 위해서(때문에) 신어 왔으니까, 즐겨
+		PRINTFORMDW 프랑은 속옷 모습인 채 가는 다리를 내밀면, 어른의 색과 향기를 발하는 가타 스타킹을 매료 시키고 붙인다
+		PRINTFORM 「후후, 이런 것 좋아하겠지? %MASTERNAME%를 위해서(때문에) 신어 왔으니까, 즐겨
 		CALL K11_PRINT_HEARTCBW
 	ENDIF
 	IF RAND:2
-		PRINTFORMDW 순진한 사랑스러움을 가지는 프랑에, 어른의 색과 향기가 추가되고 %CALLNAME:MASTER%(을)를 유혹한다
+		PRINTFORMDW 순진한 사랑스러움을 가지는 프랑에, 어른의 색과 향기가 추가되고 %CALLNAME:MASTER%를 유혹한다
 	ENDIF
 	
 	LOCAL = GETCOLOR()
@@ -115,9 +115,9 @@ IF CFLAG:TARGET:의상 == 0 || CFLAG:TARGET:의상 == 1
 ENDIF
 RETURN RESULT
 
-;終了時にガーターベルトを통상の니삭스に戻す
+;종료시에 가터 벨트를통상의니삭스에 되돌린다
 @K11_SOCKS_CHANGE2
-;上関数で立てた플래그を拾う
+;우와세키수로 세운플래그를 줍는다
 IF KFLAG:3 == 1
 	EQUIP:TARGET:신발안 = 2
 	TEQUIP:TARGET:신발안 = 2
@@ -127,24 +127,24 @@ RETURN RESULT
 
 [SKIPEND]
 
-;코스프레で超遊んで見る。
-;まだ設定不十分らしいので、バグったりするかも。ああ、また怒られるかも。でもやってみたいんだもん。
+;코스프레로 매우 놀아 본다.
+;아직 설정 불충분한 것 같으니까, 버그를 일으키거나 할지도. 아아, 또 화가 날지도. 그렇지만 해 보고 싶은걸.
 @K11_CLOTHES_CHANGE1
-;반라・전라設定の場合、이벤트起こらない。호감도3000で発生
+;반라·전라설정의 경우, 이벤트 일어나지 않는다. 호감도 3000로 발생
 IF CFLAG:TARGET:의상 == 0 && FAVOR(3000, 3000)
-	;無いとは思うが、一度も出なかったらそれはそれで寂しいので、１度は3500호감도により着替えあり
+	;없다고는 생각하지만, 한번도 나오지 않았으면 그건 그걸로 외롭기 때문에, 1번은 3500호감도에 의해 서로 갈아입어
 	IF KFLAG:6 == 0 && FAVOR(3500, 3500)
 		KFLAG:6 = 1
 	ELSE
-		;착의플레이선호ある場合
+		;착의플레이선호 있는 경우
 		IF TALENT:TARGET:착의플레이선호 == 1
-			;３分の１で着替えない
+			;3분의 1으로 갈아입지 않는다
 			LOCAL:1 = PERCENT(33)
 				SIF LOCAL:1
 				RETURN RESULT
-		;착의플레이선호ない場合
+		;착의플레이선호 없는 경우
 		ELSE
-			;５分の４で着替えない
+			;5분의 4로 갈아입지 않는다
 			LOCAL:1 = PERCENT(80)
 				SIF LOCAL:1
 				RETURN RESULT
@@ -156,7 +156,7 @@ IF CFLAG:TARGET:의상 == 0 && FAVOR(3000, 3000)
 	SETCOLOR LOCAL
 	PRINTFORMDL 
 
-	;一旦전라にする
+	;일단전라로 한다
 	EQUIP:TARGET:신발안 = 0
 	TEQUIP:TARGET:신발안 = 0
 	EQUIP:TARGET:하반신속옷 = 0
@@ -169,10 +169,10 @@ IF CFLAG:TARGET:의상 == 0 && FAVOR(3000, 3000)
 	TEQUIP:TARGET:상반신겉옷 = 0
 
 ;EQUIP:코스프레 <※>코스프레(1=노예복/2=기모노/3=메이드복/4=중국의류/5=세라복/6=스쿠미즈/7=바니걸복/8=체육복)
-;EQUIP:악세서리 特殊        (1=장갑/2=소매/3=우의)
+;EQUIP:악세서리 특수        (1=장갑/2=소매/3=우의)
 ;EQUIP:신발안 신발안        (1=양말/2=니삭스/3=가터벨트)
 ;EQUIP:하반신속옷 하반신속옷  (1=드로와즈/2=팬티/3=트렁크/4=팬티스타킹)
-;EQUIP:상반신속옷 상반신속옷  (1=브래지어/2=キャミソール/3=붕대)
+;EQUIP:상반신속옷 상반신속옷  (1=브래지어/2=캐미숄/3=붕대)
 ;EQUIP:하반신겉옷 하반신겉옷  (1=스커트/2=치마바지/3=몸빼/4=바지)
 ;EQUIP:상반신겉옷 상반신겉옷  (1=겉옷)
 ;EQUIP:전신겉옷 전신겉옷    (1=기모노/2=도사복/3=원피스)
@@ -201,7 +201,7 @@ IF CFLAG:TARGET:의상 == 0 && FAVOR(3000, 3000)
 		TEQUIP:TARGET:코스프레 = 3
 		EQUIP:TARGET:신발안 = 2
 		TEQUIP:TARGET:신발안 = 2
-		;메이드복플랑ちゃんの속옷は드로와즈だと思います！！！！！１１１１
+		;메이드복플랑의속옷는드로와즈라고 생각합니다!!!!! 1111
 		EQUIP:TARGET:하반신속옷 = 1
 		TEQUIP:TARGET:하반신속옷 = 1
 		PRINTFORMDW 프랑은, 홍마관의 메이드옷을 몸에 대었다
@@ -236,7 +236,7 @@ IF CFLAG:TARGET:의상 == 0 && FAVOR(3000, 3000)
 		EQUIP:TARGET:신발안 = 2
 		TEQUIP:TARGET:신발안 = 2
 		PRINTFORMDW 프랑은 스쿨 수영복을 몸에 대었다
-		PRINTFORMDW 스크수의 가슴 팍에 크고 「４－９－５　거절하지 않아」라고 쓰여지고 있다
+		PRINTFORMDW 스크수의 가슴 팍에 크고 「4－9－5  거절하지 않아」라고 쓰여지고 있다
 		PRINTFORMW 「이것이군요, 일전에 도서관에 풀이 생겼을 때에 준비한 프랑이 받아 먼 바다의 수영복이야♪」
 	;7=바니걸복
 	ELSEIF RAND:2 == 0
@@ -265,7 +265,7 @@ IF CFLAG:TARGET:의상 == 0 && FAVOR(3000, 3000)
 		PRINTFORMW 「이것은 운동복이야. 그러니까 반드시, 모두 외설때에 입고 있어군요♪」
 	ENDIF
 
-	;K11_CLOTHES_CHANGE2で使う플래그　（코스프레用）
+	;K11_CLOTHES_CHANGE2로 사용하는플래그  （코스프레용）
 	KFLAG:5 = 1
 	
 	LOCAL = GETCOLOR()
@@ -273,13 +273,13 @@ IF CFLAG:TARGET:의상 == 0 && FAVOR(3000, 3000)
 	DRAWLINE
 	SETCOLOR LOCAL
 
-;양말のみの変更
+;양말만의 변경
 ELSEIF CFLAG:TARGET:의상 == 0 || CFLAG:TARGET:의상 == 1
 	IF KFLAG:4 == 0 && FAVOR(1500, 1500)
-		;無いとは思うが、一度も出なかったらそれはそれで寂しいので、１度は호감도により着替えあり
+		;없다고는 생각하지만, 한번도 나오지 않았으면 그건 그걸로 외롭기 때문에, 1번은호감도에 의해 서로 갈아입어
 		KFLAG:4 = 1
 	ELSE
-		;レアっぷりを出했다いので、適当に確率を入れる。착의플레이선호で上昇보정
+		;레어를 출했다 있고 것으로, 적당하게 확률을 넣는다. 착의플레이선호로 상승보정
 		LOCAL:1 = PERCENT(60)
 		SIF LOCAL:1
 			RETURN RESULT
@@ -288,24 +288,24 @@ ELSEIF CFLAG:TARGET:의상 == 0 || CFLAG:TARGET:의상 == 1
 			RETURN RESULT
 	ENDIF
 
-	;ガーター変更
+	;가터 변경
 	EQUIP:TARGET:신발안 = 3
 	TEQUIP:TARGET:신발안 = 3
-	;K11_CLOTHES_CHANGE2で使う플래그 （ガーター用）
+	;K11_CLOTHES_CHANGE2로 사용하는플래그 （가터용）
 	KFLAG:3 = 1
 	LOCAL = GETCOLOR()
 	SETCOLOR 0xCCCCCC
 	DRAWLINE
 	SETCOLOR LOCAL
 	PRINTFORMDL 
-	PRINTFORMW 「응……오늘은 이런 건 신어 보았지만 아무쪼록인？」
+	PRINTFORMW 「응…… 오늘은 이런 건 신어 보았지만 아무쪼록인?」
 	IF CFLAG:TARGET:의상 == 0
 		PRINTFORMDW 프랑은 미니스커트의 옷자락을 안주 싶게 하면 , 어른의 색과 향기를 발하는, 벨트가 붙은 흑의 가타 스타킹을 매료 시키고 붙였다
 		PRINTFORM 「어쩐지 외설 보이겠죠.%MASTERNAME%기뻐해 주면 기쁘다
 		CALL K11_PRINT_HEARTCBW
 	ELSEIF CFLAG:TARGET:의상 == 1
 		PRINTFORMDW 프랑은 속옷 모습인 채 가는 다리를 내미면(자), 어른의 색과 향기를 발하는, 벨트가 붙은 흑의 가타 스타킹을 매료 시키고 붙였다
-		PRINTFORM 「후후, 이런 것 좋아하겠지？ %MASTERNAME%(을)를 위해서(때문에) 신어 왔으니까, 즐겨
+		PRINTFORM 「후후, 이런 것 좋아하겠지?  %MASTERNAME%(을)를 위해서(때문에) 신어 왔으니까, 즐겨
 		CALL K11_PRINT_HEARTCBW
 	ENDIF
 	
@@ -317,9 +317,9 @@ ELSEIF CFLAG:TARGET:의상 == 0 || CFLAG:TARGET:의상 == 1
 ENDIF
 RETURN RESULT
 
-;終了時に통상の服に戻す
+;종료시에통상의 옷에 되돌린다
 @K11_CLOTHES_CHANGE2
-;上関数で立てた플래그を拾う（코스프레）
+;우와세키수로 세운플래그를 줍는다（코스프레）
 IF KFLAG:5 == 1
 	EQUIP:코스프레 = 0
 	TEQUIP:TARGET:코스프레 = 0
@@ -337,7 +337,7 @@ IF KFLAG:5 == 1
 	KFLAG:5 = 0
 
 ELSEIF KFLAG:3 == 1
-;上関数で立てた플래그を拾う（ガーターベルト）
+;우와세키수로 세운플래그를 줍는다（가터 벨트）
 	EQUIP:TARGET:신발안 = 2
 	TEQUIP:TARGET:신발안 = 2
 	KFLAG:3 = 0
@@ -346,13 +346,13 @@ ENDIF
 RETURN RESULT
 
 
-;初期設定　빗치化
+;초기설정  빗치화
 @K11_STATUSSET
-	;あらすじ［2］の場合だと、優し目の플랑ちゃんになる
+	;개요［2］의 경우라면 상냥한 눈의플랑가 된다
 	IF KFLAG:1 == 2
 		TALENT:TARGET:처녀 = 0
 		TALENT:TARGET:더러움무시 = 1
-		;정조무관심の幼女っていうのはエロい。会いたい
+		;정조무관심의 유녀라고 하는 것은 에로하다. 만나고 싶다
 		TALENT:TARGET:정조무관심 = 1
 		TALENT:TARGET:마음씨착한 = 1
 		TALENT:TARGET:헌신적 = 1
@@ -369,7 +369,7 @@ RETURN RESULT
 	ELSE
 		TALENT:TARGET:처녀 = 0
 		TALENT:TARGET:더러움무시 = 1
-		;정조무관심の幼女っていうのはエロい。会いたい
+		;정조무관심의 유녀라고 하는 것은 에로하다. 만나고 싶다
 		TALENT:TARGET:정조무관심 = 1
 		TALENT:TARGET:혀기술 = 1
 		TALENT:TARGET:손가락기술 = 1
@@ -403,23 +403,23 @@ RETURN RESULT
 	ABL:TARGET:성교 = 2
 RETURN RESULT
 
-;呼び名設定
+;통칭 설정
 @K11_NAMESET
-	;ストーリー分岐
+	;스토리 분기
 	IF KFLAG:1 == 2
-		;남자だった場合
+		;남자였던 경우
 		IF TALENT:MASTER:남자 == 1
-			RESULTS = お義兄様
+			RESULTS = 의형님
 			MASTERNAME = %RESULTS%
-		;女もしくは후타나리だった場合（基本的に想定しません）
+		;녀 혹은후타나리였던 경우（기본적으로 상정하지 않습니다）
 		ELSE
-			RESULTS = お義姉様
+			RESULTS = 의누이님
 			MASTERNAME = %RESULTS%
 		ENDIF
 	ELSE
 	PRINTL 　
 		$INPUT_LOOP_2
-		;남자だった場合
+		;남자였던 경우
 		IF TALENT:MASTER:남자 == 1
 			PRINTFORMDL [1] 삼촌;두려워하고 모양
 			PRINTFORMDL [2] 오빠
@@ -428,13 +428,13 @@ RETURN RESULT
 			PRINTFORMDL [9] ※스스로 통칭을 입력한다（비추천）
 			INPUT
 			IF RESULT == 1
-				RESULTS = 삼촌;おじ様
+				RESULTS = 삼촌;아저씨
 				MASTERNAME = %RESULTS%
 			ELSEIF RESULT == 2
-				RESULTS = 오빠;お兄様
+				RESULTS = 오빠;오라버니
 				MASTERNAME = %RESULTS%
 			ELSEIF RESULT == 3
-				RESULTS = おにいさま
+				RESULTS = 오라버니
 				MASTERNAME = %RESULTS%
 			ELSEIF RESULT == 9
 				PRINTFORMDL ※례 【 타로 】(이)라고 입력했을 경우,
@@ -456,21 +456,21 @@ RETURN RESULT
 						PRINTFORML 「-응, 그렇구나, -응, 에―」
 						PRINTFORML 「으로, 그것 나의 이름이지만」
 					ELSEIF RESULTS == "레밀리아"
-						PRINTFORML 「……아하하 하！ 에 네, 그렇구나, 아―, 재미있다」
+						PRINTFORML 「…… 아하하 하! 에 네, 그렇구나, 아─, 재미있다」
 					ELSEIF RESULTS == "레이무"
 						PRINTFORML 「-응자, 당신의 이름은 사실은 마리사씨인 것」
 					ELSEIF RESULTS == "마리사"
-						PRINTFORML 「어머나, 정직하게 대답하다니 드물구나, 마리사씨？」
+						PRINTFORML 「어머나, 정직하게 대답하다니 드물구나, 마리사씨?」
 					ELSEIF RESULTS == "사쿠야"
-						PRINTFORML 「그렇게 어머나, 정직하게 대답하다니 드물구나, 마리사씨？」
+						PRINTFORML 「그렇게 어머나, 정직하게 대답하다니 드물구나, 마리사씨?」
 					ELSEIF RESULTS == "파츄리"
 						PRINTFORML 「어머나, 어느새 그렇게 혈색 좋아졌는지 해들 」
 					ELSEIF RESULTS == "사쿠야"
 						PRINTFORML 「도―, 그렇다면 케이크 가져와. 배 고파졌어요」
 					ELSEIF RESULTS == "메이링"
-						PRINTFORML 「응과……이것은 하극상은 녀석？」
+						PRINTFORML 「응과…… 이것은 하극상은 녀석?」
 					ELSE
-						PRINTFORML 「%RESULTS%？」
+						PRINTFORML 「%RESULTS%?」
 					ENDIF
 					PRINTFORMDL [0] 네
 					PRINTFORMDL [1] 아니오
@@ -493,7 +493,7 @@ RETURN RESULT
 			ELSE
 				GOTO INPUT_LOOP_2
 			ENDIF
-		;女もしくは후타나리だった場合（基本的に想定しません）
+		;녀 혹은후타나리였던 경우（기본적으로 상정하지 않습니다）
 		ELSE
 			PRINTFORMDL [1] 언니
 			PRINTFORMDL [2] %CALLNAME:PLAYER%
@@ -501,7 +501,7 @@ RETURN RESULT
 			PRINTFORMDL [9] ※스스로 통칭을 입력한다（비추천）
 			INPUT
 			IF RESULT == 1
-				RESULTS = 언니;お姉様
+				RESULTS = 언니;누님
 				MASTERNAME = %RESULTS%
 			ELSEIF RESULT == 2
 				MASTERNAME = %CALLNAME:PLAYER%
@@ -525,21 +525,21 @@ RETURN RESULT
 						PRINTFORML 「-응, 그렇구나, -응, 에―」
 						PRINTFORML 「으로, 그것 나의 이름이지만」
 					ELSEIF RESULTS == "레밀리아"
-						PRINTFORML 「……아하하 하！ 에 네, 그렇구나, 아―, 재미있다」
+						PRINTFORML 「…… 아하하 하! 에 네, 그렇구나, 아─, 재미있다」
 					ELSEIF RESULTS == "레이무"
 						PRINTFORML 「-응자, 당신의 이름은 사실은 마리사씨인 것」
 					ELSEIF RESULTS == "마리사"
-						PRINTFORML 「어머나, 정직하게 대답하다니 드물구나, 마리사씨？」
+						PRINTFORML 「어머나, 정직하게 대답하다니 드물구나, 마리사씨?」
 					ELSEIF RESULTS == "사쿠야"
-						PRINTFORML 「그렇게 어머나, 정직하게 대답하다니 드물구나, 마리사씨？」
+						PRINTFORML 「그렇게 어머나, 정직하게 대답하다니 드물구나, 마리사씨?」
 					ELSEIF RESULTS == "파츄리"
 						PRINTFORML 「어머나, 어느새 그렇게 혈색 좋아졌는지 해들 」
 					ELSEIF RESULTS == "사쿠야"
 						PRINTFORML 「도―, 그렇다면 케이크 가져와. 배 고파졌어요」
 					ELSEIF RESULTS == "메이링"
-						PRINTFORML 「응과……이것은 하극상은 녀석？」
+						PRINTFORML 「응과…… 이것은 하극상은 녀석?」
 					ELSE
-						PRINTFORML 「%RESULTS%？」
+						PRINTFORML 「%RESULTS%?」
 					ENDIF
 					PRINTL [0] 네
 					PRINTL [1] 아니오

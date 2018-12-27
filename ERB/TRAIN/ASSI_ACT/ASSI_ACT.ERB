@@ -1,9 +1,9 @@
 ﻿;------------------------------------------------------------------------
-;EDIT	001		kap			2011/10/14		コンビネーションアクションの決定処理を変更
-;EDIT	002		revkoishi	2014/06/07		안빼고플래그を折る処理を追加
+;EDIT	001		kap			2011/10/14		콤비 네이션 액션의 결정 처리를 변경
+;EDIT	002		revkoishi	2014/06/07		안빼고플래그를 꺾는 처리를 추가
 ;------------------------------------------------------------------------
 ;-----------EDIT 001 START--------------
-;基本的に表記を変更し、
+;기본적으로 표기를 변경해,
 ;---------------------------------------
 @ASSI_ACT, ARG
 TCVAR:ARG:조수방침 = 0
@@ -11,22 +11,22 @@ TCVAR:ARG:조수ACT파생 = 0
 
 CALL ASSIACT_SELECT, ARG
 
-;ＳＰアクションのチェック
+;ＳＰ액션의 체크
 SIF GET_SP_ASSIACTNUM(ARG) >= 0
 	TCVAR:ARG:조수ACT = GET_SP_ASSIACTNUM(ARG)
 
-;연속실행の確率低下のためにここで기록しておく
+;연속실행의 확률 저하를 위해서(때문에) 여기서기록 해 둔다
 TCVAR:ARG:전회조수애무개소 = TCVAR:ARG:조수방침
 
-;特殊コマンド派生チェック
+;특수 커맨드 파생 체크
 SIF GET_SP_ASSIACTNUM(ARG) >= 0
 	TCVAR:ARG:조수ACT = GET_SP_ASSIACTNUM(ARG)
 
-;テスト用記述。いつでも消していいよ
+;테스트용 기술. 언제라도 지워도 좋아
 ;TCVAR:ARG:조수ACT = GET_ASSIACTNUM("사진촬영")
 
 ;────────────────────────────────────
-;014,대기する（ソースなし）
+;014, 대기 한다（소스 없음）
 ;────────────────────────────────────
 SIF NOWASSIACTNAME(ARG) == "대기"
 ;OriginalString : %CALLNAME:TARGET%は%CALLNAME:ARG%を側に대기시켰다…
@@ -40,37 +40,37 @@ SIF NOWASSIACTNAME(ARG) == "대기"
 #DIM Ｖ애무
 #DIM Ｍ애무
 ;-----------EDIT 001 START--------------
-;행동決定のうち우선度がもっとも高いので変更
-;また、행동예약を通さずこの場で直接戻り値を弄る
+;행동결정중 우선도가 가장 높기 때문에 변경
+;또, 행동예약를 통하지 않고 이 장소에서 직접 반환값을 만지작거린다
 ;---------------------------------------
-;우선されるものを先に処理
+;우선 되는 것을 먼저 처리
 ;---------------------------------------
-;약품使用と강제탈의の손伝うは우선
+;약품사용과강제탈의의손 타고는우선
 ;탈의
 IF TFLAG:강제탈의 > 0 && ARG == ASSI:1
-	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("その他")
+	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("그 외")
 	TCVAR:ARG:조수ACT = GET_ASSIACTNUM("탈의")
 	RETURN 1
 ENDIF
 ;약품
 IF TFLAG:미약등사용 > 0 && ARG == ASSI:1
-	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("その他")
+	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("그 외")
 	TCVAR:ARG:조수ACT = GET_ASSIACTNUM("약품")
 	RETURN 1
 ENDIF
-;公衆플레이・방치플레이は強制대기
+;공중플레이·방치플레이는 강제대기
 IF IS_NOWACTNAME("공중육변기플레이/방치플레이")
-	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("その他")
+	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("그 외")
 	TCVAR:ARG:조수ACT = GET_ASSIACTNUM("대기")
 	RETURN 1
 ENDIF
-;휴식中は대기
-IF IS_POLICY("今", "휴식")
-	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("その他")
+;휴식중은대기
+IF IS_POLICY("지금", "휴식")
+	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("그 외")
 	TCVAR:ARG:조수ACT = GET_ASSIACTNUM("대기")
 	RETURN 1
 ENDIF
-;삽입중(역강간中)は他の행동をとらないように
+;삽입중(역강간중)는 다른행동를 취하지 않도록
 IF TFLAG:조수에삽입중 == ARG
 	TFLAG:조수연속교합 = 1
 	TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("Ｖ애무")
@@ -80,23 +80,23 @@ ENDIF
 ;-----------EDIT 001 END  --------------
 
 ;-----------EDIT 001 START-----------------
-;コンビネーションの決定を変換関数に置き換える
+;콤비 네이션의 결정을 변환 함수에 옮겨놓는다
 ;-------------------------------------------
-;コンビネーションは暫定で発動率50%
-IF (RAND:2 == 0 || TFLAG:コンビネーション예약) && ARG == ASSI:1
+;콤비 네이션은 잠정으로 발동율 50%
+IF (RAND:2 == 0 || TFLAG:콤비네이션예약) && ARG == ASSI:1
 	IF GET_COMBIACTNUM(TFLAG:ACT) >= 0
-		;조수が처녀だと타니와타리はできない
+		;조수가처녀라면타니와타리는 할 수 없다
 		IF GET_COMBIACTNUM(TFLAG:ACT) != 311 || !TALENT:ASSI:처녀
-			;主人の행동を上書き
+			;주인의행동를 덧쓰기
 			TFLAG:ACT = GET_COMBIACTNUM(TFLAG:ACT)
 			;-----------EDIT 002 START-----------------
-			;안빼고플래그を折る処理を追加@revkoishi(14/06/07)
+			;안빼고플래그를 꺾는 처리를 추가@revkoishi(14/06/07)
 			;------------------------------------------
 			TFLAG:안빼고 = IS_NOWACTNAME("Ｗ역강간/타니와타리") ? 0 # TFLAG:안빼고
 			;-----------EDIT 002 END  -----------------
-			;조수には-1をいれておく
+			;조수에는-1을 넣어 둔다
 			TCVAR:ARG:조수ACT = -1
-			TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("コンビネーション")
+			TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("콤비 네이션")
 			RETURN 1
 		ENDIF
 	ENDIF
@@ -105,9 +105,9 @@ ENDIF
 
 
 ;-----------EDIT 001 START-----------------
-;基本的に処理内容は変わらないが
-;旧来は우선度の低い順に処理して、あとから数値を上書きしていたのを
-;우선度が高い順に処理して、確定で打ち切るように変更했다
+;기본적으로 처리 내용은 변함없겠지만
+;구래는우선도의 낮은 순서에 처리해, 나중에 수치를 덧쓰기하고 있던 것을
+;우선도가 높은 순서에 처리해, 확정으로 자르도록(듯이) 변경했다
 ;-------------------------------------------
 ;가학
 IF MENU(TFLAG:ACT분류) == "가학"
@@ -123,7 +123,7 @@ IF MENU(TFLAG:ACT분류) == "수치"
 	RETURN 1
 ENDIF
 
-;たまには言葉責めするように
+;가끔 씩은 말 꾸짖고 하도록(듯이)
 IF RAND:10 == 0
 	IF GROUPMATCH(MENU(TFLAG:ACT분류), "애무", "도구", "성교", "봉사", "성봉")
 		TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("수치")
@@ -132,20 +132,20 @@ IF RAND:10 == 0
 	RETURN 1
 ENDIF
 
-;조수の행동선택
-;C責め
+;조수의행동선택
+;C고문
 Ｃ애무 = (10 + ABL:MASTER:Ｃ감각) * (RAND:100 + 1)
-;A責め
+;A고문
 Ａ애무 = (10 + ABL:MASTER:Ａ감각) * (RAND:100 + 1)
-;B責め
+;B고문
 Ｂ애무 = (10 + ABL:MASTER:Ｂ감각) * (RAND:100 + 1)
-;V責め
+;V고문
 Ｖ애무 = (10 + ABL:MASTER:Ｖ감각) * (RAND:100 + 1)
-;M責め
+;M고문
 Ｍ애무 = (10 + (TALENT:ARG:혀기술 - TALENT:ARG:거친혀) * 3) * (RAND:100 + 1)
 SIF TCVAR:MASTER:가버려
 	Ｃ애무 *= 2
-;同じ部位を연속して責めないように
+;같은 부위를연속 해 꾸짖지 않도록
 SELECTCASE TCVAR:ARG:전회조수애무개소
 	CASE 2
 		Ｃ애무 /= 2
@@ -158,7 +158,7 @@ SELECTCASE TCVAR:ARG:전회조수애무개소
 	CASE 6
 		Ｍ애무 /= 2
 ENDSELECT
-;実行判定
+;실행 판정
 SIF !ASSI_ACTABLE("Ｃ애무", ARG)
 	Ｃ애무 = 0
 SIF !ASSI_ACTABLE("Ａ애무", ARG)
@@ -170,7 +170,7 @@ SIF !ASSI_ACTABLE("Ｖ애무", ARG)
 SIF !ASSI_ACTABLE("Ｍ애무", ARG)
 	Ｍ애무 = 0
 SELECTCASE MAX(Ｃ애무, Ｂ애무, Ａ애무, Ｖ애무, Ｍ애무)
-	;空き場所がない
+	;빈장소가 없다
 	CASE IS <= 0
 		TCVAR:ARG:조수방침 = GET_ASSIMENUNUM("수치")
 		CALL ASSI_ACTM7, ARG
@@ -192,59 +192,59 @@ SELECTCASE MAX(Ｃ애무, Ｂ애무, Ａ애무, Ｖ애무, Ｍ애무)
 ENDSELECT
 ;-----------EDIT 001 END  -----------------
 
-;以下は細かい設定
+;이하는 세세한 설정
 ;-----------EDIT 001 START--------------
-;以下の関数群は基本的に表記を変更し、ACTABLEに実行判定を移했다のみだが
-;例外的に거친혀は実行確率がプラスされていたのをマイナスに変更
-;なお、AIの判断が大雑把というか、おそらく暫定処理のママ방치になってるんで
-;もっと細かく組むべきかもしれない
+;이하의 함수군은 기본적으로 표기를 변경해, ACTABLE에 실행 판정을 이했다만이지만
+;예외적으로거친혀는 실행 확률이 플러스 되고 있던 것을 마이나스로 변경
+;덧붙여 AI의 판단이 대잡파라고 할까, 아마 잠정 처리의 마마방치가 되어 있기 때문에
+;좀 더 세세하게 짜야할 것인가도 모른다
 ;---------------------------------------
-;C責め
+;C고문
 @ASSI_ACTM2, ARG
-#DIM 손で
-#DIM 舌で
+#DIM 손로
+#DIM 혀로
 #DIM 스마타
 #DIM 파이즈리
-#DIM 발コキ
+#DIM 발코키
 #DIM Ｃ도구
 #DIM 역강간
-;A 손で B 舌で C 스마타 D 파이즈리 E 발コキ F 로터、오나홀 G 성교
-손で = (10 + ABL:ARG:애무 + TALENT:ARG:손가락기술 * 5) * (RAND:100 + 1)
-舌で = (10 + ABL:ARG:애무 + (TALENT:ARG:혀기술 - TALENT:ARG:거친혀 - TALENT:ARG:냄새민감) * 5) * (RAND:100 + 1)
+;A 손로 B 혀로 C 스마타 D 파이즈리 E 발코키 F 로터, 오나홀 G 성교
+손로 = (10 + ABL:ARG:애무 + TALENT:ARG:손가락기술 * 5) * (RAND:100 + 1)
+혀로 = (10 + ABL:ARG:애무 + (TALENT:ARG:혀기술 - TALENT:ARG:거친혀 - TALENT:ARG:냄새민감) * 5) * (RAND:100 + 1)
 스마타 = (10 + ABL:ARG:애무) * (RAND:100 + 1)
 파이즈리 = (10 + ABL:ARG:애무 + (TALENT:ARG:거유 - TALENT:ARG:빈유 + TALENT:ARG:음유 - TALENT:ARG:냄새민감) * 5) * (RAND:100 + 1)
-발コキ = (10 + ABL:ARG:애무 + TALENT:ARG:새드 * 5) * (RAND:100 + 1)
+발코키 = (10 + ABL:ARG:애무 + TALENT:ARG:새드 * 5) * (RAND:100 + 1)
 Ｃ도구 = (10 + ABL:ARG:애무 + TALENT:ARG:도구능숙 * 5) * (RAND:100 + 1)
 역강간 = (10 + ABL:ARG:성교 + TALENT:ARG:음호 * 5) * (RAND:100 + 1)
 
-;実行判定
+;실행 판정
 SIF !ASSI_ACTABLE("손으로 애무", ARG)
-	손で = 0
+	손로 = 0
 SIF !ASSI_ACTABLE("입으로 애무", ARG)
-	舌で = 0
+	혀로 = 0
 SIF !ASSI_ACTABLE("스마타", ARG)
 	스마타 = 0
 SIF !ASSI_ACTABLE("파이즈리한다", ARG)
 	파이즈리 = 0
 SIF !ASSI_ACTABLE("풋잡하기", ARG)
-	발コキ = 0
+	발코키 = 0
 SIF !ASSI_ACTABLE("Ｃ도구", ARG)
 	Ｃ도구 = 0
 SIF !ASSI_ACTABLE("역강간", ARG)
 	역강간 = 0
-SELECTCASE MAX(손で, 舌で, 스마타, 파이즈리, 발コキ, Ｃ도구, 역강간)
-	;実行可能なものがない場合は수치に飛ばす
+SELECTCASE MAX(손로, 혀로, 스마타, 파이즈리, 발코키, Ｃ도구, 역강간)
+	;실행 가능한 것이 없는 경우는수치에 날린다
 	CASE 0
 		CALL ASSI_ACTM7, ARG
-	CASE 손で
+	CASE 손로
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("손으로 애무")
-	CASE 舌で
+	CASE 혀로
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("입으로 애무")
 	CASE 스마타
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("스마타")
 	CASE 파이즈리
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("파이즈리한다")
-	CASE 발コキ
+	CASE 발코키
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("풋잡하기")
 	CASE Ｃ도구
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("Ｃ도구")
@@ -252,18 +252,18 @@ SELECTCASE MAX(손で, 舌で, 스마타, 파이즈리, 발コキ, Ｃ도구, �
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("역강간")
 ENDSELECT
 
-;A責め
+;A고문
 @ASSI_ACTM3, ARG
 #DIM 항문애무
 #DIM 항문펠라
 #DIM 항문로터
 #DIM 항문바이브
-;A 손で B 舌で C 로터 D 항문바이브
+;A 손로 B 혀로 C 로터 D 항문바이브
 항문애무 = (10 + ABL:ARG:애무 + TALENT:ARG:손가락기술 * 5) * (RAND:100 + 1)
 항문펠라 = (10 + ABL:ARG:애무 + (TALENT:ARG:혀기술 - TALENT:ARG:거친혀 - TALENT:ARG:냄새민감) * 5) * (RAND:100 + 1)
 항문로터 = (10 + ABL:ARG:도구 + TALENT:ARG:도구능숙 * 5) * (RAND:100 + 1)
 항문바이브 = (10 + ABL:ARG:도구 + TALENT:ARG:도구능숙 * 5) * (RAND:100 + 1)
-;実行判定
+;실행 판정
 SIF !ASSI_ACTABLE("항문애무", ARG)
 	항문애무 = 0
 SIF !ASSI_ACTABLE("항문펠라", ARG)
@@ -274,7 +274,7 @@ SIF !ASSI_ACTABLE("항문바이브", ARG)
 	항문바이브 = 0
 	
 SELECTCASE MAX(항문애무, 항문펠라, 항문로터, 항문바이브)
-	;実行可能なものがない場合は수치に飛ばす
+	;실행 가능한 것이 없는 경우는수치에 날린다
 	CASE 0
 		CALL ASSI_ACTM7, ARG
 	CASE 항문애무
@@ -291,7 +291,7 @@ ENDSELECT
 #DIM 가슴애무
 #DIM 유두핥기
 #DIM 유두로터
-;A 손で B 舌で C 로터
+;A 손로 B 혀로 C 로터
 가슴애무 = (10 + ABL:ARG:애무 + TALENT:ARG:손가락기술 * 5) * (RAND:100 + 1)
 유두핥기 = (10 + ABL:ARG:애무 + (TALENT:ARG:혀기술 - TALENT:ARG:거친혀 ) * 5) * (RAND:100 + 1)
 유두로터 = (10 + ABL:ARG:도구 + TALENT:ARG:도구능숙 * 5) * (RAND:100 + 1)
@@ -304,7 +304,7 @@ SIF !ASSI_ACTABLE("유두로터", ARG)
 	유두로터 = 0
 	
 SELECTCASE MAX(가슴애무, 유두핥기, 유두로터)
-	;実行可能なものがない場合は수치に飛ばす
+	;실행 가능한 것이 없는 경우는수치에 날린다
 	CASE 0
 		CALL ASSI_ACTM7, ARG
 	CASE 가슴애무
@@ -316,7 +316,7 @@ SELECTCASE MAX(가슴애무, 유두핥기, 유두로터)
 ENDSELECT
 
 @ASSI_ACTM5, ARG
-;A 손で B 바이브 C 성교
+;A 손로 B 바이브 C 성교
 #DIM 손가락삽입
 #DIM 바이브
 #DIM 성교
@@ -331,7 +331,7 @@ SIF !ASSI_ACTABLE("성교", ARG)
 	성교 = 0
 	
 SELECTCASE MAX(손가락삽입, 바이브, 성교)
-	;実行可能なものがない場合は수치に飛ばす
+	;실행 가능한 것이 없는 경우는수치에 날린다
 	CASE 0
 		CALL ASSI_ACTM7, ARG
 	CASE 손가락삽입
@@ -360,7 +360,7 @@ SIF !ASSI_ACTABLE("발을핥게한다", ARG)
 	발을핥게한다 = 0
 	
 SELECTCASE MAX(키스, 안면승마, 발을핥게한다)
-	;実行可能なものがない場合は수치に飛ばす
+	;실행 가능한 것이 없는 경우는수치에 날린다
 	CASE 0
 		CALL ASSI_ACTM7, ARG
 	CASE 키스
@@ -377,7 +377,7 @@ ENDSELECT
 #DIM 사진촬영
 #DIM 조교자와키스
 #DIM 치태를응시
-;A 자위를과시한다 B 매도 C 사진を撮る D 조교자와키스 E 치태를응시
+;A 자위를과시한다 B 매도 C 사진를 찍는 D 조교자와키스 E 치태를응시
 자위를과시한다 = (10 + ABL:ARG:자위중독 + TALENT:ARG:튀고싶어함 * 5) * (RAND:100 + 1)
 매도 = (10 + ABL:ARG:회화 + TALENT:ARG:새드 * 5) * (RAND:100 + 1)
 사진촬영 = (10 + ABL:ARG:수치 ) * (RAND:100 + 1)
@@ -385,7 +385,7 @@ ENDSELECT
 치태를응시 = (10 + ABL:ARG:수치 + TALENT:ARG:호기심 * 5) * (RAND:100 + 1)
 
 
-;実行判定
+;실행 판정
 SIF !ASSI_ACTABLE("자위를과시한다", ARG)
 	자위를과시한다 = 0
 SIF !ASSI_ACTABLE("매도", ARG)
@@ -397,7 +397,7 @@ SIF !ASSI_ACTABLE("조교자와키스", ARG)
 SIF !ASSI_ACTABLE("치태를응시", ARG)
 	치태를응시 = 0
 SELECTCASE MAX(자위를과시한다, 매도, 사진촬영, 조교자와키스, 치태를응시)
-	;実行可能なものがない場合は수치に飛ばす
+	;실행 가능한 것이 없는 경우는수치에 날린다
 	CASE 자위를과시한다
 		TCVAR:ARG:조수ACT = GET_ASSIACTNUM("자위를과시한다")
 	CASE 매도
@@ -426,7 +426,7 @@ SIF !ASSI_ACTABLE("매도", ARG)
 	매도 = 0
 
 SELECTCASE MAX(머리를짓밟다, 발을핥게한다, 매도)
-	;実行可能なものがない場合は수치に飛ばす
+	;실행 가능한 것이 없는 경우는수치에 날린다
 	CASE 0
 		CALL ASSI_ACTM7, ARG
 	CASE 머리를짓밟다

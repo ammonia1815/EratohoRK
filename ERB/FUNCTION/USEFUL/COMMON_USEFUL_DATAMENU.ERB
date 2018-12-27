@@ -1,66 +1,66 @@
 ﻿;==================================================
 ;
-;	汎用関数置き場＠便利関数編
-;		演算や命令、組み込み関数の拡張にあたるもの
+;	범용 함수 두는 곳＠편리 함수편
+;		연산이나 명령, 편입 함수의 확장하는 것
 ;
-;		おおよそバリアントを問わず使えるものが多いです
+;		대체로 바리안트를 불문하고 사용할 수 있는 것이 많습니다
 ;
 ;==================================================
 
 ;-------------------------------------------------------------------------------
-;	DATAMENUパッチ由来関数群
+;	DATAMENU 패치 유래 함수군
 ;-------------------------------------------------------------------------------
 
 ;-------------------------------------------------------------------------------
-;	DATAMENUで使用している自作関数群のためのマジックナンバー
+;	DATAMENU로 사용하고 있는 자작 함수군을 위한 magic number-
 ;-------------------------------------------------------------------------------
 ;===============================================================================
-; 플레이시간をTIME:xのどこに保存するのか
-; とりあえずTIME:1
+; 플레이시간를 TIME:x의 어디에 보존하는 것인가
+; 우선 TIME:1
 @SAVETIME()
 #FUNCTION
 RETURNF 1
 
-; 画面幅
+; 화면폭
 @WIDTH(ARG)
 #FUNCTION
 RETURNF PRINTCPERLENGTH() * PRINTCPERLINE() + ARG
 
-; PRINTCの文字数
+; PRINTC의 문자수
 @PRINTCPERLENGTH(ARG)
 #FUNCTION
 RETURNF 27 + ARG
 
-; 行頭空白 Revということで統一感のため0
+; 줄머리 공백 Rev라고 하는 일로 통일감이기 때문에 0
 @BULLETSPACE(ARG)
 #FUNCTION
 RETURNF 0 + ARG
 
 ;-------------------------------------------------------------------------------
-;	FORM構文拡張(式中関数)
+;	FORM 구문 확장(식 안의 함수)
 ;-------------------------------------------------------------------------------
-;	통상FORM構文との違い
-;	文字列の文字数が許容文字数を超えるとバッサリカット 
-;	例 "플랑드르",10 → 플랑ド..	(ぱの人のをぱクリんくしょん)
-;	CENTER位置が可能
+;	통상FORM 구문과의 차이
+;	캐릭터 라인의 문자수가 허용 문자수를 넘으면 싹둑 컷 
+;	예"플랑드르", 10 → 플랑드.. 	(의 사람클리응구분 처리응)
+;	CENTER 위치가 가능
 ;===============================================================================
-;	ARGS = 文字列	ARG = 許容文字数
-;	ARG:1 = 0:右寄せ(RIGHT) / 1:左寄せ(LEFT) / 2:中央寄せ(CENTER)
+;	ARGS =캐릭터 라인	ARG =허용 문자수
+;	ARG:1 = 0:오른쪽 대고(RIGHT)/1:왼쪽 맞춤(LEFT)/2:중앙 대고(CENTER)
 @FORMCELL(ARGS, ARG, ARG:1)
 #FUNCTIONS
 #LOCALSIZE 2
 #LOCALSSIZE 1
 ARG = !ARG ? PRINTCPERLENGTH() # ARG
-; 文字数が許容文字数オーバー
+; 문자수가 허용 문자수오버
 LOCALS = \@ STRLENS(ARGS) > ARG ? %SUBSTRING(ARGS,0,ARG-2) + ".."% # %SUBSTRING(ARGS,0,ARG)% \@
 SELECTCASE ARG:1
-	; 右寄せ
+	; 오른쪽 공격
 	CASE 0
 		RETURNF @"%LOCALS,ARG,RIGHT%"
-	; 左寄せ
+	; 왼쪽 맞춤
 	CASE 1
 		RETURNF @"%LOCALS,ARG,LEFT%"
-	; 中央寄せ
+	; 중앙 공격
 	CASE 2
 		LOCAL = LIMIT((ARG - STRLENS(LOCALS)) / 2, 0, ARG)
 		LOCAL:1 = LIMIT((ARG - STRLENS(LOCALS)) % 2, 0, 1)
@@ -68,28 +68,28 @@ SELECTCASE ARG:1
 ENDSELECT
 
 ;-------------------------------------------------------------------------------
-;	ダイアログ表示PRINT_DIALOG
+;	다이얼로그 표시 PRINT_DIALOG
 ;-------------------------------------------------------------------------------
-;	枠1はコマンドと同時に使うことを想定
-;	例  CALL PRINT_DIALOG("おぜうさまクンカクンカしますか？",1,1,1) 
+;	범위 1은 커맨드와 동시에 사용하는 것을 상정
+;	예  CALL PRINT_DIALOG("님쿠카쿤카 합니까?", 1, 1, 1) 
 ;	───────────────────────────
-;		おぜうさまをクンカクンカしますか？
+;		님을 쿠카쿤카 합니까?
 ;	------------------------------------------------------
 ;
-;	枠2はユーザーに知らせるダイアログに使うことを想定
-;	例  CALL PRINT_DIALOG("플랑            ",2,2,0) 
-;	    CALL PRINT_DIALOG("      ちゃん      ",0,2,0) 
-;	    CALL PRINT_DIALOG("            ウフフ",0,2,2) 
+;	범위 2는 유저에게 알리는 다이얼로그에 사용하는 것을 상정
+;	예  CALL PRINT_DIALOG("플랑            ", 2, 2, 0) 
+;	    CALL PRINT_DIALOG("            ", 0, 2, 0) 
+;	    CALL PRINT_DIALOG("            우후후", 0, 2, 2) 
 ;	┌─────────────────────────┐
 ;	│  플랑                                          │
-;	│        ちゃん                                    │
-;	│              ウフフ                              │
+;	│                                            │
+;	│              우후후                              │
 ;	└─────────────────────────┘
 ;
 ;===============================================================================
-;	ARGS = 表題
-;	ARG:0, ARG:1, ARG:2, それぞれ 上枠, 左右枠, 下枠  
-;	数値は枠タイプ	1=─と-- / 2=罫線枠 / 0=なし
+;	ARGS =표제
+;	ARG:0, ARG:1, ARG:2, 각각 상 범위, 좌우범위, 하 범위  
+;	수치는 테두리 타입	1=─와--/2=괘선범위/0=없음
 @PRINT_DIALOG(ARGS, ARG:0, ARG:1, ARG:2)
 #LOCALSIZE 2
 #LOCALSSIZE 1
@@ -131,172 +131,172 @@ CALL NEWLINE
 RETURN LOCAL:1
 
 ;-------------------------------------------------------------------------------
-;	新しい行に改行する
+;	새로운 행에 개행한다
 ;-------------------------------------------------------------------------------
-;	例  CALL NEWLINE
+;	예  CALL NEWLINE
 ;
-;	DRAWLINE前や、PRINTCで並べたり했다場合に最後にこれ打っとけば安心
-;	既に新しい行の場合は何もしない
-;	引数に数値入れれば改行後その分だけ空白
+;	DRAWLINE전이나, PRINTC로 나란해질 수 있거나했다경우에 마지막에 이것 쳐 두면 안심
+;	이미 새로운 행의 경우는 아무것도 하지 않는다
+;	인수에 수치 넣으면 개행 후 그 만큼 공백
 ;===============================================================================
 @NEWLINE(ARG)
 #LOCALSIZE 1
-; RESULT値を退避
+; RESULT치를 퇴피
 LOCAL = RESULT
-; 新しい行でない場合に改行を入れる
+; 새로운 행이 아닌 경우에 개행을 넣는다
 SIF !LINEISEMPTY()
 ;OriginalString : 
 	PRINTL 
-; 自動整形コマンドボタン用
+; 자동 정형 커맨드 버튼용
 CALL POSITION_C(-1)
-; 空白引数あり(BULLETSPACE用)
+; 공백 인수 있어(BULLETSPACE용)
 SIF ARG > 0
 ;OriginalString : % " " * ARG %
 	PRINTFORM % " " * ARG %
-; RESULT値を戻す
+; RESULT치를 되돌린다
 RETURN LOCAL
 
 ;-------------------------------------------------------------------------------
-;	拡張DRAWLINE
+;	확장 DRAWLINE
 ;-------------------------------------------------------------------------------
-;	例  CALL EX_DRAWLINE(UNICODE(0xAF) + UNICODE(0x2D) + UNICODE(0x5F) + UNICODE(0x2D), 0xFFFF00)
+;	예  CALL EX_DRAWLINE(UNICODE(0 xAF) + UNICODE(0 x2D) + UNICODE(0 x5F) + UNICODE(0 x2D), 0 xFFFF00)
 ;
-;	引数ひとつめはDRAWLINEを構成する文字列変数、何も入れない場合"----"所謂普通の
-;	引数ふたつめはDRAWLINEを描画する文字色、何も入れない場合そのまま
+;	인수 하나째는 DRAWLINE를 구성하는 캐릭터 라인 변수, 아무것도 넣지 않는 경우"----"소위 보통
+;	인수 둘째는 DRAWLINE를 묘화 하는 문자색, 아무것도 넣지 않는 경우 그대로
 ;===============================================================================
 @EX_DRAWLINE(ARGS = "-", ARG = -1)
 #LOCALSIZE 3
 VARSET LOCAL, -1
 LOCAL = RESULT
-; LINE色が指定されている場合 LOCAL:1に指定文字色、LOCAL:2に現在の文字色を保存
+; LINE색이 지정되고 있는 경우 LOCAL:1으로 지정 문자색, LOCAL:2에 현재의 문자색을 보존
 IF RANGE(ARG, 0, 0xFFFFFF)
 	LOCAL:1 = ARG
 	LOCAL:2 = GETCOLOR()
 ENDIF
-; 常に新しい行で
+; 항상 새로운 행으로
 CALL NEWLINE
-; 指定色に変更
+; 지정색으로 변경
 SIF LOCAL:1 != -1
 	SETCOLOR LOCAL:1
-; 描画
+; 묘화
 DRAWLINEFORM %ARGS%
-; 文字色戻し 
+; 문자색반환 
 SIF LOCAL:1 != -1
 	SETCOLOR LOCAL:2
 RETURN LOCAL
 
 ;-------------------------------------------------------------------------------
-;	ページセレクタ
+;	페이지 실렉터
 ;-------------------------------------------------------------------------------
-;	例  CALL PRINT_PAGESELECT(現在ページ,最大ページ)
+;	예  CALL PRINT_PAGESELECT(현재 페이지, 최대 페이지)
 ;
-;	…ARGSでタグ指定できてもいいけどどうしよっかな
-;	100ページを超える場合10ページ前/後が出てきます
+;	…ARGS로 태그 지정할 수 있어도 괜찮지만 어떻게 할까나
+;	100 페이지를 넘는 경우 10 페이지전/후가 나옵니다
 ;===============================================================================
-;	ARG = 現在ページ  ARG:1 = 最大ページ  ARG:2 = VARSIZE(理論的最大値,最小1000)
-;	ARG:3 = 許容する文字数  ARG:4 = -1ならDRAWLINEしない
+;	ARG =현재 페이지  ARG:1 =최대 페이지  ARG:2 = VARSIZE(이론적 최대치, 최소 1000)
+;	ARG:3 =허용 하는 문자수  ARG:4 = -1이라면 DRAWLINE 하지 않는다
 @PRINT_PAGESELECT(ARG, ARG:1, ARG:2, ARG:3, ARG:4)
 #LOCALSIZE 4
 LOCAL:3 = RESULT
-; 引数が無かったら抜ける
+; 인수가 없으면 빠진다
 SIF !ARG:1
 	RETURN LOCAL:3
 ARG:3 = !ARG:3 ? PRINTCPERLENGTH() # ARG:3
-; 最小1000
+; 최소 1000
 LOCAL = ARG:2 < 1000 ? 1000 # POWER(10,STRLENS(@"{ARG:2}")-1)
-; ケタ算出
+; 자릿수 산출
 LOCAL:1 = STRLENS(@"{LOCAL}")
 LOCAL:2 = ARG:3 - (6 + LOCAL:1)
 CALL NEWLINE
 
 SIF ARG:4 != -1
 	CALL EX_DRAWLINE(, 0x808080 )
-; 10ページ前
+; 10 페이지전
 SIF ARG:1 >= 100
-	CALL PRINTC_COMMAND(LOCAL+11, UNICODE(0x25C0) + FORMCELL("10ページ前",LOCAL:2,2), LOCAL:1)
+	CALL PRINTC_COMMAND(LOCAL+11, UNICODE(0x25C0) + FORMCELL("10 페이지전",LOCAL:2,2), LOCAL:1)
 
 	CALL PRINTC_COMMAND(LOCAL+1,  UNICODE(0x25C0) + FORMCELL("전의 페이지",LOCAL:2,2), LOCAL:1)
 	CALL PRINTC_COMMAND(LOCAL+3,  UNICODE(0x25B6) + FORMCELL("다음 페이지",LOCAL:2,2), LOCAL:1)
-; 10ページ後
+; 10 페이지 후
 SIF ARG:1 >= 100
-	CALL PRINTC_COMMAND(LOCAL+13, UNICODE(0x25B6) + FORMCELL("10ページ後",LOCAL:2,2), LOCAL:1)
-; 現在ページタグ
+	CALL PRINTC_COMMAND(LOCAL+13, UNICODE(0x25B6) + FORMCELL("10 페이지 후",LOCAL:2,2), LOCAL:1)
+; 현재 페이지 태그
 CALL PRINTC_PLAIN(@"(PAGE.{ARG + 1}/{ARG:1 + 1})")
 RETURN LOCAL:3
 
 ;-------------------------------------------------------------------------------
-;	ページめくりTURNPAGE(式中関数)
+;	페이지 넘김 TURNPAGE(식 안의 함수)
 ;-------------------------------------------------------------------------------
-;	例	次に1ページめくりたい
-;		現在ページ = TURNPAGE(現在ページ,+1,最小ページ,最大ページ)
-;	例	前に10ページめくりたい
-;		現在ページ = TURNPAGE(現在ページ,-10,最小ページ,最大ページ)
+;	례차에 1 페이지 넘김 싶다
+;		현재 페이지 = TURNPAGE(현재 페이지,+1, 최소 페이지, 최대 페이지)
+;	례전에 10 페이지 넘김 싶다
+;		현재 페이지 = TURNPAGE(현재 페이지, -10, 최소 페이지, 최대 페이지)
 ;===============================================================================
-;	NOWP = 現在ページ  VARP = 増減数  MINP = 最小ページ  MAXP = 最大ページ
+;	NOWP =현재 페이지  VARP =증감수  MINP =최소 페이지  MAXP =최대 페이지
 @TURNPAGE(NOWP, VARP, MINP, MAXP)
 #FUNCTION
 #DIM NOWP, 1
 #DIM VARP, 1
 #DIM MINP, 1
 #DIM MAXP, 1
-;状況的にありえないと思うけど増減数が0もしくは増減数 > (最大ページ - 最小ページ) は何もしない
+;상황적으로 있을 수 없다고 생각하지만 증감수가 0혹은 증감수 > (최대 페이지 - 최소 페이지)는 아무것도 하지 않는다
 IF VARP == 0 || (VARP < 0 ? VARP * -1 # VARP ) > (MAXP - MINP)
 	RETURNF NOWP
-;前のページへ(VARPを負数として計算)
+;전의 페이지로(VARP를 음수로서 계산)
 ELSEIF VARP < 0
 	RETURNF NOWP + VARP >= MINP ? NOWP + VARP # NOWP + MAXP + (VARP + 1) - MINP
-;次のページへ(VARPを正数として計算)
+;다음의 페이지로(VARP를 정수로서 계산)
 ELSEIF VARP > 0
 	RETURNF NOWP + VARP <= MAXP ? NOWP + VARP # NOWP - MAXP + (VARP - 1) + MINP
 ENDIF
 
 ;-------------------------------------------------------------------------------
-;	[ 99] - こういうコマンド表記 (式中関数)
+;	[ 99] - 이런 커맨드 표기(식 안의 함수)
 ;-------------------------------------------------------------------------------
-;	例  PRINTBUTTON @"%PRINT_COMMANDF(99,"こういうボタン表記")%",99
+;	예  PRINTBUTTON @"%PRINT_COMMANDF(99, "이런 버튼 표기")%", 99
 ;===============================================================================
-;	ARG = [번호]  ARGS = 文字列  ARG:1 = []内スペース  ARG:2 = 全体文字数
+;	ARG = [번호]  ARGS =캐릭터 라인  ARG:1 = []안스페이스  ARG:2 =전체 문자수
 @PRINT_COMMANDF(ARG, ARGS, ARG:1 = 3, ARG:2)
 #FUNCTIONS
 #LOCALSSIZE 1
-; ARG初期値に変数式中使えないみたいなので PRINTCの最大文字数(27)
+; ARG 초기치에 변수식중 사용할 수 없는 것 같아 PRINTC의 최대 문자수(27)
 ARG:2 = !ARG:2 ? PRINTCPERLENGTH() # ARG:2
 ; |<--          26         -->|
-;  [ xx] - こんな感じに整形   
+;  [ xx] - 이런 느낌에 정형   
 LOCALS = [%TOSTR(ARG), ARG:1, RIGHT%] - %FORMCELL(ARGS, ARG:2 - (5+ARG:1), 1)%
 RETURNF @"%@"%SUBSTRING(LOCALS,0,ARG:2)%",ARG:2,LEFT%"
 
 ;-------------------------------------------------------------------------------
-;	自動位置整形機能付きコマンド表記PRINTC_COMMAND
+;	자동 위치 정형 기능부 커맨드 표기 PRINTC_COMMAND
 ;-------------------------------------------------------------------------------
-;	上の奴の自動改行機能付加、CALLを並べるだけでほぼPRINTBUTTONCと同じ使い方ができる
+;	상의 녀석의 자동 개행 기능부가, CALL를 늘어놓는 것만으로 거의 PRINTBUTTONC와 같은 사용법이 생긴다
 ;===============================================================================
-;	ARG = [번호]  ARGS = 文字列  ARG:1 = []内スペース  ARG:2 = 全体文字数
-;	ARG:3 = いくつで改行
+;	ARG = [번호]  ARGS =캐릭터 라인  ARG:1 = []안스페이스  ARG:2 =전체 문자수
+;	ARG:3 =몇개로 개행
 @PRINTC_COMMAND(ARG, ARGS, ARG:1 = 3, ARG:2 = -1, ARG:3 = -1)
 #LOCALSIZE 1
 #DIM LENGTH, 1
 #DIM LINE, 1
 LOCAL = RESULT
-; ARG初期値に変数式中使えないみたいなので, LENGTH = PRINTCの文字数() LINE = PRINTCを並べる数(4)
+; ARG 초기치에 변수식중 사용할 수 없는 것 같아, LENGTH = PRINTC의 문자수() LINE = PRINTC를 늘어놓는 수(4)
 LENGTH = (ARG:2 == -1 ? PRINTCPERLENGTH() # ARG:2)
 LINE   = (ARG:3 == -1 ? PRINTCPERLINE()  # ARG:3)
-; 新しい行の場合初期処理
+; 새로운 행의 경우 초기 처리
 SIF LINEISEMPTY()
 	CALL POSITION_C(0, LINE)
-; 表示
+; 표시
 ;OriginalString : @"%PRINT_COMMANDF(ARG, ARGS, ARG:1, LENGTH)%", ARG
 PRINTBUTTON @"%PRINT_COMMANDF(ARG, ARGS, ARG:1, LENGTH)%", ARG
-; 一つ進める
+; 1개 진행한다
 CALL POSITION_C(+1, LINE)
 RETURN LOCAL
 
 ;-------------------------------------------------------------------------------
-;	自動位置整形機能付き통상表記
+;	자동 위치 정형 기능부통상표기
 ;-------------------------------------------------------------------------------
-;	上の奴のPRINTFORMC版(ボタン化しない)
+;	상의 녀석의 PRINTFORMC판(버튼화하지 않는다)
 ;===============================================================================
-;	ARGS = 文字列  ARG = 全体文字数  ARG:1 = いくつで改行
+;	ARGS =캐릭터 라인  ARG =전체 문자수  ARG:1 =몇개로 개행
 @PRINTC_PLAIN(ARGS, ARG, ARG:1)
 #LOCALSIZE 1
 ARG = !ARG ? PRINTCPERLENGTH() # ARG
@@ -308,12 +308,12 @@ CALL POSITION_C(+1,ARG:1)
 RETURN RESULT
 
 ;-------------------------------------------------------------------------------
-;	↑↑と↑のやつの位置保存用関数
+;	↑↑와↑의 녀석의 위치 보존용 함수
 ;-------------------------------------------------------------------------------
-;	内部処理
+;	내부 처리
 ;===============================================================================
-;	ARG = 位置(-1で初期化、0で初期化と改行、1以上で位置にPLUS)
-;	ARG:1 = いくつで改行
+;	ARG =위치(-1으로 초기화, 0으로 초기화와 개행, 1이상으로 위치에 PLUS)
+;	ARG:1 =몇개로 개행
 @POSITION_C(ARG, ARG:1 = -1)
 #DIM POSITION_C, 1
 #DIM PERLINE, 1
@@ -334,44 +334,44 @@ SELECTCASE ARG
 ENDSELECT
 
 ;-------------------------------------------------------------------------------
-;	非常によく使う[돌아가기]を関数化
+;	매우 자주(잘) 사용하는[돌아가기]를 함수화
 ;-------------------------------------------------------------------------------
-;	例  CALL PRINT_RETURN
+;	예  CALL PRINT_RETURN
 ;===============================================================================
-;	ARGS = 돌아가기のタグ  ARG = 引数(指定しないと-1)  ARG:1 = []内スペース
+;	ARGS = 돌아가기의 태그  ARG =인수(지정하지 않으면-1)  ARG:1 = []안스페이스
 @PRINT_RETURN(ARGS = "돌아가기", ARG = -1, ARG:1 = 3)
 #LOCALSIZE 1
 LOCAL = RESULT
-; 薄色でDRAWLINE
+; 박색으로 DRAWLINE
 CALL EX_DRAWLINE(, 0x808080 )
-; コマンド処理
+; 커맨드 처리
 CALL PRINTC_COMMAND(ARG, ARGS, ARG:1)
 RETURN LOCAL
 
 ;-------------------------------------------------------------------------------
-;	선택肢(最大12択)
+;	선택지(최대 12택)
 ;-------------------------------------------------------------------------------
-;	例  CALL PRINT_CHOICE(0,"예",1, "아니오",2,) ※돌아가기なしのY/N
-;		PANCTIONや紅魔館の関数の構文を参考にしま했다
+;	예  CALL PRINT_CHOICE(0, "예", 1, "아니오", 2, ) ※돌아가기없음의 Y/N
+;		PANCTION나 홍마관의 함수의 구문을 참고에 섬했다
 ;===============================================================================
-;	ARG == 0/1「돌아가기」を使うか  ARGS:x == 선택肢の文章  ARG:x == RESULT値
+;	ARG == 0/1「돌아가기」를 사용할까  ARGS:x == 선택지의 문장  ARG:x == RESULT치
 @PRINT_CHOICE(ARG, ARGS:1,ARG:1, ARGS:2,ARG:2, ARGS:3,ARG:3, ARGS:4,ARG:4, ARGS:5,ARG:5, ARGS:6,ARG:6, ARGS:7,ARG:7, ARGS:8,ARG:8, ARGS:9,ARG:9, ARGS:10,ARG:10, ARGS:11,ARG:11, ARGS:12,ARG:12)
 #LOCALSIZE 1
 #LOCALSSIZE 1
 CALL POSITION_C(-1)
 FOR LOCAL, 0, 13
-	; タグ文が無い場合は除外
+	; 태그문이 없는 경우는 제외
 	IF ARGS:LOCAL == ""
 		CONTINUE
-	; 번호が無くてタグ文があるときは文章のみ
+	; 번호가 없어서 태그문이 있을 때는 문장만
 	ELSEIF !ARG:LOCAL
 		CALL PRINTC_PLAIN(ARGS:LOCAL)
-	; 両方ある
+	; 양쪽 모두 있다
 	ELSE
 		CALL PRINTC_COMMAND(ARG:LOCAL,ARGS:LOCAL,2)
 	ENDIF
 NEXT
-; [-1] - 돌아가기 の有無
+; [-1] - 돌아가기의 유무
 SIF ARG
 	CALL PRINT_RETURN(,,2)
 $INPUT_LOOP
@@ -382,19 +382,19 @@ CLEARLINE 1
 GOTO INPUT_LOOP
 
 ;-------------------------------------------------------------------------------
-;	플레이시간の計算/表示PLAYTIME(式中関数)	
+;	플레이시간의 계산/표시 PLAYTIME(식 안의 함수)	
 ;-------------------------------------------------------------------------------
-;	引数はSET/GETで使用する(機能してるのはGETとそれ以外だけど)
-;	商用ゲームによくある、いかに플레이ヤーが人生を無駄に했다のかというヤツ
-;	初回はLOCALに시간保持、次回からLOCALに시간が保持されていれば差分を
-;	TIME:SAVETIME()に加算して、LOCAL更新
+;	인수는 SET/GET로 사용한다(기능하고 있는 것은 GET와 그 이외이지만)
+;	상용 게임에 자주 있다, 얼마나플레이야가 인생을 쓸데없게했다의 것일까하고 말하는 녀석
+;	첫회는 LOCAL에시간보유, 다음번부터 LOCAL에시간가 보유 되고 있으면 차분을
+;	TIME:SAVETIME()에 가산해, LOCAL 갱신
 ;
-;	例  @EVENTFIRST と @EVENTLOAD で
+;	예  @EVENTFIRST 와 @EVENTLOAD 로
 ;		CALLF PLAYTIME("SET")
-;	    あとは使いたいところ(INFOやSAVEINFOあたり)で
+;	    후는 사용하고 싶은 곳(INFO나 SAVEINFO 근처)로
 ;		%PLAYTIME("GET")%
 ;===============================================================================
-;	LOCAL = GETSECOND一時保存用  TIME:SAVETIME() = 경과시간(秒)
+;	LOCAL = GETSECOND 일시 보존용  TIME:SAVETIME() = 경과시간(초)
 @PLAYTIME(ARGS)
 #FUNCTIONS
 #LOCALSIZE 1
@@ -411,11 +411,11 @@ ELSE
 		CASE "SET"
 			RETURNF 
 		CASE "GET"
-			;時
+			;시
 			HOUR = TIME:SAVETIME() /360
-			;分
+			;분
 			MINUTES = TIME:SAVETIME() / 60 % 60
-			;秒
+			;초
 			SECOND = TIME:SAVETIME() % 60
 			IF TIME:SAVETIME() < 3600000
 				RETURNF @"\@ HOUR < 10 ? 0 # \@{HOUR}:\@ MINUTES < 10 ? 0 # \@{MINUTES}:\@ SECOND < 10 ? 0 # \@{SECOND}"

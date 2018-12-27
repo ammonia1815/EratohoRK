@@ -1,93 +1,93 @@
 ﻿
-;eratohoR#私家改変 0004.6.1 用　흥미보정パッチ より改変後導入
+;eratohoR#사가 개변 0004.6. 1용  흥미보정패치보다 개변 후 도입
 
-;죠교자の選んだコマンドに対して、노예のコマンドで흥미が増えたり減ったり
-;使用플래그 … CFLAG:400 ～ CFLAG:520 くらい(CFLAG:(400 + TFLAG:ACT)
-;ARG = 0:書き込み 1:読み出し(初期化)
+;죠교자가 선택한 커맨드에 대해서, 노예의 커맨드로흥미가 증가하거나 줄어들거나
+;사용플래그… CFLAG:400 ～ CFLAG:520 정도(CFLAG:(400 + TFLAG:ACT)
+;ARG = 0:기입 1:읽기(초기화)
 @KYOMI_ADD(ARG)
 #LOCALSIZE 200
 #DIM LCOUNT
 #DIM LTEMP
 
 IF ARG == 1
-	;ACT長期보정値に加算 ;ACT 장기 보정 값에 추가
+	;ACT 장기보정치에 가산 ;ACT 장기 보정 값에 추가
 	FOR LCOUNT, 0, 200
 		RESULT:LCOUNT += ABSQSI(LOCAL:LCOUNT)
 	NEXT
-	;LOCAL初期化
+	;LOCAL 초기화
 	VARSET LOCAL
-	;RESULT保持
+	;RESULT 보유
 	RETURN RESULT
 ENDIF
 
-;ACT範囲外(ACT非実行時に呼ばれた等)の場合脱出 ;; ACT 범위를 벗어난 ACT (비 실행시에 불린 등)의 경우 탈출
+;ACT 범위외(ACT비실행시에 불린 등)의 경우 탈출 ;; ACT 범위를 벗어난 ACT (비 실행시에 불린 등)의 경우 탈출
 SIF GET_NORMALACTNUM(TFLAG:ACT) < 0 || VARSIZE("LOCAL") <= GET_NORMALACTNUM(TFLAG:ACT)
 	RETURN 0
 
-;最終的に加算する흥미値 ;결국 가산하는 흥미값
+;최종적으로 가산하는흥미치 ;결국 가산하는 흥미값
 LTEMP = 0
 
-;날뛴다なら常に흥미-2 ;날뛴다면 항상 흥미 -2
-SIF IS_COMGRONAME("날뛴다/逃げる/거부")
+;날뛴다라면 항상흥미-2 ;날뛴다면 항상 흥미 -2
+SIF IS_COMGRONAME("날뛴다/도망친다/거부")
 	LTEMP -= CFLAG:MASTER:죠교레벨 < 10 ? 2 # 4
 
-;싫어한다なら常に흥미-1 // 날뛴다扱いの時は弾くように ;; 싫어한다라면 항상 흥미 -1 // 날뛴다 취급시에는 연주처럼
+;싫어한다라면 항상흥미-1//날뛴다취급때는 연주하도록(듯이);; 싫어한다라면 항상 흥미 -1//날뛴다 취급시에는 연주처럼
 SIF IS_NOWCOMNAME("싫어한다") && IS_COMGRONAME("소극적으로 한다")
 	LTEMP -= CFLAG:MASTER:죠교레벨 < 10 ? 1 # 2
 
-;죠교자のプライドが高い場合、애무/성교系で貶されるとムキになる ;죠교자의 프라이드가 높은 경우, 애무 / 성교 계에서 비방하면 정색을하게
+;죠교자의 프라이드가 높은 경우, 애무/성교계로 폄하해지면 울컥하게 되는;죠교자의 프라이드가 높은 경우, 애무/성교 계에서 비방하면 정색을하게
 {
 SIF TALENT:프라이드높음 && IS_NOWCOMNAME("서투르다고 모욕한다") 
 && (MENUMATCH(TFLAG:ACT, "애무") || MENUMATCH(TFLAG:ACT, "성교"))
 }
 	LTEMP += 2
 
-;特定状況での効果up ;특정 상황에서의 효과 up
+;특정 상황에서의 효과 up ;특정 상황에서의 효과 up
 {
 SIF IS_NOWCOMNAME("애정을 담아 한다") && 
 (MENUMATCH(TFLAG:ACT, "봉사") || MENUMATCH(TFLAG:ACT, "성봉") || IS_NOWACTNAME("기승위"))
 }
 	LTEMP += 3
 
-;새드は노예の悲鳴を喜ぶ ;새드는 노예의 비명을 기뻐
+;새드는노예의 비명을 기뻐하는;새드는 노예의 비명을 기뻐
 SIF TALENT:새드 && IS_NOWCOMNAME("비명지른다")
 	LTEMP += 2
 
 
 ;///////////
-;ACT毎の보정 ;ACT마다의 보정
+;ACT 마다의보정 ;ACT마다의 보정
 ;///////////
 SELECTCASE GET_ACTNAME(TFLAG:ACT)
-	;ACT분류/회화系
+	;ACT분류/회화계
 	;==============
 	CASE "지금 기분을 묻다"
 		SELECTCASE TFLAG:ACT파생
-			CASE 0 ;                                       歯切れ悪く質問に答えた
+			CASE 0 ;                                       말씨 나쁘게 질문에 답했다
 				LTEMP -= 1
-			CASE 1 ;                               派生が勇気を出して強く当たった
+			CASE 1 ;                               파생이 용기를 내 강하게 맞았다
 				LTEMP -= 2
-			CASE 2 ;                             皮肉「今の気分は、と聞かれても」
+			CASE 2 ;                             야유 「지금의 기분은, 이라고 (들)묻어도」
 				LTEMP -= 1
-			CASE 3 ;                                 はっきりと今の気持ちを告げた
+			CASE 3 ;                                 분명히 지금의 기분을 고했다
 				LTEMP += 3
-			CASE 4 ;                                           まあまあ悪くはない
+			CASE 4 ;                                           그저 나쁘지는 않다
 				LTEMP += 1
-			CASE 5 ;                                         気持ち良いこと했다い
+			CASE 5 ;                                         기분 좋은 일했다 있고
 				LTEMP += 2
 		ENDSELECT
 	CASE "자신에게의 마음을 묻다"
 		SELECTCASE TFLAG:ACT파생
-			CASE 0 ;                                 嫌いじゃない…かも知れない…
+			CASE 0 ;                                 싫지 않은… 일지도 모른다…
 				LTEMP += 1
-			CASE 1 ;                                     そんなことあるわけない！
+			CASE 1 ;                                     그런 일이 있을 이유 없다!
 				LTEMP -= 2
-			CASE 2 ;               皮肉「困るねぇ…好きじゃないといったら怒る？」
+			CASE 2 ;               야유 「곤란하네요… 좋아하지 않다고 말하면 화내?」
 				LTEMP -= 1
-			CASE 3 ;       もう酷いことしなければ、もっと好きになれるかもしれない
+			CASE 3 ;       이제(벌써) 심한 일 하지 않으면, 좀 더 좋아하게 될 수 있을지도 모른다
 				LTEMP += 1
-			CASE 4 ;                                       はっきりと好きと告げた
+			CASE 4 ;                                       분명히 좋아라고 고했다
 			 	LTEMP += 3
-			CASE 5 ;           もっとすごいことしてくれば、もっと好きになれるかも
+			CASE 5 ;           좀 더 굉장한 일 해 주면, 좀 더 좋아하게 될 수 있을지도
 				LTEMP += 2
 		ENDSELECT
 	CASE "성에 관한 이야기를 하다"
@@ -98,7 +98,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 2
 			CASE "적극적으로 한다"
 				LTEMP += 3
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "용서를 빌다"
 				LTEMP -= 1
@@ -111,7 +111,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 2
 			CASE "적극적으로 한다"
 				LTEMP += 3
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "용서를 빌다"
 				LTEMP -= 1
@@ -124,14 +124,14 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다"
 				LTEMP -= 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "용서를 빌다"
 				LTEMP += 3
 		ENDSELECT
 	CASE "의상 변경을 요구한다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "소극적으로 한다", "受け入れる"
+			CASE "소극적으로 한다", "받아들인다"
 				LTEMP += 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 2
@@ -140,15 +140,15 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "합의를 요구한다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "소극적으로 한다" ;                              小さい声で了承
+			CASE "소극적으로 한다" ;                              작은 소리로 승낙
 				LTEMP += 1
-			CASE "태연하게 한다" ;                            好きにすればいい
+			CASE "태연하게 한다" ;                            마음대로 하면 된다
 				LTEMP += 1
-			CASE "적극적으로 한다" ;                        初めてを捧げてもいい
+			CASE "적극적으로 한다" ;                        처음을 바쳐도 괜찮다
 				LTEMP += 3
-			CASE "受け入れる" ;気持ちよくしてくれるなら初めてをあげてもいい
+			CASE "받아들인다" ;기분 좋게 해 준다면 처음을 주어도 괜찮다
 				LTEMP += 2
-			CASEELSE          ;                                  합의しない
+			CASEELSE          ;                                  합의 하지 않는다
 				LTEMP -= 2
 		ENDSELECT
 	CASE "징계한다고 위협한다"
@@ -159,7 +159,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다"
 				LTEMP -= 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "용서를 빌다"
 				LTEMP += 3
@@ -172,7 +172,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다"
 				LTEMP -= 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "용서를 빌다"
 				LTEMP += 3
@@ -185,13 +185,13 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다"
 				LTEMP -= 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "용서를 빌다"
 				LTEMP += 3
 		ENDSELECT
 
-	;ACT분류/애무系
+	;ACT분류/애무계
 	;==============
 	CASE "손으로 애무"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
@@ -201,7 +201,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -214,7 +214,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -227,7 +227,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -240,7 +240,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -253,7 +253,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -266,7 +266,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 3
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다"
 				LTEMP -= 3
@@ -279,7 +279,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -292,7 +292,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -305,7 +305,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				IF TALENT:새드 || TALENT:심술궂음
@@ -322,13 +322,13 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
 		ENDSELECT
 
-	;ACT분류/도구系
+	;ACT분류/도구계
 	;==============
 	CASE "로터"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
@@ -338,7 +338,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -351,7 +351,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -364,7 +364,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -377,7 +377,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -390,7 +390,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -403,7 +403,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
@@ -416,27 +416,27 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "용서를 빌다"
 				LTEMP -= 2
 		ENDSELECT
 
-	;ACT분류/애무系
+	;ACT분류/애무계
 	;==============
 	CASE "밀어 넘어트린다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "소극적으로 한다"                  ;      顔を背け黙り込んだ
+			CASE "소극적으로 한다"                  ;      얼굴을 돌리고 입을 다물었다
 				LTEMP -= 1
-			CASE "적극적으로 한다", "태연하게 한다"    ;      抵抗せず身を任せた
+			CASE "적극적으로 한다", "태연하게 한다"    ;      저항하지 않고 몸을 맡겼다
 				LTEMP += 2
-			CASE "受け入れる"                  ;          抵抗しなかった
+			CASE "받아들인다"                  ;          저항하지 않았다
 				LTEMP += 1
-			CASE "용서를 빌다"                  ;押さえつけられ怯えている
+			CASE "용서를 빌다"                  ;억누를 수 있는 무서워하고 있다
 				LTEMP -= 2
 		ENDSELECT
 
-	;ACT분류/성교系
+	;ACT분류/성교계
 	;==============
 	CASE "정상위"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
@@ -446,14 +446,14 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				SIF IS_NOWCOMNAME("허리를 흔든다")
 					LTEMP += 2
 				SIF IS_NOWCOMNAME("안에 내!")
 					LTEMP += 3
 				SIF IS_NOWCOMNAME("안에 내면 안돼!")
 					LTEMP += 1
-				;最低限+2は加算される
+				;최저한+2은 가산된다
 				LTEMP += 1
 			CASE "용서를 빌다"
 				IF TALENT:새드
@@ -468,14 +468,14 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				SIF IS_NOWCOMNAME("허리를 흔든다")
 					LTEMP += 2
 				SIF IS_NOWCOMNAME("안에 내!")
 					LTEMP += 3
 				SIF IS_NOWCOMNAME("안에 내면 안돼!")
 					LTEMP += 1
-				;最低限+2は保証
+				;최저한+2은 보증
 				LTEMP += 1
 			CASE "용서를 빌다"
 				IF TALENT:새드
@@ -490,12 +490,12 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 2
-			CASE "受け入れる"
+			CASE "받아들인다"
 				SIF IS_NOWCOMNAME("안에 내!")
 					LTEMP += 3
 				SIF IS_NOWCOMNAME("안에 내면 안돼!")
 					LTEMP += 1
-				;最低限+2は加算される
+				;최저한+2은 가산된다
 				LTEMP += 1
 			CASE "용서를 빌다"
 				IF TALENT:새드
@@ -510,14 +510,14 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				SIF IS_NOWCOMNAME("허리를 흔든다")
 					LTEMP += 2
 				SIF IS_NOWCOMNAME("안에 내!")
 					LTEMP += 3
 				SIF IS_NOWCOMNAME("안에 내면 안돼!")
 					LTEMP += 1
-				;最低限+2は加算される
+				;최저한+2은 가산된다
 				LTEMP += 1
 			CASE "용서를 빌다"
 				IF TALENT:새드
@@ -532,14 +532,14 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				SIF IS_NOWCOMNAME("허리를 흔든다")
 					LTEMP += 2
 				SIF IS_NOWCOMNAME("안에 내!")
 					LTEMP += 3
 				SIF IS_NOWCOMNAME("안에 내면 안돼!")
 					LTEMP += 1
-				;最低限+2は加算される
+				;최저한+2은 가산된다
 				LTEMP += 1
 			CASE "용서를 빌다"
 				IF TALENT:새드
@@ -554,14 +554,14 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += TALENT:변태적 ? 2 # 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				SIF IS_NOWCOMNAME("허리를 흔든다")
 					LTEMP += TALENT:변태적 ? 3 # 2
 				SIF IS_NOWCOMNAME("안에 내!")
 					LTEMP += TALENT:변태적 ? 4 # 3
 				SIF IS_NOWCOMNAME("안에 내면 안돼!")
 					LTEMP += TALENT:변태적 ? 2 # 1
-				;最低限+2は加算される
+				;최저한+2은 가산된다
 				LTEMP += 1
 			CASE "용서를 빌다"
 				IF TALENT:새드
@@ -571,11 +571,11 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				ENDIF
 		ENDSELECT
 
-	;ACT분류/수치系
+	;ACT분류/수치계
 	;==============
 	CASE "자위"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "적극적으로 한다", "受け入れる"
+			CASE "적극적으로 한다", "받아들인다"
 				LTEMP += 2
 			CASE "태연하게 한다"
 				LTEMP += 1
@@ -583,7 +583,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				SIF IS_NOWCOMNAME("부끄러워한다")
 					LTEMP += 3
 				LTEMP -= 1
-			;リアクションが拒絶
+			;리액션이 거절
 			CASEELSE
 				IF TALENT:심술궂음
 					LTEMP += 1
@@ -593,7 +593,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "비패개장"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 2
@@ -610,7 +610,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "자위과시"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる", "적극적으로 한다"
+			CASE "받아들인다", "적극적으로 한다"
 				LTEMP += 2
 			CASE "태연하게 한다"
 				LTEMP += 1
@@ -633,7 +633,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 			LTEMP += 2
 	CASE "방뇨"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 			CASE "태연하게 한다", "적극적으로 한다"
 				LTEMP += 2
@@ -641,12 +641,12 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				SIF IS_NOWCOMNAME("부끄러워한다")
 					LTEMP += 3
 				LTEMP -= 1
-			;リアクションが拒絶
+			;리액션이 거절
 			CASEELSE
 				LTEMP -= 2
 		ENDSELECT
 
-	;ACT분류/봉사系
+	;ACT분류/봉사계
 	;==============
 	CASE "손으로 애무를 강요"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
@@ -656,7 +656,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 2
 			CASE "소극적으로 한다"
 				LTEMP -= 1
-			CASE "날뛴다", "거부", "逃げる"
+			CASE "날뛴다", "거부", "도망친다"
 				LTEMP -= IS_COMIMPNAME("악인상대") ? 3 # 1
 		ENDSELECT
 	CASE "입으로 애무를 강요"
@@ -665,7 +665,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				LTEMP += 1
-			CASE "날뛴다", "거부", "逃げる"
+			CASE "날뛴다", "거부", "도망친다"
 				LTEMP -= IS_COMIMPNAME("악인상대") ? 3 # 1
 		ENDSELECT
 	CASE "파이즈리"
@@ -674,7 +674,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				LTEMP += 1
-			CASE "날뛴다", "거부", "逃げる"
+			CASE "날뛴다", "거부", "도망친다"
 				LTEMP -= IS_COMIMPNAME("악인상대") ? 3 # 1
 		ENDSELECT
 	CASE "스마타"
@@ -683,19 +683,19 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				LTEMP += 1
-			CASE "날뛴다", "거부", "逃げる"
+			CASE "날뛴다", "거부", "도망친다"
 				LTEMP -= IS_COMIMPNAME("악인상대") ? 3 # 1
 		ENDSELECT
 	CASE "발핥기강제"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
-				;죠교자が새드/프라이드높음の場合は+1
+				;죠교자가새드/프라이드높음의 경우는+1
 				SIF TALENT:새드 || TALENT:프라이드높음
 					LTEMP += 1
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				LTEMP -= 1
-			CASE "날뛴다", "거부", "逃げる"
+			CASE "날뛴다", "거부", "도망친다"
 				LTEMP -= IS_COMIMPNAME("악인상대") ? 3 # 1
 		ENDSELECT
 	CASE "이라마치오"
@@ -704,7 +704,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				LTEMP += TALENT:새드 ? 2 # 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 1
 		ENDSELECT
 	CASE "가슴애무강제"
@@ -713,17 +713,17 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				LTEMP += 1
-			CASE "날뛴다", "거부", "逃げる"
+			CASE "날뛴다", "거부", "도망친다"
 				LTEMP -= 2
 		ENDSELECT
 
-	;ACT분류/가학系
+	;ACT분류/가학계
 	;==============
 	CASE "스펭킹"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -736,7 +736,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -749,7 +749,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -762,7 +762,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -778,7 +778,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -794,7 +794,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -807,7 +807,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 		ENDSELECT
 	CASE "매도"
-		SIF IS_COMGRONAME("적극적으로 한다/태연하게 한다/受け入れる")
+		SIF IS_COMGRONAME("적극적으로 한다/태연하게 한다/받아들인다")
 			LTEMP += 1
 		SIF IS_COMGRONAME("용서를 빌다/소극적으로 한다")
 			LTEMP -= 1
@@ -823,7 +823,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -836,7 +836,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "용서를 빌다", "소극적으로 한다"
 				SIF TALENT:새드
@@ -846,11 +846,11 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 				LTEMP -= 1
 		ENDSELECT
 
-	;ACT분류/이상系
+	;ACT분류/이상계
 	;==============
 	CASE "피스트퍽"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
@@ -859,7 +859,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "애널피스트"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
@@ -868,7 +868,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "양쪽피스트"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 1
@@ -918,7 +918,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SIF IS_NOWCOMNAME("무서워한다")
 			LTEMP -= 2
 
-	;ACT분류/휴식系
+	;ACT분류/휴식계
 	;==============
 	CASE "휴식시킨다"
 		SIF IS_NOWCOMNAME("침묵한다")
@@ -984,11 +984,11 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		SIF IS_NOWCOMNAME("무서워한다")
 			LTEMP -= 2
 
-	;ACT분류/성교봉사系
+	;ACT분류/성교봉사계
 	;==================
 	CASE "정상위시킨다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 3
@@ -999,7 +999,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "후배위시킨다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 3
@@ -1010,7 +1010,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "대면좌위시킨다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 3
@@ -1021,7 +1021,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "배면좌위시킨다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 3
@@ -1032,7 +1032,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "항문섹스시킨다"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 2
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 3
@@ -1043,7 +1043,7 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 	CASE "역강간"
 		SELECTCASE COMGRONAME(TFLAG:REACT분류)
-			CASE "受け入れる"
+			CASE "받아들인다"
 				LTEMP += 3
 			CASE "적극적으로 한다", "태연하게 한다"
 				LTEMP += 2
@@ -1054,5 +1054,5 @@ SELECTCASE GET_ACTNAME(TFLAG:ACT)
 		ENDSELECT
 ENDSELECT
 
-;흥미の加算
+;흥미의 가산
 LOCAL:GET_NORMALACTNUM(TFLAG:ACT) += LTEMP

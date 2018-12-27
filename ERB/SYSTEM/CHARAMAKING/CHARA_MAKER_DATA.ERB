@@ -1,6 +1,6 @@
 ﻿;-----------------------------------------
-;キャラメイクデータの세이브&로드画面
-;ARGが真のとき세이브画面
+;캐릭터 메이크 데이터의세이브&로드화면
+;ARG가 진정한 때세이브화면
 ;-----------------------------------------
 @CHARAMAKE_DATA_MENU, ARG
 #LOCALSIZE 2
@@ -18,7 +18,7 @@ $START
 CLEARLINE LINECOUNT - LINE
 FOR LOCAL, 0, 5
 	RESETCOLOR
-	;データが存在しないもの
+	;데이터가 존재하지 않는 것
 	IF GLOBALS:LOCAL == ""
 		LOCALS = [{LOCAL}] ＥＭＰＴＹ
 ;OriginalString : ┌%LOCALS + (84 - STRLENS(LOCALS)) / 2 * "─"%┐
@@ -30,8 +30,8 @@ FOR LOCAL, 0, 5
 		SPLIT GLOBALS:LOCAL, "_", LOCALS_A
 		SPLIT LOCALS_A:1, "/", LOCALS_B
 		LOCALS = [{LOCAL}] %LOCALS_B:1%
-		;メモ機能봉인
-		; メモ:%LOCALS_A%
+		;메모 기능봉인
+		; 메모:%LOCALS_A%
 		SIF STRLENS(LOCALS) % 2
 			LOCALS += " "
 ;OriginalString : ┌
@@ -69,7 +69,7 @@ SIF RESULT == 99
 	RETURN 0
 IF RANGE(RESULT, 0, 4)
 	SAVE = RESULT
-	;データがある場合キャラクター表示は確実に行う
+	;데이터가 있는 경우 캐릭터 표시는 확실히 실시한다
 	IF GLOBALS:SAVE != ""
 		CALL CHARAMAKE_LOAD, RESULT
 		CHARA = RESULT
@@ -78,7 +78,7 @@ IF RANGE(RESULT, 0, 4)
 	;로드
 	IF !ARG
 		IF GLOBALS:SAVE != ""
-			CALL PRINT_DIALOG("이 캐릭터를 로드하겠습니까？", 1, 1, 1)
+			CALL PRINT_DIALOG("이 캐릭터를 로드하겠습니까?", 1, 1, 1)
 ;OriginalString : [0] はい
 			PRINTL [0] 네
 ;OriginalString : [1] いいえ
@@ -88,18 +88,18 @@ IF RANGE(RESULT, 0, 4)
 				DELCHARA CHARA
 				GOTO START
 			ELSE
-				;主人をサクる
+				;주인을 사크
 				DELCHARA 0
-				;유카리と主人公を入れ替えておく
+				;유카리와 주인공을 바꿔 넣어 둔다
 				SWAPCHARA 0, 1
 				RETURN 1
 			ENDIF
 		ENDIF
 	ELSE
 		IF GLOBALS:SAVE != ""
-			;どちらにしろ。消す
+			;어느 쪽으로 하든. 지운다
 			DELCHARA CHARA
-			CALL PRINT_DIALOG("データを上書きしても하시겠습니까？", 1, 1, 1)
+			CALL PRINT_DIALOG("데이터를 덧쓰기해도하시겠습니까?", 1, 1, 1)
 ;OriginalString : [0] はい
 			PRINTL [0] 네
 ;OriginalString : [1] いいえ
@@ -108,41 +108,41 @@ IF RANGE(RESULT, 0, 4)
 			SIF RESULT
 				GOTO START
 		ENDIF
-		;キャラクター保存
+		;캐릭터 보존
 		CALL CHARAMAKE_SAVE, SAVE, MASTER
-		CALL PRINT_DIALOG("キャラクターを保存しま했다", 2, 2, 2)
+		CALL PRINT_DIALOG("캐릭터를 보존 섬했다", 2, 2, 2)
 	ENDIF
 ENDIF
 GOTO START
 
 ;=========================================================================
 ;@CHARA_MAKER_SAVE
-;キャラメイカーで作成했다データをGLOBALSに保存をする関数
-;ARG   GLOBALS:ARGにデータを保存する
-;ARG:1 ARG:1のキャラ등록번호の素質を세이브する。省略했다場合は0番のキャラ
+;캐릭터 메이커로 작성했다데이터를 GLOBALS에 보존을 하는 함수
+;ARG   GLOBALS:ARG에 데이터를 보존한다
+;ARG:1 ARG:1의 캐릭터등록번호의 소질을세이브 한다. 생략했다경우는 0번의 캐릭터
 ;		0    1    2   3     4   5       6
-;保存は メモ_名前_ABL_CFLAG_EXP_MAXBASE_TALENT
+;보존은 메모_이름 _ABL_CFLAG_EXP_MAXBASE_TALENT
 ;==========================================================================
 @CHARAMAKE_SAVE, ARG, ARG:1 = -1
 #DIM CHARA, 1
 CHARA = ARG:1 == -1 ? 0 # ARG:1
-;初期化
+;초기화
 GLOBALS:ARG = 
-;とりあえずメモ機能いらないかな？
-;PRINTFORML この세이브データの内容を示すメモを入力してください
+;우선 메모 기능 필요없을까?
+;PRINTFORML 이세이브데이터의 내용을 나타내는 메모를 입력해 주세요
 ;$INPUT_LOOP
 ;INPUTS
-;PRINTFORML 「%RESULTS%」で하시겠습니까？
-;PRINTL [0] はい
-;PRINTL [1] いいえ
+;PRINTFORML 「%RESULTS%」로하시겠습니까?
+;PRINTL [0] 네
+;PRINTL [1] 아니오
 ;LOCALS = %RESULTS%
 ;CALL INPUTINT(0, 1)
 ;IF RESULT
-;	PRINTL では、入力しなおしてください
+;	PRINTL 에서는, 다시 입력해 주세요
 ;	GOTO INPUT_LOOP
 ;ENDIF
 GLOBALS:ARG += LOCALS + "_"
-;名前関係
+;이름 관계
 GLOBALS:ARG += NAME:(ARG:1) + "/" + CALLNAME:(ARG:1) + "_"
 ;ABL
 LOCAL:1 = 0
@@ -207,10 +207,10 @@ SAVEGLOBAL
 
 ;=========================================================================
 ;@CHARA_MAKER_LOAD
-;キャラメイカーで作成했다データをGLOBALSに保存をする関数
-;ARG   GLOBALS:ARGのデータを読み込む
+;캐릭터 메이커로 작성했다데이터를 GLOBALS에 보존을 하는 함수
+;ARG   GLOBALS:ARG의 데이터를 읽어들인다
 ;		0    1    2   3     4   5       6
-;保存は メモ_名前_ABL_CFLAG_EXP_MAXBASE_TALENT
+;보존은 메모_이름 _ABL_CFLAG_EXP_MAXBASE_TALENT
 ;==========================================================================
 @CHARAMAKE_LOAD, ARG
 #DIMS RESULTS_A, 7
@@ -221,7 +221,7 @@ ADDVOIDCHARA
 CHARA = CHARANUM -1
 SPLIT GLOBALS:ARG, "_", RESULTS_A
 SPLIT RESULTS_A:1, "/", RESULTS_B
-;名前
+;이름
 NAME:CHARA = %RESULTS_B%
 CALLNAME:CHARA = %RESULTS_B:1%
 
@@ -273,7 +273,7 @@ FOR LOCAL, 0, RESULT
 NEXT
 RETURN CHARA
 
-;キャラデータ表示関数
+;캐릭터 데이터 표시 함수
 @PRINTSTATE_CHARAMAKE(ARG)
 DRAWLINE
 ;OriginalString : ■ %CALLNAME:ARG% ■
@@ -287,7 +287,7 @@ CALL PRINT_BASEL("기력", ARG, 1, 32, 1)
 SIF MAXBASE:ARG:이성
 	CALL PRINT_BASEL("이성", ARG, 5, 32, 1)
 SIF MAXBASE:ARG:사정
-	CALL PRINT_BASEL("精力", ARG, 2, 32, 1)
+	CALL PRINT_BASEL("정력", ARG, 2, 32, 1)
 CALL NEW_PRINT_TALENT(ARG)
 CALL NEW_PRINT_EXP(ARG)
 CALL NEW_PRINT_ABL(ARG)

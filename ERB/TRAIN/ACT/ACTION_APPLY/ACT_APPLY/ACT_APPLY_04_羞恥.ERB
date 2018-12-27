@@ -1,97 +1,97 @@
 ﻿;────────────────────────────────────
-;040,자위
+;040, 자위
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ/Ｈ）[罰]（이탈、중독충족）
+;리액션전（Ｓ/Ｎ/Ｈ）[벌]（이탈, 중독충족）
 @ACTION_APPLY_40
-;거부される可能性があるのでここは命令を出すところまで処理します
-;이탈SOURCE増加、죠교대상노출증、자위중독、죠교레벨によって減少
+;거부 될 가능성이 있으므로 여기는 명령을 내리는 곳까지 처리합니다
+;이탈SOURCE 증가, 죠교대상노출증, 자위중독, 죠교레벨에 의해 감소
 SOURCE:MASTER:이탈 = 1200 - GET_ABL(MASTER, "노출증") * 8 - GET_ABL(MASTER, "자위중독") * 20 - CFLAG:MASTER:죠교레벨 * 20
-;이탈SOURCEが負の値をとらないよう調整
+;이탈SOURCE가 부의 값을 받지 않게 조정
 SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
-;죠교대상자위중독、기교に応じて중독충족SOURCE増加
+;죠교대상자위중독, 기교에 응해중독충족SOURCE 증가
 SOURCE:MASTER:중독충족 = GET_ABL(MASTER, "자위중독") * (GET_ABL(MASTER, "자위중독") + 10) * (GET_ABL(MASTER, "기교") + 10) / 1000
-;죠교대상자위중독に応じて발기도上昇
+;죠교대상자위중독에 응해발기도상승
 TCVAR:MASTER:발기도 += 100 + GET_ABL(MASTER, "자위중독") * 5
 TFLAG:경과시간 += 3
 
-;リアクション後（쾌Ｃ、쾌Ｖ、쾌Ａ、쾌Ｂ、성행위、노출、이탈、중독충족）
+;리액션 후（쾌Ｃ, 쾌Ｖ, 쾌Ａ, 쾌Ｂ, 성행위, 노출, 이탈, 중독충족）
 @ACTION_APPLY2_40
-IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる")
-	;자위の実行関数呼び出し
+IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/받아들인다")
+	;자위의 실행 함수 호출
 	CALL ONANIE_APPLY
-	;죠교대상の손を一本占有する
+	;죠교대상의손를 한 개 점유 한다
 	TFLAG:손사용중++
-;その他の場合(拒絶)
+;그 외의 경우(거절)
 ELSE
-	;REACT분류に要求に応じないをセット
+	;REACT분류에 요구에 응하지 않는 것을 세트
 	CALL SET_COMGRO("거부")
 ENDIF
 
 ;────────────────────────────────────
-;041,비패개장
+;041, 비패개장
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ/Ｈ）（쾌Ｃ、노출、이탈）
+;리액션전（Ｓ/Ｎ/Ｈ）（쾌Ｃ, 노출, 이탈）
 @ACTION_APPLY_41
-;하반신全部강제탈의
+;하반신전부강제탈의
 TFLAG:강제탈의 = 5
-;손가락기술素質、죠교대상기교に応じて쾌ＣSOURCE増加
+;손가락기술소질, 죠교대상기교에 응해쾌ＣSOURCE 증가
 SOURCE:MASTER:쾌Ｃ = 30 + (TALENT:손가락기술 + 1) * GET_ABL(TARGET, "기교")
-;쾌ＣSOURCE、거울使用に応じて노출SOURCE増加
+;쾌ＣSOURCE, 거울사용에 응해노출SOURCE 증가
 SOURCE:MASTER:노출 = SOURCE:MASTER:쾌Ｃ / 3 + (TEQUIP:거울 + 1) * 250
-;노출SOURCEに応じて이탈SOURCE増加、노출증、죠교대상죠교레벨によって減少
+;노출SOURCE에 응해이탈SOURCE 증가, 노출증, 죠교대상죠교레벨에 의해 감소
 SOURCE:MASTER:이탈 = SOURCE:MASTER:노출 - GET_ABL(MASTER, "노출증") * 2 - CFLAG:MASTER:죠교레벨 * 5
-;汚れが相互に移る
+;더러움이 서로 옮긴다
 STAIN:MASTER:바기나 |= STAIN:손
 STAIN:손 |= STAIN:MASTER:바기나
-;이탈SOURCEが負の値をとらないよう調整
+;이탈SOURCE가 부의 값을 받지 않게 조정
 SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
-;죠교자、죠교대상자위を中断
+;죠교자, 죠교대상자위를 중단
 TEQUIP:자위중 = 0
 TFLAG:경과시간 += 1
 
-;リアクション後（Ｓ/Ｎ/Ｈ）（쾌Ｃ、노출、이탈）
+;리액션 후（Ｓ/Ｎ/Ｈ）（쾌Ｃ, 노출, 이탈）
 @ACTION_APPLY2_41
-;現在処理なし
+;현재 처리 없음
 
 ;────────────────────────────────────
-;042,자위과시
+;042, 자위과시
 ;────────────────────────────────────
-;リアクション前（Ｓ/Ｎ/Ｈ/Ａ）（이탈、욕정追加、쾌Ｃ、쾌Ｖ、쾌Ｂ）
+;리액션전（Ｓ/Ｎ/Ｈ/Ａ）（이탈, 욕정추가, 쾌Ｃ, 쾌Ｖ, 쾌Ｂ）
 @ACTION_APPLY_42
-;同じ確率で上＋下겉옷、상반신全部、하반신全部のどれかを자주탈의
+;같은 확률로 상＋하겉옷, 상반신전부, 하반신전부의 어떤 것인지를자주탈의
 TFLAG:자주탈의 = 3 + RAND:3
-;죠교자해방素質が存在すれば악세서리－まで、전라まで자주탈의のどちらかに発展
+;죠교자해방소질이 존재하면악세서리－까지, 전라까지자주탈의의 어딘가에 발전
 SIF TALENT:해방
 	TFLAG:자주탈의 = 7 + RAND:2
-;죠교자억압/수줍음素質が存在すれば상반신겉옷、하반신겉옷자주탈의または탈의なしまで軽減
+;죠교자억압/수줍음소질이 존재하면상반신겉옷, 하반신겉옷자주탈의 또는탈의없음까지 경감
 SIF TALENT:억압 || TALENT:수줍음
 	TFLAG:자주탈의 = RAND:3
-;죠교자착의플레이선호素質が存在すれば속옷だけ자주탈의に固定
+;죠교자착의플레이선호소질이 존재하면속옷만자주탈의에 고정
 SIF TALENT:착의플레이선호
 	TFLAG:자주탈의 = 9
-;죠교자욕망、기교、죠교레벨、죠교자기교、손가락기술素質に応じて쾌ＣSOURCE増加
+;죠교자욕망, 기교, 죠교레벨, 죠교자기교, 손가락기술소질에 응해쾌ＣSOURCE 증가
 SOURCE:쾌Ｃ = 50 + GET_ABL(TARGET, "욕망") * GET_ABL(TARGET, "기교") * GET_TRAINLV(TARGET) * 2 / 100 + GET_ABL(TARGET, "기교") * 2 * (TALENT:TARGET:손가락기술 + 1)
-;죠교자が非남자なら、죠교자욕망、기교、죠교레벨、죠교자기교、손가락기술素質に応じて쾌ＢSOURCE増加
+;죠교자가 비남자라면, 죠교자욕망, 기교, 죠교레벨, 죠교자기교, 손가락기술소질에 응해쾌ＢSOURCE 증가
 SIF !TALENT:남자
 	SOURCE:쾌Ｂ = 50 + GET_ABL(TARGET, "욕망") * GET_ABL(TARGET, "기교") * GET_TRAINLV(TARGET) * 2 / 100 + GET_ABL(TARGET, "기교") * 2 * (TALENT:TARGET:손가락기술 + 1)
 
 
-;죠교자が바이브を所持していて、처녀でも男でもなければ바이브使用
-;一時オミット。復活시킨다ときは実行判定を見直してACT파생の方で処置
+;죠교자가바이브를 소지하고 있어, 처녀도 남자도 아니면바이브사용
+;일시 생략. 부활시킨다때는 실행 판정을 다시 봐 ACT파생의 (분)편으로 처치
 [SKIPSTART]
-IF ITEM:바이브 && !TALENT:처녀 && !TALENT:남자
-	;죠교자욕망、죠교레벨、도구능숙素質、기교、도구強化に応じて쾌ＶSOURCE増加
+IF ITEM:바이브 && ! TALENT:처녀 && ! TALENT:남자
+	;죠교자욕망, 죠교레벨, 도구능숙소질, 기교, 도구강화에 응해쾌ＶSOURCE 증가
 	SOURCE:쾌Ｖ = 50 + GET_ABL(TARGET, "욕망") * (GET_TRAINLV(TARGET) + 1) * 5 / 10 + (TALENT:도구능숙 + 1) * GET_ABL(TARGET, "기교") * (ITEM:9 + 1) * 3
-	;代わりに쾌ＣSOURCE減少
+	;대신에쾌ＣSOURCE 감소
 	TIMES SOURCE:쾌Ｃ , 0.80
 ENDIF
 [SKIPEND]
 
-;快x総計を취득しLOCALへ
+;쾌x총계를취득 해 LOCAL에
 LOCAL = SOURCE:쾌Ｃ + SOURCE:쾌Ｖ + SOURCE:쾌Ｂ
-;죠교대상죠교레벨と욕망を見て、どちらかが低ければLOCAL軽減
+;죠교대상죠교레벨와욕망를 봐, 어느 쪽인지가 낮으면 LOCAL 경감
 IF CFLAG:MASTER:죠교레벨 < 1 || ABL:MASTER:욕망 < 1
 	TIMES LOCAL, 0.10
 ELSEIF CFLAG:MASTER:죠교레벨 < 3 || ABL:MASTER:욕망 < 2
@@ -103,117 +103,117 @@ ELSEIF CFLAG:MASTER:죠교레벨 < 8 || ABL:MASTER:욕망 < 4
 ELSEIF CFLAG:MASTER:죠교레벨 < 11 || ABL:MASTER:욕망 < 5
 	TIMES LOCAL, 0.85
 ENDIF
-;LOCALの1/5だけ죠교자욕정が増加
+;LOCAL가 1/5만여라죠교자욕정가 증가
 CUP:MASTER:욕정 += LOCAL / 5
-;LOCALに応じて이탈SOURCE増加、죠교대상노출증、죠교레벨によって減少
+;LOCAL에 응해이탈SOURCE 증가, 죠교대상노출증, 죠교레벨에 의해 감소
 SOURCE:MASTER:이탈 = LOCAL - GET_ABL(MASTER, "노출증") * 2 - CFLAG:MASTER:죠교레벨 * 5
-;이탈SOURCEが負の値をとらないよう調整
+;이탈SOURCE가 부의 값을 받지 않게 조정
 SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
-;죠교자욕망に応じて발기도上昇
+;죠교자욕망에 응해발기도상승
 TCVAR:MASTER:금회발기 += 100 + GET_ABL(TARGET, "욕망")
 TFLAG:경과시간 += 3
 
-;リアクション後（Ｓ/Ｎ/Ｈ/Ａ）（이탈、욕정追加、쾌Ｃ、쾌Ｖ、쾌Ｂ）
+;리액션 후（Ｓ/Ｎ/Ｈ/Ａ）（이탈, 욕정추가, 쾌Ｃ, 쾌Ｖ, 쾌Ｂ）
 @ACTION_APPLY2_42
-;죠교자자위を開始
+;죠교자자위를 개시
 TEQUIP:자위중 |= 2
 
 ;────────────────────────────────────
-;043,수치플레이（Ｓ/Ｎ/Ｈ）（노출）
+;043, 수치플레이（Ｓ/Ｎ/Ｈ）（노출）
 ;────────────────────────────────────
 @ACTION_APPLY_43
-;開始時
+;개시시
 IF TFLAG:ACT파생 == 0
-	;노출SOURCE増加
+	;노출SOURCE 증가
 	SOURCE:MASTER:노출 = 200
-	;거울を据え付ける
+	;거울를 고정시킨다
 	TEQUIP:거울 = 1
-;終了時
+;종료시
 ELSE
-	;거울を片付ける
+	;거울를 정리한다
 	TEQUIP:거울 = 0
 ENDIF
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
 TFLAG:경과시간 += 2
 
 ;────────────────────────────────────
-;044,야외플레이（Ｈ/Ａ）[罰]（구속<=개목걸이のこと、노출、이탈、트라우마）
+;044, 야외플레이（Ｈ/Ａ）[벌]（구속<=개목걸이의 일, 노출, 이탈, 트라우마）
 ;────────────────────────────────────
 @ACTION_APPLY_44
-;終了時
+;종료시
 IF TFLAG:ACT파생 == 1
-	;야외플레이終了
+	;야외플레이종료
 	TEQUIP:야외플레이 = 0
-;開始時
+;개시시
 ELSE
-	;반항각인に応じて구속SOURCE増加
+	;반항각인에 응해구속SOURCE 증가
 	SOURCE:MASTER:구속 = 50 + MARK:반항각인 * 15
-	;노출SOURCE増加
+	;노출SOURCE 증가
 	SOURCE:MASTER:노출 = 300
-	;구속SOURCEに応じて이탈SOURCE増加、죠교대상노출증、죠교레벨によって減少
+	;구속SOURCE에 응해이탈SOURCE 증가, 죠교대상노출증, 죠교레벨에 의해 감소
 	SOURCE:MASTER:이탈 = 150 + SOURCE:MASTER:구속 - GET_ABL(MASTER, "노출증") * 3 - CFLAG:MASTER:죠교레벨 * 10
-	;이탈SOURCEが負の値をとらないよう調整
+	;이탈SOURCE가 부의 값을 받지 않게 조정
 	SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
-	;죠교대상겁쟁이、무관심、억압、해방、수줍음、수치없음素質、이탈SOURCEに応じて트라우마SOURCE増減
+	;죠교대상겁쟁이, 무관심, 억압, 해방, 수줍음, 수치없음소질, 이탈SOURCE에 응해트라우마SOURCE 증감
 	SOURCE:MASTER:트라우마 = TALENT:MASTER:겁쟁이 * 150 - TALENT:MASTER:무관심 * 50 + TALENT:MASTER:억압 * 150 - TALENT:MASTER:해방 * 50 + TALENT:MASTER:수줍음 * 250 - TALENT:MASTER:수치없음 * 150 + SOURCE:MASTER:이탈
-	;이탈SOURCEが0なら트라우마SOURCEも0になる
+	;이탈SOURCE가 0이라면트라우마SOURCE도 0이 된다
 	SOURCE:MASTER:트라우마 = SOURCE:MASTER:이탈 == 0 ? 0 # SOURCE:MASTER:트라우마
-	;트라우마SOURCEが負の値をとらないよう調整
+	;트라우마SOURCE가 부의 값을 받지 않게 조정
 	SOURCE:MASTER:트라우마 = SOURCE:MASTER:트라우마 < 0 ? 0 # SOURCE:MASTER:트라우마
-	;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+	;트라우마(각인)의 원이 이죠교였던 경우, 트라우마SOURCE를 1.5배로 한다
 	SIF CFLAG:MASTER:트라우마 == 44
 		TIMES SOURCE:MASTER:트라우마 , 1.50
-	;야외플레이開始
+	;야외플레이개시
 	TEQUIP:야외플레이 = 1
 ENDIF
-;안면승마系解除
+;안면승마계 해제
 CALL FACESITTING_SET(0)
-;죠교자、죠교대상자위を中断
+;죠교자, 죠교대상자위를 중단
 TEQUIP:자위중 = 0
 TFLAG:경과시간 += 5
 
 ;────────────────────────────────────
-;045,방뇨
+;045, 방뇨
 ;────────────────────────────────────
-;リアクション前（Ｎ/Ｈ/Ａ）[罰]（노출、이탈、트라우마）
+;리액션전（Ｎ/Ｈ/Ａ）[벌]（노출, 이탈, 트라우마）
 @ACTION_APPLY_45
-;노출SOURCE増加
+;노출SOURCE 증가
 SOURCE:MASTER:노출 = 350
-;이탈SOURCE増加、죠교대상노출증、죠교레벨によって減少
+;이탈SOURCE 증가, 죠교대상노출증, 죠교레벨에 의해 감소
 SOURCE:MASTER:이탈 = 750 - GET_ABL(MASTER, "노출증") * 15 - CFLAG:MASTER:죠교레벨 * 30
-;이탈SOURCEが負の値をとらないよう調整
+;이탈SOURCE가 부의 값을 받지 않게 조정
 SOURCE:MASTER:이탈 = SOURCE:MASTER:이탈 < 0 ? 0 # SOURCE:MASTER:이탈
-;죠교대상겁쟁이、무관심、억압、해방、수줍음、수치없음素質、이탈SOURCEに応じて트라우마SOURCE増減
+;죠교대상겁쟁이, 무관심, 억압, 해방, 수줍음, 수치없음소질, 이탈SOURCE에 응해트라우마SOURCE 증감
 SOURCE:MASTER:트라우마 = TALENT:MASTER:겁쟁이 * 150 - TALENT:MASTER:무관심 * 50 + TALENT:MASTER:억압 * 150 - TALENT:MASTER:해방 * 50 + TALENT:MASTER:수줍음 * 250 - TALENT:MASTER:수치없음 * 150 + SOURCE:MASTER:이탈
-;이탈SOURCEが0なら트라우마SOURCEも0になる
+;이탈SOURCE가 0이라면트라우마SOURCE도 0이 된다
 SOURCE:MASTER:트라우마 = SOURCE:MASTER:이탈 == 0 ? 0 # SOURCE:MASTER:트라우마
-;트라우마SOURCEが負の値をとらないよう調整
+;트라우마SOURCE가 부의 값을 받지 않게 조정
 SOURCE:MASTER:트라우마 = SOURCE:MASTER:트라우마 < 0 ? 0 # SOURCE:MASTER:트라우마
-	;트라우마(각인)の元がこの죠교だった場合、트라우마SOURCEを1.5倍にする
+	;트라우마(각인)의 원이 이죠교였던 경우, 트라우마SOURCE를 1.5배로 한다
 	SIF CFLAG:MASTER:트라우마 == 45
 		TIMES SOURCE:MASTER:트라우마 , 1.50
-;죠교대상자위を中断
+;죠교대상자위를 중단
 TEQUIP:자위중 &= ~1
 TFLAG:경과시간 += 2
 
-;リアクション後（Ｎ/Ｈ/Ａ）[罰]（노출、이탈、트라우마）
+;리액션 후（Ｎ/Ｈ/Ａ）[벌]（노출, 이탈, 트라우마）
 @ACTION_APPLY2_45
-IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/受け入れる")
-	;소변を失う
+IF IS_COMGRONAME("소극적으로 한다/태연하게 한다/적극적으로 한다/받아들인다")
+	;소변를 잃는다
 	BASE:MASTER:소변 = 0
-	;굴종SOURCE増加
+	;굴종SOURCE 증가
 	SOURCE:MASTER:굴종 += 200
 	SOURCE:MASTER:달성 += 50 + LOCAL
-	;죠교대상Ｖを占有する
+	;죠교대상Ｖ를 점유 한다
 	TFLAG:Ｖ사용중 = 2
-;その他の場合(拒絶)
+;그 외의 경우(거절)
 ELSE
-	;REACT분류に要求に応じないをセット
+	;REACT분류에 요구에 응하지 않는 것을 세트
 	CALL SET_COMGRO("거부")
-	;노출、이탈、트라우마、굴종SOURCE減少
+	;노출, 이탈, 트라우마, 굴종SOURCE 감소
 	TIMES SOURCE:MASTER:노출 , 0.40
 	TIMES SOURCE:MASTER:이탈 , 0.50
 	TIMES SOURCE:MASTER:트라우마 , 0.10
@@ -221,6 +221,6 @@ ELSE
 ENDIF
 
 ;────────────────────────────────────
-;046,코스프레（Ｓ/Ｎ/Ｈ/Ａ）（미구현）
+;046, 코스프레（Ｓ/Ｎ/Ｈ/Ａ）（미구현）
 ;────────────────────────────────────
 ;@ACTION_APPLY_46
